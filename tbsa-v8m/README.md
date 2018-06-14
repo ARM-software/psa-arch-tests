@@ -48,7 +48,9 @@ Partners can also write their own abstraction layer implementations to allow TBS
 
 ## Getting started
 
-Follow the instructions in the subsequent sections to get a copy of the source code on your local machine and build the tests. See 'Porting steps for TBSA-v8M test suite' to port the TBSA-v8M test suite on a given target system.
+
+Follow the instructions in the subsequent sections to get a copy of the source code on your local machine and build the tests. <br />
+See User guide document to get details on the steps involved in Porting the test suite to your platform.
 
 
 ### Prerequisites
@@ -59,27 +61,27 @@ Before starting the test suite build, ensure that the following requirements are
 - Scripting tools           : Perl 5.12.3
 - Other open-source tools   : GCC 6.3.1
 
-Refer to the docs/TBSA-M-User-Guide.pdf for other environment requirements of the TBSA-M test suite.
-<br />
 
 
 ## Download source
 To download the master branch of the repository, type the following command:
 
-	git clone https://github.com/ARM-software/psa-m-arch-test.git <br />
+	git clone https://github.com/ARM-software/psa-m-arch-test.git
 
 
 ## Porting steps
 
-TBD
+Refer to the docs/TBSA-M-User-Guide.pdf for other environment requirements of the TBSA-M test suite.
 
 ## Build steps
 
 To build TBSA-v8M test suite for a given platform, execute the following commands:
+      1. cd syscomp_tbsa_m
+      2. make TARGET=<platform_name>
+          Example: make TARGET=fvp
 
-      1. cd syscomp_tbsa_m <br />
-      2. make TARGET=<platform_name>  <br />
-          Example: make TARGET=fvp        <br />
+where <platform_name> is the same as the name of the target specific directory created in the platform/board directory.
+
 
 
 ### Build output
@@ -89,8 +91,11 @@ TBSA build generates two output binaries:
 	- tbsa_test_combined.bin
 
 ## Test Suite Execution
+The following steps describe the execution flow prior to the start of test execution.
+1. The target platform must load the tbsa.elf file.
+2. The suite exectuion begins from the tbsa_entry.
+3. The tests are executed sequentially in a loop in the tbsa_dispatcher function.
 
-TBD
 
 ## License
 
