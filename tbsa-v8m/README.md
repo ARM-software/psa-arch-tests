@@ -4,20 +4,20 @@
 
 ## Introduction
 
-### TBSA-v8m Specification
+### TBSA-v8M Specification
 
-The TBSA-v8M specification defines the behavior of an abstract machine referred as TBSA-v8M system. Implementations compliant with TBSA-v8M architecture must conform to the described behavior of the TBSA-v8M System.
+The TBSA-v8M specification defines the behavior of an abstract machine referred to as a TBSA-v8M system. Implementations that are compliant with the TBSA-v8M architecture must conform to the described behavior of the TBSA-v8M System.
 
 To receive a copy of the TBSA-v8M specification, Arm Licensees may contact Arm through their partner managers.
 
 ### Architecture test suite
 
-The TBSA-M Architecture test suite checks whether an implementation conforms to the behaviors described in the TBSA-v8M specification.
+The TBSA-v8M Architecture test suite checks whether an implementation conforms to the behaviors described in the TBSA-v8M specification.
 
-TBSA-M compliance tests are self-checking, portable C-based tests
+TBSA-v8M compliance tests are self-checking, portable C-based tests
 with directed stimulus.
 
-The tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2 license allowing for external contribution.
+The tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license allowing for external contribution.
 
 
 ## Release details
@@ -27,11 +27,11 @@ The tests are available as open source. The tests and the corresponding abstract
 
   - This test suite is not a substitute for design verification.
 
- - To review the test logs, Arm licensees can contact ARM directly through their partner managers.
+ - To review the test logs, Arm licensees can contact Arm directly through their partner managers.
 
 ## Layers
 
-TBSA-M compliance tests use a layered software-stack approach to enable porting across different test platforms. The constituents of the layered stack are as below:
+TBSA-v8M compliance tests use a layered software-stack approach to enable porting across different test platforms. The constituents of the layered stack are:
          - Test suite
          - Validation Abstraction Layer (VAL)
          - Platform Abstraction Layer (PAL)
@@ -41,12 +41,13 @@ These tests are written on top of Validation Abstraction Layer (VAL) and Platfor
 
 The abstraction layers provide platform information and runtime environment to enable execution of the tests.
 
-In the present release, PAL is written on top of baremetal drivers and CMSIS.
+In this release, PAL is written on top of baremetal drivers and CMSIS.
 
 Partners can also write their own abstraction layer implementations to allow TBSA-v8M tests to be run in other environments, for example, as raw workload on an RTL simulation.
 
 
 ## Getting started
+
 
 Follow the instructions in the subsequent sections to get a copy of the source code on your local machine and build the tests. <br />
 See User guide document to get details on the steps involved in Porting the test suite to your platform.
@@ -63,7 +64,7 @@ Before starting the test suite build, ensure that the following requirements are
 
 
 ## Download source
-	To download the master branch of the repository, type the below command
+To download the master branch of the repository, type the following command:
 
 	git clone https://github.com/ARM-software/psa-m-arch-test.git
 
@@ -74,20 +75,20 @@ Refer to the docs/TBSA-M-User-Guide.pdf for other environment requirements of th
 
 ## Build steps
 
-To build TBSA-M ACK for a given platform, execute the following commands:
-
+To build TBSA-v8M test suite for a given platform, execute the following commands:
       1. cd syscomp_tbsa_m
       2. make TARGET=<platform_name>
-          ex: make TARGET=fvp
+          Example: make TARGET=fvp
 
 where <platform_name> is the same as the name of the target specific directory created in the platform/board directory.
 
 
-### Build output
-	TBSA build generates two output binaries:
-        - tbsa.elf and 
-        - tbsa_test_combined.bin
 
+### Build output
+TBSA build generates two output binaries:
+        
+	- tbsa.elf  
+	- tbsa_test_combined.bin
 
 ## Test Suite Execution
 The following steps describe the execution flow prior to the start of test execution.
@@ -98,12 +99,12 @@ The following steps describe the execution flow prior to the start of test execu
 
 ## License
 
-ARM TBSA-v8M Architecture test suite is distributed under Apache v2.0 License.
+Arm TBSA-v8M Architecture test suite is distributed under Apache v2.0 License.
 
 
 ## Feedback, contributions, and support
 
  - For feedback, use the GitHub Issue Tracker that is associated with this repository.
- - For support, please send an email to "support-psa-tests-acs@arm.com" with details.
- - ARM licensees can contact ARM directly through their partner managers.
- - ARM welcomes code contributions through GitHub pull requests. For details, see "docs/Contributions.txt".
+ - For support, send an email to support-psa-tests-acs@arm.com with details.
+ - Arm licensees can contact Arm directly through their partner managers.
+ - Arm welcomes code contributions through GitHub pull requests. For details, see "docs/Contributions.txt".
