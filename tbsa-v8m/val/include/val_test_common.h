@@ -22,37 +22,35 @@
 
 /* Macro's */
 #define TBSA_BASE_BASE                  0
-#define TBSA_0_STR			"\n-------------------- Base Tests             --------------------"
+#define TBSA_0_STR			"\n\n------------------------------- Base Tests            -------------------------------"
 #define TBSA_TRUSTED_BOOT_BASE          1
-#define TBSA_1_STR			"\n-------------------- Trusted Boot Tests     --------------------"
+#define TBSA_1_STR			"\n\n------------------------------- Trusted Boot Tests    -------------------------------"
 #define TBSA_CRYPTO_BASE                2
-#define TBSA_2_STR			"\n-------------------- Crypto Tests           --------------------"
+#define TBSA_2_STR			"\n\n------------------------------- Crypto Tests          -------------------------------"
 #define TBSA_DEBUG_BASE                 3
-#define TBSA_3_STR			"\n-------------------- Debug Tests            --------------------"
+#define TBSA_3_STR			"\n\n------------------------------- Debug Tests           -------------------------------"
 #define TBSA_DRAM_BASE                  4
-#define TBSA_4_STR			"\n-------------------- DRAM Tests             --------------------"
+#define TBSA_4_STR			"\n\n------------------------------- DRAM Tests            -------------------------------"
 #define TBSA_EIP_BASE                   5
-#define TBSA_5_STR			"\n-------------------- EIP Tests              --------------------"
+#define TBSA_5_STR			"\n\n------------------------------- EIP Tests             -------------------------------"
 #define TBSA_ENTROPY_SOURCE_BASE        6
-#define TBSA_6_STR			"\n-------------------- Entropy Source Tests   --------------------"
+#define TBSA_6_STR			"\n\n------------------------------- Entropy Source Tests  -------------------------------"
 #define TBSA_FUSES_BASE                 7
-#define TBSA_7_STR			"\n-------------------- Fuses Tests            --------------------"
+#define TBSA_7_STR			"\n\n------------------------------- Fuses Tests           -------------------------------"
 #define TBSA_INFRASTRUCTURE_BASE        8
-#define TBSA_8_STR			"\n-------------------- Infrastructure Tests   --------------------"
+#define TBSA_8_STR			"\n\n------------------------------- Infrastructure Tests  -------------------------------"
 #define TBSA_INTERRUPTS_BASE            9
-#define TBSA_9_STR			"\n-------------------- Interrupts Tests       --------------------"
+#define TBSA_9_STR			"\n\n------------------------------- Interrupts Tests      -------------------------------"
 #define TBSA_SECURE_RAM_BASE            10
-#define TBSA_10_STR			"\n-------------------- Secure RAM Tests       --------------------"
+#define TBSA_10_STR			"\n\n------------------------------- Secure RAM Tests      -------------------------------"
 #define TBSA_PERIPHERALS_BASE           11
-#define TBSA_11_STR			"\n-------------------- Peripherals Tests      --------------------"
-#define TBSA_SAMPLE_BASE                12
-#define TBSA_12_STR			"\n-------------------- Sample Tests           --------------------"
-#define TBSA_TRUSTED_TIMERS_BASE        13
-#define TBSA_13_STR			"\n-------------------- Trusted Timers Tests   --------------------"
-#define TBSA_VERSION_COUNTERS_BASE      14
-#define TBSA_14_STR			"\n-------------------- Version Counters Tests --------------------"
-#define TBSA_VOLATALITY_BASE            15
-#define TBSA_15_STR			"\n-------------------- Volatality Tests       --------------------"
+#define TBSA_11_STR			"\n\n------------------------------- Peripherals Tests     -------------------------------"
+#define TBSA_TRUSTED_TIMERS_BASE        12
+#define TBSA_12_STR			"\n\n------------------------------- Trusted Timers Tests  -------------------------------"
+#define TBSA_VERSION_COUNTERS_BASE      13
+#define TBSA_13_STR			"\n\n------------------------------- Version Counters Tests-------------------------------"
+#define TBSA_VOLATALITY_BASE            14
+#define TBSA_14_STR			"\n\n------------------------------- Volatality Tests      -------------------------------"
 
 #define TBSA_MAX_TEST_PER_COMP          20
 #define TBSA_GET_COMP_NUM(test_id)      ((test_id - (test_id % TBSA_MAX_TEST_PER_COMP)) / TBSA_MAX_TEST_PER_COMP)

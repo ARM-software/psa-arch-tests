@@ -42,6 +42,14 @@ typedef struct
     uint32_t res2:8;
 }boot_t;
 
+typedef struct
+{
+    uint32_t pass_cnt:8;
+    uint32_t skip_cnt:8;
+    uint32_t fail_cnt:8;
+    uint32_t res0:8;
+}test_count_t;
+
 /* enums */
 typedef enum
 {
@@ -67,12 +75,13 @@ typedef enum
 
 typedef enum
 {
-    NV_TEST = 0x0,
-    NV_WDOG = 0x1,
-    NV_BOOT = 0x2,
-    NV_DPM1 = 0x3,
-    NV_DPM2 = 0x4,
-    NV_SHCSR= 0x5,
+    NV_TEST     = 0x0,
+    NV_TEST_CNT = 0x1,
+    NV_WDOG     = 0x2,
+    NV_BOOT     = 0x3,
+    NV_DPM1     = 0x4,
+    NV_DPM2     = 0x5,
+    NV_SHCSR    = 0x6,
 }nvram_index_t;
 
 /* prototypes */

@@ -206,6 +206,7 @@ test_id_t val_nvram_get_last_id (void)
     memory_desc_t  *memory_desc;
     boot_t         boot;
     test_id_t      test_id;
+    test_count_t   test_count;
 
     status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVRAM, 0),
                                    (uint8_t **)&memory_desc,
@@ -221,13 +222,15 @@ test_id_t val_nvram_get_last_id (void)
         return TBSA_TEST_INVALID;
     }
 
-    if (boot.state != WARM_BOOT_REQUESTED) {
-        return TBSA_TEST_INVALID;
-    }
-
+    if ((boot.state == WARM_BOOT_REQUESTED) || (boot.state == COLD_BOOT_REQUESTED)) {
     status = val_nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_TEST), &test_id, sizeof(test_id_t));
     if(status != TBSA_STATUS_SUCCESS) {
         val_print(PRINT_ERROR, "\n\tNVRAM read error", 0);
+        return TBSA_TEST_INVALID;
+    }
+    } else {
+        memset((void*)&test_count, 0UL, sizeof(test_count_t));
+        val_nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_TEST_CNT), &test_count, sizeof(test_count_t));
         return TBSA_TEST_INVALID;
     }
 
@@ -276,6 +279,38 @@ val_infra_init(test_id_t *test_id)
 tbsa_status_t
 val_infra_exit(void)
 {
+    tbsa_status_t status;
+    memory_desc_t *memory_desc;
+    test_count_t  test_count;
+
+    status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVRAM, 0),
+                                   (uint8_t **)&memory_desc,
+                                   (uint32_t *)sizeof(memory_desc_t));
+    if(status != TBSA_STATUS_SUCCESS) {
+        val_print(PRINT_ERROR, "\n\tNVRAM not present", 0);
+        return status;
+    }
+
+    status = val_nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_TEST_CNT), &test_count, sizeof(test_count_t));
+    if(status != TBSA_STATUS_SUCCESS) {
+        val_print(PRINT_ERROR, "\n\tNVRAM read error", 0);
+        return status;
+    }
+
+    val_print(PRINT_ALWAYS, "\n", 0);
+    for(int i=0; i < strlen(val_get_comp_name(CREATE_TEST_ID(TBSA_BASE_BASE, 1))); i++) {
+        val_print(PRINT_ALWAYS, "-", 0);
+    }
+
+    val_print(PRINT_ALWAYS, "\nTotal tests : %d", (test_count.pass_cnt + test_count.skip_cnt + test_count.fail_cnt));
+    val_print(PRINT_ALWAYS, "\nPass        : %d", test_count.pass_cnt);
+    val_print(PRINT_ALWAYS, "\nFail        : %d", test_count.fail_cnt);
+    val_print(PRINT_ALWAYS, "\nSkip        : %d", test_count.skip_cnt);
+
+    val_print(PRINT_ALWAYS, "\n", 0);
+    for(int i=0; i < strlen(val_get_comp_name(CREATE_TEST_ID(TBSA_BASE_BASE, 1))); i++) {
+        val_print(PRINT_ALWAYS, "-", 0);
+    }
 
    return TBSA_STATUS_SUCCESS;
 }
@@ -315,19 +350,19 @@ val_report_status(test_id_t test_id)
             break;
 
         case TBSA_TEST_PASS:
-            val_print(PRINT_TEST, "\n                                                           PASS", 0);
+            val_print(PRINT_TEST, "                                                               PASS", 0);
             break;
 
         case TBSA_TEST_FAIL:
-            val_print(PRINT_TEST, "\n                                                           FAIL", 0);
+            val_print(PRINT_TEST, "\n\t\t                                                                 FAIL", 0);
             break;
 
         case TBSA_TEST_SKIP:
-            val_print(PRINT_TEST, "\n                                                           SKIP", 0);
+            val_print(PRINT_TEST, "\n\t\t                                                                 SKIP", 0);
             break;
 
         case TBSA_TEST_PENDING:
-            val_print(PRINT_TEST, "\n                                                           PEND", 0);
+            val_print(PRINT_TEST, "\n\t\t                                                                 PEND", 0);
             break;
     }
 
@@ -381,7 +416,7 @@ val_err_check_set(uint32_t checkpoint, tbsa_status_t status)
 {
     if (TBSA_ERROR(status)) {
         val_print(PRINT_ERROR, "\n        Checkpoint %x : ", checkpoint);
-        val_print(PRINT_ERROR, "Status = %x \n", status);
+        val_print(PRINT_ERROR, "Status = %x", status);
         val_set_status(RESULT_FAIL(status));
     } else {
         val_print(PRINT_DEBUG, "\n        Checkpoint %x : ", checkpoint);
@@ -494,14 +529,12 @@ char *val_get_comp_name(test_id_t test_id)
             return TBSA_10_STR;
         case TBSA_PERIPHERALS_BASE:
             return TBSA_11_STR;
-        case TBSA_SAMPLE_BASE:
-            return TBSA_12_STR;
         case TBSA_TRUSTED_TIMERS_BASE:
-            return TBSA_13_STR;
+            return TBSA_12_STR;
         case TBSA_VERSION_COUNTERS_BASE:
-            return TBSA_14_STR;
+            return TBSA_13_STR;
         case TBSA_VOLATALITY_BASE:
-            return TBSA_15_STR;
+            return TBSA_14_STR;
         default:
             return "No Component";
 

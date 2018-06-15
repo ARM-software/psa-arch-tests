@@ -67,6 +67,7 @@ tbsa_dispatcher(test_id_t test_id_prev)
     test_id_t     test_id;
     tbsa_status_t status;
     memory_desc_t *memory_desc;
+    test_count_t  test_count;
 
     status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVRAM, 0),
                                    (uint8_t **)&memory_desc,
@@ -94,11 +95,11 @@ tbsa_dispatcher(test_id_t test_id_prev)
         if (TBSA_GET_COMP_NUM(test_id_prev) != TBSA_GET_COMP_NUM(test_id)) {
             val_print(PRINT_ALWAYS, val_get_comp_name(test_id), 0);
         }
-        val_print(PRINT_ALWAYS, "\n%d : ", test_id);
+        val_print(PRINT_ALWAYS, "\n\n%d : ", test_id);
         val_print(PRINT_ALWAYS, ((tbsa_test_info_t *)g_s_test_info_addr)->ref_tag, 0);
-        val_print(PRINT_ALWAYS, "\n    ", 0);
+        val_print(PRINT_ALWAYS, "      ", 0);
         val_print(PRINT_ALWAYS, ((tbsa_test_info_t *)g_s_test_info_addr)->title, 0);
-        val_print(PRINT_ALWAYS, "\n    # Secure", 0);
+        val_print(PRINT_ALWAYS, "      # Secure    ", 0);
 
         val_execute_test_fn(test_id, ENTRY_FUNC_HOOK_S);
 
@@ -111,7 +112,7 @@ tbsa_dispatcher(test_id_t test_id_prev)
         val_execute_test_fn(test_id, EXIT_FUNC_HOOK_S);
 
         val_report_status(test_id);
-        val_print(PRINT_ALWAYS, "\n    # Non Secure", 0);
+        val_print(PRINT_ALWAYS, "\n      # Non Secure", 0);
 
         if (IS_TEST_PASS(val_get_status()))
         {
@@ -126,6 +127,30 @@ tbsa_dispatcher(test_id_t test_id_prev)
         /* calling NS exit hook unconditionally */
         val_execute_test_fn(test_id, EXIT_FUNC_HOOK_NS);
 
+        status = val_nvram_read(memory_desc->start,
+                                TBSA_NVRAM_OFFSET(NV_TEST_CNT),
+                                &test_count,
+                                sizeof(test_count_t));
+        if(status != TBSA_STATUS_SUCCESS) {
+            val_print(PRINT_ALWAYS, "\n\tNVRAM write error", 0);
+            break;
+        }
+        if (IS_TEST_PASS(val_get_status())) {
+            test_count.pass_cnt += 1;
+        } else if(IS_TEST_SKIP(val_get_status())) {
+            test_count.skip_cnt += 1;
+        } else if(IS_TEST_FAIL(val_get_status())) {
+            test_count.fail_cnt += 1;
+        }
+        status = val_nvram_write(memory_desc->start,
+                                 TBSA_NVRAM_OFFSET(NV_TEST_CNT),
+                                 &test_count,
+                                 sizeof(test_count_t));
+        if(status != TBSA_STATUS_SUCCESS) {
+            val_print(PRINT_ALWAYS, "\n\tNVRAM write error", 0);
+            break;
+        }
+
         val_report_status(test_id);
 
         test_id_prev = test_id;
@@ -136,7 +161,7 @@ tbsa_dispatcher(test_id_t test_id_prev)
             break;
         }
 
-   } while(1);
+    } while(1);
 
 exit:
    val_infra_exit();
