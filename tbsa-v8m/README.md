@@ -21,11 +21,12 @@ The tests are available as open source. The tests and the corresponding abstract
 
 
 ## Release details
- - Code Quality: Alpha v0.5
- - The TBSA-v8M tests are written for version 1.0 of the TBSA-v8M specification. <br />
-   The suite quality is Alpha. This indicates that the suite contains tests which have not been validated on any platform and may contain a reasonable amount of functional bugs.
+ - Release Version - 0.5
+ - Code Quality: Alpha <br />
+   The suite is in development. This indicates that the suite contains tests which have not been validated on any platform. Please use this opportunity to suggest enhancements and point out errors.
 
-  - This test suite is not a substitute for design verification.
+ - The TBSA-v8M tests are written for version 1.1 of the TBSA-v8M specification.
+ - This test suite is not a substitute for design verification.
 
  - To review the test logs, Arm licensees can contact Arm directly through their partner managers.
 
@@ -76,12 +77,11 @@ Refer to the docs/TBSA-M-User-Guide.pdf for other environment requirements of th
 ## Build steps
 
 To build TBSA-v8M test suite for a given platform, execute the following commands:
-      1. cd syscomp_tbsa_m
-      2. make TARGET=<platform_name>
-          Example: make TARGET=fvp
+	1. cd syscomp_tbsa_m
+	2. make TARGET=<platform_name>
+	   Example: make TARGET=fvp
 
 where <platform_name> is the same as the name of the target specific directory created in the platform/board directory.
-
 
 
 ### Build output
