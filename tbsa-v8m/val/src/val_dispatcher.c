@@ -28,9 +28,9 @@ extern addr_t g_ns_test_info_addr;
     @brief    - Execute the function pointer which was given to us by the test
     @param    - test_id      : Current test ID
               - test_fn_type : Test function type
+    @return   - void
 **/
-void
-val_execute_test_fn(test_id_t test_id, tbsa_test_fn_type_t test_fn_type)
+void val_execute_test_fn(test_id_t test_id, tbsa_test_fn_type_t test_fn_type)
 {
     test_fptr_t   fn_ptr;
     addr_t        addr;
@@ -58,10 +58,10 @@ val_execute_test_fn(test_id_t test_id, tbsa_test_fn_type_t test_fn_type)
 /**
     @brief    - This function is responsible for setting up VAL infrastructure.
                 Loads TBSA tests one by one and calls the functions(entry/payload/exit) from each test image.
+    @param    - test_id_prev  : Previous ran test ID
     @return   - none
 **/
-void
-tbsa_dispatcher(test_id_t test_id_prev)
+void tbsa_dispatcher(test_id_t test_id_prev)
 {
 
     test_id_t     test_id;
@@ -166,4 +166,3 @@ tbsa_dispatcher(test_id_t test_id_prev)
 exit:
    val_infra_exit();
 }
-

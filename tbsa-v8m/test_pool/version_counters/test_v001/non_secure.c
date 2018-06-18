@@ -62,7 +62,7 @@ void test_payload(tbsa_val_api_t *val)
         goto cleanup;
     }
 
-    if (boot.state != COLD_BOOT_REQUESTED) {
+    if (boot.cb != COLD_BOOT_REQUESTED) {
         status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MISCELLANEOUS, MISCELLANEOUS_VER_COUNT, instance),
                                         (uint8_t **)&misc_desc,
                                         (uint32_t *)sizeof(miscellaneous_desc_t));
@@ -70,7 +70,7 @@ void test_payload(tbsa_val_api_t *val)
             goto cleanup;
         }
 
-        boot.state = COLD_BOOT_REQUESTED;
+        boot.cb = COLD_BOOT_REQUESTED;
         status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
         if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
             goto cleanup;
@@ -80,8 +80,8 @@ void test_payload(tbsa_val_api_t *val)
         if (val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_ERROR)) {
             goto cleanup;
         }
-    } else if (boot.state == COLD_BOOT_REQUESTED) {
-        boot.state = BOOT_UNKNOWN;
+    } else if (boot.cb == COLD_BOOT_REQUESTED) {
+        boot.cb = BOOT_UNKNOWN;
         status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
         if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
             goto cleanup;

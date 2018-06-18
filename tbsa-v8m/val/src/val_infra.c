@@ -25,9 +25,9 @@
 
 /* globals */
 print_verbosity_t    g_print_level = PRINT_TEST;
-tbsa_status_buffer_t *g_status_buffer = NULL;
 addr_t               g_test_binary_src_addr;
 uint32_t             g_test_binary_in_ram;
+tbsa_status_buffer_t g_test_status_buffer[TBSA_TOTAL_TESTS];
 
 /* externs*/
 extern tbsa_isr_vector      g_tbsa_s_isr_vector;
@@ -39,14 +39,11 @@ extern const tbsa_val_api_t tbsa_val_ns_api;
     @return   - tbsa_status_t
 **/
 
-static
-tbsa_status_t
-val_status_buffer_init(void)
+static tbsa_status_t val_status_buffer_init(tbsa_status_buffer_t *psbuf)
 {
-    tbsa_status_buffer_t *psbuf = g_status_buffer;
     int i;
 
-    for(i=0; i < TBSA_STATUS_BUF_SIZE;)
+    for(i=0; i < TBSA_TEST_STATUS_BUF_SIZE;)
     {
         psbuf->state   = 0x0;
         psbuf->status  = (uint8_t)TBSA_STATUS_INVALID;
@@ -57,17 +54,58 @@ val_status_buffer_init(void)
 }
 
 /**
+    @brief    - This function parses the input string and writes bytes into UART TX FIFO
+    @param    - str     : Buffer of the string to print
+                data    : Data value to print
+    @return   - void
+**/
+void val_print_raw(char *str, uint32_t data)
+{
+    uint8_t j, buffer[16];
+    int8_t  i=0;
+
+    for(;*str != '\0'; ++str) {
+        if(*str == '%') {
+            ++str;
+            if(*str == 'd') {
+                while(data != 0) {
+                    j         = data % 10;
+                    data      = data /10;
+                    buffer[i] = j + 48;
+                    i        += 1;
+                }
+            } else if(*str == 'x' || *str == 'X') {
+                while(data != 0) {
+                    j         = data & 0xf;
+                    data    >>= 4;
+                    buffer[i] = j + ((j > 9) ? 55 : 48);
+                    i        += 1;
+                }
+            }
+            if (i > 0) {
+                while(i > 0) {
+                    pal_uart_tx(buffer[--i]);
+                }
+            } else {
+                pal_uart_tx(48);
+            }
+        } else {
+            pal_uart_tx(*str);
+        }
+    }
+}
+
+/**
     @brief    - Print module
     @param    - verbosity: Print verbosity level
               - string   : Input string
               - data     : Value for format specifier
     @return   - tbsa_status_t
 **/
-tbsa_status_t
-val_print(print_verbosity_t verbosity, char *string, uint32_t data)
+tbsa_status_t val_print(print_verbosity_t verbosity, char *string, uint32_t data)
 {
     if(verbosity >= g_print_level) {
-        pal_print_raw(string, data);
+        val_print_raw(string, data);
     }
     return TBSA_STATUS_SUCCESS;
 }
@@ -77,15 +115,14 @@ val_print(print_verbosity_t verbosity, char *string, uint32_t data)
     @param    - blob     : Populates the base address
     @return   - tbsa_status_t
 **/
-tbsa_status_t
-val_target_cfg_get_next(void **blob)
+tbsa_status_t val_target_cfg_get_next(void **blob)
 {
     tbsa_status_t status = TBSA_STATUS_SUCCESS;
     target_cfg_hdr_t *hdr;
     uint32_t size;
 
     if (*blob == NULL) {
-        *blob = pal_target_get_cfg_start();
+        *blob = pal_get_target_cfg_start();
         if (blob == NULL) {
             return TBSA_STATUS_NOT_FOUND;
         }
@@ -117,8 +154,7 @@ val_target_cfg_get_next(void **blob)
               - size     : Block size
     @return   - tbsa_status_t
 **/
-tbsa_status_t
-val_target_get_cfg_blob(cfg_id_t cfg_id, uint8_t **data, uint32_t *size)
+tbsa_status_t val_target_get_cfg_blob(cfg_id_t cfg_id, uint8_t **data, uint32_t *size)
 {
     tbsa_status_t status;
     void *config_blob = NULL;
@@ -163,8 +199,7 @@ val_target_get_cfg_blob(cfg_id_t cfg_id, uint8_t **data, uint32_t *size)
   @return - data contains the information of type specific to a
             config id.
 **/
-tbsa_status_t
-val_target_get_config(cfg_id_t cfg_id, uint8_t **data, uint32_t *size)
+tbsa_status_t val_target_get_config(cfg_id_t cfg_id, uint8_t **data, uint32_t *size)
 {
     tbsa_status_t status;
 
@@ -187,17 +222,38 @@ val_target_get_config(cfg_id_t cfg_id, uint8_t **data, uint32_t *size)
 **/
 void val_memory_init (void)
 {
-    addr_t *addr;
+    val_status_buffer_init(&g_test_status_buffer[0]);
+}
 
-    pal_mem_get_status_buffer_addr(&addr, TBSA_STATUS_BUF_SIZE);
-    if(addr != NULL) {
-        g_status_buffer = (tbsa_status_buffer_t *)addr;
-        val_status_buffer_init();
+/**
+    @brief    - Initialize NVRAM
+    @param    - void
+    @return   - void
+**/
+tbsa_status_t val_nvram_init (void)
+{
+    tbsa_status_t  status       = TBSA_STATUS_SUCCESS;
+    memory_desc_t  *memory_desc;
+    test_id_t      test_id;
+
+    status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVRAM, 0),
+                                   (uint8_t **)&memory_desc,
+                                   (uint32_t *)sizeof(memory_desc_t));
+    if(status != TBSA_STATUS_SUCCESS) {
+        return status;
     }
+
+    if (val_system_reset_type() == COLD_RESET) {
+        test_id = TBSA_TEST_INVALID;
+        val_nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_TEST), &test_id, sizeof(test_id_t));
+    }
+
+    return status;
 }
 
 /**
     @brief    - This function returns the test ID of the last test that was run
+    @param    - void
     @return   - test_id_t
 **/
 test_id_t val_nvram_get_last_id (void)
@@ -222,12 +278,12 @@ test_id_t val_nvram_get_last_id (void)
         return TBSA_TEST_INVALID;
     }
 
-    if ((boot.state == WARM_BOOT_REQUESTED) || (boot.state == COLD_BOOT_REQUESTED)) {
-    status = val_nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_TEST), &test_id, sizeof(test_id_t));
-    if(status != TBSA_STATUS_SUCCESS) {
-        val_print(PRINT_ERROR, "\n\tNVRAM read error", 0);
-        return TBSA_TEST_INVALID;
-    }
+    if ((boot.wb == WARM_BOOT_REQUESTED) || (boot.cb == COLD_BOOT_REQUESTED)) {
+        status = val_nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_TEST), &test_id, sizeof(test_id_t));
+        if(status != TBSA_STATUS_SUCCESS) {
+            val_print(PRINT_ERROR, "\n\tNVRAM read error", 0);
+            return TBSA_TEST_INVALID;
+        }
     } else {
         memset((void*)&test_count, 0UL, sizeof(test_count_t));
         val_nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_TEST_CNT), &test_count, sizeof(test_count_t));
@@ -242,8 +298,7 @@ test_id_t val_nvram_get_last_id (void)
     @param    - test_id  : Populate test ID
     @return   - tbsa_status_t
 **/
-tbsa_status_t
-val_infra_init(test_id_t *test_id)
+tbsa_status_t val_infra_init(test_id_t *test_id)
 {
     tbsa_status_t status;
 
@@ -253,6 +308,7 @@ val_infra_init(test_id_t *test_id)
     val_mem_reg_write(VTOR_NS, (uint32_t)&g_tbsa_ns_isr_vector);
 
     val_memory_init();
+    val_nvram_init();
 
     pal_spi_init();
 
@@ -274,10 +330,10 @@ val_infra_init(test_id_t *test_id)
 
 /**
     @brief    - Exit procedures for VAL infrastructure
+    @param    - void
     @return   - tbsa_status_t
 **/
-tbsa_status_t
-val_infra_exit(void)
+tbsa_status_t val_infra_exit(void)
 {
     tbsa_status_t status;
     memory_desc_t *memory_desc;
@@ -321,10 +377,9 @@ val_infra_exit(void)
     @param    - test_id  : Current test ID
     @return   - tbsa_status_t
 **/
-tbsa_status_t
-val_report_status(test_id_t test_id)
+tbsa_status_t val_report_status(test_id_t test_id)
 {
-    tbsa_status_buffer_t *psbuf = g_status_buffer;
+    tbsa_status_buffer_t *psbuf = g_test_status_buffer;
     uint32_t status;
 
     if (psbuf == NULL) {
@@ -374,45 +429,34 @@ val_report_status(test_id_t test_id)
     @param    - status   : Test status
     @return   - tbsa_status_t
 **/
-tbsa_status_t
-val_set_status(uint32_t status)
+tbsa_status_t val_set_status(uint32_t status)
 {
-    if (g_status_buffer == NULL) {
-        val_print(PRINT_ERROR, "No memory for status buffer\n", 0);
-        return TBSA_STATUS_ERROR;
-    }
-
     /* g_status_buf offset 0 is reserved for saving/checking test status temporarily */
-    g_status_buffer->state   = ((status >> TEST_STATE_BIT) & TEST_STATE_MASK);
-    g_status_buffer->status  = (status & TEST_STATUS_MASK);
+    g_test_status_buffer[0].state   = ((status >> TEST_STATE_BIT) & TEST_STATE_MASK);
+    g_test_status_buffer[0].status  = (status & TEST_STATUS_MASK);
 
     return TBSA_STATUS_SUCCESS;
 }
 
 /**
     @brief    - Returns the state and status of the test
+    @param    - void
+    @return   - test status
 **/
-uint32_t
-val_get_status(void)
+uint32_t val_get_status(void)
 {
-    if (g_status_buffer == NULL) {
-        val_print(PRINT_ERROR, "No memory for status buffer\n", 0);
-        return (TBSA_TEST_FAIL << TEST_STATE_BIT) | TBSA_STATUS_ERROR;
-    }
-
-    /* g_status_buf offset 0 is reserved for saving/checking test status temporarily */
-    return ((g_status_buffer->state) << TEST_STATE_BIT) | (g_status_buffer->status);
+    /* g_test_status_buffer offset 0 is reserved for saving/checking test status temporarily */
+    return ((g_test_status_buffer[0].state) << TEST_STATE_BIT) | (g_test_status_buffer[0].status);
 }
 
 /*
-    @brief           - This function checks if the input status argument is an error.
-                       On error, we print the checkpoint value and set the status.
-    @param           - checkpoint      : Test debug checkpoint
-                     - tbsa_status_t   : Test status
-    @return          - returns the input status back to the program.
+    @brief    - This function checks if the input status argument is an error.
+                On error, we print the checkpoint value and set the status.
+    @param    - checkpoint      : Test debug checkpoint
+              - tbsa_status_t   : Test status
+    @return   - returns the input status back to the program.
 */
-tbsa_status_t
-val_err_check_set(uint32_t checkpoint, tbsa_status_t status)
+tbsa_status_t val_err_check_set(uint32_t checkpoint, tbsa_status_t status)
 {
     if (TBSA_ERROR(status)) {
         val_print(PRINT_ERROR, "\n        Checkpoint %x : ", checkpoint);
@@ -426,43 +470,9 @@ val_err_check_set(uint32_t checkpoint, tbsa_status_t status)
 }
 
 /*
-    @brief     - Reads 'size' bytes from NVRAM at a given 'base + offset' into given buffer.
-    @param     - base      : Base address of NVRAM
-               - offset    : Offset
-               - buffer    : Pointer to source address
-               - size      : Number of bytes
-    @return    - tbsa_status_t
-*/
-tbsa_status_t val_nvram_read(addr_t base, uint32_t offset, void *buffer, int size)
-{
-    if(pal_nvram_read(base, offset, buffer, size)) {
-        return TBSA_STATUS_SUCCESS;
-    } else {
-        return TBSA_STATUS_ERROR;
-    }
-}
-
-/*
-    @brief     - Writes 'size' bytes from buffer into NVRAM at a given 'base + offset'.
-    @param     - base      : Base address of NVRAM
-               - offset    : Offset
-               - buffer    : Pointer to source address
-               - size      : Number of bytes
-    @return    - tbsa_status_t
-*/
-tbsa_status_t val_nvram_write(addr_t base, uint32_t offset, void *buffer, int size)
-{
-    if(pal_nvram_write(base, offset, buffer, size)) {
-        return TBSA_STATUS_SUCCESS;
-    } else {
-        return TBSA_STATUS_ERROR;
-    }
-}
-
-/*
-    @brief      - Generates system warm/cold reset.
-    @param      - reset_type - Warm or Cold
-    @return     - void
+    @brief    - Generates system warm/cold reset.
+    @param    - reset_type - Warm or Cold
+    @return   - void
 */
 void val_system_reset(system_reset_t reset_type)
 {
@@ -571,11 +581,11 @@ tbsa_status_t val_get_test_binary_info(addr_t *test_binary_src_addr, uint32_t *t
 }
 
 /*
-     @brief    - VAL facilitating memcpy support for tests
-     @param    - dst  : destination address
-                 src  : source address
-                 size : number of bytes to copy
-     @return   - void
+     @brief   - VAL facilitating memcpy support for tests
+     @param   - dst  : destination address
+                src  : source address
+                size : number of bytes to copy
+     @return  - void
 */
 void val_memcpy(void *dst, void *src, uint32_t size)
 {
@@ -583,9 +593,9 @@ void val_memcpy(void *dst, void *src, uint32_t size)
 }
 
 /*
-     @brief    - VAL facilitating execution of piece of trusted code at a given address
-     @param    - addr : Trusted addres
-     @return   - Trusted code return value
+     @brief   - VAL facilitating execution of piece of trusted code at a given address
+     @param   - addr : Trusted addres
+     @return  - Trusted code return value
 */
 __attribute__((naked))
 uint32_t val_execute_in_trusted_mode(addr_t address)

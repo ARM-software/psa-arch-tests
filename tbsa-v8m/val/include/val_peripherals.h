@@ -43,4 +43,7 @@ tbsa_status_t val_mpc_configure_security_attribute (uint32_t instance, addr_t st
 
 tbsa_status_t val_uart_init(void);
 
+tbsa_status_t  val_nvram_read   (addr_t base, uint32_t offset, void *buffer, int size);
+tbsa_status_t  val_nvram_write  (addr_t base, uint32_t offset, void *buffer, int size);
+
 #endif /* _VAL_PERIPHERALS_H_ */

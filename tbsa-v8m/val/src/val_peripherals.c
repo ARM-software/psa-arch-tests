@@ -27,8 +27,7 @@ extern uint32_t g_test_binary_in_ram;
                 len  : length of data to be read in bytes
     @return   - error status
 **/
-tbsa_status_t
-val_i2c_read(addr_t addr, uint8_t *data, uint32_t len)
+tbsa_status_t val_i2c_read(addr_t addr, uint8_t *data, uint32_t len)
 {
   return pal_i2c_read(addr, data, len);
 }
@@ -40,8 +39,7 @@ val_i2c_read(addr_t addr, uint8_t *data, uint32_t len)
                 len  : length of data to be written in bytes
     @return   - error status
 **/
-tbsa_status_t
-val_i2c_write(addr_t addr, uint8_t *data, uint32_t len)
+tbsa_status_t val_i2c_write(addr_t addr, uint8_t *data, uint32_t len)
 {
   return pal_i2c_write(addr, data, len);
 }
@@ -53,8 +51,7 @@ val_i2c_write(addr_t addr, uint8_t *data, uint32_t len)
                 len  : length of data to be read in bytes
     @return   - error status
 **/
-tbsa_status_t
-val_spi_read(addr_t addr, uint8_t *data, uint32_t len)
+tbsa_status_t val_spi_read(addr_t addr, uint8_t *data, uint32_t len)
 {
     if (g_test_binary_in_ram) {
         memcpy((void*)data, (void *)addr, len);
@@ -71,8 +68,7 @@ val_spi_read(addr_t addr, uint8_t *data, uint32_t len)
                 len  : length of data to be written in bytes
     @return   - error status
 **/
-tbsa_status_t
-val_spi_write(addr_t addr, uint8_t *data, uint32_t len)
+tbsa_status_t val_spi_write(addr_t addr, uint8_t *data, uint32_t len)
 {
   return pal_spi_write(addr, data, len);
 }
@@ -82,8 +78,7 @@ val_spi_write(addr_t addr, uint8_t *data, uint32_t len)
     @param    - base address of the given timer instance
     @return   - error status
 **/
-tbsa_status_t
-val_timer_init (addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
+tbsa_status_t val_timer_init (addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
 {
     return pal_timer_init (base_addr, time_us, timer_tick_us);
 }
@@ -93,8 +88,7 @@ val_timer_init (addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
     @param    - base address of the given timer instance
     @return   - error status
 **/
-tbsa_status_t
-val_timer_enable (addr_t base_addr)
+tbsa_status_t val_timer_enable (addr_t base_addr)
 {
     return pal_timer_enable(base_addr);
 }
@@ -104,8 +98,7 @@ val_timer_enable (addr_t base_addr)
     @param    - base address of the given timer instance
     @return   - error status
 **/
-tbsa_status_t
-val_timer_disable (addr_t base_addr)
+tbsa_status_t val_timer_disable (addr_t base_addr)
 {
     return pal_timer_disable(base_addr);
 }
@@ -115,8 +108,7 @@ val_timer_disable (addr_t base_addr)
     @param    - base address of the given timer instance
     @return   - error status
 **/
-tbsa_status_t
-val_timer_interrupt_clear (addr_t base_addr)
+tbsa_status_t val_timer_interrupt_clear (addr_t base_addr)
 {
     return pal_timer_interrupt_clear(base_addr);
 }
@@ -126,8 +118,7 @@ val_timer_interrupt_clear (addr_t base_addr)
     @param    - base address of the given timer instance
     @return   - error status
 **/
-tbsa_status_t
-val_wd_timer_init (addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
+tbsa_status_t val_wd_timer_init (addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
 {
     return pal_wd_timer_init (base_addr, time_us, timer_tick_us);
 }
@@ -137,8 +128,7 @@ val_wd_timer_init (addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
     @param    - base address of the given timer instance
     @return   - error status
 **/
-tbsa_status_t
-val_wd_timer_enable (addr_t base_addr)
+tbsa_status_t val_wd_timer_enable (addr_t base_addr)
 {
     return pal_wd_timer_enable(base_addr);
 }
@@ -148,8 +138,7 @@ val_wd_timer_enable (addr_t base_addr)
     @param    - base address of the given timer instance
     @return   - error status
 **/
-tbsa_status_t
-val_wd_timer_disable (addr_t base_addr)
+tbsa_status_t val_wd_timer_disable (addr_t base_addr)
 {
     return pal_wd_timer_disable(base_addr);
 }
@@ -159,8 +148,7 @@ val_wd_timer_disable (addr_t base_addr)
     @param    - base address of the given timer instance
     @return   - error status
 **/
-tbsa_status_t
-val_is_wd_timer_enabled (addr_t base_addr)
+tbsa_status_t val_is_wd_timer_enabled (addr_t base_addr)
 {
     if (pal_is_wd_timer_enabled(base_addr)) {
         return TBSA_STATUS_SUCCESS;
@@ -176,8 +164,7 @@ val_is_wd_timer_enabled (addr_t base_addr)
     @sec_attr - Map the address to either Secure or Non-Secure security attribute
     @return   - error status
 **/
-tbsa_status_t
-val_mpc_configure_security_attribute (uint32_t instance, addr_t start_addr, addr_t end_addr, mem_tgt_attr_t sec_attr)
+tbsa_status_t val_mpc_configure_security_attribute (uint32_t instance, addr_t start_addr, addr_t end_addr, mem_tgt_attr_t sec_attr)
 {
 
    if (sec_attr == MEM_NONSECURE) {
@@ -209,4 +196,38 @@ tbsa_status_t val_uart_init(void)
     pal_uart_init(uart_desc->base);
 
     return TBSA_STATUS_SUCCESS;
+}
+
+/*
+    @brief     - Reads 'size' bytes from NVRAM at a given 'base + offset' into given buffer.
+    @param     - base      : Base address of NVRAM
+               - offset    : Offset
+               - buffer    : Pointer to source address
+               - size      : Number of bytes
+    @return    - tbsa_status_t
+*/
+tbsa_status_t val_nvram_read(addr_t base, uint32_t offset, void *buffer, int size)
+{
+    if(pal_nvram_read(base, offset, buffer, size)) {
+        return TBSA_STATUS_SUCCESS;
+    } else {
+        return TBSA_STATUS_ERROR;
+    }
+}
+
+/*
+    @brief     - Writes 'size' bytes from buffer into NVRAM at a given 'base + offset'.
+    @param     - base      : Base address of NVRAM
+               - offset    : Offset
+               - buffer    : Pointer to source address
+               - size      : Number of bytes
+    @return    - tbsa_status_t
+*/
+tbsa_status_t val_nvram_write(addr_t base, uint32_t offset, void *buffer, int size)
+{
+    if(pal_nvram_write(base, offset, buffer, size)) {
+        return TBSA_STATUS_SUCCESS;
+    } else {
+        return TBSA_STATUS_ERROR;
+    }
 }

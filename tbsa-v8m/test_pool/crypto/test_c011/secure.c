@@ -76,14 +76,14 @@ void test_payload(tbsa_val_api_t *val)
         return;
     }
 
-    if (boot.state != WARM_BOOT_REQUESTED) {
+    if (boot.wb != WARM_BOOT_REQUESTED) {
 
         status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
         if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
             return;
         }
 
-        boot.state = WARM_BOOT_REQUESTED;
+        boot.wb = WARM_BOOT_REQUESTED;
         /* Saving the boot state */
         status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
         if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
@@ -146,7 +146,7 @@ void test_payload(tbsa_val_api_t *val)
     }
 
     /* Restoring the state */
-    boot.state = BOOT_UNKNOWN;
+    boot.wb = BOOT_UNKNOWN;
     status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
     if (val->err_check_set(TEST_CHECKPOINT_E, status)) {
         return;
