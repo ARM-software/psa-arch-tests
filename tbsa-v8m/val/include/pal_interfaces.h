@@ -385,37 +385,18 @@ int  pal_crypto_compute_hash(unsigned char *input, size_t ilen, unsigned char *o
 void pal_uart_init                  (addr_t uart_base_addr);
 
 /*
-    @brief     - This function parses the input string and writes byte by byte to print the input string
-    @param     - offset         : Input String
-               - data           : Value for Format specifier
-    @return    - error status
+    @brief     - Send data to UART TX FIFO
+    @param     - data : data to be written to TX FIFO
+    @return    - void
 */
-void pal_print_raw                  (char *str, uint32_t data);
-
-/**
-    @brief    - This function parses ELF header, entry address(test info addreess) and program headers.
-                Copies the loadable segments to system memory.
-    @param     - saddr              : Source location of tbsa_test_combined.bin
-               - info_addr          : Populates the entry address from S/NS test ELF
-               - test_binary_in_ram : 1 - if present in RAM, 0 - otherwise
-    @return   - Returns Success/Failure
-**/
-int  pal_test_load                  (uint32_t saddr, uint32_t *info_addr, uint32_t test_binary_in_ram);
-
-/**
-    @brief     - Provides the status buffer base address.
-                 This buffer collects the test related information.
-    @param     - addr      : Returns the static buffer's base address
-               - num_bytes : Number of bytes
-    @return    - Returns Success/Failure
-**/
-int  pal_mem_get_status_buffer_addr (uint32_t **addr, uint32_t num_bytes);
+void pal_uart_tx                    (uint8_t data);
 
 /**
     @brief    - provides the database source location.
+    @param    - void
     @return   - Returns base address of database
 **/
-void *pal_target_get_cfg_start(void);
+void *pal_get_target_cfg_start(void);
 
 /*
     @brief     - Writes 'size' bytes from buffer into NVRAM at a given 'base + offset'.

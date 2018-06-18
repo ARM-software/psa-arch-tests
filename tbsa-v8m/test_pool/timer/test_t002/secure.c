@@ -114,7 +114,7 @@ test_payload(tbsa_val_api_t *val)
         return;
     }
 
-    if (boot.state == WARM_BOOT_REQUESTED) {
+    if (boot.wb == WARM_BOOT_REQUESTED) {
         /* There was watchdog reset previously */
         val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
         setup_ns_env();
@@ -183,7 +183,7 @@ test_payload(tbsa_val_api_t *val)
         per_num  = 0;
         instance = 0;
         while (per_num < soc_per->num) {
-            boot.state = WARM_BOOT_REQUESTED;
+            boot.wb = WARM_BOOT_REQUESTED;
             status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_WDOG), &boot, sizeof(boot_t));
             if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
                 return;

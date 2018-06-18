@@ -50,7 +50,7 @@ void entry_hook(tbsa_val_api_t *val)
 tbsa_status_t test_env_reset(void)
 {
     tbsa_status_t status;
-    boot.state = BOOT_UNKNOWN;
+    boot.cb = BOOT_UNKNOWN;
     status = g_val->nvram_write(nvram_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
     if (g_val->err_check_set(TEST_CHECKPOINT_17, status)) {
         return status;
@@ -137,7 +137,7 @@ void test_payload(tbsa_val_api_t *val)
         return;
     }
 
-    if (boot.state == COLD_BOOT_REQUESTED) {
+    if (boot.cb == COLD_BOOT_REQUESTED) {
         reset_done++;
     }
 
@@ -248,7 +248,7 @@ void test_payload(tbsa_val_api_t *val)
                             timeout = 0x1000000;
                             while(--timeout);
 
-                            boot.state = COLD_BOOT_REQUESTED;
+                            boot.cb = COLD_BOOT_REQUESTED;
                             status = val->nvram_write(nvram_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
                             if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
                                 goto clean_up;

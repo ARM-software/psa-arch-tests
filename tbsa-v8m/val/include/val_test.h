@@ -52,7 +52,7 @@
 #define TEST_CHECKPOINT_18              0xC18
 
 #define TBSA_TOTAL_TESTS                256
-#define TBSA_STATUS_BUF_SIZE            (TBSA_TOTAL_TESTS * sizeof(tbsa_status_buffer_t))
+#define TBSA_TEST_STATUS_BUF_SIZE       (TBSA_TOTAL_TESTS * sizeof(tbsa_status_buffer_t))
 
 #define TBSA_TEST_START                 0x01
 #define TBSA_TEST_END                   0x02
@@ -80,6 +80,8 @@
 #define IS_TEST_PENDING(status)         (((status >> TEST_STATE_BIT) & TEST_STATE_MASK) == TBSA_TEST_PENDING)
 
 #define TBSA_STATUS(status)             (status & TEST_STATUS_MASK)
+
+#define TBSA_ELF_IDENT                  16
 
 /* typedef's */
 typedef enum {
@@ -110,6 +112,40 @@ typedef struct {
     uint32_t *bss_start;
     uint32_t *bss_end;
 }tbsa_test_init_t;
+
+typedef uint32_t  elf32_word;
+typedef int32_t   elf32_sword;
+typedef uint16_t  elf32_half;
+typedef uint32_t  elf32_off;
+typedef uint32_t  elf32_addr;
+
+typedef struct {
+    unsigned char e_ident[ELF_IDENT]; /* ident bytes */
+    elf32_half    e_type;            /* file type */
+    elf32_half    e_machine;         /* target machine */
+    elf32_word    e_version;         /* file version */
+    elf32_addr    e_entry;           /* start address */
+    elf32_off     e_phoff;           /* phdr file offset */
+    elf32_off     e_shoff;           /* shdr file offset */
+    elf32_word    e_flags;           /* file flags */
+    elf32_half    e_ehsize;          /* sizeof ehdr */
+    elf32_half    e_phentsize;       /* sizeof phdr */
+    elf32_half    e_phnum;           /* number phdrs */
+    elf32_half    e_shentsize;       /* sizeof shdr */
+    elf32_half    e_shnum;           /* number shdrs */
+    elf32_half    e_shstrndx;        /* shdr string index */
+}tbsa_elf_header_t;
+
+typedef struct {
+    elf32_word p_type;          /* Segment type */
+    elf32_off  p_offset;        /* Segment file offset */
+    elf32_addr p_vaddr;         /* Segment virtual address */
+    elf32_addr p_paddr;         /* Segment physical address */
+    elf32_word p_filesz;        /* Segment size in file */
+    elf32_word p_memsz;         /* Segment size in memory */
+    elf32_word p_flags;         /* Segment flags */
+    elf32_word p_align;         /* Segment alignment */
+}tbsa_pheader_t;
 
 /* prototypes */
 tbsa_status_t val_test_get_info   (test_id_t test_id, tbsa_test_fn_type_t info_type, uint32_t *paddr);

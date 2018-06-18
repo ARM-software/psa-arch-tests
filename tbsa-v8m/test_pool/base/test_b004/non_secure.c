@@ -66,7 +66,7 @@ void test_payload(tbsa_val_api_t *val)
         return;
     }
 
-    if (boot.state != WARM_BOOT_REQUESTED) {
+    if (boot.wb != WARM_BOOT_REQUESTED) {
 
         do {
             status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_SRAM, instance),
@@ -130,7 +130,7 @@ void test_payload(tbsa_val_api_t *val)
             return;
         }
 
-        boot.state = WARM_BOOT_REQUESTED;
+        boot.wb = WARM_BOOT_REQUESTED;
         status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
         if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
             return;
@@ -163,7 +163,7 @@ void test_payload(tbsa_val_api_t *val)
     } else {
 
         /* If we are here means, we are in second run of this test */
-        boot.state = BOOT_UNKNOWN;
+        boot.wb = BOOT_UNKNOWN;
         status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
         if (val->err_check_set(TEST_CHECKPOINT_F, status)) {
             return;

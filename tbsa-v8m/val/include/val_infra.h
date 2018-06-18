@@ -36,8 +36,8 @@
 /* typedef's */
 typedef struct
 {
-    uint32_t state:8;
-    uint32_t res0:8;
+    uint32_t wb:8;
+    uint32_t cb:8;
     uint32_t res1:8;
     uint32_t res2:8;
 }boot_t;
@@ -95,9 +95,6 @@ tbsa_status_t  val_err_check_set(uint32_t checkpoint, tbsa_status_t status);
 tbsa_status_t  val_report_status (test_id_t test_id);
 tbsa_status_t  val_set_status    (uint32_t status);
 uint32_t       val_get_status    (void);
-
-tbsa_status_t  val_nvram_read   (addr_t base, uint32_t offset, void *buffer, int size);
-tbsa_status_t  val_nvram_write  (addr_t base, uint32_t offset, void *buffer, int size);
 
 void           val_system_reset      (system_reset_t reset_type);
 system_reset_t val_system_reset_type (void);

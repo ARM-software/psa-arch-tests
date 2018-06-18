@@ -26,8 +26,7 @@
     @return   - TBSA_STATUS_SUCCUSS on successful execution of the function, and fail error
                 codes if incorrect args are passed
 **/
-tbsa_status_t
-val_mem_reg_read(uint32_t reg_id, uint32_t *rd_data)
+tbsa_status_t val_mem_reg_read(uint32_t reg_id, uint32_t *rd_data)
 {
   return val_mem_read((uint32_t *)reg_id, WORD, rd_data);
 }
@@ -39,8 +38,7 @@ val_mem_reg_read(uint32_t reg_id, uint32_t *rd_data)
     @return   - TBSA_STATUS_SUCCUSS on successful execution of the function, and fail error
                 codes if incorrect args are passed
 **/
-tbsa_status_t
-val_pe_reg_read(sys_reg_t reg_id, uint32_t *rd_data)
+tbsa_status_t val_pe_reg_read(sys_reg_t reg_id, uint32_t *rd_data)
 {
   switch(reg_id) {
       case CONTROL:
@@ -63,8 +61,7 @@ val_pe_reg_read(sys_reg_t reg_id, uint32_t *rd_data)
     @return   - TBSA_STATUS_SUCCUSS on successful execution of the function, and fail error
                 codes if incorrect args are passed
 **/
-tbsa_status_t
-val_mem_read(uint32_t *address, mem_access_size_t access_size, uint32_t *rd_data)
+tbsa_status_t val_mem_read(uint32_t *address, mem_access_size_t access_size, uint32_t *rd_data)
 {
   switch(access_size) {
     case BYTE:
@@ -88,8 +85,7 @@ val_mem_read(uint32_t *address, mem_access_size_t access_size, uint32_t *rd_data
                 rd_data     : data read
     @return   - TBSA_STATUS_SUCCUSS
 **/
-tbsa_status_t
-val_mem_read_wide(uint32_t *address, uint32_t *rd_data)
+tbsa_status_t val_mem_read_wide(uint32_t *address, uint32_t *rd_data)
 {
     *rd_data = ldr_wide_asm(address);
     return TBSA_STATUS_SUCCESS;
@@ -101,8 +97,7 @@ val_mem_read_wide(uint32_t *address, uint32_t *rd_data)
                 wr_data     : data to be written with
     @return   - TBSA_STATUS_SUCCUSS
 **/
-tbsa_status_t
-val_mem_write_wide(uint32_t *address, uint32_t wr_data)
+tbsa_status_t val_mem_write_wide(uint32_t *address, uint32_t wr_data)
 {
     str_wide_asm(address, wr_data);
     return TBSA_STATUS_SUCCESS;
@@ -115,14 +110,13 @@ val_mem_write_wide(uint32_t *address, uint32_t wr_data)
     @return   - TBSA_STATUS_SUCCUSS on successful execution of the function, and fail error
                 codes if incorrect args are passed
 **/
-tbsa_status_t
-val_mem_reg_write(uint32_t reg_id, uint32_t wr_data)
+tbsa_status_t val_mem_reg_write(uint32_t reg_id, uint32_t wr_data)
 {
-  tbsa_status_t status;
-  status = val_mem_write((uint32_t *)reg_id, WORD, wr_data);
-  dsb_asm();
-  isb_asm();
-  return status;
+    tbsa_status_t status;
+    status = val_mem_write((uint32_t *)reg_id, WORD, wr_data);
+    dsb_asm();
+    isb_asm();
+    return status;
 }
 
 /**
@@ -132,8 +126,7 @@ val_mem_reg_write(uint32_t reg_id, uint32_t wr_data)
     @return   - TBSA_STATUS_SUCCUSS on successful execution of the function, and fail error
                 codes if incorrect args are passed
 **/
-tbsa_status_t
-val_pe_reg_write(sys_reg_t reg_id, uint32_t wr_data)
+tbsa_status_t val_pe_reg_write(sys_reg_t reg_id, uint32_t wr_data)
 {
   switch(reg_id) {
       case CONTROL:
@@ -156,22 +149,21 @@ val_pe_reg_write(sys_reg_t reg_id, uint32_t wr_data)
     @return   - TBSA_STATUS_SUCCUSS on successful execution of the function, and fail error
                 codes if incorrect args are passed
 **/
-tbsa_status_t
-val_mem_write(uint32_t *address, mem_access_size_t access_size, uint32_t wr_data)
+tbsa_status_t val_mem_write(uint32_t *address, mem_access_size_t access_size, uint32_t wr_data)
 {
-  switch(access_size) {
-    case BYTE:
-      strb_asm(address, wr_data);
-      return TBSA_STATUS_SUCCESS;
-    case HALF_WORD:
-      strh_asm(address, wr_data);
-      return TBSA_STATUS_SUCCESS;
-    case WORD:
-      str_asm(address, wr_data);
-      return TBSA_STATUS_SUCCESS;
-    default:
-      return TBSA_STATUS_INVALID_ARGS;
-  }
+    switch(access_size) {
+        case BYTE:
+            strb_asm(address, wr_data);
+            return TBSA_STATUS_SUCCESS;
+        case HALF_WORD:
+            strh_asm(address, wr_data);
+            return TBSA_STATUS_SUCCESS;
+        case WORD:
+            str_asm(address, wr_data);
+            return TBSA_STATUS_SUCCESS;
+        default:
+            return TBSA_STATUS_INVALID_ARGS;
+    }
 }
 
 /**
@@ -180,8 +172,7 @@ val_mem_write(uint32_t *address, mem_access_size_t access_size, uint32_t wr_data
     @return   - 1 Target address is Secure
                 0 Target address is Non-secure
 **/
-bool_t
-val_is_secure_address(addr_t address)
+bool_t val_is_secure_address(addr_t address)
 {
     uint32_t result;
     result = tt_asm((uint32_t*)address);
