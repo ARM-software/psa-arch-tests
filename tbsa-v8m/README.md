@@ -46,6 +46,9 @@ In this release, PAL is written on top of baremetal drivers and CMSIS.
 
 Partners can also write their own abstraction layer implementations to allow TBSA-v8M tests to be run in other environments, for example, as raw workload on an RTL simulation.
 
+## Scenarios
+
+The mapping of the rules in the specification to the test cases and the steps followed in the tests are mentioned in the [Scenario document](docs/Arm_TBSA-v8M_Scenario_document.pdf) present in the docs/ folder.
 
 ## Getting started
 
@@ -72,16 +75,16 @@ To download the master branch of the repository, type the following command:
 
 ## Porting steps
 
-Refer to the docs/TBSA-M-User-Guide.pdf for other environment requirements of the TBSA-M test suite.
+Refer to the [User Guide](docs/Arm_TBSA-v8M_Validation_Methodology_and_User_Guide.pdf) document in the docs folder for details.
 
 ## Build steps
 
 To build TBSA-v8M test suite for a given platform, execute the following commands:
-	1. cd syscomp_tbsa_m
-	2. make TARGET=<platform_name>
+	1. cd syscomp_tbsa_m <br />
+	2. make TARGET=<platform_name>  <br />
 	   Example: make TARGET=fvp
 
-where <platform_name> is the same as the name of the target specific directory created in the platform/board directory.
+<br /> where <platform_name> is the same as the name of the target specific directory created in the platform/board directory.
 
 
 ### Build output
