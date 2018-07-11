@@ -32,3 +32,7 @@ Arm PSA test suite is distributed under Apache v2.0 License.
  - For support, send an email to support-psa-arch-tests@arm.com with details.
  - Arm licensees can contact Arm directly through their partner managers.
  - Arm welcomes code contributions through GitHub pull requests. 
+
+--------------
+
+*Copyright (c) 2018, Arm Limited and Contributors. All rights reserved.*
