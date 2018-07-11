@@ -231,7 +231,7 @@ void test_payload(tbsa_val_api_t *val)
 
                 if ((memory_desc->dpm_index == dpm_desc->index) && (memory_desc->mem_type == TYPE_NORMAL_READ_WRITE)) {
                     if (!reset_done) {
-                        /*Initiliaze the memory with known data*/
+                        /*Initialize the memory with known data*/
                         val->mem_write((uint32_t *)memory_desc->start, WORD, TEST_DATA);
 
                         if (test_dbg_seq_write(memory_desc->start, SEQ_LOCKED_STATE_READ))

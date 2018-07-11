@@ -21,7 +21,7 @@
 **/
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_TRUSTED_BOOT_BASE, 1),
                   CREATE_TEST_TITLE("Trusted boot operation from Trusted and Non-trusted world"),
-                  CREATE_REF_TAG("R020/R090_TBSA_BOOT"),
+                  CREATE_REF_TAG("R010/R020/R030/R090_TBSA_BOOT"),
                   entry_hook,
                   test_payload,
                   exit_hook);
@@ -75,7 +75,7 @@ void test_payload(tbsa_val_api_t *val)
         }
 
         /* Trying to get the last reset type.
-         * Execuing in non-secure mode, expecting secure fault
+         * Executing in non-secure mode, expecting secure fault
          */
         val_system_reset_type();
     } else {
@@ -99,7 +99,16 @@ void test_payload(tbsa_val_api_t *val)
         }
     }
 
-    val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
+    /* See whether VTOR is relocated from ROM before TBSA does */
+    if(val->is_vtor_relocated_from_rom()) {
+        val->print(PRINT_WARN, "\n\tPrimary processor possibly booted from ROM;", 0);
+        val->print(PRINT_WARN, "\n\tVTOR updated when control reached tbsa_entry", 0);
+        val->set_status(RESULT_SKIP(TBSA_STATUS_UNKNOWN));
+    } else {
+        val->print(PRINT_DEBUG, "\n\tPrimary processor booted from ROM", 0);
+        val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
+    }
+
 }
 
 void exit_hook(tbsa_val_api_t *val)

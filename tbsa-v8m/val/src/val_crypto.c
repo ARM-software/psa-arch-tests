@@ -141,7 +141,7 @@ tbsa_status_t val_crypto_aes_decrypt(uint8_t *data, uint64_t datasize, uint8_t *
 /**
     @brief    - This function generates AES key
     @param    - key      : The buffer where the generated key is stored
-                enc_type : Type of algorith to be used
+                enc_type : Type of algorithm to be used
                 size     : Size of the key to be generated
     @return   - 0 on success
 **/
@@ -309,27 +309,58 @@ void val_crypto_init(uint32_t crypto_base_addr)
     pal_crypto_init(crypto_base_addr);
 }
 /**
-    @brief    - This function will validate the cerificate using public key
+    @brief    - This function will validate the certificate using public key
     @param    - certificate_base_addr : Base address of the certificate where it is stored in memory
                 public_key_addr       : Base address of the public key where it is stored in memory
                 certificate_size      : Certificate memory size
                 public_key_size       : Public key memory size
     @return   - error status
 **/
-tbsa_status_t crypto_validate_certificate(addr_t certificate_base_addr,addr_t public_key_addr, size_t certificate_size, size_t public_key_size)
+tbsa_status_t val_crypto_validate_certificate(addr_t certificate_base_addr,addr_t public_key_addr, size_t certificate_size, size_t public_key_size)
 {
     return pal_crypto_validate_certificate(certificate_base_addr,public_key_addr,certificate_size,public_key_size);
 }
 
 /**
-    @brief    - This function will get unique ID from valid cerificate using public key
+    @brief    - This function will get unique ID from valid certificate using public key
     @param    - certificate_base_addr : Base address of the certificate where it is stored in memory
                 public_key_addr       : Base address of the public key where it is stored in memory
                 certificate_size      : Certificate memory size
                 public_key_size       : Public key memory size
     @return   - unique ID of the certificate
 **/
-tbsa_status_t crypto_get_uniqueID_from_certificate(addr_t certificate_base_addr,addr_t public_key_addr, size_t certificate_size, size_t public_key_size)
+tbsa_status_t val_crypto_get_uniqueID_from_certificate(addr_t certificate_base_addr,addr_t public_key_addr, size_t certificate_size, size_t public_key_size)
 {
     return pal_crypto_get_uniqueID_from_certificate(certificate_base_addr,public_key_addr,certificate_size,public_key_size);
+}
+
+/**
+    @brief    - This function will get DPM field from public key
+    @param    - public_key_addr       : Base address of the public key where it is stored in memory
+                public_key_size       : Public key memory size
+                dpm_field             : Pointer where DPM will be stored
+    @return   - Error status
+**/
+tbsa_status_t val_crypto_get_dpm_from_key(addr_t public_key_addr, size_t public_key_size, uint32_t *dpm_field)
+{
+    uint32_t status = TBSA_STATUS_SUCCESS;
+
+    status = pal_crypto_get_dpm_from_key (public_key_addr,public_key_size,(uint32_t *) dpm_field);
+    return status;
+
+}
+
+/**
+    @brief    - This function will get DPM field from certificate
+    @param    - certificate_base_addr       : Base address of the certificate where it is stored in memory
+                certificate_size       : certificate memory size
+                dpm_field             : Pointer where DPM will be stored
+    @return   - Error status
+**/
+tbsa_status_t val_crypto_get_dpm_from_certificate(addr_t certificate_base_addr, size_t certificate_size, uint32_t *dpm_field)
+{
+    uint32_t status = TBSA_STATUS_SUCCESS;
+
+    status = pal_crypto_get_dpm_from_certificate (certificate_base_addr, certificate_base_addr, (uint32_t *) dpm_field);
+    return status;
 }

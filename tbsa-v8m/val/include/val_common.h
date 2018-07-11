@@ -71,6 +71,7 @@ typedef enum {
     TBSA_STATUS_INCORRECT_KEY_SIZE = 0x8F,
     TBSA_STATUS_ZERO_COUNT_ERROR   = 0X90,
     TBSA_STATUS_WRITE_ERROR        = 0x91,
+    TBSA_STATUS_UNKNOWN            = 0x92,
     TBSA_STATUS_INVALID            = 0xFF,
 }tbsa_status_t;
 

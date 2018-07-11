@@ -18,12 +18,13 @@
 #include "val_test_common.h"
 
 /*  Publish these functions to the external world as associated to this test ID */
-TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 6),
-                  CREATE_TEST_TITLE("A Trusted HK must not be directly accessible by any software."),
-                  CREATE_REF_TAG("R140_TBSA_KEY-R100_TBSA_BOOT"),
+TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_DEBUG_BASE, 8),
+                  CREATE_TEST_TITLE("Access to the secure DPM registers must be restricted to privileged Secure world software."),
+                  CREATE_REF_TAG("R020/R280_TBSA_DEBUG"),
                   entry_hook,
                   test_payload,
                   exit_hook);
+
 
 void entry_hook(tbsa_val_api_t *val)
 {
@@ -36,4 +37,3 @@ void test_payload(tbsa_val_api_t *val)
 void exit_hook(tbsa_val_api_t *val)
 {
 }
-

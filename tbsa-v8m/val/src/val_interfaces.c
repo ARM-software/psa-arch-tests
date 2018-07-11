@@ -25,6 +25,7 @@ const tbsa_val_api_t tbsa_val_s_api = {
     .err_check_set             = val_err_check_set,
     .report_status             = val_report_status,
     .memcpy                    = val_memcpy,
+    .memset                    = val_memset,
     .execute_in_trusted_mode   = val_execute_in_trusted_mode,
     .nvram_read                = val_nvram_read,
     .nvram_write               = val_nvram_write,
@@ -69,6 +70,13 @@ const tbsa_val_api_t tbsa_val_s_api = {
     .dpm_get_state             = val_dpm_get_state,
     .dpm_set_access_ns_only    = val_dpm_set_access_ns_only,
     .mpc_configure_security_attribute    = val_mpc_configure_security_attribute,
+    .is_rtc_trustable          = val_is_rtc_trustable,
+    .is_rtc_synced_to_server   = val_is_rtc_synced_to_server,
+    .is_vtor_relocated_from_rom = val_is_vtor_relocated_from_rom,
+    .crypto_validate_certificate         = val_crypto_validate_certificate,
+    .crypto_get_uniqueID_from_certificate = val_crypto_get_uniqueID_from_certificate,
+    .crypto_get_dpm_from_key             = val_crypto_get_dpm_from_key,
+    .crypto_get_dpm_from_certificate     = val_crypto_get_dpm_from_certificate,
 };
 
 /* NSC entry functions(to Trusted APIs) to be used by Non-trusted test/s */
@@ -80,6 +88,7 @@ const tbsa_val_api_t tbsa_val_ns_api = {
     .err_check_set             = val_err_check_set_nsc,
     .report_status             = val_report_status_nsc,
     .memcpy                    = val_memcpy_nsc,
+    .memset                    = val_memset_nsc,
     .execute_in_trusted_mode   = val_execute_in_trusted_mode_nsc,
     .nvram_read                = val_nvram_read_nsc,
     .nvram_write               = val_nvram_write_nsc,
@@ -124,4 +133,11 @@ const tbsa_val_api_t tbsa_val_ns_api = {
     .dpm_get_state             = val_dpm_get_state_nsc,
     .dpm_set_access_ns_only    = val_dpm_set_access_ns_only_nsc,
     .mpc_configure_security_attribute    = val_mpc_configure_security_attribute_nsc,
+    .is_rtc_trustable          = val_is_rtc_trustable_nsc,
+    .is_rtc_synced_to_server   = val_is_rtc_synced_to_server_nsc,
+    .is_vtor_relocated_from_rom=val_is_vtor_relocated_from_rom_nsc,
+    .crypto_validate_certificate         = val_crypto_validate_certificate_nsc,
+    .crypto_get_uniqueID_from_certificate = val_crypto_get_uniqueID_from_certificate_nsc,
+    .crypto_get_dpm_from_key             = val_crypto_get_dpm_from_key_nsc,
+    .crypto_get_dpm_from_certificate     = val_crypto_get_dpm_from_certificate_nsc,
 };

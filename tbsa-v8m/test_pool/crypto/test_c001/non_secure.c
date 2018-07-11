@@ -167,10 +167,10 @@ void test_payload(tbsa_val_api_t *val)
         return;
     }
 
-    /* Check if we receive atleast 3 interrupts before the atomic
+    /* Check if we receive at least 3 interrupts before the atomic
      * key generation is done. If not reinit the timer and retry
      * until we receive the expected number of exceptions. Reinit
-     * is done only 3 times if the number of exceptions recieved
+     * is done only 3 times if the number of exceptions received
      * is zero.
      */
     while(g_exception_taken < 5) {

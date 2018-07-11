@@ -17,23 +17,26 @@
 
 #include "val_test_common.h"
 
-/*  Publish these functions to the external world as associated to this test ID */
-TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 6),
-                  CREATE_TEST_TITLE("A Trusted HK must not be directly accessible by any software."),
-                  CREATE_REF_TAG("R140_TBSA_KEY-R100_TBSA_BOOT"),
+/**
+  Publish these functions to the external world as associated to this test ID
+**/
+TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_INTERRUPTS_BASE, 4),
+                  CREATE_TEST_TITLE("Secure exception irqs must be wired/configured as Secure interrupt sources"),
+                  CREATE_REF_TAG("R070_TBSA_INFRA"),
                   entry_hook,
                   test_payload,
                   exit_hook);
 
 void entry_hook(tbsa_val_api_t *val)
 {
+    val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
 }
 
 void test_payload(tbsa_val_api_t *val)
 {
+    val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
 }
 
 void exit_hook(tbsa_val_api_t *val)
 {
 }
-

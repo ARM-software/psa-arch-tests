@@ -25,7 +25,7 @@
 **/
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_TRUSTED_TIMERS_BASE, 2),
                   CREATE_TEST_TITLE("Trusted and Non-trusted world operation to trusted watchdog timer"),
-                  CREATE_REF_TAG("R060/R070/R080/R100/R110_TBSA_TIME"),
+                  CREATE_REF_TAG("R060/R070/R080/R100/R110/R120_TBSA_TIME"),
                   entry_hook,
                   test_payload,
                   exit_hook);
@@ -108,7 +108,7 @@ test_payload(tbsa_val_api_t *val)
         return;
     }
 
-    /* Read the non-volatile falg and check for the pattern which was updated in the previous ran */
+    /* Read the non-volatile flag and check for the pattern which was updated in the previous ran */
     status = val->nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_WDOG), &boot, sizeof(boot_t));
     if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
         return;
@@ -168,9 +168,9 @@ test_payload(tbsa_val_api_t *val)
         /*
          * - Ensure trusted watchdog timer modification from trusted access
          * - A Trusted watchdog timer must be able to trigger a reset of the SoC
-         * - A Trusted watchdog timer must implement a flag that indicates the occurance of a
+         * - A Trusted watchdog timer must implement a flag that indicates the occurence of a
          *   timeout event that causes a Warm reset, to allow post reset software to distinguish
-         *   this from a powerup cold boot.
+         *   this from a power up cold boot.
          */
 
         status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_CLOCKS, CLOCKS_SYS_FREQ, 0),

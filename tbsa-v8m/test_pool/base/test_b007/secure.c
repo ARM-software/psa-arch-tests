@@ -17,15 +17,14 @@
 
 #include "val_test_common.h"
 
-#define PATTERN1	0x73737373
-#define PATTERN2	0x56565656
+#define PATTERN     0xC0DECAFE
 
 /**
   Publish these functions to the external world as associated to this test ID
 **/
-TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_BASE_BASE, 3),
-                  CREATE_TEST_TITLE("Check scrub of shared storage when reallocated from Trusted to Non-trusted"),
-                  CREATE_REF_TAG("R100_TBSA_INFRA"),
+TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_BASE_BASE, 7),
+                  CREATE_TEST_TITLE("Check only all Secure or all Non-secure transactions to any one region"),
+                  CREATE_REF_TAG("R050_TBSA_INFRA"),
                   entry_hook,
                   test_payload,
                   exit_hook);
@@ -51,38 +50,20 @@ void test_payload(tbsa_val_api_t *val)
             return;
         }
 
-        if (memory_desc->attribute == MEM_CONFIGURABLE) {
-            /* We found a configurable SRAM block */
+        if (memory_desc->attribute == MEM_UNUSED) {
+            /* We found a free SRAM block */
             sram_block_found = TRUE;
-
-            /* Ensure the configurable block is secure */
-            if(!val->is_secure_address(memory_desc->start)) {
-                /* Configure a given block of memory as secure one */
-                status = val->mpc_configure_security_attribute(0, memory_desc->start, memory_desc->end, MEM_SECURE);
-                if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
-                    return;
-                }
-            }
-            /* Writing a known pattern to trusted shared volatile storage */
-            *(uint32_t*)(memory_desc->start)                                 = PATTERN1;
-            *(uint32_t*)(memory_desc->end - (memory_desc->end % 0x4) - 0x4 ) = PATTERN2;
-
-            /* Configure given secure block to non-secure */
-            status = val->mpc_configure_security_attribute(0, memory_desc->start, memory_desc->end, MEM_NONSECURE);
-            if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
-                return;
-            }
-
+            val->memset((void*)memory_desc->start, PATTERN, (uint32_t)(memory_desc->end - memory_desc->start));
             break;
         }
-        instance++;
-    } while(instance < GET_NUM_INSTANCE(memory_desc));
 
-    if (sram_block_found) {
+        instance++;
+    } while (instance < GET_NUM_INSTANCE(memory_desc));
+
+    if (sram_block_found)
         val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
-    } else {
-        val->err_check_set(TEST_CHECKPOINT_4, TBSA_STATUS_NOT_FOUND);
-    }
+    else
+        val->err_check_set(TEST_CHECKPOINT_2, TBSA_STATUS_NOT_FOUND);
 }
 
 void exit_hook(tbsa_val_api_t *val)

@@ -173,7 +173,7 @@ void test_payload(tbsa_val_api_t *val)
                         ns_addr++;
                     else
                         s_addr++;
-                    /*Initiliaze the memory with known data*/
+                    /*Initialize the memory with known data*/
                     val->mem_write((uint32_t *)memory_desc->start, WORD, TEST_DATA);
 
                     if (test_dbg_seq_write(memory_desc->start, SEQ_CLOSED_STATE_READ))
@@ -204,7 +204,7 @@ void test_payload(tbsa_val_api_t *val)
                         val->print(PRINT_ERROR, " at address = 0x%x", memory_desc->start);
                         goto clean_up;
                     }
-                    /*Initiliaze the memory with known data*/
+                    /*Initialize the memory with known data*/
                     val->mem_write((uint32_t *)memory_desc->start, WORD, ~TEST_DATA);
 
                     if (test_dbg_seq_write(memory_desc->start, SEQ_CLOSED_STATE_WRITE))

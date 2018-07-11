@@ -22,16 +22,16 @@
 **/
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_TRUSTED_TIMERS_BASE, 3),
                   CREATE_TEST_TITLE("Trusted and Non-trusted world operation to TRTC"),
-                  CREATE_REF_TAG("R130/R140/R150_TBSA_TIME"),
+                  CREATE_REF_TAG("R130/R150/R160_TBSA_TIME"),
                   entry_hook,
                   test_payload,
                   exit_hook);
 
 soc_peripheral_hdr_t  *soc_per;
 soc_peripheral_desc_t *soc_per_desc;
+memory_desc_t         *memory_desc;
 
-void
-entry_hook(tbsa_val_api_t *val)
+void entry_hook(tbsa_val_api_t *val)
 {
     tbsa_test_init_t init = {
                              .bss_start      = &__tbsa_test_bss_start__,
@@ -43,61 +43,157 @@ entry_hook(tbsa_val_api_t *val)
 
 void test_payload(tbsa_val_api_t *val)
 {
-    uint32_t      per_num  = 0;
-    uint32_t      instance = 0;
-    uint32_t      data;
     tbsa_status_t status;
+    uint32_t      instance;
+    uint32_t      data;
+    bool_t        trtc_found    = FALSE;
+    boot_t        boot;
+    uint32_t      shcsr;
 
-    /* Get total number of peripherals available */
-    status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, 0, 0),
-                                    (uint8_t **)&soc_per,
-                                    (uint32_t *)sizeof(soc_peripheral_hdr_t));
+    status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVRAM, 0),
+                                   (uint8_t **)&memory_desc,
+                                   (uint32_t *)sizeof(memory_desc_t));
     if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
-        goto clean_up;
+        return;
     }
 
-    /* Check we have at least one TRTC */
-    while (per_num < soc_per->num) {
+    status = val->nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
+    if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
+        return;
+    }
+
+    if (boot.cb != COLD_BOOT_REQUESTED) {
+        instance = 0UL;
+        status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SPAD), &instance, sizeof(instance));
+        if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
+            return;
+        }
+    } else {
+        /* Getting instance value from NVRAM */
+        status = val->nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SPAD), &instance, sizeof(instance));
+        if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
+            return;
+        }
+    }
+
+    do {
         status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, SOC_PERIPHERAL_RTC, instance),
                                         (uint8_t **)&soc_per_desc,
                                         (uint32_t *)sizeof(soc_peripheral_desc_t));
-        if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
-            goto clean_up;
+        if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
+            break;
         }
 
-        if (soc_per_desc->attribute != SECURE_PROGRAMMABLE) {
-            per_num++;
-            continue;
+        if (soc_per_desc->attribute == SECURE_PROGRAMMABLE) {
+            trtc_found = TRUE;
+            if (boot.cb != COLD_BOOT_REQUESTED) {
+                boot.cb = COLD_BOOT_REQUESTED;
+                status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
+                if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
+                    return;
+                }
+                /* Writing instance value into NVRAM so that we go to next instance of TRTC in next run after reset */
+                status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SPAD), &instance, sizeof(instance));
+                if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
+                    return;
+                }
+                /* Issuing cold boot request */
+                val->system_reset(COLD_RESET);
+                /* Shouldn't come here */
+                val->print(PRINT_ERROR, "\n\tShouldn't comer here", 0);
+                while(TRUE);
+            }
+
+            /* Check for validity of TRTC ? */
+            if (val->is_rtc_synced_to_server(soc_per_desc->base)) {
+                if (!val->is_rtc_trustable(soc_per_desc->base)) {
+                    val->err_check_set(TEST_CHECKPOINT_9, TBSA_STATUS_INCORRECT_VALUE);
+                    boot.cb = BOOT_UNKNOWN;
+                    status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SPAD), &boot, sizeof(boot));
+                    if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
+                        return;
+                    }
+                    break;
+                }
+            } else {
+                if (val->is_rtc_trustable(soc_per_desc->base)) {
+                    /* When there is outage of power to the TRTC, TRTC is not trusted */
+                    val->err_check_set(TEST_CHECKPOINT_B, TBSA_STATUS_INCORRECT_VALUE);
+                    boot.cb = BOOT_UNKNOWN;
+                    status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SPAD), &boot, sizeof(boot));
+                    if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
+                        return;
+                    }
+                    break;
+                }
+            }
+            /* Indicates TRTC is not Trusted when there is outage of power to TRTC */
+            boot.cb = COLD_BOOT_COMPLETED;
         }
+        instance++;
+    } while(instance < GET_NUM_INSTANCE(soc_per_desc));
 
-        /* Ensure TRTC access from non-trusted world triggers secure fault exception */
-        val->set_status(RESULT_PENDING(status));
-
-        /* Trying to read the TRTC base address, expect secure fault? */
-        val_mem_read_wide((uint32_t *)(soc_per_desc->base + soc_per_desc->offset), &data);
-
-        /* wait here till pending status is cleared by secure fault */
-        while (IS_TEST_PENDING(val->get_status()));
-
-        val->set_status(RESULT_PENDING(status));
-
-        /* Trying to read the clock source base address for a given TRTC, expect secure fault? */
-        val_mem_read_wide((uint32_t *)soc_per_desc->clk_src, &data);
-
-        /* wait here till pending status is cleared by secure fault */
-        while (IS_TEST_PENDING(val->get_status()));
-
-        /* successfully verified, break now */
-        break;
-    }
-clean_up:
-    /* Restoring default Handler */
-    status = val->interrupt_restore_handler(EXCP_NUM_SF);
-    if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
+    if (!trtc_found) {
         return;
     }
+
+    /* Disabling SecureFault, UsageFault, BusFault, MemFault temporarily */
+    status = val->mem_reg_read(SHCSR, &shcsr);
+    if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
+        return;
+    }
+
+    status = val->mem_reg_write(SHCSR, (shcsr & ~0xF0000));
+    if (val->err_check_set(TEST_CHECKPOINT_E, status)) {
+        return;
+    }
+
+    instance      = 0UL;
+    do {
+        status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, SOC_PERIPHERAL_RTC, instance),
+                                        (uint8_t **)&soc_per_desc,
+                                        (uint32_t *)sizeof(soc_peripheral_desc_t));
+        if (val->err_check_set(TEST_CHECKPOINT_F, status)) {
+            break;
+        }
+
+        if (soc_per_desc->attribute == SECURE_PROGRAMMABLE) {
+            /* Ensure TRTC access from non-trusted world triggers secure fault exception */
+            val->set_status(RESULT_PENDING(status));
+
+            /* Trying to read the TRTC base address, expect secure fault? */
+            val_mem_read_wide((uint32_t *)(soc_per_desc->base + soc_per_desc->offset), &data);
+
+            /* wait here till pending status is cleared by secure fault */
+            while (IS_TEST_PENDING(val->get_status()));
+
+            val->set_status(RESULT_PENDING(status));
+
+            /* Trying to read the clock source base address for a given TRTC, expect secure fault? */
+            val_mem_read_wide((uint32_t *)soc_per_desc->clk_src, &data);
+
+            /* wait here till pending status is cleared by secure fault */
+            while (IS_TEST_PENDING(val->get_status()));
+        }
+        instance++;
+    } while(instance < GET_NUM_INSTANCE(soc_per_desc));
+
+    /* Restoring faults */
+    status = val->mem_reg_write(SHCSR, shcsr);
+    if (val->err_check_set(TEST_CHECKPOINT_10, status)) {
+        return;
+    }
+
+    val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
 }
 
 void exit_hook(tbsa_val_api_t *val)
 {
+    tbsa_status_t status;
+
+    /* Restoring default Handler */
+    status = val->interrupt_restore_handler(EXCP_NUM_HF);
+    if (val->err_check_set(TEST_CHECKPOINT_11, status)) {
+        return;
+    }
 }

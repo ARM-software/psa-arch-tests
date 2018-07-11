@@ -24,14 +24,14 @@
 **/
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_TRUSTED_TIMERS_BASE, 3),
                   CREATE_TEST_TITLE("Trusted and Non-trusted world operation to TRTC"),
-                  CREATE_REF_TAG("R130/R140/R150_TBSA_TIME"),
+                  CREATE_REF_TAG("R130/R150/R160_TBSA_TIME"),
                   entry_hook,
                   test_payload,
                   exit_hook);
 
 tbsa_val_api_t *g_val;
 
-void secure_fault_esr (unsigned long *sf_args)
+void hard_fault_esr (unsigned long *sf_args)
 {
     if (IS_TEST_PENDING(g_val->get_status())) {
         g_val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
@@ -43,7 +43,7 @@ void secure_fault_esr (unsigned long *sf_args)
     sf_args[6] = sf_args[6] + 4;
 }
 
-__attribute__((naked)) void SF_Handler(void)
+__attribute__((naked)) void HF_Handler(void)
 {
     asm volatile("mrs r0, control_ns \n"
                  "mov r1, #0x2       \n"
@@ -51,19 +51,10 @@ __attribute__((naked)) void SF_Handler(void)
                  "cmp r0, r1         \n"
                  "beq _psp_ns        \n"
                  "mrs r0, msp_ns     \n"
-                 "b secure_fault_esr \n"
+                 "b hard_fault_esr \n"
                  "_psp_ns:           \n"
                  "mrs r0, psp_ns     \n"
-                 "b secure_fault_esr \n");
-}
-
-void setup_ns_env(void)
-{
-    tbsa_status_t status;
-
-    /* Installing Trusted Fault Handler for NS test */
-    status = g_val->interrupt_setup_handler(EXCP_NUM_SF, 0, SF_Handler);
-    g_val->err_check_set(TEST_CHECKPOINT_1, status);
+                 "b hard_fault_esr \n");
 }
 
 void entry_hook(tbsa_val_api_t *val)
@@ -74,7 +65,13 @@ void entry_hook(tbsa_val_api_t *val)
 
 void test_payload(tbsa_val_api_t *val)
 {
-    setup_ns_env();
+    tbsa_status_t status;
+
+    /* Installing Trusted Fault Handler for NS test */
+    status = g_val->interrupt_setup_handler(EXCP_NUM_HF, 0, HF_Handler);
+    if (g_val->err_check_set(TEST_CHECKPOINT_1, status)) {
+        return;
+    }
     val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
 }
 

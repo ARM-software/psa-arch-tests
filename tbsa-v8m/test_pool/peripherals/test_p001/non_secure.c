@@ -55,7 +55,6 @@ void test_payload(tbsa_val_api_t *val)
 
     val->set_status(RESULT_PENDING(status));
 
-    val->print(PRINT_ALWAYS, "\n clock: %x", clocks_desc->pll_base);
     /* Trying to read the trusted PLL base address, expect secure fault? */
     val_mem_read_wide((uint32_t *)(clocks_desc->pll_base + clocks_desc->offset), &data);
 

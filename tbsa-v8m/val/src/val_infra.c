@@ -28,6 +28,7 @@ print_verbosity_t    g_print_level = PRINT_TEST;
 addr_t               g_test_binary_src_addr;
 uint32_t             g_test_binary_in_ram;
 tbsa_status_buffer_t g_test_status_buffer[TBSA_TOTAL_TESTS];
+bool_t               g_vtor_relocated_from_rom;
 
 /* externs*/
 extern tbsa_isr_vector      g_tbsa_s_isr_vector;
@@ -235,6 +236,7 @@ tbsa_status_t val_nvram_init (void)
     tbsa_status_t  status       = TBSA_STATUS_SUCCESS;
     memory_desc_t  *memory_desc;
     test_id_t      test_id;
+    boot_t         boot;
 
     status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVRAM, 0),
                                    (uint8_t **)&memory_desc,
@@ -243,9 +245,17 @@ tbsa_status_t val_nvram_init (void)
         return status;
     }
 
-    if (val_system_reset_type() == COLD_RESET) {
+    status = val_nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
+    if(status != TBSA_STATUS_SUCCESS) {
+        return status;
+    }
+
+    if ((val_system_reset_type() == COLD_RESET) && (boot.cb != COLD_BOOT_REQUESTED)) {
         test_id = TBSA_TEST_INVALID;
-        val_nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_TEST), &test_id, sizeof(test_id_t));
+        status = val_nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_TEST), &test_id, sizeof(test_id_t));
+        if(status != TBSA_STATUS_SUCCESS) {
+            return status;
+        }
     }
 
     return status;
@@ -301,9 +311,27 @@ test_id_t val_nvram_get_last_id (void)
 tbsa_status_t val_infra_init(test_id_t *test_id)
 {
     tbsa_status_t status;
+    memory_desc_t *bootrom_desc;
+    uint32_t      vtor;
 
     val_mem_reg_write(SYST_CSR, 0x0);
     val_mem_reg_write(SYST_CSR_NS, 0x0);
+
+    status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_BOOTROM, 0),
+                                   (uint8_t **)&bootrom_desc,
+                                   (uint32_t *)sizeof(memory_desc_t));
+    if(status != TBSA_STATUS_SUCCESS) {
+        val_print(PRINT_ERROR, "\n\tBoot ROM address details not available in tbsa_tgt.cfg", 0);
+        return status;
+    }
+
+    val_mem_reg_read(VTOR, &vtor);
+    if ((vtor >= bootrom_desc->start) && (vtor <= bootrom_desc->end)) {
+        g_vtor_relocated_from_rom = FALSE;
+    } else {
+        g_vtor_relocated_from_rom = TRUE;
+    }
+
     val_mem_reg_write(VTOR, (uint32_t)&g_tbsa_s_isr_vector);
     val_mem_reg_write(VTOR_NS, (uint32_t)&g_tbsa_ns_isr_vector);
 
@@ -523,28 +551,18 @@ char *val_get_comp_name(test_id_t test_id)
             return TBSA_2_STR;
         case TBSA_DEBUG_BASE:
             return TBSA_3_STR;
-        case TBSA_DRAM_BASE:
-            return TBSA_4_STR;
         case TBSA_EIP_BASE:
-            return TBSA_5_STR;
-        case TBSA_ENTROPY_SOURCE_BASE:
-            return TBSA_6_STR;
-        case TBSA_FUSES_BASE:
-            return TBSA_7_STR;
-        case TBSA_INFRASTRUCTURE_BASE:
-            return TBSA_8_STR;
+            return TBSA_4_STR;
         case TBSA_INTERRUPTS_BASE:
-            return TBSA_9_STR;
+            return TBSA_5_STR;
         case TBSA_SECURE_RAM_BASE:
-            return TBSA_10_STR;
+            return TBSA_6_STR;
         case TBSA_PERIPHERALS_BASE:
-            return TBSA_11_STR;
+            return TBSA_7_STR;
         case TBSA_TRUSTED_TIMERS_BASE:
-            return TBSA_12_STR;
+            return TBSA_8_STR;
         case TBSA_VERSION_COUNTERS_BASE:
-            return TBSA_13_STR;
-        case TBSA_VOLATALITY_BASE:
-            return TBSA_14_STR;
+            return TBSA_9_STR;
         default:
             return "No Component";
 
@@ -593,8 +611,20 @@ void val_memcpy(void *dst, void *src, uint32_t size)
 }
 
 /*
+     @brief   - VAL facilitating memset support for tests
+     @param   - dst  : destination address
+                str  : value to set
+                size : number of bytes to copy
+     @return  - void
+*/
+void val_memset(void *dst, uint32_t str, uint32_t size)
+{
+    memset(dst, str, size);
+}
+
+/*
      @brief   - VAL facilitating execution of piece of trusted code at a given address
-     @param   - addr : Trusted addres
+     @param   - addr : Trusted address
      @return  - Trusted code return value
 */
 __attribute__((naked))
@@ -604,4 +634,15 @@ uint32_t val_execute_in_trusted_mode(addr_t address)
             "mov  r3, r0\n\t"
             "blx  r3\n\t"
             "pop  {pc, r3}\n\t");
+}
+
+/*
+     @brief   - Provides status of VTOR relocation before tbsa does
+     @param   - void
+     @return  - TRUE  - VTOR relocated from BOOT ROM
+                FALSE - VTOR is not relocated from BOOT ROM
+*/
+bool_t val_is_vtor_relocated_from_rom(void)
+{
+    return g_vtor_relocated_from_rom;
 }

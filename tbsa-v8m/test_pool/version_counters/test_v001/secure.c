@@ -30,21 +30,18 @@ TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_VERSION_COUNTERS_BASE, 1),
 tbsa_val_api_t        *g_val;
 
 void
-secure_fault_esr (unsigned long *sf_args)
+hard_fault_esr (unsigned long *sf_args)
 {
-    if (IS_TEST_PENDING(g_val->get_status())) {
-        g_val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
-    } else {
-        g_val->set_status(RESULT_FAIL(TBSA_STATUS_INVALID));
-    }
+    /* Issue system warm reset */
+    g_val->system_reset(WARM_RESET);
 
-    /* Updating the return address in the stack frame in order to avoid periodic fault */
-    sf_args[6] = sf_args[6] + 4;
+    /* Shouldn't come here */
+    while(1);
 }
 
 __attribute__((naked))
 void
-SF_Handler(void)
+HF_Handler(void)
 {
     asm volatile("mrs r0, control_ns \n"
                  "mov r1, #0x2       \n"
@@ -52,10 +49,10 @@ SF_Handler(void)
                  "cmp r0, r1         \n"
                  "beq _psp_ns        \n"
                  "mrs r0, msp_ns     \n"
-                 "b secure_fault_esr \n"
+                 "b hard_fault_esr \n"
                  "_psp_ns:           \n"
                  "mrs r0, psp_ns     \n"
-                 "b secure_fault_esr \n");
+                 "b hard_fault_esr \n");
 }
 
 void
@@ -64,7 +61,7 @@ setup_ns_env(void)
     tbsa_status_t status;
 
     /* Installing Trusted Fault Handler for NS test */
-    status = g_val->interrupt_setup_handler(EXCP_NUM_SF, 0, SF_Handler);
+    status = g_val->interrupt_setup_handler(EXCP_NUM_HF, 0, HF_Handler);
     g_val->err_check_set(TEST_CHECKPOINT_1, status);
 }
 

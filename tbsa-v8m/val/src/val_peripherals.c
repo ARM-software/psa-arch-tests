@@ -231,3 +231,52 @@ tbsa_status_t val_nvram_write(addr_t base, uint32_t offset, void *buffer, int si
         return TBSA_STATUS_ERROR;
     }
 }
+
+/**
+    @brief    - Initialize RTC
+    @param    - void
+    @return   - tbsa_status_t
+**/
+tbsa_status_t val_rtc_init (void)
+{
+    tbsa_status_t         status;
+    soc_peripheral_desc_t *rtc_desc;
+    uint32_t              instance = 0;
+
+    do {
+        status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, SOC_PERIPHERAL_RTC, instance),
+                                       (uint8_t **)&rtc_desc,
+                                       (uint32_t *)sizeof(soc_peripheral_desc_t));
+        if (status != TBSA_STATUS_SUCCESS) {
+             return status;
+        }
+
+        pal_rtc_init(rtc_desc->base);
+
+        instance++;
+    } while(instance);
+
+    return TBSA_STATUS_SUCCESS;
+}
+
+/**
+    @brief    - RTC validity mechanism to indicate RTC is Trusted/Non-trusted
+    @param    - base address of the given RTC instance
+    @return   - 1 - Valid
+                0 - Non-valid
+**/
+bool_t val_is_rtc_trustable (addr_t base_addr)
+{
+    return pal_is_rtc_trustable(base_addr);
+}
+
+/**
+    @brief    - Returns whether RTC is synced to server or not.
+    @param    - base address of the given RTC instance
+    @return   - 1 - Synced
+                0 - Not-synced
+**/
+bool_t val_is_rtc_synced_to_server (addr_t base_addr)
+{
+    return pal_is_rtc_synced_to_server(base_addr);
+}

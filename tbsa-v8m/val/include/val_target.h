@@ -70,7 +70,8 @@ typedef enum _SOC_PERIPHERAL_CONFIG_ID_ {
 typedef enum _MEMORY_CONFIG_ID_ {
   MEMORY_SRAM              = 0x1,
   MEMORY_FLASH             = 0x2,
-  MEMORY_NVRAM             = 0x3
+  MEMORY_NVRAM             = 0x3,
+  MEMORY_BOOTROM           = 0x4
 } memory_cfg_id_t;
 
 typedef enum _CRYPTO_CONFIG_ID_ {
@@ -118,6 +119,7 @@ typedef enum _COMPONENT_GROUPING_{
   SRAM              = GROUP_MEMORY,
   FLASH             = GROUP_MEMORY,
   NVRAM             = GROUP_MEMORY,
+  BOOTROM           = GROUP_MEMORY,
   CRYPTO            = GROUP_CRYPTO,
   SYS_FREQ          = GROUP_CLOCKS,
   IDAU              = GROUP_PROTECTION_UNITS,
@@ -157,7 +159,7 @@ typedef enum {
 } fuse_type_t;
 
 /**
-  !* LifeCycle State *!
+  !* Life Cycle State *!
   Chip manufacturer (CM LCS)
   Device manufacturer (DM LCS)
   Security enabled (Secure LCS)
@@ -196,7 +198,8 @@ typedef enum {
     MEM_SECURE             = 0x1,
     MEM_NONSECURE          = 0x2,
     MEM_NSC                = 0x3,
-    MEM_CONFIGURABLE       = 0x4
+    MEM_CONFIGURABLE       = 0x4,
+    MEM_UNUSED             = 0x5
 }mem_tgt_attr_t;
 
 typedef enum {
@@ -213,6 +216,12 @@ typedef enum {
     TOKEN_CERTIFICATE      = 0x2,
     TOKEN_CHALLENGE_RESP   = 0x3,
 } unlock_token_t;
+
+typedef enum {
+    SECURE_TARGET_ONLY      = 0x1,
+    NONSECURE_TARGET_ONLY   = 0x2,
+    SECURE_NONSECURE_TARGET = 0x4,
+} interrupt_target_t;
 
 typedef struct _CFG_HDR_TYPE_ {
     cfg_id_t cfg_id;
@@ -307,14 +316,15 @@ typedef struct _SOC_PER_INFO_NUM_ {
 } soc_peripheral_hdr_t;
 
 typedef struct _SOC_PER_INFO_DESC_ {
-    cfg_type_t  cfg_type;
-    uint32_t    vendor_id;
-    uint32_t    device_id;
-    addr_t      base;
-    uint32_t    offset;
-    uint32_t    intr_id;
-    addr_t      clk_src;
-    dev_attr_t  attribute;
+    cfg_type_t         cfg_type;
+    uint32_t           vendor_id;
+    uint32_t           device_id;
+    addr_t             base;
+    uint32_t           offset;
+    uint32_t           intr_id;
+    interrupt_target_t intr_target;
+    addr_t             clk_src;
+    dev_attr_t         attribute;
 } soc_peripheral_desc_t;
 
 /*

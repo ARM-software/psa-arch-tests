@@ -22,7 +22,7 @@
 **/
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_TRUSTED_TIMERS_BASE, 1),
                   CREATE_TEST_TITLE("Trusted and Non-trusted world operation to trusted timer"),
-                  CREATE_REF_TAG("R030/R040_TBSA_TIME"),
+                  CREATE_REF_TAG("R030/R040/R050_TBSA_TIME-R120_TBSA_INFRA"),
                   entry_hook,
                   test_payload,
                   exit_hook);
@@ -45,8 +45,6 @@ void entry_hook(tbsa_val_api_t *val)
 void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
-    bool_t        timer_num_init = FALSE;
-    uint32_t      timer_num;
     uint32_t      instance = 0;
     uint32_t      data;
     uint32_t      shcsr;
@@ -68,11 +66,6 @@ void test_payload(tbsa_val_api_t *val)
                                         (uint32_t *)sizeof(soc_peripheral_desc_t));
         if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
             return;
-        }
-
-        if(!timer_num_init) {
-            timer_num      = GET_NUM_INSTANCE(timer_desc);
-            timer_num_init = TRUE;
         }
 
         if (timer_desc->attribute == SECURE_PROGRAMMABLE) {
@@ -97,8 +90,7 @@ void test_payload(tbsa_val_api_t *val)
             while (IS_TEST_PENDING(val->get_status()));
         }
         instance++;
-        timer_num--;
-    } while(timer_num);
+    } while(instance < GET_NUM_INSTANCE(timer_desc));
 
     /* Restoring faults */
     status = val->mem_reg_write(SHCSR, shcsr);

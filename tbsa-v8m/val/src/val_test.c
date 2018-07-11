@@ -21,7 +21,7 @@
 #include "val_peripherals.h"
 #include "pal_interfaces.h"
 
-/* gloabls */
+/* globals */
 addr_t          g_s_test_info_addr;
 addr_t          g_ns_test_info_addr;
 extern uint32_t g_test_binary_src_addr;

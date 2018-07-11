@@ -144,7 +144,7 @@ int  pal_spi_read(uint32_t addr, uint8_t *data, uint32_t len);
 int  pal_spi_write(uint32_t addr, uint8_t *data, uint32_t len);
 
 /**
-    @brief    - This function initializes the crytographic functions
+    @brief    - This function initializes the cryptographic functions
 **/
 void pal_crypto_init(addr_t crypto_base_addr);
 
@@ -513,7 +513,7 @@ void pal_fuse_count_zeros(uint32_t value, uint32_t *zero_cnt);
 int pal_fuse_get_lcs(uint32_t *pLcs);
 
 /**
-    @brief    - This function will validate the cerificate using public key.
+    @brief    - This function will validate the certificate using public key.
     @param    - certificate_base_addr : Base address of the certificate where it is stored in memory
                 public_key_addr       : Base address of the public key where it is stored in memory
                 certificate_size      : Certificate memory size
@@ -523,7 +523,7 @@ int pal_fuse_get_lcs(uint32_t *pLcs);
 int pal_crypto_validate_certificate(uint32_t certificate_base_addr, uint32_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size);
 
 /**
-    @brief    - This function will get unique ID from valid cerificate using public key
+    @brief    - This function will get unique ID from valid certificate using public key
     @param    - certificate_base_addr : Base address of the certificate where it is stored in memory
                 public_key_addr       : Base address of the public key where it is stored in memory
                 certificate_size      : Certificate memory size
@@ -532,4 +532,57 @@ int pal_crypto_validate_certificate(uint32_t certificate_base_addr, uint32_t pub
 **/
 int pal_crypto_get_uniqueID_from_certificate(uint32_t certificate_base_addr, uint32_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size);
 
+/**
+    @brief    - Initialize RTC
+    @param    - base address of the given RTC instance
+    @return   - error status
+**/
+int pal_rtc_init(addr_t base_addr);
+
+/**
+    @brief    - RTC validity mechanism to indicate RTC is Trusted/Non-trusted
+    @param    - base address of the given RTC instance
+    @return   - error status
+**/
+int pal_is_rtc_trustable(addr_t base_addr);
+
+/**
+    @brief    - RTC validity mechanism to indicate RTC is synced with server or not
+    @param    - base address of the given RTC instance
+    @return   - error status
+**/
+int pal_is_rtc_synced_to_server(addr_t base_addr);
+
+/**
+    @brief    - This function will get DPM field from public key
+    @param    - public_key_addr       : Base address of the public key where it is stored in memory
+                public_key_size       : Public key memory size
+                dpm_field             : Buffer to store DPM number
+    @return   - error status
+**/
+int pal_crypto_get_dpm_from_key(uint32_t public_key_addr, uint32_t public_key_size, uint32_t *dpm_field);
+
+/**
+    @brief    - This function will get DPM field from certificate
+    @param    - certificate_base_addr : Base address of the certificate where it is stored in memory
+                certificate_size      : certificate memory size
+                dpm_field             : Buffer to store DPM number
+    @return   - error status
+**/
+int pal_crypto_get_dpm_from_certificate(uint32_t certificate_base_addr, uint32_t certificate_size, uint32_t *dpm_field);
+
+/**
+    @brief    - This function will update the firmware version
+    @param    - instance              : Instance if the firmware
+                fw_ver_cnt            : Version of the firmware
+    @return   - error status
+**/
+int pal_firmware_version_update(uint32_t instance, uint32_t firmware_version_type, uint32_t fw_ver_cnt);
+
+/**
+    @brief    - This function will read the firmware version
+    @param    - instance              : Instance if the firmware
+    @return   - error status
+**/
+int pal_firmware_version_read(uint32_t instance, uint32_t firmware_version_type);
 #endif /* PAL_INTERFACES_H */
