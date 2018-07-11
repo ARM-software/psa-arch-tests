@@ -19,7 +19,7 @@
 /* Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_BASE_BASE, 1),
                   CREATE_TEST_TITLE("Check Trusted and Non-trusted world asset access"),
-                  CREATE_REF_TAG("R010/R020_TBSA_BASE-R010/R020_TBSA_INFRA"),
+                  CREATE_REF_TAG("R010/R020_TBSA_BASE-R010/R020/R030/R220_TBSA_INFRA-R040_TBSA_EIP"),
                   entry_hook,
                   test_payload,
                   exit_hook);

@@ -24,7 +24,7 @@
 **/
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_SECURE_RAM_BASE, 1),
                   CREATE_TEST_TITLE("Secure RAM access from Trusted world only"),
-                  CREATE_REF_TAG("R030/R180_TBSA_INFRA"),
+                  CREATE_REF_TAG("R160/R170/R180_TBSA_INFRA"),
                   entry_hook,
                   test_payload,
                   exit_hook);

@@ -22,9 +22,12 @@
 #include "val_infra.h"
 
 #define TBSA_ACS_MAJOR_VER    0
-#define TBSA_ACS_MINOR_VER    5
+#define TBSA_ACS_MINOR_VER    6
 
 uint32_t __tbsa_bss_start__;
 uint32_t __tbsa_bss_end__;
+uint32_t __tbsa_data_src_start__;
+uint32_t __tbsa_data_start__;
+uint32_t __tbsa_data_end__;
 
 #endif /* _TBSA_H_ */

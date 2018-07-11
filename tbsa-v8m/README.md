@@ -21,7 +21,7 @@ The tests are available as open source. The tests and the corresponding abstract
 
 
 ## Release details
- - Release Version - 0.5
+ - Release Version - 0.6
  - Code Quality: Alpha <br />
    The suite is in development. This indicates that the suite contains tests which have not been validated on any platform. Please use this opportunity to suggest enhancements and point out errors.
 
@@ -70,7 +70,7 @@ Before starting the test suite build, ensure that the following requirements are
 ## Download source
 To download the master branch of the repository, type the following command:
 
-	git clone https://github.com/ARM-software/psa-m-arch-test.git
+	git clone https://github.com/ARM-software/psa-arch-tests.git
 
 
 ## Porting steps
@@ -84,13 +84,18 @@ To build TBSA-v8M test suite for a given platform, execute the following command
 	2. make TARGET=<platform_name>  <br />
 	   Example: make TARGET=fvp
 
+To build only certain test for a given platform, execute the following commands:
+    1. cd syscomp_tbsa_m <br />
+    2. make TARGET=<platform_name> SUITE=<test_name> <br />
+       Example: make TARGET=fvp SUITE=boot,crypto,mem
+
 <br /> where <platform_name> is the same as the name of the target specific directory created in the platform/board directory.
 
 
 ### Build output
 TBSA build generates two output binaries:
-        
-	- tbsa.elf  
+
+	- tbsa.elf
 	- tbsa_test_combined.bin
 
 ## Test Suite Execution

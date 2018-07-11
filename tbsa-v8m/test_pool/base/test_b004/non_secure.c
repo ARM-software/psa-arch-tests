@@ -22,7 +22,7 @@
 **/
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_BASE_BASE, 4),
                   CREATE_TEST_TITLE("Check memory must not be executable/NSC after it is reallocated from NT to T"),
-                  CREATE_REF_TAG("R110_TBSA_INFRA"),
+                  CREATE_REF_TAG("R110/R230_TBSA_INFRA"),
                   entry_hook,
                   test_payload,
                   exit_hook);
@@ -48,8 +48,6 @@ void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
     uint32_t      instance         = 0UL;
-    uint32_t      sram_num;
-    bool_t        sram_num_init    = FALSE;
     bool_t        sram_block_found = FALSE;
     boot_t        boot;
     uint32_t      shcsr            = 0UL;
@@ -74,11 +72,6 @@ void test_payload(tbsa_val_api_t *val)
                                             (uint32_t *)sizeof(memory_desc_t));
             if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
                 return;
-            }
-
-            if (!sram_num_init) {
-                sram_num = GET_NUM_INSTANCE(memory_desc);
-                sram_num_init = TRUE;
             }
 
             if (memory_desc->attribute == MEM_CONFIGURABLE) {
@@ -118,12 +111,9 @@ void test_payload(tbsa_val_api_t *val)
                 }
 
                 break;
-            } else {
-                instance++;
             }
-            /* Moving to next instance of SRAM block*/
-            sram_num--;
-        } while(sram_num);
+            instance++;
+        } while(instance < GET_NUM_INSTANCE(memory_desc));
 
         if (!sram_block_found) {
             val->err_check_set(TEST_CHECKPOINT_9, TBSA_STATUS_NOT_FOUND);

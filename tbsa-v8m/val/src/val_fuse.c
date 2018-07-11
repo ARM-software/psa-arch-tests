@@ -44,7 +44,7 @@ tbsa_status_t val_fuse_write(addr_t addr, uint32_t *data, size_t size)
 /**
     @brief    - This function will choose the operation to be performed on a fuse
     @param    - fuse_ops : fuse read/write
-                addr     : address of the fuse on which the operation is to be perfomed
+                addr     : address of the fuse on which the operation is to be performed
                 data     : buffer, which can be used to get the data in case of fuse reads
                            and write the data in case of writes.
                 size     : size of the fuse
@@ -121,9 +121,9 @@ tbsa_status_t val_fuse_get_lcs(uint32_t *pLcs)
                 - fw_ver_cnt : Firmware version counter
     @return     - tbsa_status_t
 */
-tbsa_status_t val_firmware_version_update(uint32_t instance, uint32_t fw_ver_cnt)
+tbsa_status_t val_firmware_version_update(uint32_t instance, firmware_version_type_t firmware_version_type, uint32_t fw_ver_cnt)
 {
-    return TBSA_STATUS_SUCCESS;
+    return pal_firmware_version_update(instance, firmware_version_type, fw_ver_cnt);
 }
 
 /*
@@ -131,7 +131,7 @@ tbsa_status_t val_firmware_version_update(uint32_t instance, uint32_t fw_ver_cnt
     @param    - instance : Instance number
     @return   - firmware version counter
 */
-uint32_t val_firmware_version_read(uint32_t instance)
+uint32_t val_firmware_version_read(uint32_t instance, firmware_version_type_t firmware_version_type)
 {
-    return 0;
+    return pal_firmware_version_read(instance, firmware_version_type);
 }

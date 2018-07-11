@@ -44,7 +44,6 @@ ns_src    :=non_secure.c
 
 DIR       :=$(dir $(wildcard $(ROOT_DIR)/*/))
 DIR       :=$(filter-out ./, $(DIR))
-DIR       :=$(filter-out ./test_c001/, $(DIR))
 all: build
 
 build:

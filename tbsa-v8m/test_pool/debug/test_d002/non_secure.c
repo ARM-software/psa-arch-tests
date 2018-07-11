@@ -180,7 +180,7 @@ void test_payload(tbsa_val_api_t *val)
                     else
                         s_addr++;
 
-                    /*Initiliaze the memory with known data*/
+                    /*Initialize the memory with known data*/
                     val->mem_write((uint32_t *)memory_desc->start, WORD, TEST_DATA);
 
                     if (test_dbg_seq_write(memory_desc->start, SEQ_OPEN_STATE_READ))
@@ -207,7 +207,7 @@ void test_payload(tbsa_val_api_t *val)
                         }
                     }
 
-                    /*Initiliaze the memory with known data*/
+                    /*Initialize the memory with known data*/
                     val->mem_write((uint32_t *)memory_desc->start, WORD, ~TEST_DATA);
 
                     if (test_dbg_seq_write(memory_desc->start, SEQ_OPEN_STATE_WRITE))

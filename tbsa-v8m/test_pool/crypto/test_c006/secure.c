@@ -20,7 +20,7 @@
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 6),
                   CREATE_TEST_TITLE("A Trusted HK must not be directly accessible by any software."),
-                  CREATE_REF_TAG("R140_TBSA_KEY"),
+                  CREATE_REF_TAG("R140_TBSA_KEY-R100_TBSA_BOOT"),
                   entry_hook,
                   test_payload,
                   exit_hook);

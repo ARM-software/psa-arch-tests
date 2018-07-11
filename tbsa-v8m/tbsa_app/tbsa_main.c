@@ -28,6 +28,8 @@ void tbsa_main (void)
 
     /* zero bss section */
     memset(&__tbsa_bss_start__, 0, TBSA_REGION_SIZE(&__tbsa_bss_start__, &__tbsa_bss_end__));
+    /* Initialize data section */
+    memcpy(&__tbsa_data_start__, &__tbsa_data_src_start__, TBSA_REGION_SIZE(&__tbsa_data_start__, &__tbsa_data_end__));
 
     status = val_infra_init(&test_id_prev);
     if (TBSA_ERROR(status))

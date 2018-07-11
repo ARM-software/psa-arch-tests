@@ -82,6 +82,7 @@ typedef enum
     NV_DPM1     = 0x4,
     NV_DPM2     = 0x5,
     NV_SHCSR    = 0x6,
+    NV_SPAD     = 0x7,
 }nvram_index_t;
 
 /* prototypes */
@@ -104,6 +105,9 @@ char           *val_get_comp_name(test_id_t test_id);
 tbsa_status_t  val_get_test_binary_info(addr_t *test_binary_src_addr, uint32_t *test_binary_in_ram);
 
 void           val_memcpy                  (void *dst, void *src, uint32_t size);
+void           val_memset                  (void *dst, uint32_t str,  uint32_t size);
 uint32_t       val_execute_in_trusted_mode (addr_t address);
+
+bool_t         val_is_vtor_relocated_from_rom(void);
 
 #endif /* _VAL_INFRA_H_ */

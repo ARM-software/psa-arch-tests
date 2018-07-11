@@ -24,7 +24,7 @@
 **/
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_TRUSTED_TIMERS_BASE, 2),
                   CREATE_TEST_TITLE("Trusted and Non-trusted world operation to trusted watchdog timer"),
-                  CREATE_REF_TAG("R060/R070/R080/R100/R110_TBSA_TIME"),
+                  CREATE_REF_TAG("R060/R070/R080/R100/R110/R120_TBSA_TIME"),
                   entry_hook,
                   test_payload,
                   exit_hook);

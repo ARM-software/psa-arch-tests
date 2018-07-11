@@ -33,9 +33,14 @@ SECTIONS
         *(.text*)
         *(.rodata)
         *(.rodata*)
+
+        KEEP(*(.init))
+        KEEP(*(.fini))
     } > TBSA_TEXT
 
-    .data :
+    __tbsa_data_src_start__ = .;
+
+    .data : AT (__tbsa_data_src_start__)
     {
         . = ALIGN(4);
         __tbsa_data_start__ = .;
@@ -63,6 +68,13 @@ SECTIONS
         . = ALIGN(4);
         __tbsa_ns_data_start__ = .;
         KEEP(*(.tbsa_ns_data))
+        . = ALIGN(4);
+    } > TBSA_NS_DATA
+
+    .ns_target_database :
+    {
+        . = ALIGN(4);
+        KEEP(*(.ns_target_database))
         . = ALIGN(4);
         __tbsa_ns_data_end__ = .;
     } > TBSA_NS_DATA

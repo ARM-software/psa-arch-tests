@@ -38,6 +38,13 @@ SECTIONS
         *(.rodata*)
     } > TBSA_TEST_TEXT
 
+    .ns_target_database :
+    {
+        . = ALIGN(4);
+        KEEP(*(.ns_target_database))
+        . = ALIGN(4);
+    } > TBSA_TEST_TEXT
+
     .data :
     {
         . = ALIGN(4);

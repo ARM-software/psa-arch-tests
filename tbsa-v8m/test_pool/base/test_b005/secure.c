@@ -22,7 +22,7 @@
 **/
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_BASE_BASE, 5),
                   CREATE_TEST_TITLE("Check transaction filters config space must only be accessed from the TW"),
-                  CREATE_REF_TAG("R060_TBSA_INFRA"),
+                  CREATE_REF_TAG("R060/R080/R210_TBSA_INFRA-R110_TBSA_FUSE"),
                   entry_hook,
                   test_payload,
                   exit_hook);

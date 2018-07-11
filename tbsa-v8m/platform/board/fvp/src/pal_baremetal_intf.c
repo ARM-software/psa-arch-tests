@@ -319,3 +319,33 @@ int pal_is_rtc_synced_to_server(addr_t base_addr)
 {
     return 0;
 }
+
+int pal_crypto_validate_certificate(uint32_t certificate_base_addr, uint32_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size)
+{
+    return -1;
+}
+
+int pal_crypto_get_uniqueID_from_certificate(uint32_t certificate_base_addr, uint32_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size)
+{
+    return -1;
+}
+
+int pal_crypto_get_dpm_from_key(uint32_t public_key_addr, uint32_t public_key_size, uint32_t *dpm_field)
+{
+    return -1;
+}
+
+int pal_crypto_get_dpm_from_certificate(uint32_t certificate_base_addr, uint32_t certificate_size, uint32_t *dpm_field)
+{
+    return -1;
+}
+
+int pal_firmware_version_update(uint32_t instance, uint32_t firmware_version_type, uint32_t fw_ver_cnt)
+{
+    return -1;
+}
+
+int pal_firmware_version_read(uint32_t instance, uint32_t firmware_version_type)
+{
+    return -1;
+}

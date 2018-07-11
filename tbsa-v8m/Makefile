@@ -11,6 +11,8 @@ OUT_DIR :=./out
 VLIB    :=tbsa_val.a
 PLIB    :=tbsa_pal.a
 
+SUITE :=
+
 # Root folder
 ROOT_DIR:=.
 
@@ -79,7 +81,7 @@ clean:
 	cd test_pool && make clean
 
 tbsa.bin:tbsa.elf
-	$(OBJCOPY) $< -O binary $@
+	$(OBJCOPY) $< -j .text -O binary $@
 	mv tbsa.asm $(OUT_DIR)
 	mv tbsa.bin $(OUT_DIR)
 	mv tbsa.elf $(OUT_DIR)

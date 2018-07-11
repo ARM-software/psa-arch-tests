@@ -46,4 +46,8 @@ tbsa_status_t val_uart_init(void);
 tbsa_status_t  val_nvram_read   (addr_t base, uint32_t offset, void *buffer, int size);
 tbsa_status_t  val_nvram_write  (addr_t base, uint32_t offset, void *buffer, int size);
 
+tbsa_status_t val_rtc_init                (void);
+bool_t        val_is_rtc_trustable        (addr_t base_addr);
+bool_t        val_is_rtc_synced_to_server (addr_t base_addr);
+
 #endif /* _VAL_PERIPHERALS_H_ */

@@ -40,13 +40,14 @@ typedef struct {
     tbsa_status_t (*err_check_set)             (uint32_t checkpoint, tbsa_status_t status);
     tbsa_status_t (*report_status)             (test_id_t test_id);
     void          (*memcpy)                    (void *dst, void *src, uint32_t size);
+    void          (*memset)                    (void *dst, uint32_t str, uint32_t size);
     uint32_t      (*execute_in_trusted_mode)   (addr_t address);
     tbsa_status_t (*nvram_read)                (uint32_t base, uint32_t offset, void *buffer, int size);
     tbsa_status_t (*nvram_write)               (uint32_t base, uint32_t offset, void *buffer, int size);
     void          (*system_reset)              (system_reset_t);
     system_reset_t(*system_reset_type)         (void);
-    tbsa_status_t (*firmware_version_update)   (uint32_t instace, uint32_t fw_ver_cnt);
-    uint32_t      (*firmware_version_read)     (uint32_t instace);
+    tbsa_status_t (*firmware_version_update)   (uint32_t instance, firmware_version_type_t firmware_version_type, uint32_t fw_ver_cnt);
+    uint32_t      (*firmware_version_read)     (uint32_t instance, firmware_version_type_t firmware_version_type);
     tbsa_status_t (*test_initialize)           (tbsa_test_init_t *init);
     tbsa_status_t (*mem_reg_read)              (uint32_t reg_name, uint32_t *rd_data);
     tbsa_status_t (*mem_read)                  (uint32_t *address, mem_access_size_t access_size, uint32_t *rd_data);
@@ -86,6 +87,11 @@ typedef struct {
     tbsa_status_t (*mpc_configure_security_attribute)    (uint32_t instance, addr_t start_addr,addr_t end_addr, mem_tgt_attr_t sec_attr);
     tbsa_status_t (*crypto_validate_certificate)    (addr_t certificate_base_addr,addr_t public_key_addr, size_t certificate_size, size_t public_key_size);
     tbsa_status_t (*crypto_get_uniqueID_from_certificate)    (addr_t certificate_base_addr,addr_t public_key_addr, size_t certificate_size, size_t public_key_size);
+    bool_t        (*is_rtc_trustable)          (addr_t base_addr);
+    bool_t        (*is_rtc_synced_to_server)   (addr_t base_addr);
+    bool_t        (*is_vtor_relocated_from_rom) (void);
+    tbsa_status_t (*crypto_get_dpm_from_key)    (addr_t public_key_addr, size_t public_key_size, uint32_t *dpm_field);
+    tbsa_status_t (*crypto_get_dpm_from_certificate)    (addr_t certificate_base_addr, size_t certificate_size, uint32_t *dpm_field);
 }tbsa_val_api_t;
 
 typedef void (*test_fptr_t)(tbsa_val_api_t *val);
@@ -104,6 +110,7 @@ uint32_t      val_get_status_nsc              (void);
 tbsa_status_t val_err_check_set_nsc           (uint32_t checkpoint, tbsa_status_t status);
 tbsa_status_t val_report_status_nsc           (test_id_t test_id);
 void          val_memcpy_nsc                  (void *dst, void *src, uint32_t size);
+void          val_memset_nsc                  (void *dst, uint32_t str, uint32_t size);
 uint32_t      val_execute_in_trusted_mode_nsc (addr_t address);
 
 tbsa_status_t val_test_initialize_nsc (tbsa_test_init_t *init);
@@ -150,8 +157,8 @@ tbsa_status_t val_nvram_write_nsc (addr_t base, uint32_t offset, void *buffer, i
 void           val_system_reset_nsc      (system_reset_t reset_type);
 system_reset_t val_system_reset_type_nsc (void);
 
-tbsa_status_t val_firmware_version_update_nsc (uint32_t instace, uint32_t fw_ver_cnt);
-uint32_t      val_firmware_version_read_nsc   (uint32_t instace);
+tbsa_status_t val_firmware_version_update_nsc (uint32_t instance, firmware_version_type_t firmware_version_type, uint32_t fw_ver_cnt);
+uint32_t      val_firmware_version_read_nsc   (uint32_t instance, firmware_version_type_t firmware_version_type);
 
 tbsa_status_t val_debug_get_status_nsc  (dbg_access_t dbg_access);
 tbsa_status_t val_debug_set_status_nsc  (dbg_access_t dbg_access, dbg_seq_status_t dbg_status);
@@ -161,5 +168,12 @@ tbsa_status_t val_dpm_set_access_ns_only_nsc(uint32_t index, bool_t access_ns);
 tbsa_status_t val_mpc_configure_security_attribute_nsc    (uint32_t instance, addr_t start_addr,addr_t end_addr, mem_tgt_attr_t sec_attr);
 tbsa_status_t val_crypto_validate_certificate_nsc    (addr_t certificate_base_addr,addr_t public_key_addr, size_t certificate_size, size_t public_key_size);
 tbsa_status_t val_crypto_get_uniqueID_from_certificate_nsc    (addr_t certificate_base_addr,addr_t public_key_addr, size_t certificate_size, size_t public_key_size);
+tbsa_status_t val_crypto_get_dpm_from_key_nsc    (addr_t public_key_addr, size_t public_key_size, uint32_t *dpm_field);
+tbsa_status_t val_crypto_get_dpm_from_certificate_nsc    (addr_t certificate_base_addr, size_t certificate_size, uint32_t *dpm_field);
+
+bool_t        val_is_rtc_trustable_nsc        (addr_t base_addr);
+bool_t        val_is_rtc_synced_to_server_nsc (addr_t base_addr);
+
+bool_t        val_is_vtor_relocated_from_rom_nsc (void);
 
 #endif /* _VAL_INTERFACES_H_ */

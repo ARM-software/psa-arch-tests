@@ -20,7 +20,7 @@
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_DEBUG_BASE, 1),
                   CREATE_TEST_TITLE("There must be a DPM to permit access to all assets"),
-                  CREATE_REF_TAG("R030/R120_TBSA_DEBUG"),
+                  CREATE_REF_TAG("R010/R030/R120_TBSA_DEBUG"),
                   entry_hook,
                   test_payload,
                   exit_hook);

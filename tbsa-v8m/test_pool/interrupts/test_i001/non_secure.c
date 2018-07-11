@@ -44,8 +44,6 @@ void entry_hook(tbsa_val_api_t *val)
 void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
-    bool_t        timer_num_init = FALSE;
-    uint32_t      timer_num;
     uint32_t      instance   = 0;
     uint32_t      pend_state;
 
@@ -58,11 +56,6 @@ void test_payload(tbsa_val_api_t *val)
             return;
         }
 
-        if(!timer_num_init) {
-            timer_num      = GET_NUM_INSTANCE(timer_desc);
-            timer_num_init = TRUE;
-        }
-
         if (timer_desc->attribute == SECURE_PROGRAMMABLE) {
             /* So we have one trusted timer, let's work with that */
             trusted_timer_found = TRUE;
@@ -70,8 +63,7 @@ void test_payload(tbsa_val_api_t *val)
         }
 
         instance++;
-        timer_num--;
-    } while(timer_num);
+    } while(instance < GET_NUM_INSTANCE(timer_desc));
 
     if (trusted_timer_found) {
         /* SET pending bit for a given trusted timer IRQ(trusted mode) */

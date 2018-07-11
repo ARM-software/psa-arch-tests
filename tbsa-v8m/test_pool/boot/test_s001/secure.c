@@ -21,7 +21,7 @@
 **/
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_TRUSTED_BOOT_BASE, 1),
                   CREATE_TEST_TITLE("Trusted boot operation from Trusted and Non-trusted world"),
-                  CREATE_REF_TAG("R020/R090_TBSA_BOOT"),
+                  CREATE_REF_TAG("R010/R020/R030/R090_TBSA_BOOT"),
                   entry_hook,
                   test_payload,
                   exit_hook);

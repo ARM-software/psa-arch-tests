@@ -20,7 +20,7 @@
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_DEBUG_BASE, 7),
                   CREATE_TEST_TITLE("Check that certificate unlock token use an approved asymmetric algorithm"),
-                  CREATE_REF_TAG("R230_TBSA_DEBUG"),
+                  CREATE_REF_TAG("R220/230/240/250/260/270_TBSA_DEBUG"),
                   entry_hook,
                   test_payload,
                   exit_hook);

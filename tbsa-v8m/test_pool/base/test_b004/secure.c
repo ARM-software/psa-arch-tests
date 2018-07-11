@@ -22,7 +22,7 @@
 **/
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_BASE_BASE, 4),
                   CREATE_TEST_TITLE("Check memory must not be executable/NSC after it is reallocated from NT to T"),
-                  CREATE_REF_TAG("R110_TBSA_INFRA"),
+                  CREATE_REF_TAG("R110/R230_TBSA_INFRA"),
                   entry_hook,
                   test_payload,
                   exit_hook);
