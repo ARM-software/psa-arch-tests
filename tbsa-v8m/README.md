@@ -22,7 +22,7 @@ The tests are available as open source. The tests and the corresponding abstract
 
 ## Release details
  - Release Version - 0.6
- - Code Quality: Alpha <br />
+ - Code Quality: Pre-Beta <br />
    The suite is in development. This indicates that the suite contains tests which have not been validated on any platform. Please use this opportunity to suggest enhancements and point out errors.
 
  - The TBSA-v8M tests are written for version 1.1 of the TBSA-v8M specification.
@@ -116,3 +116,7 @@ Arm TBSA-v8M Architecture test suite is distributed under Apache v2.0 License.
  - For support, send an email to support-psa-tests-acs@arm.com with details.
  - Arm licensees can contact Arm directly through their partner managers.
  - Arm welcomes code contributions through GitHub pull requests. For details, see "docs/Contributions.txt".
+
+--------------
+
+*Copyright (c) 2018, Arm Limited and Contributors. All rights reserved.*
