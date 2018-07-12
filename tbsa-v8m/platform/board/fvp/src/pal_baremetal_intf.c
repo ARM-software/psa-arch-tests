@@ -137,67 +137,7 @@ int pal_timer_interrupt_clear (addr_t base_addr)
     return timer_cmsdk_interrupt_clear(base_addr);
 }
 
-void pal_crypto_aes_init(void)
-{
-    return;
-}
-
-int pal_crypto_aes_setkey_enc(uint8_t *key, uint32_t keysize)
-{
-    return 0xFF;
-}
-
-int pal_crypto_aes_setkey_dec(uint8_t *key, uint32_t keysize)
-{
-    return 0xFF;
-}
-
 int pal_crypto_aes_generate_key(uint8_t *key, uint32_t size)
-{
-    return 0xFF;
-}
-
-int pal_crypto_aes_crypt_ecb(int mode, uint8_t *input, uint8_t *output)
-{
-    return 0xFF;
-}
-
-int pal_crypto_aes_crypt_cbc(int mode, uint64_t len, uint8_t *iv, uint8_t *input, uint8_t *output)
-{
-    return 0xFF;
-}
-
-int pal_crypto_aes_crypt_cfb(int mode, uint64_t len, uint64_t *iv_offset, uint8_t *iv, uint8_t *input, uint8_t *output)
-{
-    return 0xFF;
-}
-
-int pal_crypto_aes_crypt_ctr(uint64_t len, uint64_t *nc_offset, uint8_t *nonce_cntr, uint8_t *stream_block, uint8_t *input, uint8_t *output)
-{
-    return 0xFF;
-}
-
-int pal_crypto_aes_crypt_ofb(uint64_t len, uint64_t *nc_offset, uint8_t *nonce_cntr, uint8_t *stream_block, uint8_t *input, uint8_t *output)
-{
-    return 0xFF;
-}
-
-void pal_crypto_sha256_init(void)
-{
-    return;
-}
-
-int pal_crypto_sha256_start(uint32_t is_224)
-{
-    return 0xFF;
-}
-
-int pal_crypto_sha256_update(uint8_t *input, uint64_t ilen)
-{
-    return 0xFF;
-}
-
-int pal_crypto_sha256_finish(uint8_t *output)
 {
     return 0xFF;
 }
@@ -244,8 +184,7 @@ int pal_mpc_configure_mem_to_secure (addr_t start_addr,addr_t end_addr)
 
 void pal_crypto_init(addr_t crypto_base_addr)
 {
-    pal_crypto_sha256_init();
-    pal_crypto_aes_init();
+    return;
 }
 
 int pal_fuse_read(addr_t addr, uint32_t *data, size_t size)
