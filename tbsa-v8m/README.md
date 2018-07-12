@@ -113,7 +113,7 @@ Arm TBSA-v8M Architecture test suite is distributed under Apache v2.0 License.
 ## Feedback, contributions, and support
 
  - For feedback, use the GitHub Issue Tracker that is associated with this repository.
- - For support, send an email to support-psa-tests-acs@arm.com with details.
+ - For support, send an email to support-psa-arch-tests@arm.com with details.
  - Arm licensees can contact Arm directly through their partner managers.
  - Arm welcomes code contributions through GitHub pull requests. For details, see "docs/Contributions.txt".
 
