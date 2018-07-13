@@ -42,12 +42,6 @@ typedef struct {
 } key_info_desc_t;
 
 void          val_crypto_init(uint32_t crypto_base_addr);
-tbsa_status_t val_crypto_aes_encrypt(uint8_t *data, uint64_t datasize, uint8_t *key,
-                                     uint32_t keysize, uint8_t *iv, aes_cipher_t mode,
-                                     uint8_t *output_data, uint32_t output_datasize);
-tbsa_status_t val_crypto_aes_decrypt(uint8_t *data, uint64_t datasize, uint8_t *key,
-                                     uint32_t keysize, uint8_t *iv, aes_cipher_t mode,
-                                     uint8_t *output_data, uint32_t output_datasize);
 tbsa_status_t val_crypto_key_generate(uint8_t *key, crypt_t enc_type, uint32_t size);
 tbsa_status_t val_crypto_validate_public_key(crypt_t type, uint32_t *key, uint32_t size,
                                              addr_t addr, uint32_t *valid);
