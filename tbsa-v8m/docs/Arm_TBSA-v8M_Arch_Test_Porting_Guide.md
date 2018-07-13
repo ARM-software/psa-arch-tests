@@ -58,6 +58,7 @@ An example of the input configuration file is as shown.
 ## PAL API list
   These functions will require implementation/porting to the target platform. <br />
   
+**Note**:  
 The NVIC functions are CMSIS compliant. The CMSIS repository on Github is cloned during build. A partner need not port the NVIC functions if there are no platform specific changes.
 
 |   	|                                             	|                                                                                                                                                                   	|                                                                                                    	|                                                                                                                                                                                                                                                                            	|   	|   	|
