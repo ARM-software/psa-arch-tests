@@ -1,6 +1,6 @@
-﻿
+
 # Porting Guide - TBSA-v8M Architecture test suite 
-===========================================
+-----------------------------------------------------
 
 ## Introduction
 The TBSA-v8M Architecture test suite contains a platform abstraction layer (PAL) which abstracts platform specific information from the tests.
@@ -50,13 +50,15 @@ An example of the input configuration file is as shown.
   - Update platform/board/<platform_name>/src/pal_baremetal_intf.c with the correct instance of the peripherals used.
   - Update the primary input for the TBSA-v8M tests, that is, target configuration file in platform/board/<platform_name>/tbsa_tgt.cfg. Use platform/boards/fvp/tbsa_tgt.cfg as reference.
   - Refer val/include/val_target.h for structure details.
-<br />
-**Note**
+
+**Note**:
   pal_nvram_read and pal_nvram_write of the reference FVP platform code simulate non-volatility of the data across resets by ensuring that the memory range is not initialized across warm boots.
   A partner board may choose to simulate the same or provide NVRAM using external storage or Internal Flash.
 
 ## PAL API list
-  These functions will require implementation/porting to the target platform.
+  These functions will require implementation/porting to the target platform. <br />
+  
+The NVIC functions are CMSIS compliant. The CMSIS repository on Github is cloned during build. A partner need not port the NVIC functions if there are no platform specific changes.
 
 |   	|                                             	|                                                                                                                                                                   	|                                                                                                    	|                                                                                                                                                                                                                                                                            	|   	|   	|
 |---	|---------------------------------------------	|-------------------------------------------------------------------------------------------------------------------------------------------------------------------	|----------------------------------------------------------------------------------------------------	|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|---	|---	|
