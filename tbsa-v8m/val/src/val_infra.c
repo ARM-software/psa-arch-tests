@@ -317,6 +317,11 @@ tbsa_status_t val_infra_init(test_id_t *test_id)
     val_mem_reg_write(SYST_CSR, 0x0);
     val_mem_reg_write(SYST_CSR_NS, 0x0);
 
+    status = val_uart_init();
+    if(status != TBSA_STATUS_SUCCESS) {
+        return status;
+    }
+
     status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_BOOTROM, 0),
                                    (uint8_t **)&bootrom_desc,
                                    (uint32_t *)sizeof(memory_desc_t));
@@ -343,11 +348,6 @@ tbsa_status_t val_infra_init(test_id_t *test_id)
     status = val_get_test_binary_info(&g_test_binary_src_addr, &g_test_binary_in_ram);
 
     if (status != TBSA_STATUS_SUCCESS) {
-        return status;
-    }
-
-    status = val_uart_init();
-    if(status != TBSA_STATUS_SUCCESS) {
         return status;
     }
 
