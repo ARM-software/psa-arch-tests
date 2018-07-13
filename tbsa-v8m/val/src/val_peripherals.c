@@ -190,7 +190,7 @@ tbsa_status_t val_uart_init(void)
                                    (uint8_t **)&uart_desc,
                                    (uint32_t *)sizeof(soc_peripheral_desc_t));
     if (status != TBSA_STATUS_SUCCESS) {
-        return status;
+        return TBSA_STATUS_UART_INIT_ERROR;
     }
 
     pal_uart_init(uart_desc->base);
