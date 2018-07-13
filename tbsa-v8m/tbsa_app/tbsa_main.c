@@ -34,6 +34,8 @@ void tbsa_main (void)
     status = val_infra_init(&test_id_prev);
     if (TBSA_ERROR(status))
     {
+        if (status == TBSA_STATUS_UART_INIT_ERROR)
+            goto exit;
         val_print(PRINT_ERROR, "\nVal Infra Init failed with error = %x ", status);
         goto exit;
     }
@@ -44,9 +46,9 @@ void tbsa_main (void)
 
     /* Call the dispatcher routine*/
     tbsa_dispatcher(test_id_prev);
+    val_print(PRINT_ALWAYS, "\n\nEntering standby\n", 0);
 
 exit:
-    val_print(PRINT_ALWAYS, "\n\nEntering standby\n", 0);
     while(1) {
         asm volatile("WFI");
     }
