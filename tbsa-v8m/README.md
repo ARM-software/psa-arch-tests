@@ -48,7 +48,7 @@ Partners can also write their own abstraction layer implementations to allow TBS
 
 ## Scenarios
 
-The mapping of the rules in the specification to the test cases and the steps followed in the tests are mentioned in the [Scenario document](docs/Arm_TBSA-v8M_Scenario_document.pdf) present in the docs/ folder.
+The mapping of the rules in the specification to the test cases and the steps followed in the tests are mentioned in the [Scenario document](docs/Arm_TBSA-v8M_Arch_Test_Scenario_Document.pdf) present in the docs/ folder.
 
 ## Getting started
 
@@ -75,7 +75,8 @@ To download the master branch of the repository, type the following command:
 
 ## Porting steps
 
-Refer to the [User Guide](docs/Arm_TBSA-v8M_Validation_Methodology_and_User_Guide.pdf) document in the docs folder for details.
+Refer to the [Porting Guide](docs/Arm_TBSA-v8M_Arch_Test_Porting_Guide.md) document for porting steps.
+Refer to the [User Guide](docs/Arm_TBSA-v8M_Arch_Test_Validation_Methodology_and_User_Guide.pdf) document in the docs folder for additional details.
 
 ## Build steps
 
