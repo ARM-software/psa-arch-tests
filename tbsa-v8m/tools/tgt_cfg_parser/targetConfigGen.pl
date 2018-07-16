@@ -79,7 +79,7 @@ close IN0;
 print OUT '#include "val_target.h"',"\n";
 print OUT '#include <stdio.h>',"\n\n";
 
-print OUT "void main\(void\) \{\n";
+print OUT "int main\(void\) \{\n";
 
 while(<IN>) {
     if($_ !~ /^\//) {# exclude commented lines
@@ -221,6 +221,7 @@ foreach $thisgroup (@unique_groups) {
 print OUT "fprintf\(fp\, \"0x\%08x\\n\"\, 0xffffffff\)\;\n";
 print OUT "fprintf\(fp\, \"\}\;\\n\\n\"\)\;\n";
 print OUT "fprintf\(fp\, \"#endif \\n\"\)\;\n";
+print OUT "return 0\;\n";
 
 
 # foreach $thisdevice (@unique_devices) {
