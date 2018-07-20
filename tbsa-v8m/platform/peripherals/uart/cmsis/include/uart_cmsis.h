@@ -14,11 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
-
-#ifndef _UART_CMSDK_H_
-#define _UART_CMSDK_H_
+#ifndef _UART_CMSIS_H_
+#define _UART_CMSIS_H_
 
 #include "pal_common.h"
+#include "Driver_USART.h"
+
+#define UART0 0x40004000UL
+#define UART1 0x40005000UL
 
 /* CMSDK_UART DATA Register Definitions */
 #define CMSDK_UART_STATE_TXBF_Pos         0                                                  /* CMSDK_UART STATE: TXBF Position */
@@ -42,7 +45,6 @@ typedef struct
 } uart_t;
 
 /* function prototypes */
-int32_t uart_init(uart_t *uart);
-int32_t uart_putc(uart_t *uart, const void *data, uint32_t num);
+ARM_DRIVER_USART *uart_get_cmsis_driver (uint32_t uart);
 
-#endif /* _UART_CMSDK_H_ */
+#endif /* _UART_CMSIS_H_ */

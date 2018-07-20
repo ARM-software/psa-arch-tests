@@ -76,8 +76,8 @@ typedef struct {
     tbsa_status_t (*crypto_validate_public_key) (crypt_t type, uint32_t *key, uint32_t size, addr_t addr, uint32_t *valid);
     tbsa_status_t (*crypto_get_key_info)       (key_desc_t **key_info_desc, key_type_t key_type, uint32_t instance);
     tbsa_status_t (*crypto_set_base_addr)      (dev_attr_t attribute);
-    tbsa_status_t (*crypto_revoke_key)         (uint32_t index, addr_t addr, size_t size);
-    tbsa_status_t (*fuse_ops)                  (fuse_ops_t fuse_ops, addr_t addr, uint32_t *data, size_t size);
+    tbsa_status_t (*crypto_revoke_key)         (uint32_t index, addr_t addr, uint32_t size);
+    tbsa_status_t (*fuse_ops)                  (fuse_ops_t fuse_ops, addr_t addr, uint32_t *data, uint32_t size);
     tbsa_status_t (*get_fuse_info)             (fuse_desc_t **fuse_info_desc, fuse_type_t fuse_type, uint32_t instance);
     tbsa_status_t (*debug_get_status)          (dbg_access_t dbg_access);
     tbsa_status_t (*debug_set_status)          (dbg_access_t dbg_access, dbg_seq_status_t dbg_status);
@@ -85,13 +85,13 @@ typedef struct {
     tbsa_status_t (*dpm_get_state)             (uint32_t index, uint32_t *dbg_status);
     tbsa_status_t (*dpm_set_access_ns_only)    (uint32_t index, bool_t access_ns);
     tbsa_status_t (*mpc_configure_security_attribute)    (uint32_t instance, addr_t start_addr,addr_t end_addr, mem_tgt_attr_t sec_attr);
-    tbsa_status_t (*crypto_validate_certificate)    (addr_t certificate_base_addr,addr_t public_key_addr, size_t certificate_size, size_t public_key_size);
-    tbsa_status_t (*crypto_get_uniqueID_from_certificate)    (addr_t certificate_base_addr,addr_t public_key_addr, size_t certificate_size, size_t public_key_size);
+    tbsa_status_t (*crypto_validate_certificate)    (addr_t certificate_base_addr,addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size);
+    tbsa_status_t (*crypto_get_uniqueID_from_certificate)    (addr_t certificate_base_addr,addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size);
     bool_t        (*is_rtc_trustable)          (addr_t base_addr);
     bool_t        (*is_rtc_synced_to_server)   (addr_t base_addr);
     bool_t        (*is_vtor_relocated_from_rom) (void);
-    tbsa_status_t (*crypto_get_dpm_from_key)    (addr_t public_key_addr, size_t public_key_size, uint32_t *dpm_field);
-    tbsa_status_t (*crypto_get_dpm_from_certificate)    (addr_t certificate_base_addr, size_t certificate_size, uint32_t *dpm_field);
+    tbsa_status_t (*crypto_get_dpm_from_key)    (addr_t public_key_addr, uint32_t public_key_size, uint32_t *dpm_field);
+    tbsa_status_t (*crypto_get_dpm_from_certificate)    (addr_t certificate_base_addr, uint32_t certificate_size, uint32_t *dpm_field);
 }tbsa_val_api_t;
 
 typedef void (*test_fptr_t)(tbsa_val_api_t *val);
@@ -146,9 +146,9 @@ tbsa_status_t val_crypto_key_generate_nsc        (uint8_t *key, crypt_t enc_type
 tbsa_status_t val_crypto_validate_public_key_nsc (crypt_t type, uint32_t *key, uint32_t size, addr_t addr, uint32_t *valid);
 tbsa_status_t val_crypto_get_key_info_nsc        (key_desc_t **key_info_desc, key_type_t key_type, uint32_t instance);
 tbsa_status_t val_crypto_set_base_addr_nsc       (dev_attr_t attribute);
-tbsa_status_t val_crypto_revoke_key_nsc          (uint32_t index, addr_t addr, size_t size);
+tbsa_status_t val_crypto_revoke_key_nsc          (uint32_t index, addr_t addr, uint32_t size);
 tbsa_status_t val_fuse_get_lcs_nsc               (uint32_t *pLcs);
-tbsa_status_t val_fuse_ops_nsc                   (fuse_ops_t fuse_ops, addr_t addr, uint32_t *data, size_t size);
+tbsa_status_t val_fuse_ops_nsc                   (fuse_ops_t fuse_ops, addr_t addr, uint32_t *data, uint32_t size);
 tbsa_status_t val_get_fuse_info_nsc              (fuse_desc_t **fuse_info_desc, fuse_type_t fuse_type, uint32_t instance);
 
 tbsa_status_t val_nvram_read_nsc  (addr_t base, uint32_t offset, void *buffer, int size);
@@ -166,10 +166,10 @@ tbsa_status_t val_dpm_set_state_nsc     (uint32_t index, dpm_status_t dbg_status
 tbsa_status_t val_dpm_get_state_nsc     (uint32_t index, uint32_t *dbg_status);
 tbsa_status_t val_dpm_set_access_ns_only_nsc(uint32_t index, bool_t access_ns);
 tbsa_status_t val_mpc_configure_security_attribute_nsc    (uint32_t instance, addr_t start_addr,addr_t end_addr, mem_tgt_attr_t sec_attr);
-tbsa_status_t val_crypto_validate_certificate_nsc    (addr_t certificate_base_addr,addr_t public_key_addr, size_t certificate_size, size_t public_key_size);
-tbsa_status_t val_crypto_get_uniqueID_from_certificate_nsc    (addr_t certificate_base_addr,addr_t public_key_addr, size_t certificate_size, size_t public_key_size);
-tbsa_status_t val_crypto_get_dpm_from_key_nsc    (addr_t public_key_addr, size_t public_key_size, uint32_t *dpm_field);
-tbsa_status_t val_crypto_get_dpm_from_certificate_nsc    (addr_t certificate_base_addr, size_t certificate_size, uint32_t *dpm_field);
+tbsa_status_t val_crypto_validate_certificate_nsc    (addr_t certificate_base_addr,addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size);
+tbsa_status_t val_crypto_get_uniqueID_from_certificate_nsc    (addr_t certificate_base_addr,addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size);
+tbsa_status_t val_crypto_get_dpm_from_key_nsc    (addr_t public_key_addr, uint32_t public_key_size, uint32_t *dpm_field);
+tbsa_status_t val_crypto_get_dpm_from_certificate_nsc    (addr_t certificate_base_addr, uint32_t certificate_size, uint32_t *dpm_field);
 
 bool_t        val_is_rtc_trustable_nsc        (addr_t base_addr);
 bool_t        val_is_rtc_synced_to_server_nsc (addr_t base_addr);

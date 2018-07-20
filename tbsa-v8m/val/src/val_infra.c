@@ -29,6 +29,7 @@ addr_t               g_test_binary_src_addr;
 uint32_t             g_test_binary_in_ram;
 tbsa_status_buffer_t g_test_status_buffer[TBSA_TOTAL_TESTS];
 bool_t               g_vtor_relocated_from_rom;
+addr_t               g_stdio_uart_base_addr;
 
 /* externs*/
 extern tbsa_isr_vector      g_tbsa_s_isr_vector;
@@ -62,8 +63,10 @@ static tbsa_status_t val_status_buffer_init(tbsa_status_buffer_t *psbuf)
 **/
 void val_print_raw(char *str, uint32_t data)
 {
-    uint8_t j, buffer[16];
-    int8_t  i=0;
+    uint8_t buffer[16];
+    uint8_t j;
+    int8_t  i      = 0;
+    char    char_0 = 48;
 
     for(;*str != '\0'; ++str) {
         if(*str == '%') {
@@ -85,13 +88,13 @@ void val_print_raw(char *str, uint32_t data)
             }
             if (i > 0) {
                 while(i > 0) {
-                    pal_uart_tx(buffer[--i]);
+                    val_uart_tx(g_stdio_uart_base_addr, (void*)&buffer[--i], sizeof(uint8_t));
                 }
             } else {
-                pal_uart_tx(48);
+                val_uart_tx(g_stdio_uart_base_addr, (void*)&char_0, sizeof(uint8_t));
             }
         } else {
-            pal_uart_tx(*str);
+            val_uart_tx(g_stdio_uart_base_addr, (void*)str, sizeof(uint8_t));
         }
     }
 }
@@ -221,9 +224,9 @@ tbsa_status_t val_target_get_config(cfg_id_t cfg_id, uint8_t **data, uint32_t *s
 /**
     @brief    - Initialise VAL memory blocks
 **/
-void val_memory_init (void)
+tbsa_status_t val_memory_init (void)
 {
-    val_status_buffer_init(&g_test_status_buffer[0]);
+    return val_status_buffer_init(&g_test_status_buffer[0]);
 }
 
 /**
@@ -310,14 +313,25 @@ test_id_t val_nvram_get_last_id (void)
 **/
 tbsa_status_t val_infra_init(test_id_t *test_id)
 {
-    tbsa_status_t status;
-    memory_desc_t *bootrom_desc;
-    uint32_t      vtor;
+    tbsa_status_t         status;
+    memory_desc_t         *bootrom_desc;
+    soc_peripheral_desc_t *uart_desc;
+    uint32_t              vtor;
 
     val_mem_reg_write(SYST_CSR, 0x0);
     val_mem_reg_write(SYST_CSR_NS, 0x0);
 
-    status = val_uart_init();
+    /* It is assumed that UART instance 0 is used for flushing print messages */
+    status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, SOC_PERIPHERAL_UART, 0),
+                                   (uint8_t **)&uart_desc,
+                                   (uint32_t *)sizeof(soc_peripheral_desc_t));
+    if (status != TBSA_STATUS_SUCCESS) {
+        return status;
+    }
+
+    g_stdio_uart_base_addr = uart_desc->base;
+
+    status = val_uart_init(g_stdio_uart_base_addr);
     if(status != TBSA_STATUS_SUCCESS) {
         return status;
     }
@@ -340,10 +354,20 @@ tbsa_status_t val_infra_init(test_id_t *test_id)
     val_mem_reg_write(VTOR, (uint32_t)&g_tbsa_s_isr_vector);
     val_mem_reg_write(VTOR_NS, (uint32_t)&g_tbsa_ns_isr_vector);
 
-    val_memory_init();
-    val_nvram_init();
+    status = val_memory_init();
+    if (status != TBSA_STATUS_SUCCESS) {
+        return status;
+    }
 
-    pal_spi_init();
+    status = val_nvram_init();
+    if (status != TBSA_STATUS_SUCCESS) {
+        return status;
+    }
+
+    status = val_spi_init();
+    if (status != TBSA_STATUS_SUCCESS) {
+        return status;
+    }
 
     status = val_get_test_binary_info(&g_test_binary_src_addr, &g_test_binary_in_ram);
 

@@ -47,12 +47,12 @@ tbsa_status_t val_crypto_validate_public_key(crypt_t type, uint32_t *key, uint32
                                              addr_t addr, uint32_t *valid);
 tbsa_status_t val_crypto_get_key_info(key_desc_t **key_info_desc, key_type_t key_type,
                                       uint32_t instance);
-tbsa_status_t val_crypto_compute_hash(unsigned char *input, size_t ilen, unsigned char *output,
+tbsa_status_t val_crypto_compute_hash(unsigned char *input, uint32_t ilen, unsigned char *output,
                                       int algo);
 tbsa_status_t val_crypto_set_base_addr(dev_attr_t attribute);
-tbsa_status_t val_crypto_revoke_key(uint32_t index, addr_t addr, size_t size);
-tbsa_status_t val_crypto_validate_certificate    (addr_t certificate_base_addr,addr_t public_key_addr, size_t certificate_size, size_t public_key_size);
-tbsa_status_t val_crypto_get_uniqueID_from_certificate    (addr_t certificate_base_addr,addr_t public_key_addr, size_t certificate_size, size_t public_key_size);
-tbsa_status_t val_crypto_get_dpm_from_key    (addr_t public_key_addr, size_t public_key_size, uint32_t *dpm_field);
-tbsa_status_t val_crypto_get_dpm_from_certificate    (addr_t certificate_base_addr, size_t certificate_size, uint32_t *dpm_field);
+tbsa_status_t val_crypto_revoke_key(uint32_t index, addr_t addr, uint32_t size);
+tbsa_status_t val_crypto_validate_certificate    (addr_t certificate_base_addr,addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size);
+tbsa_status_t val_crypto_get_uniqueID_from_certificate    (addr_t certificate_base_addr,addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size);
+tbsa_status_t val_crypto_get_dpm_from_key    (addr_t public_key_addr, uint32_t public_key_size, uint32_t *dpm_field);
+tbsa_status_t val_crypto_get_dpm_from_certificate    (addr_t certificate_base_addr, uint32_t certificate_size, uint32_t *dpm_field);
 #endif /* _VAL_CRYPTO_H_ */

@@ -31,19 +31,25 @@ FRAMEINCDIR   :=../../../platform/include/
 DPMINCDIR     :=../../../platform/peripherals/dpm/fvp_basic/include/
 NVRAMINCDIR   :=../../../platform/peripherals/nvram/nv_sim/include/
 TIMERINCDIR   :=../../../platform/peripherals/timer/arm/include/
+ifeq ($(ENV), cmsis)
+UARTINCDIR    :=../../../platform/peripherals/uart/cmsis/include/
+else
 UARTINCDIR    :=../../../platform/peripherals/uart/arm/include/
+endif
 WDTIMERINCDIR :=../../../platform/peripherals/watchdog/arm/include/
 CMSISINCDIR   :=../../../platform/CMSIS_5/CMSIS/Core/Include/
+CMSISDRVINCDIR:=../../../platform/CMSIS_5/CMSIS/Driver/Include/
 DEVINCDIR     :=../../../platform/CMSIS_5/Device/ARM/ARMv8MML/Include/
 CFLAGS        :=-march=armv8-m.main -mcmse -mthumb -Wall -Werror -O0 -fdata-sections -ffunction-sections \
-                -I${PALTARDIR}    \
-                -I${FRAMEINCDIR}  \
-                -I${DPMINCDIR}    \
-                -I${NVRAMINCDIR}  \
-                -I${TIMERINCDIR}  \
-                -I${UARTINCDIR}   \
-                -I${WDTIMERINCDIR}\
-                -I${CMSISINCDIR}  \
+                -I${PALTARDIR}      \
+                -I${FRAMEINCDIR}    \
+                -I${DPMINCDIR}      \
+                -I${NVRAMINCDIR}    \
+                -I${TIMERINCDIR}    \
+                -I${UARTINCDIR}     \
+                -I${WDTIMERINCDIR}  \
+                -I${CMSISINCDIR}    \
+                -I${CMSISDRVINCDIR} \
                 -I${DEVINCDIR}
 
 .PHONY: all
@@ -51,12 +57,19 @@ CFLAGS        :=-march=armv8-m.main -mcmse -mthumb -Wall -Werror -O0 -fdata-sect
 all: build
 
 build: $(LIBNAME)
-
-tbsa_pal_src  +=$(wildcard ../../../platform/board/${TARGET}/src/*.c)
+ifeq ($(ENV), cmsis)
+tbsa_pal_src  :=$(wildcard ../../../platform/board/${TARGET}/src/pal_cmsis_intf.c)
+else
+tbsa_pal_src  :=$(wildcard ../../../platform/board/${TARGET}/src/pal_baremetal_intf.c)
+endif
 tbsa_pal_src  +=$(wildcard ../../../platform/peripherals/dpm/fvp_basic/src/*.c)
 tbsa_pal_src  +=$(wildcard ../../../platform/peripherals/nvram/nv_sim/src/*.c)
 tbsa_pal_src  +=$(wildcard ../../../platform/peripherals/timer/arm/src/*.c)
+ifeq ($(ENV), cmsis)
+tbsa_pal_src  +=$(wildcard ../../../platform/peripherals/uart/cmsis/src/*.c)
+else
 tbsa_pal_src  +=$(wildcard ../../../platform/peripherals/uart/arm/src/*.c)
+endif
 tbsa_pal_src  +=$(wildcard ../../../platform/peripherals/watchdog/arm/src/*.c)
 tbsa_pal_src_s:=$(wildcard ../../../platform/board/${TARGET}/src/*.s)
 

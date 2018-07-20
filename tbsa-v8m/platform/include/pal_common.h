@@ -41,6 +41,11 @@ typedef uint32_t           cfg_id_t;
 
 #define addr_t uint32_t
 #define bool_t uint8_t
-#define size_t uint32_t
+
+typedef enum
+{
+    PAL_STATUS_SUCCESS = 0x0,
+    PAL_STATUS_ERROR   = 0x80
+}pal_status_t;
 
 #endif /* PAL_COMMON_H */
