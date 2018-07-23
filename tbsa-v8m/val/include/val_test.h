@@ -52,7 +52,7 @@
 #define TEST_CHECKPOINT_18              0xC18
 #define TEST_CHECKPOINT_19              0xC19
 
-#define TBSA_TOTAL_TESTS                256
+#define TBSA_TOTAL_TESTS                200
 #define TBSA_TEST_STATUS_BUF_SIZE       (TBSA_TOTAL_TESTS * sizeof(tbsa_status_buffer_t))
 
 #define TBSA_TEST_START                 0x01

@@ -1,3 +1,20 @@
+#/** @file
+# * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+# * SPDX-License-Identifier : Apache-2.0
+# *
+# * Licensed under the Apache License, Version 2.0 (the "License");
+# * you may not use this file except in compliance with the License.
+# * You may obtain a copy of the License at
+# *
+# *  http://www.apache.org/licenses/LICENSE-2.0
+# *
+# * Unless required by applicable law or agreed to in writing, software
+# * distributed under the License is distributed on an "AS IS" BASIS,
+# * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# * See the License for the specific language governing permissions and
+# * limitations under the License.
+#**/
+
 # Toolchain
 PREFIX:=arm-none-eabi-
 CC:=$(PREFIX)gcc
@@ -17,7 +34,7 @@ SUITE :=
 ROOT_DIR:=.
 
 VALINCDIR     :=val/include/
-CFLAGS        :=-march=armv8-m.main -mcmse -mthumb -Wall -Werror -O0 -fdata-sections -ffunction-sections -I${VALINCDIR}
+CFLAGS        :=-march=armv8-m.main -mcmse -mthumb -Wall -Werror -O0 -fdata-sections -ffunction-sections -I$(VALINCDIR)
 ASFLAGS       :=-march=armv8-m.main -mthumb
 LDFLAGS       :=\
                -Xlinker --fatal-warnings \
@@ -37,9 +54,9 @@ check_target:
 gen_database:
 	@echo ""
 	@echo "Reading target configuration file ..."
-	mkdir -p platform/board/${TARGET}/include
-	./tools/tgt_cfg_parser/targetConfigGen.pl ./platform/board/${TARGET}/tbsa_tgt.cfg platform/board/${TARGET}/include/pal_database
-	gcc targetConfigGen.c -o targetConfigGen -I./${VALINCDIR}
+	mkdir -p platform/board/$(TARGET)/include
+	./tools/tgt_cfg_parser/targetConfigGen.pl ./platform/board/$(TARGET)/tbsa_tgt.cfg platform/board/$(TARGET)/include/pal_database
+	gcc targetConfigGen.c -o targetConfigGen -I$(VALINCDIR)
 	./targetConfigGen
 	rm -f ./targetConfigGen
 	rm -f ./targetConfigGen.c
@@ -47,7 +64,7 @@ gen_database:
 gen_linker:
 	@echo ""
 	@echo "Generating target specific linker scripts ..."
-	cd tools/gen_linker_scripts/ && python gen_linker_scripts.py ${TARGET}
+	cd tools/gen_linker_scripts/ && python gen_linker_scripts.py $(TARGET)
 	@echo ""
 
 setup_cmsis:
@@ -69,7 +86,7 @@ output:
 	mkdir -p $(OUT_DIR)
 
 pal_lib:
-	cd platform/board/${TARGET} && make ODIR=$(OUT_DIR) LIBNAME=$(PLIB)
+	cd platform/board/$(TARGET) && make ODIR=$(OUT_DIR) LIBNAME=$(PLIB) ENV=$(ENV)
 
 $(VLIB): $(tbsa_val_obj)
 	$(AR) -rc $(OUT_DIR)/$@ $^
@@ -90,6 +107,6 @@ tbsa.bin:tbsa.elf
 	cd test_pool && make
 
 tbsa.elf:tbsa_app/tbsa_main.c
-	$(CC) $(CFLAGS) -Tplatform/board/${TARGET}/linker/tbsa.linker $(LDFLAGS) -o $@ tbsa_app/tbsa_main.c $(SYSLIBS)
+	$(CC) $(CFLAGS) -Tplatform/board/$(TARGET)/linker/tbsa.linker $(LDFLAGS) -o $@ tbsa_app/tbsa_main.c $(SYSLIBS)
 	$(OBJDUMP) -d $@ > tbsa.asm
 	hexdump -v -e ' 1/4 "%08X" "\n"' tbsa.elf > tbsa.hex

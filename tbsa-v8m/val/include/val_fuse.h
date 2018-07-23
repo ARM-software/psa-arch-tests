@@ -27,7 +27,7 @@ typedef enum {
   FUSE_WRITE,
 } fuse_ops_t;
 
-tbsa_status_t val_fuse_ops(fuse_ops_t fuse_ops, addr_t addr, uint32_t *data, size_t size);
+tbsa_status_t val_fuse_ops(fuse_ops_t fuse_ops, addr_t addr, uint32_t *data, uint32_t size);
 tbsa_status_t val_get_fuse_info(fuse_desc_t **fuse_info_desc, fuse_type_t fuse_type, uint32_t instance);
 tbsa_status_t val_fuse_get_lcs(uint32_t *pLcs);
 

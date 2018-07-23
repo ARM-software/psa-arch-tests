@@ -15,12 +15,12 @@
  * limitations under the License.
 **/
 
-#include "uart_cmsdk.h"
+#include "uart_cmsis.h"
 
 /**
     @brief    - This function initializes the UART
 **/
-int32_t uart_init(uart_t *uart)
+static int32_t uart_init(uart_t* uart)
 {
     /* Disable RX and TX interrupts, disable overrun interrupts, enable TX,
     * disable RX */
@@ -44,7 +44,7 @@ static int uart_is_tx_empty(uart_t *uart)
 /**
     @brief    - This function checks for empty TX FIFO and writes to FIFO register
 **/
-int32_t uart_putc(uart_t *uart, const void *data, uint32_t num)
+static int32_t uart_putc(uart_t *uart, const void *data, uint32_t num)
 {
     const uint8_t *pdata = (const uint8_t *)data;
 
@@ -55,4 +55,55 @@ int32_t uart_putc(uart_t *uart, const void *data, uint32_t num)
     uart->DATA = *pdata;
 
     return 0;
+}
+
+static int32_t uart0_init(ARM_USART_SignalEvent_t cb_event)
+{
+    (void)cb_event;
+    return uart_init((uart_t*)UART0);
+}
+
+static int32_t uart0_putc(const void *data, uint32_t num)
+{
+    return uart_putc((uart_t*)UART0, data, num);
+}
+
+ARM_DRIVER_USART Driver_USART0 = {
+    .GetVersion      = NULL,
+    .GetCapabilities = NULL,
+    .Initialize      = uart0_init,
+    .Uninitialize    = NULL,
+    .PowerControl    = NULL,
+    .Send            = uart0_putc
+};
+
+static int32_t uart1_init(ARM_USART_SignalEvent_t cb_event)
+{
+    (void)cb_event;
+    return uart_init((uart_t*)UART1);
+}
+
+static int32_t uart1_putc(const void *data, uint32_t num)
+{
+    return uart_putc((uart_t*)UART1, data, num);
+}
+
+ARM_DRIVER_USART Driver_USART1 = {
+    .GetVersion      = NULL,
+    .GetCapabilities = NULL,
+    .Initialize      = uart1_init,
+    .Uninitialize    = NULL,
+    .PowerControl    = NULL,
+    .Send            = uart1_putc
+};
+
+ARM_DRIVER_USART *uart_get_cmsis_driver (uint32_t uart)
+{
+    if (uart == UART0) {
+        return &Driver_USART0;
+    } if (uart == UART1) {
+        return &Driver_USART1;
+    } else {
+        return NULL;
+    }
 }

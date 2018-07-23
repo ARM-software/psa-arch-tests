@@ -26,28 +26,30 @@
 tbsa_status_t val_i2c_read         (addr_t addr, uint8_t *data, uint32_t len);
 tbsa_status_t val_i2c_write        (addr_t addr, uint8_t *data, uint32_t len);
 
-tbsa_status_t val_spi_read         (addr_t addr, uint8_t *data, uint32_t len);
-tbsa_status_t val_spi_write        (addr_t addr, uint8_t *data, uint32_t len);
+tbsa_status_t val_spi_init  (void);
+tbsa_status_t val_spi_read  (addr_t addr, uint8_t *data, uint32_t len);
+tbsa_status_t val_spi_write (addr_t addr, uint8_t *data, uint32_t len);
 
-tbsa_status_t val_timer_init           (addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us);
-tbsa_status_t val_timer_enable         (addr_t base_addr);
-tbsa_status_t val_timer_disable        (addr_t base_addr);
-tbsa_status_t val_timer_interrupt_clear(addr_t base_addr);
+tbsa_status_t val_timer_init           (addr_t addr, uint32_t time_us, uint32_t timer_tick_us);
+tbsa_status_t val_timer_enable         (addr_t addr);
+tbsa_status_t val_timer_disable        (addr_t addr);
+tbsa_status_t val_timer_interrupt_clear(addr_t addr);
 
-tbsa_status_t val_wd_timer_init       (addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us);
-tbsa_status_t val_wd_timer_enable     (addr_t base_addr);
-tbsa_status_t val_wd_timer_disable    (addr_t base_addr);
-tbsa_status_t val_is_wd_timer_enabled (addr_t base_addr);
+tbsa_status_t val_wd_timer_init       (addr_t addr, uint32_t time_us, uint32_t timer_tick_us);
+tbsa_status_t val_wd_timer_enable     (addr_t addr);
+tbsa_status_t val_wd_timer_disable    (addr_t addr);
+tbsa_status_t val_is_wd_timer_enabled (addr_t addr);
 
-tbsa_status_t val_mpc_configure_security_attribute (uint32_t instance, addr_t start_addr,addr_t end_addr, mem_tgt_attr_t sec_attr);
+tbsa_status_t val_mpc_configure_security_attribute (addr_t mpc, addr_t start_addr,addr_t end_addr, mem_tgt_attr_t sec_attr);
 
-tbsa_status_t val_uart_init(void);
+tbsa_status_t val_uart_init(addr_t addr);
+tbsa_status_t val_uart_tx  (addr_t addr, const void *data, uint32_t num);
 
 tbsa_status_t  val_nvram_read   (addr_t base, uint32_t offset, void *buffer, int size);
 tbsa_status_t  val_nvram_write  (addr_t base, uint32_t offset, void *buffer, int size);
 
 tbsa_status_t val_rtc_init                (void);
-bool_t        val_is_rtc_trustable        (addr_t base_addr);
-bool_t        val_is_rtc_synced_to_server (addr_t base_addr);
+bool_t        val_is_rtc_trustable        (addr_t addr);
+bool_t        val_is_rtc_synced_to_server (addr_t addr);
 
 #endif /* _VAL_PERIPHERALS_H_ */

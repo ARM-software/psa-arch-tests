@@ -25,7 +25,7 @@
               - size     : Number of words to be read
     @return   - error status
 **/
-tbsa_status_t val_fuse_read(addr_t addr, uint32_t *data, size_t size)
+tbsa_status_t val_fuse_read(addr_t addr, uint32_t *data, uint32_t size)
 {
    return pal_fuse_read(addr, data, size);
 }
@@ -36,7 +36,7 @@ tbsa_status_t val_fuse_read(addr_t addr, uint32_t *data, size_t size)
               - data     : Data to be written
     @return   - error status
 **/
-tbsa_status_t val_fuse_write(addr_t addr, uint32_t *data, size_t size)
+tbsa_status_t val_fuse_write(addr_t addr, uint32_t *data, uint32_t size)
 {
    return pal_fuse_write(addr, data, size);
 }
@@ -50,7 +50,7 @@ tbsa_status_t val_fuse_write(addr_t addr, uint32_t *data, size_t size)
                 size     : size of the fuse
     @return   - error status
 **/
-tbsa_status_t val_fuse_ops(fuse_ops_t fuse_ops, addr_t addr, uint32_t *data, size_t size)
+tbsa_status_t val_fuse_ops(fuse_ops_t fuse_ops, addr_t addr, uint32_t *data, uint32_t size)
 {
     switch (fuse_ops) {
         case FUSE_READ:

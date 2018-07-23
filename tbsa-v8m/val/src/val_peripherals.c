@@ -20,6 +20,28 @@
 
 extern uint32_t g_test_binary_in_ram;
 
+/*
+    @brief    - Initialize UART
+    @param    - addr : Address of peripheral
+    @return   - tbsa_status_t
+*/
+tbsa_status_t val_uart_init(addr_t addr)
+{
+    return pal_uart_init(addr);
+}
+
+/*
+    @brief     - Send data to UART TX FIFO
+    @param     - addr : Address of the peripheral
+                 data : Data to be written to TX FIFO
+                 num  : Number of bytes
+    @return    - tbsa_status_t
+*/
+tbsa_status_t val_uart_tx(addr_t addr, const void *data, uint32_t num)
+{
+    return pal_uart_tx(addr, data, num);
+}
+
 /**
     @brief    - This API will read from slave address via I2C
     @param    - addr : Slave address
@@ -42,6 +64,33 @@ tbsa_status_t val_i2c_read(addr_t addr, uint8_t *data, uint32_t len)
 tbsa_status_t val_i2c_write(addr_t addr, uint8_t *data, uint32_t len)
 {
   return pal_i2c_write(addr, data, len);
+}
+
+/**
+    @brief    - Initialize SPI
+    @param    - void
+    @return   - tbsa_status_t
+**/
+tbsa_status_t val_spi_init (void)
+{
+    tbsa_status_t         status;
+    soc_peripheral_desc_t *spi_desc;
+    uint32_t              instance = 0;
+
+    do {
+        status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, SOC_PERIPHERAL_RTC, instance),
+                                       (uint8_t **)&spi_desc,
+                                       (uint32_t *)sizeof(soc_peripheral_desc_t));
+        if (status != TBSA_STATUS_SUCCESS) {
+             return status;
+        }
+
+        pal_spi_init(spi_desc->base);
+
+        instance++;
+    } while(instance);
+
+    return TBSA_STATUS_SUCCESS;
 }
 
 /**
@@ -75,82 +124,82 @@ tbsa_status_t val_spi_write(addr_t addr, uint8_t *data, uint32_t len)
 
 /**
     @brief    - Initializes the Timer instance
-    @param    - base address of the given timer instance
-    @return   - error status
+    @param    - Base address of the given timer instance
+    @return   - Error status
 **/
-tbsa_status_t val_timer_init (addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
+tbsa_status_t val_timer_init (addr_t addr, uint32_t time_us, uint32_t timer_tick_us)
 {
-    return pal_timer_init (base_addr, time_us, timer_tick_us);
+    return pal_timer_init (addr, time_us, timer_tick_us);
 }
 
 /**
     @brief    - Enable Timer instance
-    @param    - base address of the given timer instance
-    @return   - error status
+    @param    - Base address of the given timer instance
+    @return   - Error status
 **/
-tbsa_status_t val_timer_enable (addr_t base_addr)
+tbsa_status_t val_timer_enable (addr_t addr)
 {
-    return pal_timer_enable(base_addr);
+    return pal_timer_enable(addr);
 }
 
 /**
     @brief    - Disable Timer instance
-    @param    - base address of the given timer instance
-    @return   - error status
+    @param    - Base address of the given timer instance
+    @return   - Error status
 **/
-tbsa_status_t val_timer_disable (addr_t base_addr)
+tbsa_status_t val_timer_disable (addr_t addr)
 {
-    return pal_timer_disable(base_addr);
+    return pal_timer_disable(addr);
 }
 
 /**
     @brief    - Clear the Timer interrupt
-    @param    - base address of the given timer instance
-    @return   - error status
+    @param    - Base address of the given timer instance
+    @return   - Error status
 **/
-tbsa_status_t val_timer_interrupt_clear (addr_t base_addr)
+tbsa_status_t val_timer_interrupt_clear (addr_t addr)
 {
-    return pal_timer_interrupt_clear(base_addr);
+    return pal_timer_interrupt_clear(addr);
 }
 
 /**
     @brief    - Initializes the WatchDog Timer instance
-    @param    - base address of the given timer instance
-    @return   - error status
+    @param    - Base address of the given timer instance
+    @return   - Error status
 **/
-tbsa_status_t val_wd_timer_init (addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
+tbsa_status_t val_wd_timer_init (addr_t addr, uint32_t time_us, uint32_t timer_tick_us)
 {
-    return pal_wd_timer_init (base_addr, time_us, timer_tick_us);
+    return pal_wd_timer_init (addr, time_us, timer_tick_us);
 }
 
 /**
     @brief    - Enable WatchDog Timer instance
-    @param    - base address of the given timer instance
-    @return   - error status
+    @param    - Base address of the given timer instance
+    @return   - Error status
 **/
-tbsa_status_t val_wd_timer_enable (addr_t base_addr)
+tbsa_status_t val_wd_timer_enable (addr_t addr)
 {
-    return pal_wd_timer_enable(base_addr);
+    return pal_wd_timer_enable(addr);
 }
 
 /**
     @brief    - Disable Watch Dog Timer instance
-    @param    - base address of the given timer instance
-    @return   - error status
+    @param    - Base address of the given timer instance
+    @return   - Error status
 **/
-tbsa_status_t val_wd_timer_disable (addr_t base_addr)
+tbsa_status_t val_wd_timer_disable (addr_t addr)
 {
-    return pal_wd_timer_disable(base_addr);
+    return pal_wd_timer_disable(addr);
 }
 
 /**
     @brief    - Checks if watchdog enabled
-    @param    - base address of the given timer instance
-    @return   - error status
+    @param    - Base address of the given timer instance
+    @return   - Error status
 **/
-tbsa_status_t val_is_wd_timer_enabled (addr_t base_addr)
+tbsa_status_t val_is_wd_timer_enabled (addr_t addr)
 {
-    if (pal_is_wd_timer_enabled(base_addr)) {
+    if (pal_is_wd_timer_enabled(addr)) {
         return TBSA_STATUS_SUCCESS;
     } else {
         return TBSA_STATUS_ERROR;
@@ -159,43 +208,15 @@ tbsa_status_t val_is_wd_timer_enabled (addr_t base_addr)
 
 /**
     @brief    - Allow a memory region to be configured as Non-Secure/Secure via MPC
-    @instance - MPC instance number
-    @addr     - Memory address to be configured by MPC
-    @sec_attr - Map the address to either Secure or Non-Secure security attribute
+    @param    - mpc - MPC address
+                start_addr : Start of memory address to be configured by MPC
+                end_addr   : End of memory address to be configured by MPC
+                sec_attr   : Map the address to either Secure or Non-Secure security attribute
     @return   - error status
 **/
-tbsa_status_t val_mpc_configure_security_attribute (uint32_t instance, addr_t start_addr, addr_t end_addr, mem_tgt_attr_t sec_attr)
+tbsa_status_t val_mpc_configure_security_attribute (addr_t mpc, addr_t start_addr, addr_t end_addr, mem_tgt_attr_t sec_attr)
 {
-
-   if (sec_attr == MEM_NONSECURE) {
-      return pal_mpc_configure_mem_to_nonsecure(start_addr,end_addr);
-   } else {
-      return pal_mpc_configure_mem_to_secure(start_addr,end_addr);
-   }
-}
-
-/*
-    @brief    - Initialize UART
-    @param    - None
-    @return   - tbsa_status_t
-*/
-tbsa_status_t val_uart_init(void)
-{
-    tbsa_status_t         status;
-    soc_peripheral_desc_t *uart_desc;
-    uint32_t              instance = 0UL;
-
-    /* It is assumed that UART instance 0 is used for flushing print messages */
-    status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, SOC_PERIPHERAL_UART, instance),
-                                   (uint8_t **)&uart_desc,
-                                   (uint32_t *)sizeof(soc_peripheral_desc_t));
-    if (status != TBSA_STATUS_SUCCESS) {
-        return TBSA_STATUS_UART_INIT_ERROR;
-    }
-
-    pal_uart_init(uart_desc->base);
-
-    return TBSA_STATUS_SUCCESS;
+    return pal_mpc_configure_mem_region(mpc, start_addr,end_addr, (uint32_t)sec_attr);
 }
 
 /*
@@ -261,22 +282,22 @@ tbsa_status_t val_rtc_init (void)
 
 /**
     @brief    - RTC validity mechanism to indicate RTC is Trusted/Non-trusted
-    @param    - base address of the given RTC instance
+    @param    - Base address of the given RTC instance
     @return   - 1 - Valid
                 0 - Non-valid
 **/
-bool_t val_is_rtc_trustable (addr_t base_addr)
+bool_t val_is_rtc_trustable (addr_t addr)
 {
-    return pal_is_rtc_trustable(base_addr);
+    return pal_is_rtc_trustable(addr);
 }
 
 /**
     @brief    - Returns whether RTC is synced to server or not.
-    @param    - base address of the given RTC instance
+    @param    - Base address of the given RTC instance
     @return   - 1 - Synced
                 0 - Not-synced
 **/
-bool_t val_is_rtc_synced_to_server (addr_t base_addr)
+bool_t val_is_rtc_synced_to_server (addr_t addr)
 {
-    return pal_is_rtc_synced_to_server(base_addr);
+    return pal_is_rtc_synced_to_server(addr);
 }

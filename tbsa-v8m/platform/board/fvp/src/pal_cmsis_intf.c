@@ -15,12 +15,21 @@
  * limitations under the License.
 **/
 
-#include "uart_cmsdk.h"
+#include "uart_cmsis.h"
 #include "timer_cmsdk.h"
 #include "wd_cmsdk.h"
 #include "pal_dpm_fvp.h"
 #include "nvram.h"
 #include "pal_database.h"
+
+#include "Driver_Common.h"
+#include "Driver_USART.h"
+#include "Driver_SPI.h"
+#include "Driver_I2C.h"
+
+ARM_DRIVER_USART *cmsis_usart = NULL;
+ARM_DRIVER_SPI   *cmsis_spi   = NULL;
+ARM_DRIVER_I2C   *cmsis_i2c   = NULL;
 
 void *pal_get_target_cfg_start(void)
 {
@@ -79,50 +88,92 @@ uint32_t pal_NVIC_GetActive(uint32_t intr_num)
 
 int32_t pal_uart_init(addr_t addr)
 {
-    if (uart_init((void*)addr) != PAL_STATUS_SUCCESS) {
+    cmsis_usart = uart_get_cmsis_driver(addr);
+    if (cmsis_usart == NULL) {
         return PAL_STATUS_ERROR;
-    } else {
+    }
+
+    if (cmsis_usart->Initialize(NULL) == ARM_DRIVER_OK) {
         return PAL_STATUS_SUCCESS;
+    } else {
+        return PAL_STATUS_ERROR;
     }
 }
 
 int32_t pal_uart_tx(addr_t addr, const void *data, uint32_t num)
 {
-    if (uart_putc((void*)addr, data, num) != PAL_STATUS_SUCCESS) {
-        return PAL_STATUS_ERROR;
-    } else {
+    (void)addr;
+    if (cmsis_usart->Send(data, num) == ARM_DRIVER_OK) {
         return PAL_STATUS_SUCCESS;
+    } else {
+        return PAL_STATUS_ERROR;
     }
 }
 
 int32_t pal_i2c_init(addr_t addr)
 {
-    return PAL_STATUS_ERROR;
+    //cmsis_i2c = i2c_get_cmsis_driver(addr);
+    if (cmsis_i2c == NULL) {
+        return PAL_STATUS_ERROR;
+    }
+
+    if (cmsis_i2c->Initialize(NULL) == ARM_DRIVER_OK) {
+        return PAL_STATUS_SUCCESS;
+    } else {
+        return PAL_STATUS_ERROR;
+    }
 }
 
-int32_t pal_i2c_read(uint32_t slv_addr, uint8_t *rd_data, uint32_t len)
+int32_t pal_i2c_read(addr_t slv_addr, uint8_t *rd_data, uint32_t num)
 {
-    return PAL_STATUS_ERROR;
+    if (cmsis_i2c->MasterReceive(slv_addr, rd_data, num, 0) == ARM_DRIVER_OK) {
+        return PAL_STATUS_SUCCESS;
+    } else {
+        return PAL_STATUS_ERROR;
+    }
 }
 
-int32_t pal_i2c_write(uint32_t slv_addr, uint8_t *wr_data, uint32_t len)
+int32_t pal_i2c_write(addr_t slv_addr, uint8_t *wr_data, uint32_t num)
 {
-    return PAL_STATUS_ERROR;
+    if (cmsis_i2c->MasterTransmit(slv_addr, wr_data, num, 0) == ARM_DRIVER_OK) {
+        return PAL_STATUS_SUCCESS;
+    } else {
+        return PAL_STATUS_ERROR;
+    }
 }
 
 int32_t pal_spi_init(addr_t addr)
 {
-   return PAL_STATUS_ERROR;
+    //cmsis_spi = spi_get_cmsis_driver(addr);
+    if (cmsis_spi == NULL) {
+        return PAL_STATUS_ERROR;
+    }
+
+    if (cmsis_spi->Initialize(NULL) == ARM_DRIVER_OK) {
+        return PAL_STATUS_SUCCESS;
+    } else {
+        return PAL_STATUS_ERROR;
+    }
 }
 
 int32_t pal_spi_read(addr_t addr, void *data, uint32_t num)
 {
-    return PAL_STATUS_ERROR;
+    (void)addr;
+    if (cmsis_spi->Receive(data, num) == ARM_DRIVER_OK) {
+        return PAL_STATUS_SUCCESS;
+    } else {
+        return PAL_STATUS_ERROR;
+    }
 }
 
 int32_t pal_spi_write(addr_t addr, const void *data, uint32_t num)
 {
-    return PAL_STATUS_ERROR;
+    (void)addr;
+    if (cmsis_spi->Send(data, num) == ARM_DRIVER_OK) {
+        return PAL_STATUS_SUCCESS;
+    } else {
+        return PAL_STATUS_ERROR;
+    }
 }
 
 int pal_timer_init (addr_t addr, uint32_t time_us, uint32_t timer_tick_us)

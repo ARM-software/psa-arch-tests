@@ -195,11 +195,11 @@ typedef enum {
 }dev_attr_t;
 
 typedef enum {
-    MEM_SECURE             = 0x1,
-    MEM_NONSECURE          = 0x2,
-    MEM_NSC                = 0x3,
-    MEM_CONFIGURABLE       = 0x4,
-    MEM_UNUSED             = 0x5
+    MEM_SECURE             = 0x0,
+    MEM_NONSECURE          = 0x1,
+    MEM_NSC                = 0x2,
+    MEM_CONFIGURABLE       = 0x3,
+    MEM_UNUSED             = 0x4
 }mem_tgt_attr_t;
 
 typedef enum {

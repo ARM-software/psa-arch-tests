@@ -19,7 +19,7 @@
 #include "val_peripherals.h"
 #include "pal_interfaces.h"
 
-tbsa_status_t val_crypto_compute_hash(unsigned char *input, size_t ilen, unsigned char *output, int algo)
+tbsa_status_t val_crypto_compute_hash(unsigned char *input, uint32_t ilen, unsigned char *output, int algo)
 {
     return pal_crypto_compute_hash(input, ilen, output, algo);
 }
@@ -178,7 +178,7 @@ tbsa_status_t val_crypto_set_base_addr(dev_attr_t attribute)
                 size     : size of the key
     @return   - error status
 **/
-tbsa_status_t val_crypto_revoke_key(uint32_t index, addr_t addr, size_t size)
+tbsa_status_t val_crypto_revoke_key(uint32_t index, addr_t addr, uint32_t size)
 {
     /* TBD */
     return TBSA_STATUS_ERROR;
@@ -202,7 +202,7 @@ void val_crypto_init(uint32_t crypto_base_addr)
                 public_key_size       : Public key memory size
     @return   - error status
 **/
-tbsa_status_t val_crypto_validate_certificate(addr_t certificate_base_addr,addr_t public_key_addr, size_t certificate_size, size_t public_key_size)
+tbsa_status_t val_crypto_validate_certificate(addr_t certificate_base_addr,addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size)
 {
     return pal_crypto_validate_certificate(certificate_base_addr,public_key_addr,certificate_size,public_key_size);
 }
@@ -215,7 +215,7 @@ tbsa_status_t val_crypto_validate_certificate(addr_t certificate_base_addr,addr_
                 public_key_size       : Public key memory size
     @return   - unique ID of the certificate
 **/
-tbsa_status_t val_crypto_get_uniqueID_from_certificate(addr_t certificate_base_addr,addr_t public_key_addr, size_t certificate_size, size_t public_key_size)
+tbsa_status_t val_crypto_get_uniqueID_from_certificate(addr_t certificate_base_addr,addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size)
 {
     return pal_crypto_get_uniqueID_from_certificate(certificate_base_addr,public_key_addr,certificate_size,public_key_size);
 }
@@ -227,7 +227,7 @@ tbsa_status_t val_crypto_get_uniqueID_from_certificate(addr_t certificate_base_a
                 dpm_field             : Pointer where DPM will be stored
     @return   - Error status
 **/
-tbsa_status_t val_crypto_get_dpm_from_key(addr_t public_key_addr, size_t public_key_size, uint32_t *dpm_field)
+tbsa_status_t val_crypto_get_dpm_from_key(addr_t public_key_addr, uint32_t public_key_size, uint32_t *dpm_field)
 {
     uint32_t status = TBSA_STATUS_SUCCESS;
 
@@ -243,7 +243,7 @@ tbsa_status_t val_crypto_get_dpm_from_key(addr_t public_key_addr, size_t public_
                 dpm_field             : Pointer where DPM will be stored
     @return   - Error status
 **/
-tbsa_status_t val_crypto_get_dpm_from_certificate(addr_t certificate_base_addr, size_t certificate_size, uint32_t *dpm_field)
+tbsa_status_t val_crypto_get_dpm_from_certificate(addr_t certificate_base_addr, uint32_t certificate_size, uint32_t *dpm_field)
 {
     uint32_t status = TBSA_STATUS_SUCCESS;
 
