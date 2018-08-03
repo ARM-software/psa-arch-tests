@@ -64,7 +64,8 @@ typedef enum _SOC_PERIPHERAL_CONFIG_ID_ {
   SOC_PERIPHERAL_TIMER     = 0x2,
   SOC_PERIPHERAL_WATCHDOG  = 0x3,
   SOC_PERIPHERAL_RTC       = 0x4,
-  SOC_PERIPHERAL_INTRCNT   = 0x5
+  SOC_PERIPHERAL_INTRCNT   = 0x5,
+  SOC_PERIPHERAL_SPI       = 0x6
 } soc_peripheral_cfg_id_t;
 
 typedef enum _MEMORY_CONFIG_ID_ {

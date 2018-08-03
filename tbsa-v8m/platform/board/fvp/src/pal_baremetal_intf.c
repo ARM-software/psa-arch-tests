@@ -232,7 +232,7 @@ void pal_system_cold_reset(void)
 
 int pal_is_cold_reset(void)
 {
-    return PAL_STATUS_ERROR;
+    return 0;
 }
 
 int pal_is_warm_reset(void)

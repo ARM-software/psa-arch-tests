@@ -364,15 +364,16 @@ tbsa_status_t val_infra_init(test_id_t *test_id)
         return status;
     }
 
-    status = val_spi_init();
+    status = val_get_test_binary_info(&g_test_binary_src_addr, &g_test_binary_in_ram);
     if (status != TBSA_STATUS_SUCCESS) {
         return status;
     }
 
-    status = val_get_test_binary_info(&g_test_binary_src_addr, &g_test_binary_in_ram);
-
-    if (status != TBSA_STATUS_SUCCESS) {
-        return status;
+    if (!g_test_binary_in_ram) {
+        status = val_spi_init();
+        if (status != TBSA_STATUS_SUCCESS) {
+            return status;
+        }
     }
 
     *test_id = val_nvram_get_last_id();
