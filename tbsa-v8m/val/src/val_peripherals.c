@@ -78,7 +78,7 @@ tbsa_status_t val_spi_init (void)
     uint32_t              instance = 0;
 
     do {
-        status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, SOC_PERIPHERAL_RTC, instance),
+        status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, SOC_PERIPHERAL_SPI, instance),
                                        (uint8_t **)&spi_desc,
                                        (uint32_t *)sizeof(soc_peripheral_desc_t));
         if (status != TBSA_STATUS_SUCCESS) {
