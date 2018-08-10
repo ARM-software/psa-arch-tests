@@ -65,7 +65,7 @@ void test_payload(tbsa_val_api_t *val)
             }
             /* Writing a known pattern to trusted shared volatile storage */
             *(uint32_t*)(memory_desc->start)                                 = PATTERN1;
-            *(uint32_t*)(memory_desc->end - (memory_desc->end % 0x4) - 0x4 ) = PATTERN2;
+            *(uint32_t*)(memory_desc->end - ((uint32_t)(memory_desc->end) % 0x4) - 0x4 ) = PATTERN2;
 
             /* Configure given secure block to non-secure */
             status = val->mpc_configure_security_attribute(0, memory_desc->start, memory_desc->end, MEM_NONSECURE);

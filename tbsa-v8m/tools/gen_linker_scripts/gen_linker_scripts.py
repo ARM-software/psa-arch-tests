@@ -23,7 +23,7 @@ from linker_address_length import *
 
 num_args = len(sys.argv)
 if (num_args != 2):
-	print str("\nTarget string is required as second argument!")
+	print("\nTarget string is required as second argument!")
 	sys.exit(1)
 
 tbsa_linker_path  = "../../platform/board/" + sys.argv[1] + "/linker"

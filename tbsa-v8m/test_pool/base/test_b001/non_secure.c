@@ -80,7 +80,7 @@ void test_payload(tbsa_val_api_t *val)
 
             /* Check the status updated by handler in case a securefault occurs */
             if (IS_TEST_FAIL(val->get_status())) {
-                val->print(PRINT_ERROR, "\n        Securefault occured on reads at address 0x%x", memory_desc->start);
+                val->print(PRINT_ERROR, "\n        Securefault occured on reads at address 0x%x", (uint32_t)(memory_desc->start));
                 return;
             }
             if (memory_desc->mem_type == TYPE_NORMAL_READ_WRITE) {
@@ -88,7 +88,7 @@ void test_payload(tbsa_val_api_t *val)
 
                 /* Check the status updated by handler in case a securefault occurs */
                 if (IS_TEST_FAIL(val->get_status())) {
-                    val->print(PRINT_ERROR, "\n        Securefault occured on writes at address 0x%x", memory_desc->start);
+                    val->print(PRINT_ERROR, "\n        Securefault occured on writes at address 0x%x", (uint32_t)(memory_desc->start));
                     return;
                 }
             }
@@ -131,7 +131,7 @@ void test_payload(tbsa_val_api_t *val)
 
             /* Check the status updated by handler in case a securefault occurs */
             if (IS_TEST_FAIL(val->get_status())) {
-                val->print(PRINT_ERROR, "\n        Securefault occured at peripheral address 0x%x", soc_peripheral_desc->base);
+                val->print(PRINT_ERROR, "\n        Securefault occured at peripheral address 0x%x", (uint32_t)(soc_peripheral_desc->base));
                 return;
             }
             instance++;

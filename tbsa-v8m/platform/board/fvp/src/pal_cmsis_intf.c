@@ -88,7 +88,7 @@ uint32_t pal_NVIC_GetActive(uint32_t intr_num)
 
 int32_t pal_uart_init(addr_t addr)
 {
-    cmsis_usart = uart_get_cmsis_driver(addr);
+    cmsis_usart = uart_get_cmsis_driver((uint32_t)addr);
     if (cmsis_usart == NULL) {
         return PAL_STATUS_ERROR;
     }
@@ -126,7 +126,7 @@ int32_t pal_i2c_init(addr_t addr)
 
 int32_t pal_i2c_read(addr_t slv_addr, uint8_t *rd_data, uint32_t num)
 {
-    if (cmsis_i2c->MasterReceive(slv_addr, rd_data, num, 0) == ARM_DRIVER_OK) {
+    if (cmsis_i2c->MasterReceive((uint32_t)slv_addr, rd_data, num, 0) == ARM_DRIVER_OK) {
         return PAL_STATUS_SUCCESS;
     } else {
         return PAL_STATUS_ERROR;
@@ -135,7 +135,7 @@ int32_t pal_i2c_read(addr_t slv_addr, uint8_t *rd_data, uint32_t num)
 
 int32_t pal_i2c_write(addr_t slv_addr, uint8_t *wr_data, uint32_t num)
 {
-    if (cmsis_i2c->MasterTransmit(slv_addr, wr_data, num, 0) == ARM_DRIVER_OK) {
+    if (cmsis_i2c->MasterTransmit((uint32_t)slv_addr, wr_data, num, 0) == ARM_DRIVER_OK) {
         return PAL_STATUS_SUCCESS;
     } else {
         return PAL_STATUS_ERROR;
@@ -231,7 +231,7 @@ int pal_dpm_set_access_ns_only(uint32_t index, bool_t access_ns)
     return pal_dpm_fvp_set_access_ns_only(index, access_ns);
 }
 
-int pal_mpc_configure_mem_region(addr_t mpc, addr_t start_addr,addr_t end_addr, uint32_t attr)
+int pal_mpc_configure_mem_region(addr_t mpc, addr_t start_addr, addr_t end_addr, uint32_t attr)
 {
     return PAL_STATUS_ERROR;
 }
@@ -313,22 +313,22 @@ int pal_is_rtc_synced_to_server(addr_t addr)
     return PAL_STATUS_ERROR;
 }
 
-int pal_crypto_validate_certificate(uint32_t certificate_base_addr, uint32_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size)
+int pal_crypto_validate_certificate(addr_t certificate_base_addr, addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size)
 {
     return PAL_STATUS_ERROR;
 }
 
-int pal_crypto_get_uniqueID_from_certificate(uint32_t certificate_base_addr, uint32_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size)
+int pal_crypto_get_uniqueID_from_certificate(addr_t certificate_base_addr, addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size)
 {
     return PAL_STATUS_ERROR;
 }
 
-int pal_crypto_get_dpm_from_key(uint32_t public_key_addr, uint32_t public_key_size, uint32_t *dpm_field)
+int pal_crypto_get_dpm_from_key(addr_t public_key_addr, uint32_t public_key_size, uint32_t *dpm_field)
 {
     return PAL_STATUS_ERROR;
 }
 
-int pal_crypto_get_dpm_from_certificate(uint32_t certificate_base_addr, uint32_t certificate_size, uint32_t *dpm_field)
+int pal_crypto_get_dpm_from_certificate(addr_t certificate_base_addr, uint32_t certificate_size, uint32_t *dpm_field)
 {
     return PAL_STATUS_ERROR;
 }

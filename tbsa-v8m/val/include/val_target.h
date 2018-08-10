@@ -18,7 +18,9 @@
 #ifndef _VAL_TARGET_H_
 #define _VAL_TARGET_H_
 
+#ifndef _STDIO_H_
 #include "val_common.h"
+#endif
 
 #define TARGET_CONFIG_CREATE_ID(major, minor, index) \
                     (((major & 0xFF) << 24) | ((minor & 0xFF) << 16) | (index & 0xFFFF))
@@ -225,7 +227,7 @@ typedef enum {
 } interrupt_target_t;
 
 typedef struct _CFG_HDR_TYPE_ {
-    cfg_id_t cfg_id;
+    uint32_t cfg_id;
     uint32_t size;  //size inclusive of this header
 } cfg_type_t;
 
@@ -433,18 +435,18 @@ typedef struct _DPM_INFO_DESC_ {
     uint32_t        index;  // Unique index to identify each DPM
     unlock_token_t  unlock_token;
     uint32_t        is_controlling_secure;
-    uint32_t        data_addr;
-    uint32_t        flag_addr;
+    addr_t          data_addr;
+    addr_t          flag_addr;
     union {
-        uint8_t    passwd[DPM_PW_SIZE_BYTES];
-        uint32_t   certificate_addr;
+        uint8_t     passwd[DPM_PW_SIZE_BYTES];
+        addr_t      certificate_addr;
     };
-    uint32_t   public_key_addr;
+    addr_t          public_key_addr;
     union {     /*size in bytes*/
         uint32_t    passwd_size;
         uint32_t    certificate_size;
     };
-    uint32_t    public_key_size;
+    uint32_t        public_key_size;
     crypt_t         certificate_unlock_algo;
 } dpm_desc_t;
 

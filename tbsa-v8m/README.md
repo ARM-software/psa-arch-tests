@@ -62,7 +62,7 @@ See User guide document to get details on the steps involved in Porting the test
 Before starting the test suite build, ensure that the following requirements are met:
 
 - Host Operating System     : Ubuntu
-- Scripting tools           : Perl 5.12.3
+- Scripting tools           : Perl 5.22.1
 - Other open-source tools   : GCC 6.3.1
 
 

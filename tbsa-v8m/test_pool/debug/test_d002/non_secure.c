@@ -183,7 +183,7 @@ void test_payload(tbsa_val_api_t *val)
                     /*Initialize the memory with known data*/
                     val->mem_write((uint32_t *)memory_desc->start, WORD, TEST_DATA);
 
-                    if (test_dbg_seq_write(memory_desc->start, SEQ_OPEN_STATE_READ))
+                    if (test_dbg_seq_write((uint32_t)(memory_desc->start), SEQ_OPEN_STATE_READ))
                         goto clean_up;
 
                     /* Read the data returned by debugger and compare to get the results.*/
@@ -202,7 +202,7 @@ void test_payload(tbsa_val_api_t *val)
                             val->err_check_set(TEST_CHECKPOINT_A, TBSA_STATUS_ERROR);
                             val->print(PRINT_ERROR, "\nDPM could not restrict access to Trusted assets", 0);
                             val->print(PRINT_ERROR, "\nDebugger read the actual data = 0x%x", TEST_DATA);
-                            val->print(PRINT_ERROR, " at address = 0x%x", memory_desc->start);
+                            val->print(PRINT_ERROR, " at address = 0x%x", (uint32_t)(memory_desc->start));
                             goto clean_up;
                         }
                     }
@@ -210,7 +210,7 @@ void test_payload(tbsa_val_api_t *val)
                     /*Initialize the memory with known data*/
                     val->mem_write((uint32_t *)memory_desc->start, WORD, ~TEST_DATA);
 
-                    if (test_dbg_seq_write(memory_desc->start, SEQ_OPEN_STATE_WRITE))
+                    if (test_dbg_seq_write((uint32_t)(memory_desc->start), SEQ_OPEN_STATE_WRITE))
                         goto clean_up;
 
                     if (test_dbg_seq_write(TEST_DATA, SEQ_OPEN_STATE_WRITE))
@@ -234,7 +234,7 @@ void test_payload(tbsa_val_api_t *val)
                             val->err_check_set(TEST_CHECKPOINT_C, TBSA_STATUS_ERROR);
                             val->print(PRINT_ERROR, "\nDPM could not restrict access to Trusted assets", 0);
                             val->print(PRINT_ERROR, "\nDebugger read the actual data = 0x%x", TEST_DATA);
-                            val->print(PRINT_ERROR, " at address = 0x%x", memory_desc->start);
+                            val->print(PRINT_ERROR, " at address = 0x%x", (uint32_t)(memory_desc->start));
                             goto clean_up;
                         }
                     }

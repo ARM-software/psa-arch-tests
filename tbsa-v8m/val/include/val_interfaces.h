@@ -42,8 +42,8 @@ typedef struct {
     void          (*memcpy)                    (void *dst, void *src, uint32_t size);
     void          (*memset)                    (void *dst, uint32_t str, uint32_t size);
     uint32_t      (*execute_in_trusted_mode)   (addr_t address);
-    tbsa_status_t (*nvram_read)                (uint32_t base, uint32_t offset, void *buffer, int size);
-    tbsa_status_t (*nvram_write)               (uint32_t base, uint32_t offset, void *buffer, int size);
+    tbsa_status_t (*nvram_read)                (addr_t base, uint32_t offset, void *buffer, int size);
+    tbsa_status_t (*nvram_write)               (addr_t base, uint32_t offset, void *buffer, int size);
     void          (*system_reset)              (system_reset_t);
     system_reset_t(*system_reset_type)         (void);
     tbsa_status_t (*firmware_version_update)   (uint32_t instance, firmware_version_type_t firmware_version_type, uint32_t fw_ver_cnt);
@@ -84,7 +84,7 @@ typedef struct {
     tbsa_status_t (*dpm_set_state)             (uint32_t index, dpm_status_t dbg_status, unlock_token_t unlock_token);
     tbsa_status_t (*dpm_get_state)             (uint32_t index, uint32_t *dbg_status);
     tbsa_status_t (*dpm_set_access_ns_only)    (uint32_t index, bool_t access_ns);
-    tbsa_status_t (*mpc_configure_security_attribute)    (uint32_t instance, addr_t start_addr,addr_t end_addr, mem_tgt_attr_t sec_attr);
+    tbsa_status_t (*mpc_configure_security_attribute)    (addr_t mpc, addr_t start_addr,addr_t end_addr, mem_tgt_attr_t sec_attr);
     tbsa_status_t (*crypto_validate_certificate)    (addr_t certificate_base_addr,addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size);
     tbsa_status_t (*crypto_get_uniqueID_from_certificate)    (addr_t certificate_base_addr,addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size);
     bool_t        (*is_rtc_trustable)          (addr_t base_addr);
@@ -165,7 +165,7 @@ tbsa_status_t val_debug_set_status_nsc  (dbg_access_t dbg_access, dbg_seq_status
 tbsa_status_t val_dpm_set_state_nsc     (uint32_t index, dpm_status_t dbg_status, unlock_token_t unlock_token);
 tbsa_status_t val_dpm_get_state_nsc     (uint32_t index, uint32_t *dbg_status);
 tbsa_status_t val_dpm_set_access_ns_only_nsc(uint32_t index, bool_t access_ns);
-tbsa_status_t val_mpc_configure_security_attribute_nsc    (uint32_t instance, addr_t start_addr,addr_t end_addr, mem_tgt_attr_t sec_attr);
+tbsa_status_t val_mpc_configure_security_attribute_nsc    (addr_t mpc, addr_t start_addr,addr_t end_addr, mem_tgt_attr_t sec_attr);
 tbsa_status_t val_crypto_validate_certificate_nsc    (addr_t certificate_base_addr,addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size);
 tbsa_status_t val_crypto_get_uniqueID_from_certificate_nsc    (addr_t certificate_base_addr,addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size);
 tbsa_status_t val_crypto_get_dpm_from_key_nsc    (addr_t public_key_addr, uint32_t public_key_size, uint32_t *dpm_field);

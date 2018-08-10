@@ -176,7 +176,7 @@ void test_payload(tbsa_val_api_t *val)
                     /*Initialize the memory with known data*/
                     val->mem_write((uint32_t *)memory_desc->start, WORD, TEST_DATA);
 
-                    if (test_dbg_seq_write(memory_desc->start, SEQ_CLOSED_STATE_READ))
+                    if (test_dbg_seq_write((uint32_t)(memory_desc->start), SEQ_CLOSED_STATE_READ))
                         goto clean_up;
 
                     /* Set the DPM state to Closed.*/
@@ -201,13 +201,13 @@ void test_payload(tbsa_val_api_t *val)
                         val->err_check_set(TEST_CHECKPOINT_B, TBSA_STATUS_ERROR);
                         val->print(PRINT_ERROR, "\nDPM could not restrict access in Closed State", 0);
                         val->print(PRINT_ERROR, "\nDebugger read the actual data = 0x%x", TEST_DATA);
-                        val->print(PRINT_ERROR, " at address = 0x%x", memory_desc->start);
+                        val->print(PRINT_ERROR, " at address = 0x%x", (uint32_t)(memory_desc->start));
                         goto clean_up;
                     }
                     /*Initialize the memory with known data*/
                     val->mem_write((uint32_t *)memory_desc->start, WORD, ~TEST_DATA);
 
-                    if (test_dbg_seq_write(memory_desc->start, SEQ_CLOSED_STATE_WRITE))
+                    if (test_dbg_seq_write((uint32_t)(memory_desc->start), SEQ_CLOSED_STATE_WRITE))
                         goto clean_up;
 
                     if (test_dbg_seq_write(TEST_DATA, SEQ_CLOSED_STATE_WRITE))
@@ -236,7 +236,7 @@ void test_payload(tbsa_val_api_t *val)
                     if (data != ~TEST_DATA) {
                         val->err_check_set(TEST_CHECKPOINT_E, TBSA_STATUS_ERROR);
                         val->print(PRINT_ERROR, "\nDPM could not restrict access in Closed State", 0);
-                        val->print(PRINT_ERROR, "\nDebugger updated the data at address = 0x%x", memory_desc->start);
+                        val->print(PRINT_ERROR, "\nDebugger updated the data at address = 0x%x", (uint32_t)(memory_desc->start));
                         goto clean_up;
                     }
                 }
