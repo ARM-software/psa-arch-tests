@@ -31,8 +31,8 @@ ROOT_DIR:=.
 
 .PHONY: all clean
 
-VAL_LIB   :=../../out/tbsa_val.a
-PAL_LIB   :=../../out/tbsa_pal.a
+VAL_LIB   :=../../out/$(TARGET)/tbsa_val.a
+PAL_LIB   :=../../out/$(TARGET)/tbsa_pal.a
 SYSLIBS   :=$(VAL_LIB) $(PAL_LIB) -lgcc -lc -lnosys
 INCDIR    := ../../val/include/
 CFLAGS    :=-march=armv8-m.main -mthumb -Wall -Werror -O0 -I$(INCDIR)

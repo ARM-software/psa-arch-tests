@@ -24,7 +24,7 @@ OBJDUMP:=$(PREFIX)objdump
 AS:=$(PREFIX)as
 
 # Test specific macros
-OUT_DIR :=./out
+OUT_DIR :=./out/$(TARGET)
 VLIB    :=tbsa_val.a
 PLIB    :=tbsa_pal.a
 
@@ -49,6 +49,10 @@ SYSLIBS       :=$(OUT_DIR)/$(VLIB) $(OUT_DIR)/$(PLIB) -lgcc -lc -lnosys
 all: check_target clean gen_database gen_linker setup_cmsis build
 
 check_target:
+ifeq ($(TARGET),)
+	@echo "TARGET not specified"
+	@exit 1
+endif
 	@if [ ! -d "./platform/board/$(TARGET)/" ]; then { echo "Target Not Found!!!"; exit 1; } fi
 
 gen_database:
@@ -56,7 +60,7 @@ gen_database:
 	@echo "Reading target configuration file ..."
 	mkdir -p platform/board/$(TARGET)/include
 	./tools/tgt_cfg_parser/targetConfigGen.pl ./platform/board/$(TARGET)/tbsa_tgt.cfg platform/board/$(TARGET)/include/pal_database
-	gcc targetConfigGen.c -o targetConfigGen -I$(VALINCDIR)
+	gcc -m32 targetConfigGen.c -w -o targetConfigGen -I$(VALINCDIR)
 	./targetConfigGen
 	rm -f ./targetConfigGen
 	rm -f ./targetConfigGen.c
@@ -98,13 +102,13 @@ clean:
 	cd test_pool && make clean
 
 tbsa.bin:tbsa.elf
-	$(OBJCOPY) $< -j .text -O binary $@
+	$(OBJCOPY) $< -O binary $@
 	mv tbsa.asm $(OUT_DIR)
 	mv tbsa.bin $(OUT_DIR)
 	mv tbsa.elf $(OUT_DIR)
 	mv tbsa.hex $(OUT_DIR)
 	mv tbsa.map $(OUT_DIR)
-	cd test_pool && make
+	cd test_pool && make VLIB=$(OUT_DIR)/$(VLIB) PLIB=$(OUT_DIR)/$(PLIB)
 
 tbsa.elf:tbsa_app/tbsa_main.c
 	$(CC) $(CFLAGS) -Tplatform/board/$(TARGET)/linker/tbsa.linker $(LDFLAGS) -o $@ tbsa_app/tbsa_main.c $(SYSLIBS)

@@ -71,7 +71,7 @@ tbsa_status_t test_dbg_seq_write(uint32_t addr, dbg_seq_status_t seq_status)
     if (g_val->err_check_set(TEST_CHECKPOINT_13, status)) {
         return status;
     }
-    g_val->mem_write((uint32_t *)dpm_desc->data_addr, WORD, addr);
+    g_val->mem_write((uint32_t *)dpm_desc->data_addr, WORD, (uint32_t)addr);
 
     status = g_val->debug_set_status(DBG_WRITE, seq_status);
     if (g_val->err_check_set(TEST_CHECKPOINT_14, status)) {
@@ -234,7 +234,7 @@ void test_payload(tbsa_val_api_t *val)
                         /*Initialize the memory with known data*/
                         val->mem_write((uint32_t *)memory_desc->start, WORD, TEST_DATA);
 
-                        if (test_dbg_seq_write(memory_desc->start, SEQ_LOCKED_STATE_READ))
+                        if (test_dbg_seq_write((uint32_t)(memory_desc->start), SEQ_LOCKED_STATE_READ))
                             goto clean_up;
 
                         /* Reset will only be triggered in case if DPM was not locked at reset*/
@@ -282,7 +282,7 @@ void test_payload(tbsa_val_api_t *val)
                         val->err_check_set(TEST_CHECKPOINT_11, TBSA_STATUS_ERROR);
                         val->print(PRINT_ERROR, "\nDPM could not restrict access in Locked State", 0);
                         val->print(PRINT_ERROR, "\nDebugger read the actual data = 0x%x", TEST_DATA);
-                        val->print(PRINT_ERROR, " at address = 0x%x", memory_desc->start);
+                        val->print(PRINT_ERROR, " at address = 0x%x", (uint32_t)(memory_desc->start));
                         goto clean_up;
                     }
                 }

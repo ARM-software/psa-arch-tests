@@ -146,7 +146,7 @@ void test_payload(tbsa_val_api_t *val)
         /* As per the rule, we cannot execute in secure mode as the memory block is reallocated from
          * Non-trusted to trusted, so we expect fault to occur !
          */
-        val->execute_in_trusted_mode(memory_desc->start | 0x1);
+        val->execute_in_trusted_mode((addr_t)((uint32_t)(memory_desc->start) | 0x1));
         /* Shouldn't come here */
         val->err_check_set(TEST_CHECKPOINT_E, TBSA_STATUS_ERROR);
         while(1);

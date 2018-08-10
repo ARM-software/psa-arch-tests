@@ -149,7 +149,7 @@ typedef struct {
 }tbsa_pheader_t;
 
 /* prototypes */
-tbsa_status_t val_test_get_info   (test_id_t test_id, tbsa_test_fn_type_t info_type, uint32_t *paddr);
+tbsa_status_t val_test_get_info   (test_id_t test_id, tbsa_test_fn_type_t info_type, addr_t *paddr);
 tbsa_status_t val_test_load       (test_id_t *test_id, test_id_t test_id_prev);
 tbsa_status_t val_test_initialize (tbsa_test_init_t *init);
 

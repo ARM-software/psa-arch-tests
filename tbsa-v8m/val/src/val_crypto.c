@@ -190,7 +190,7 @@ tbsa_status_t val_crypto_revoke_key(uint32_t index, addr_t addr, uint32_t size)
      @param    - crypto_base_addr: address of the crypto base
      @return   - void
 */
-void val_crypto_init(uint32_t crypto_base_addr)
+void val_crypto_init(addr_t crypto_base_addr)
 {
     pal_crypto_init(crypto_base_addr);
 }
@@ -202,9 +202,9 @@ void val_crypto_init(uint32_t crypto_base_addr)
                 public_key_size       : Public key memory size
     @return   - error status
 **/
-tbsa_status_t val_crypto_validate_certificate(addr_t certificate_base_addr,addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size)
+tbsa_status_t val_crypto_validate_certificate(addr_t certificate_base_addr, addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size)
 {
-    return pal_crypto_validate_certificate(certificate_base_addr,public_key_addr,certificate_size,public_key_size);
+    return pal_crypto_validate_certificate(certificate_base_addr, public_key_addr, certificate_size, public_key_size);
 }
 
 /**
@@ -215,9 +215,9 @@ tbsa_status_t val_crypto_validate_certificate(addr_t certificate_base_addr,addr_
                 public_key_size       : Public key memory size
     @return   - unique ID of the certificate
 **/
-tbsa_status_t val_crypto_get_uniqueID_from_certificate(addr_t certificate_base_addr,addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size)
+tbsa_status_t val_crypto_get_uniqueID_from_certificate(addr_t certificate_base_addr, addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size)
 {
-    return pal_crypto_get_uniqueID_from_certificate(certificate_base_addr,public_key_addr,certificate_size,public_key_size);
+    return pal_crypto_get_uniqueID_from_certificate(certificate_base_addr, public_key_addr, certificate_size, public_key_size);
 }
 
 /**
@@ -231,7 +231,7 @@ tbsa_status_t val_crypto_get_dpm_from_key(addr_t public_key_addr, uint32_t publi
 {
     uint32_t status = TBSA_STATUS_SUCCESS;
 
-    status = pal_crypto_get_dpm_from_key (public_key_addr,public_key_size,(uint32_t *) dpm_field);
+    status = pal_crypto_get_dpm_from_key (public_key_addr, public_key_size, (uint32_t *)dpm_field);
     return status;
 
 }
@@ -247,6 +247,6 @@ tbsa_status_t val_crypto_get_dpm_from_certificate(addr_t certificate_base_addr, 
 {
     uint32_t status = TBSA_STATUS_SUCCESS;
 
-    status = pal_crypto_get_dpm_from_certificate (certificate_base_addr, certificate_base_addr, (uint32_t *) dpm_field);
+    status = pal_crypto_get_dpm_from_certificate (certificate_base_addr, certificate_size, (uint32_t *)dpm_field);
     return status;
 }

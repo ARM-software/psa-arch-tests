@@ -33,14 +33,14 @@ typedef signed   long      int32_t;
 typedef unsigned long      uint32_t;
 typedef unsigned long long uint64_t;
 typedef uint8_t            bool_t;
-typedef uint32_t           addr_t;
+typedef char *             addr_t;
 typedef uint32_t           test_id_t;
 typedef char               char8_t;
 typedef uint32_t           cfg_id_t;
+#else
+typedef char *             addr_t;
+#define bool_t             uint8_t
 #endif
-
-#define addr_t uint32_t
-#define bool_t uint8_t
 
 typedef enum
 {

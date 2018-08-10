@@ -24,7 +24,7 @@
 /* globals */
 addr_t          g_s_test_info_addr;
 addr_t          g_ns_test_info_addr;
-extern uint32_t g_test_binary_src_addr;
+extern addr_t   g_test_binary_src_addr;
 extern uint32_t g_test_binary_in_ram;
 static const unsigned char elf_magic_header[ELF_IDENT] = {
     0x7f, 0x45, 0x4c, 0x46,     /* 0x7f, 'E', 'L', 'F' */
@@ -50,7 +50,7 @@ static const unsigned char elf_magic_header[ELF_IDENT] = {
               - test_binary_in_ram : 1 - if present in RAM, 0 - otherwise
     @return   - tbsa_status_t
 **/
-static tbsa_status_t val_test_elf_load(uint32_t saddr, uint32_t *info_addr, uint32_t test_binary_in_ram)
+static tbsa_status_t val_test_elf_load(addr_t saddr, addr_t *info_addr, uint32_t test_binary_in_ram)
 {
     tbsa_elf_header_t test_elfh;
     tbsa_pheader_t    test_ph;
@@ -91,7 +91,7 @@ static tbsa_status_t val_test_elf_load(uint32_t saddr, uint32_t *info_addr, uint
         }
     }
 
-    *info_addr = test_elfh.e_entry;
+    *info_addr = (addr_t)test_elfh.e_entry;
 
     return TBSA_STATUS_SUCCESS;
 }

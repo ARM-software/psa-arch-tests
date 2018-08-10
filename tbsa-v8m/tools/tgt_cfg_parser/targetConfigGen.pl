@@ -37,8 +37,6 @@
 # NOTE: Only C-style single line commenting is permitted inside targetConfig.cfg
 #---------------------------------------------------------------------
 
-use List::MoreUtils qw(uniq);
-
 $targetConfigPath = $ARGV[0];
 $final_output = $ARGV[1];
 $output_c = 'targetConfigGen.c';
@@ -50,6 +48,11 @@ if($final_output =~ /([0-9a-zA-Z_]+)$/) {
 }
 
 @unique_devices = undef;
+
+sub uniq {
+    my %seen;
+    grep !$seen{$_}++, @_;
+}
 
 open(IN, $targetConfigPath) or die "Unable to open $targetConfigPath $!";
 open(OUT, '>', $output_c) or die "Unable to open: $!";
@@ -65,7 +68,7 @@ while(<IN0>) {
 	while($nextline !~ /\}/) {
 	    $nextline = <IN0>;
 	    #print "$nextline";
-	    if($nextline =~ /(\S+)(\s*)\=(\s*)GROUP_([0-9a-zA-Z_]+)(,*)\n/) {
+            if($nextline =~ /(\S+)(\s*)\=(\s*)GROUP_([0-9a-zA-Z_]+)(,*)/) {
 		$comp_groups{$1} = $4;
 	    }
 	}
@@ -76,8 +79,8 @@ close IN0;
 #print values %comp_groups, "\n";
 #---------------------------------------------------------------------
 
-print OUT '#include "val_target.h"',"\n";
 print OUT '#include <stdio.h>',"\n\n";
+print OUT '#include "val_target.h"',"\n";
 
 print OUT "int main\(void\) \{\n";
 

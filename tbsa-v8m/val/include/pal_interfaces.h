@@ -109,7 +109,7 @@ int32_t pal_i2c_init(addr_t addr);
                 num     : Number of data bytes to receive
     @return   - error status
 **/
-int32_t  pal_i2c_read(uint32_t slv_addr, uint8_t *rd_data, uint32_t num);
+int32_t  pal_i2c_read(addr_t slv_addr, uint8_t *rd_data, uint32_t num);
 
 /**
     @brief    - Read peripheral using I2C
@@ -118,7 +118,7 @@ int32_t  pal_i2c_read(uint32_t slv_addr, uint8_t *rd_data, uint32_t num);
                 num     : Number of bytes to transfer
     @return   - error status
 **/
-int32_t  pal_i2c_write(uint32_t slv_addr, uint8_t *wr_data, uint32_t num);
+int32_t  pal_i2c_write(addr_t slv_addr, uint8_t *wr_data, uint32_t num);
 
 /**
     @brief    - Initialize SPI peripheral
@@ -381,7 +381,7 @@ int pal_fuse_get_lcs(uint32_t *pLcs);
                 public_key_size       : Public key memory size
     @return   - 0 on success.
 **/
-int pal_crypto_validate_certificate(uint32_t certificate_base_addr, uint32_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size);
+int pal_crypto_validate_certificate(addr_t certificate_base_addr, addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size);
 
 /**
     @brief    - Get unique ID from valid certificate using public key
@@ -391,7 +391,7 @@ int pal_crypto_validate_certificate(uint32_t certificate_base_addr, uint32_t pub
                 public_key_size       : Public key memory size
     @return   - unique ID of the certificate
 **/
-int pal_crypto_get_uniqueID_from_certificate(uint32_t certificate_base_addr, uint32_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size);
+int pal_crypto_get_uniqueID_from_certificate(addr_t certificate_base_addr, addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size);
 
 /**
     @brief    - Initialize RTC
@@ -421,7 +421,7 @@ int pal_is_rtc_synced_to_server(addr_t addr);
                 dpm_field       : Buffer to store DPM number
     @return   - error status
 **/
-int pal_crypto_get_dpm_from_key(uint32_t public_key_addr, uint32_t public_key_size, uint32_t *dpm_field);
+int pal_crypto_get_dpm_from_key(addr_t public_key_addr, uint32_t public_key_size, uint32_t *dpm_field);
 
 /**
     @brief    - Get DPM field from certificate
@@ -430,7 +430,7 @@ int pal_crypto_get_dpm_from_key(uint32_t public_key_addr, uint32_t public_key_si
                 dpm_field             : Buffer to store DPM number
     @return   - error status
 **/
-int pal_crypto_get_dpm_from_certificate(uint32_t certificate_base_addr, uint32_t certificate_size, uint32_t *dpm_field);
+int pal_crypto_get_dpm_from_certificate(addr_t certificate_base_addr, uint32_t certificate_size, uint32_t *dpm_field);
 
 /**
     @brief    - Update the firmware version

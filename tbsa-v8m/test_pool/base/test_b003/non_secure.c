@@ -50,7 +50,7 @@ void test_payload(tbsa_val_api_t *val)
         if (memory_desc->attribute == MEM_CONFIGURABLE) {
             /* Read the previously written location and check they are scrubbed */
             if ((*(uint32_t*)(memory_desc->start) != PATTERN1) && \
-                (*(uint32_t*)(memory_desc->end - (memory_desc->end % 0x4) - 0x4 ) != PATTERN2)) {
+                (*(uint32_t*)(memory_desc->end - ((uint32_t)(memory_desc->end) % 0x4) - 0x4 ) != PATTERN2)) {
                 val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
             } else {
                 val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_ERROR);

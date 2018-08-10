@@ -41,7 +41,7 @@ typedef struct {
   uint32_t index;
 } key_info_desc_t;
 
-void          val_crypto_init(uint32_t crypto_base_addr);
+void          val_crypto_init(addr_t crypto_base_addr);
 tbsa_status_t val_crypto_key_generate(uint8_t *key, crypt_t enc_type, uint32_t size);
 tbsa_status_t val_crypto_validate_public_key(crypt_t type, uint32_t *key, uint32_t size,
                                              addr_t addr, uint32_t *valid);

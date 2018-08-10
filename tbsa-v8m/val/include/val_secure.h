@@ -21,6 +21,6 @@
 #include "val_common.h"
 #include "val_interfaces.h"
 
-int val_s_to_ns (uint32_t addr, tbsa_val_api_t *val_api);
+int val_s_to_ns (addr_t addr, tbsa_val_api_t *val_api);
 
 #endif /* _VAL_SECURE_H_ */

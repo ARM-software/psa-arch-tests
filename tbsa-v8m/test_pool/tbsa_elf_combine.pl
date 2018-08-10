@@ -19,11 +19,15 @@
 
 use File::Find;
 use File::Basename;
-use List::MoreUtils 'uniq';
 
 $test_pool_path = $ARGV[0];
 $output_elf = 'tbsa_test_combined.bin';
 my @all_elf_paths;
+
+sub uniq {
+    my %seen;
+    grep !$seen{$_}++, @_;
+}
 
 print "Combining test ELFs\n";
 

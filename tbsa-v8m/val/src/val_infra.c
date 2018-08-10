@@ -214,8 +214,8 @@ tbsa_status_t val_target_get_config(cfg_id_t cfg_id, uint8_t **data, uint32_t *s
     status = val_target_get_cfg_blob(cfg_id, data, size);
 
     if (TBSA_ERROR(status)) {
-        val_print(PRINT_ERROR, "\n\tGet Config failed with status = %x", status);
-        val_print(PRINT_ERROR, " for cfg_id = %x", cfg_id);
+        val_print(PRINT_DEBUG, "\n\tGet Config failed with status = %x", status);
+        val_print(PRINT_DEBUG, " for cfg_id = %x", cfg_id);
         return status;
     }
     return TBSA_STATUS_SUCCESS;
@@ -345,7 +345,7 @@ tbsa_status_t val_infra_init(test_id_t *test_id)
     }
 
     val_mem_reg_read(VTOR, &vtor);
-    if ((vtor >= bootrom_desc->start) && (vtor <= bootrom_desc->end)) {
+    if ((vtor >= (uint32_t)(bootrom_desc->start)) && (vtor <= (uint32_t)(bootrom_desc->end))) {
         g_vtor_relocated_from_rom = FALSE;
     } else {
         g_vtor_relocated_from_rom = TRUE;

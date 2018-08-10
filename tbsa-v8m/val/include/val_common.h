@@ -46,7 +46,7 @@ typedef signed   int        int32_t;
 typedef unsigned int        uint32_t;
 typedef unsigned long  long uint64_t;
 typedef uint8_t             bool_t;
-typedef uint32_t            addr_t;
+typedef char *              addr_t;
 typedef uint32_t            test_id_t;
 typedef char                char8_t;
 typedef uint32_t            cfg_id_t;

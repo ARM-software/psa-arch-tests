@@ -100,12 +100,12 @@ int32_t pal_i2c_init(addr_t addr)
     return PAL_STATUS_ERROR;
 }
 
-int32_t pal_i2c_read(uint32_t slv_addr, uint8_t *rd_data, uint32_t len)
+int32_t pal_i2c_read(addr_t slv_addr, uint8_t *rd_data, uint32_t len)
 {
     return PAL_STATUS_ERROR;
 }
 
-int32_t pal_i2c_write(uint32_t slv_addr, uint8_t *wr_data, uint32_t len)
+int32_t pal_i2c_write(addr_t slv_addr, uint8_t *wr_data, uint32_t len)
 {
     return PAL_STATUS_ERROR;
 }
@@ -262,22 +262,22 @@ int pal_is_rtc_synced_to_server(addr_t addr)
     return PAL_STATUS_ERROR;
 }
 
-int pal_crypto_validate_certificate(uint32_t certificate_base_addr, uint32_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size)
+int pal_crypto_validate_certificate(addr_t certificate_base_addr, addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size)
 {
     return PAL_STATUS_ERROR;
 }
 
-int pal_crypto_get_uniqueID_from_certificate(uint32_t certificate_base_addr, uint32_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size)
+int pal_crypto_get_uniqueID_from_certificate(addr_t certificate_base_addr, addr_t public_key_addr, uint32_t certificate_size, uint32_t public_key_size)
 {
     return PAL_STATUS_ERROR;
 }
 
-int pal_crypto_get_dpm_from_key(uint32_t public_key_addr, uint32_t public_key_size, uint32_t *dpm_field)
+int pal_crypto_get_dpm_from_key(addr_t public_key_addr, uint32_t public_key_size, uint32_t *dpm_field)
 {
     return PAL_STATUS_ERROR;
 }
 
-int pal_crypto_get_dpm_from_certificate(uint32_t certificate_base_addr, uint32_t certificate_size, uint32_t *dpm_field)
+int pal_crypto_get_dpm_from_certificate(addr_t certificate_base_addr, uint32_t certificate_size, uint32_t *dpm_field)
 {
     return PAL_STATUS_ERROR;
 }
