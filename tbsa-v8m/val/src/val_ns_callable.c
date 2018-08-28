@@ -24,11 +24,12 @@
     fn_ret fn_name ## _nsc(__VA_ARGS__) { \
         asm volatile( \
             "sg                  \n" \
-            "push {r7, lr}       \n" \
+            "push {r7}           \n" \
+            "push {lr}           \n" \
             "ldr r7,=" #fn_name "\n" \
             "blx r7              \n" \
-            "pop {r7, lr}        \n" \
-            "bxns lr             \n" \
+            "pop {r1, r7}        \n" \
+            "bxns r1             \n" \
         ); \
         __builtin_unreachable(); \
     }
