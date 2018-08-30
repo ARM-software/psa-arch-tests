@@ -17,7 +17,7 @@
 
 # This file will have global functions which are called by secure code
     .syntax unified
-    .arch   armv8-m.main
+    .arch   armv8-m.base
 
     .thumb
     .thumb_func
@@ -38,7 +38,7 @@ tbsa_entry:
     b tbsa_main
 
     .syntax unified
-    .arch   armv8-m.main
+    .arch   armv8-m.base
 
     .thumb
     .thumb_func
@@ -52,11 +52,16 @@ val_s_to_ns:
     str   r4, [r7, #32]
     str   r5, [r7, #28]
     str   r6, [r7, #24]
-    str   r8, [r7, #16]
-    str   r9, [r7, #12]
-    str   r10, [r7, #8]
-    str   r11, [r7, #4]
-    str   r12, [r7, #0]
+    mov   r6, r8
+    str   r6, [r7, #16]
+    mov   r6, r9
+    str   r6, [r7, #12]
+    mov   r6, r10
+    str   r6, [r7, #8]
+    mov   r6, r11
+    str   r6, [r7, #4]
+    mov   r6, r12
+    str   r6, [r7, #0]
     mov   r2, #0
     mov   r3, r2
     mov   r4, r2
@@ -67,7 +72,8 @@ val_s_to_ns:
     mov   r10, r2
     mov   r11, r2
     mov   r12, r2
-    bic.w r0, r0, #1
+    mov   r2, #1
+    bics  r0, r2
     mov   r2, r0
     mov   r0, r1
     blxns r2
@@ -76,11 +82,18 @@ val_s_to_ns:
     ldr   r4, [r7, #32]
     ldr   r5, [r7, #28]
     ldr   r6, [r7, #24]
-    ldr   r8, [r7, #16]
-    ldr   r9, [r7, #12]
-    ldr   r10, [r7, #8]
-    ldr   r11, [r7, #4]
-    ldr   r12, [r7, #0]
+    push  {r0}
+    ldr   r0, [r7, #16]
+    mov   r8, r0
+    ldr   r0, [r7, #12]
+    mov   r9, r0
+    ldr   r0, [r7, #8]
+    mov   r10, r0
+    ldr   r0, [r7, #4]
+    mov   r11, r0
+    ldr   r0, [r7, #0]
+    mov   r12, r0
+    pop   {r0}
     adds  r7, #52
     mov   sp, r7
     pop   {r7, pc}
