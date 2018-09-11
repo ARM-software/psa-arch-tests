@@ -137,12 +137,12 @@ tbsa_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
         do
         {
             if (val_spi_read(sflash_addr, (uint8_t *)&test_header, sizeof(tbsa_test_header_t))) {
-                val_print(PRINT_INFO, "\n\nError: reading custom Test header", 0);
+                val_print(PRINT_INFO, "\n\n\rError: reading custom Test header", 0);
                 return TBSA_STATUS_LOAD_ERROR;
             }
 
             if (test_header.start_marker == TBSA_TEST_END_MARKER) {
-                val_print(PRINT_ERROR, "\n\nNo more valid tests found. Exiting.", 0);
+                val_print(PRINT_ERROR, "\n\n\rNo more valid tests found. Exiting.", 0);
                 *test_id = TBSA_TEST_INVALID;
                 return TBSA_STATUS_SUCCESS;
             }
@@ -162,18 +162,18 @@ tbsa_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
     }
 
     if (val_spi_read(sflash_addr, (uint8_t *)&test_header, sizeof(tbsa_test_header_t))) {
-        val_print(PRINT_INFO, "\n\nError: reading custom Test header", 0);
+        val_print(PRINT_INFO, "\n\n\rError: reading custom Test header", 0);
         return TBSA_STATUS_LOAD_ERROR;
     }
 
     if (test_header.start_marker == TBSA_TEST_END_MARKER) {
-        val_print(PRINT_ERROR, "\n\nNo more valid tests found. Exiting.", 0);
+        val_print(PRINT_ERROR, "\n\n\rNo more valid tests found. Exiting.", 0);
         *test_id = TBSA_TEST_INVALID;
         return TBSA_STATUS_SUCCESS;
     }
 
     if (test_header.start_marker != TBSA_TEST_START_MARKER) {
-        val_print(PRINT_ERROR, "\n\nNo valid test binary found. Exiting.", 0);
+        val_print(PRINT_ERROR, "\n\n\rNo valid test binary found. Exiting.", 0);
         *test_id = TBSA_TEST_INVALID;
         return TBSA_STATUS_LOAD_ERROR;
     }
@@ -181,14 +181,14 @@ tbsa_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
     /* load S image */
     sflash_addr += sizeof(tbsa_test_header_t);
     if (val_test_elf_load(sflash_addr, &g_s_test_info_addr, g_test_binary_in_ram)) {
-        val_print(PRINT_INFO, "\nError: loading Test ELF", 0);
+        val_print(PRINT_INFO, "\n\rError: loading Test ELF", 0);
         return TBSA_STATUS_LOAD_ERROR;
     }
 
     /* load NS image */
     sflash_addr += test_header.s_elf_size;
     if (val_test_elf_load(sflash_addr, &g_ns_test_info_addr, g_test_binary_in_ram)) {
-        val_print(PRINT_INFO, "\nError: loading Test ELF", 0);
+        val_print(PRINT_INFO, "\n\rError: loading Test ELF", 0);
         return TBSA_STATUS_LOAD_ERROR;
     }
 

@@ -406,17 +406,17 @@ tbsa_status_t val_infra_exit(void)
         return status;
     }
 
-    val_print(PRINT_ALWAYS, "\n", 0);
+    val_print(PRINT_ALWAYS, "\n\r", 0);
     for(int i=0; i < strlen(val_get_comp_name(CREATE_TEST_ID(TBSA_BASE_BASE, 1))); i++) {
         val_print(PRINT_ALWAYS, "-", 0);
     }
 
-    val_print(PRINT_ALWAYS, "\nTotal tests : %d", (test_count.pass_cnt + test_count.skip_cnt + test_count.fail_cnt));
-    val_print(PRINT_ALWAYS, "\nPass        : %d", test_count.pass_cnt);
-    val_print(PRINT_ALWAYS, "\nFail        : %d", test_count.fail_cnt);
-    val_print(PRINT_ALWAYS, "\nSkip        : %d", test_count.skip_cnt);
+    val_print(PRINT_ALWAYS, "\n\rTotal tests : %d", (test_count.pass_cnt + test_count.skip_cnt + test_count.fail_cnt));
+    val_print(PRINT_ALWAYS, "\n\rPass        : %d", test_count.pass_cnt);
+    val_print(PRINT_ALWAYS, "\n\rFail        : %d", test_count.fail_cnt);
+    val_print(PRINT_ALWAYS, "\n\rSkip        : %d", test_count.skip_cnt);
 
-    val_print(PRINT_ALWAYS, "\n", 0);
+    val_print(PRINT_ALWAYS, "\n\r", 0);
     for(int i=0; i < strlen(val_get_comp_name(CREATE_TEST_ID(TBSA_BASE_BASE, 1))); i++) {
         val_print(PRINT_ALWAYS, "-", 0);
     }
@@ -670,4 +670,25 @@ uint32_t val_execute_in_trusted_mode(addr_t address)
 bool_t val_is_vtor_relocated_from_rom(void)
 {
     return g_vtor_relocated_from_rom;
+}
+
+/*
+     @brief   - Check if the security extensions are enabled
+     @param   - void
+     @return  - TRUE  - Security extension are enabled
+                FALSE - Security extension are disabled
+*/
+bool_t is_sec_ext_enabled(void)
+{
+    uint32_t tt_res, tt_adr;
+    asm("mov %0, pc" : "=r"(tt_adr));
+    asm("tt %0, %1": "=r"(tt_res) : "r" (tt_adr));
+    if ((tt_res & BIT17) || (tt_res & BIT23))
+    {
+        return TRUE;
+    }
+    else
+    {
+        return FALSE;
+    }
 }

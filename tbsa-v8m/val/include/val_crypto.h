@@ -46,7 +46,7 @@ tbsa_status_t val_crypto_key_generate(uint8_t *key, crypt_t enc_type, uint32_t s
 tbsa_status_t val_crypto_validate_public_key(crypt_t type, uint32_t *key, uint32_t size,
                                              addr_t addr, uint32_t *valid);
 tbsa_status_t val_crypto_get_key_info(key_desc_t **key_info_desc, key_type_t key_type,
-                                      uint32_t instance);
+                                      uint32_t *instance);
 tbsa_status_t val_crypto_compute_hash(unsigned char *input, uint32_t ilen, unsigned char *output,
                                       int algo);
 tbsa_status_t val_crypto_set_base_addr(dev_attr_t attribute);

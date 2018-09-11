@@ -41,53 +41,60 @@ void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t   status;
     uint32_t        key[32], rev_key[32];
-    uint32_t        data, i;
+    uint32_t        data, i, instance = 0;
     key_desc_t      *key_info_rev;
+    bool_t          key_present = FALSE;
 
     status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
     if (val->err_check_set(TEST_CHECKPOINT_1, status)) {
         return;
     }
 
-    status = val->crypto_get_key_info((key_desc_t **)&key_info_rev, REVOKE, 0);
-    if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
-        return;
-    }
-
-    status = val->fuse_ops(FUSE_READ, key_info_rev->addr, key, key_info_rev->size);
-    if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
-        return;
-    }
-
-    data = 0;
-    /* Check that if Key is non-zero*/
-    for(i = 0; i < key_info_rev->size; i++)
-        data += key[i];
-
-    if (!data) {
-        val->print(PRINT_ERROR, "\n        Incorrect key", 0);
-        val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_INCORRECT_VALUE);
-        return;
-    }
-
-    status = val->crypto_revoke_key(key_info_rev->index, key_info_rev->addr, key_info_rev->size);
-    if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
-        return;
-    }
-
-    status = val->fuse_ops(FUSE_READ, key_info_rev->addr, rev_key, key_info_rev->size);
-    if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
-        return;
-    }
-
-    /* Check that if Key is not same after it is revoked*/
-    for(i = 0; i < key_info_rev->size; i++) {
-        if(key[i] == rev_key[i]) {
-            val->print(PRINT_ERROR, "\n        Key is not revoked", 0);
-            val->err_check_set(TEST_CHECKPOINT_8, TBSA_STATUS_ERROR);
+    do {
+        status = val->crypto_get_key_info((key_desc_t **)&key_info_rev, REVOKE, &instance);
+        if (status != TBSA_STATUS_SUCCESS && key_present == FALSE) {
+            val->err_check_set(TEST_CHECKPOINT_2, status);
             return;
         }
-    }
+
+        key_present = TRUE;
+        status = val->fuse_ops(FUSE_READ, key_info_rev->addr, key, key_info_rev->size);
+        if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
+            return;
+        }
+
+        data = 0;
+        /* Check that if Key is non-zero*/
+        for(i = 0; i < key_info_rev->size; i++)
+            data += key[i];
+
+        if (!data) {
+            val->print(PRINT_ERROR, "\n        Incorrect key", 0);
+            val->err_check_set(TEST_CHECKPOINT_4, TBSA_STATUS_INCORRECT_VALUE);
+            return;
+        }
+
+        status = val->crypto_revoke_key(key_info_rev->index, key_info_rev->addr, key_info_rev->size);
+        if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
+            return;
+        }
+
+        status = val->fuse_ops(FUSE_READ, key_info_rev->addr, rev_key, key_info_rev->size);
+        if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
+            return;
+        }
+
+        /* Check that if Key is not same after it is revoked*/
+        for(i = 0; i < key_info_rev->size; i++) {
+            if(key[i] == rev_key[i]) {
+                val->print(PRINT_ERROR, "\n        Key is not revoked", 0);
+                val->err_check_set(TEST_CHECKPOINT_7, TBSA_STATUS_ERROR);
+                return;
+            }
+        }
+
+        instance++;
+    } while (instance < GET_NUM_INSTANCE(key_info_rev));
 
     val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
 }

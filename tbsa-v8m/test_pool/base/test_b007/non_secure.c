@@ -50,7 +50,7 @@ void test_payload(tbsa_val_api_t *val)
         }
 
         if (memory_desc->attribute == MEM_NONSECURE) {
-            for(i = (uint32_t)(memory_desc->start); i < (uint32_t)(memory_desc->end - ((uint32_t)(memory_desc->end) % 0x4)); i += 4) {
+            for(i = (uint32_t)(memory_desc->start); i < ((uint32_t)(memory_desc->end) - ((uint32_t)(memory_desc->end) % 0x4)); i += 4) {
                 if(*(uint32_t *)(i) == PATTERN) {
                     val->err_check_set(TEST_CHECKPOINT_4, TBSA_STATUS_ERROR);
                     return;

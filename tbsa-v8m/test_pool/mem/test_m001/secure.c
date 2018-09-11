@@ -30,8 +30,7 @@ TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_SECURE_RAM_BASE, 1),
 tbsa_val_api_t *g_val;
 bool_t         secure_range_found = FALSE;
 
-void
-secure_fault_esr (unsigned long *sf_args)
+void hard_fault_esr (unsigned long *sf_args)
 {
 
     if (IS_TEST_PENDING(g_val->get_status())) {
@@ -42,16 +41,10 @@ secure_fault_esr (unsigned long *sf_args)
 
     /* Updating the return address in the stack frame in order to avoid periodic fault */
     sf_args[6] = sf_args[6] + 4;
-
-    /* Clear the status register for the next fault */
-    g_val->mem_reg_write(SFSR, 0xFF);
-    g_val->mem_reg_write(SFAR, 0x0);
-
 }
 
 __attribute__((naked))
-void
-SF_Handler(void)
+void HF_Handler(void)
 {
     asm volatile("mrs r0, control_ns \n"
                  "mov r1, #0x2       \n"
@@ -59,26 +52,24 @@ SF_Handler(void)
                  "cmp r0, r1         \n"
                  "beq _psp_ns        \n"
                  "mrs r0, msp_ns     \n"
-                 "b secure_fault_esr \n"
+                 "b hard_fault_esr \n"
                  "_psp_ns:           \n"
                  "mrs r0, psp_ns     \n"
-                 "b secure_fault_esr \n");
+                 "b hard_fault_esr \n");
 }
 
-void
-setup_ns_env(void)
+void setup_ns_env(void)
 {
     tbsa_status_t status;
 
     /* Installing Trusted Fault Handler for NS test */
-    status = g_val->interrupt_setup_handler(EXCP_NUM_SF, 0, SF_Handler);
+    status = g_val->interrupt_setup_handler(EXCP_NUM_HF, 0, HF_Handler);
     g_val->err_check_set(TEST_CHECKPOINT_9, status);
 }
 
 
 
-void
-entry_hook(tbsa_val_api_t *val)
+void entry_hook(tbsa_val_api_t *val)
 {
     tbsa_test_init_t init = {
                              .bss_start      = &__tbsa_test_bss_start__,
@@ -91,8 +82,7 @@ entry_hook(tbsa_val_api_t *val)
     val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
 }
 
-void
-test_payload(tbsa_val_api_t *val)
+void test_payload(tbsa_val_api_t *val)
 {
     uint32_t                data=0, mem_num=0, instance=0, prot_unit_num=0;
     memory_hdr_t            *mem;
@@ -200,7 +190,6 @@ test_payload(tbsa_val_api_t *val)
     val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
 }
 
-void
-exit_hook(tbsa_val_api_t *val)
+void exit_hook(tbsa_val_api_t *val)
 {
 }

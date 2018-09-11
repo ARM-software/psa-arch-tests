@@ -41,35 +41,47 @@ void entry_hook(tbsa_val_api_t *val)
 void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
-    uint32_t      i;
+    uint32_t      i, instance = 0;
     uint32_t      data, key[32] = {0xdeaddead};
     key_desc_t    *key_info_trust;
+    bool_t        key_present = FALSE;
 
     status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
     if (val->err_check_set(TEST_CHECKPOINT_1, status)) {
         return;
     }
 
-    status = val->crypto_get_key_info((key_desc_t **)&key_info_trust, TRUST, 0);
-    if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
-        return;
-    }
+    do {
 
-    status = val->fuse_ops(FUSE_READ, key_info_trust->addr, key, key_info_trust->size);
-    if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
-        return;
-    }
+        status = val->crypto_get_key_info((key_desc_t **)&key_info_trust, TRUST, &instance);
+        if (status != TBSA_STATUS_SUCCESS && key_present == FALSE) {
+            val->err_check_set(TEST_CHECKPOINT_2, status);
+            return;
+        }
 
-    data = 0;
-    for(i = 0; i < key_info_trust->size; i++)
-        data += key[i];
+        key_present = TRUE;
+        status = val->fuse_ops(FUSE_READ, key_info_trust->addr, key, key_info_trust->size);
+        if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
+            return;
+        }
 
-    /* Check that if Trusted key is zero*/
-    if (data) {
-        val->print(PRINT_ERROR, "\n        Trusted key is accessible", 0);
-        val->err_check_set(TEST_CHECKPOINT_4, TBSA_STATUS_ERROR);
-        return;
-    }
+        data = 0;
+        for(i = 0; i < key_info_trust->size; i++)
+            data += key[i];
+
+        /* Check that if Trusted key is zero*/
+        if (data) {
+            for (i = 0; i < 32; i++) {
+                if (key[i] != 0xdeaddead) {
+                    val->print(PRINT_ERROR, "\n        Trusted key is accessible", 0);
+                    val->err_check_set(TEST_CHECKPOINT_4, TBSA_STATUS_ERROR);
+                    return;
+                }
+            }
+        }
+
+        instance++;
+    } while (instance < GET_NUM_INSTANCE(key_info_trust));
 
     val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
 }

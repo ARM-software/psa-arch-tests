@@ -17,14 +17,12 @@
 
 # This file will have global functions which are called by secure code
     .syntax unified
-    .arch   armv8-m.base
 
     .thumb
     .thumb_func
     .extern  __TBSA_S_StackTop
     .extern  __TBSA_NS_StackTop
     .extern  __TBSA_S_StackLimit
-    .extern  __TBSA_NS_StackLimit
     .global tbsa_entry
 tbsa_entry:
     ldr r0, =__TBSA_S_StackTop
@@ -33,12 +31,9 @@ tbsa_entry:
     msr msplim, r0
     ldr r0, =__TBSA_NS_StackTop
     msr msp_ns, r0
-    ldr r0, =__TBSA_NS_StackLimit
-    msr msplim_ns, r0
     b tbsa_main
 
     .syntax unified
-    .arch   armv8-m.base
 
     .thumb
     .thumb_func
@@ -91,9 +86,9 @@ val_s_to_ns:
     mov   r10, r0
     ldr   r0, [r7, #4]
     mov   r11, r0
-    ldr   r0, [r7, #0]
+    ldr   r0, [r7, #4]
     mov   r12, r0
-    pop   {r0}
+    pop {r0}
     adds  r7, #52
     mov   sp, r7
     pop   {r7, pc}

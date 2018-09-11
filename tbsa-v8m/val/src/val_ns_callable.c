@@ -23,13 +23,13 @@
     __attribute__((section(".tbsa_nsc_entry_points"), naked)) \
     fn_ret fn_name ## _nsc(__VA_ARGS__) { \
         asm volatile( \
-            "sg                  \n" \
-            "push {r7}           \n" \
-            "push {lr}           \n" \
-            "ldr r7,=" #fn_name "\n" \
-            "blx r7              \n" \
-            "pop {r1, r7}        \n" \
-            "bxns r1             \n" \
+            "sg                   \n" \
+            "push {r7}            \n" \
+            "push {lr}            \n" \
+            "ldr r7,=" #fn_name " \n" \
+            "blx r7               \n" \
+            "pop {r1, r7}         \n" \
+            "bxns r1              \n" \
         ); \
         __builtin_unreachable(); \
     }
@@ -74,7 +74,7 @@ TRANSITION_NS_TO_S(tbsa_status_t, val_is_wd_timer_enabled, addr_t base_addr);
 TRANSITION_NS_TO_S(tbsa_status_t, val_crypto_key_generate, uint8_t *key, crypt_t enc_type, uint32_t size);
 TRANSITION_NS_TO_S(tbsa_status_t, val_fuse_get_lcs, uint32_t *pLcs);
 TRANSITION_NS_TO_S(tbsa_status_t, val_crypto_validate_public_key, crypt_t type, uint32_t *key, uint32_t size, addr_t addr, uint32_t *valid);
-TRANSITION_NS_TO_S(tbsa_status_t, val_crypto_get_key_info, key_desc_t **key_info_desc, key_type_t key_type, uint32_t instance);
+TRANSITION_NS_TO_S(tbsa_status_t, val_crypto_get_key_info, key_desc_t **key_info_desc, key_type_t key_type, uint32_t *instance);
 TRANSITION_NS_TO_S(tbsa_status_t, val_crypto_set_base_addr, dev_attr_t attribute);
 TRANSITION_NS_TO_S(tbsa_status_t, val_crypto_revoke_key, uint32_t index, addr_t addr, uint32_t size);
 TRANSITION_NS_TO_S(tbsa_status_t, val_fuse_ops, fuse_ops_t fuse_ops, addr_t addr, uint32_t *data, uint32_t size);

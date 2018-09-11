@@ -110,4 +110,5 @@ uint32_t       val_execute_in_trusted_mode (addr_t address);
 
 bool_t         val_is_vtor_relocated_from_rom(void);
 
+bool_t is_sec_ext_enabled(void);
 #endif /* _VAL_INFRA_H_ */

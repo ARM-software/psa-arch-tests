@@ -180,8 +180,8 @@ typedef enum {
     ROTPK                  = 0x0,
     HUK                    = 0x1,
     TRUST                  = 0x2,
-    STATIC                 = 0x3,
-    REVOKE                 = 0x4,
+    STATIC                 = 0x4,
+    REVOKE                 = 0x8,
 } key_type_t;
 
 

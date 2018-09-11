@@ -43,10 +43,11 @@ void entry_hook(tbsa_val_api_t *val)
 void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
-    uint32_t      data, expected_fuse_type, i;
+    uint32_t      data, expected_fuse_type, i, instance = 0;
     uint32_t      key[32];
     uint32_t      rd_data[32], wr_data[32] = {0xFFFFFFFF};
     key_desc_t    *key_info_static;
+    bool_t        key_present = FALSE;
 
     g_val = val;
     status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
@@ -54,59 +55,62 @@ void test_payload(tbsa_val_api_t *val)
         return;
     }
 
-    status = val->crypto_get_key_info(&key_info_static, STATIC, 0);
-    if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
-        return;
-    }
-
-    expected_fuse_type = FUSE_BULK | FUSE_LOCKABLE;
-
-    if ((key_info_static->type & expected_fuse_type) != expected_fuse_type) {
-        val->print(PRINT_ERROR, "\n        Fuse type in which static key stored is non-compliant", 0);
-        val->print(PRINT_ERROR, "\n        Fuse type %x", key_info_static->type);
-        val->print(PRINT_ERROR, "\n        Expected Fuse type %x", expected_fuse_type);
-        val->err_check_set(TEST_CHECKPOINT_3, TBSA_STATUS_ERROR);
-        return;
-    }
-
-    if ((key_info_static->state & FUSE_OPEN) == FUSE_OPEN) {
-        status = val->fuse_ops(FUSE_READ, key_info_static->addr, key, key_info_static->size);
-        if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
+    do {
+        status = val->crypto_get_key_info(&key_info_static, STATIC, &instance);
+        if (status != TBSA_STATUS_SUCCESS && key_present == FALSE) {
+            val->err_check_set(TEST_CHECKPOINT_2, status);
             return;
         }
 
-        data = 0;
-        /* Check that the static key is non-zero*/
-        for(i = 0; i < key_info_static->size; i++)
-            data += key[i];
-
-        if (!data) {
-            val->print(PRINT_ERROR, "\n        Incorrect Static Key", 0);
-            val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_ERROR);
+        key_present = TRUE;
+        expected_fuse_type = FUSE_BULK | FUSE_LOCKABLE;
+        if ((key_info_static->type & expected_fuse_type) != expected_fuse_type) {
+            val->print(PRINT_ERROR, "\n        Fuse type in which static key stored is non-compliant", 0);
+            val->print(PRINT_ERROR, "\n        Fuse type %x", key_info_static->type);
+            val->print(PRINT_ERROR, "\n        Expected Fuse type %x", expected_fuse_type);
+            val->err_check_set(TEST_CHECKPOINT_3, TBSA_STATUS_ERROR);
             return;
         }
 
-        status = val->fuse_ops(FUSE_WRITE, key_info_static->addr, wr_data, key_info_static->size);
-        if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
-            return;
-        }
-
-        status = val->fuse_ops(FUSE_READ, key_info_static->addr, rd_data, key_info_static->size);
-        if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
-            return;
-        }
-
-        for (i=0; i<key_info_static->size; i++) {
-            if (key[i] != rd_data[i]) {
-                val->print(PRINT_ERROR, "\n        Able to modify static key", 0);
-                val->err_check_set(TEST_CHECKPOINT_8, TBSA_STATUS_ERROR);
+        if ((key_info_static->state & FUSE_OPEN) == FUSE_OPEN) {
+            status = val->fuse_ops(FUSE_READ, key_info_static->addr, key, key_info_static->size);
+            if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
                 return;
             }
-        }
-    } else {
-       val->print(PRINT_INFO, "\n        Static key is not open", 0);
-    }
 
+            data = 0;
+            /* Check that the static key is non-zero*/
+            for(i = 0; i < key_info_static->size; i++)
+                data += key[i];
+
+            if (!data) {
+                val->print(PRINT_ERROR, "\n        Incorrect Static Key", 0);
+                val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_ERROR);
+                return;
+            }
+
+            status = val->fuse_ops(FUSE_WRITE, key_info_static->addr, wr_data, key_info_static->size);
+            if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
+                return;
+            }
+
+            status = val->fuse_ops(FUSE_READ, key_info_static->addr, rd_data, key_info_static->size);
+            if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
+                return;
+            }
+
+            for (i = 0; i < key_info_static->size; i++) {
+                if (key[i] != rd_data[i]) {
+                    val->print(PRINT_ERROR, "\n        Able to modify static key", 0);
+                    val->err_check_set(TEST_CHECKPOINT_8, TBSA_STATUS_ERROR);
+                    return;
+                }
+            }
+        } else {
+           val->print(PRINT_INFO, "\n        Static key is not open", 0);
+        }
+        instance++;
+    } while (instance < GET_NUM_INSTANCE(key_info_static));
     val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
 }
 
