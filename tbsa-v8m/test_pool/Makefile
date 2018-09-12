@@ -38,7 +38,7 @@ DIRECTORY := $(subst $(comma), , $(SUITE))
 endif
 
 build:
-	$(foreach d, $(DIRECTORY), cd $d && $(MAKE) TARGET=$(TARGET) && cd ..;)
+	$(foreach d, $(DIRECTORY), cd $d && $(MAKE) TARGET=$(TARGET) ARCH=$(ARCH) && cd ..;)
 
 clean:
 	$(foreach d, $(CLEAN_DIRECTORY), cd $d && $(MAKE) clean && cd ..;)

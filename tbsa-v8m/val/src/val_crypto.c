@@ -89,7 +89,7 @@ tbsa_status_t val_crypto_validate_public_key(crypt_t type, uint32_t *key, uint32
                 instance      : instance of the key
     @return   - error status
 **/
-tbsa_status_t val_crypto_get_key_info(key_desc_t **key_desc, key_type_t key_type, uint32_t instance)
+tbsa_status_t val_crypto_get_key_info(key_desc_t **key_desc, key_type_t key_type, uint32_t *instance)
 {
     key_desc_t    *key_desc_l;
     key_hdr_t     *key_hdr;
@@ -101,6 +101,8 @@ tbsa_status_t val_crypto_get_key_info(key_desc_t **key_desc, key_type_t key_type
                           (uint8_t **)&key_hdr, (uint32_t *)sizeof(key_hdr_t));
     if (status != TBSA_STATUS_SUCCESS)
         return status;
+
+    index = *instance;
 
     while (index < key_hdr->num) {
         status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_KEY, KEY_KEY, index),
@@ -119,6 +121,7 @@ tbsa_status_t val_crypto_get_key_info(key_desc_t **key_desc, key_type_t key_type
 
     if (key_present) {
         *key_desc = key_desc_l;
+        *instance = index;
         return TBSA_STATUS_SUCCESS;
     }
 

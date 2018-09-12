@@ -39,14 +39,14 @@ void tbsa_main (void)
         val_print(PRINT_ERROR, "\nVal Infra Init failed with error = %x ", status);
         goto exit;
     }
-    val_print(PRINT_ALWAYS, "\nTBSA Compliance Suite",0);
-    val_print(PRINT_ALWAYS, "\nVersion :\t%d.", TBSA_ACS_MAJOR_VER);
+    val_print(PRINT_ALWAYS, "\n\rTBSA Compliance Suite",0);
+    val_print(PRINT_ALWAYS, "\n\rVersion :\t%d.", TBSA_ACS_MAJOR_VER);
     val_print(PRINT_ALWAYS, "%d\n\n", TBSA_ACS_MINOR_VER);
 
 
     /* Call the dispatcher routine*/
     tbsa_dispatcher(test_id_prev);
-    val_print(PRINT_ALWAYS, "\n\nEntering standby\n", 0);
+    val_print(PRINT_ALWAYS, "\n\n\rEntering standby\n", 0);
 
 exit:
     while(1) {

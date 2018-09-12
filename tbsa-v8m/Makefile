@@ -33,20 +33,10 @@ SUITE :=
 # Root folder
 ROOT_DIR:=.
 
-VALINCDIR     :=val/include/
-CFLAGS        :=-march=armv8-m.main -mcmse -mthumb -Wall -Werror -O0 -fdata-sections -ffunction-sections -I$(VALINCDIR)
-ASFLAGS       :=-march=armv8-m.main -mthumb
-LDFLAGS       :=\
-               -Xlinker --fatal-warnings \
-               -Xlinker --gc-sections \
-               -z max-page-size=0x400 \
-               -Xlinker -Map=tbsa.map
-
-SYSLIBS       :=$(OUT_DIR)/$(VLIB) $(OUT_DIR)/$(PLIB) -lgcc -lc -lnosys
 
 .PHONY: all clean
 
-all: check_target clean gen_database gen_linker setup_cmsis build
+all: check_target check_arch clean gen_database gen_linker setup_cmsis build
 
 check_target:
 ifeq ($(TARGET),)
@@ -54,6 +44,22 @@ ifeq ($(TARGET),)
 	@exit 1
 endif
 	@if [ ! -d "./platform/board/$(TARGET)/" ]; then { echo "Target Not Found!!!"; exit 1; } fi
+
+check_arch:
+ifeq ($(ARCH),)
+ARCH := main
+endif
+
+VALINCDIR     :=val/include/
+CFLAGS        :=-march=armv8-m.$(ARCH) -mcmse -mthumb -Wall -Werror -O0 -fdata-sections -ffunction-sections -I$(VALINCDIR)
+ASFLAGS       :=-march=armv8-m.$(ARCH) -mthumb
+LDFLAGS       :=\
+               -Xlinker --fatal-warnings \
+               -Xlinker --gc-sections \
+               -z max-page-size=0x400 \
+               -Xlinker -Map=tbsa.map
+
+SYSLIBS       :=$(OUT_DIR)/$(VLIB) $(OUT_DIR)/$(PLIB) -lgcc -lc -lnosys
 
 gen_database:
 	@echo ""
@@ -81,7 +87,8 @@ setup_cmsis:
 build: output pal_lib $(VLIB) tbsa.bin
 
 tbsa_val_src  :=$(wildcard val/src/*.c)
-tbsa_val_src_s:=$(wildcard val/src/asm/*.s)
+tbsa_val_src_s :=$(wildcard val/src/asm/val_secure_$(ARCH).s)
+tbsa_val_src_s +=$(wildcard val/src/asm/val_pe_support.s)
 
 tbsa_val_obj  :=$(tbsa_val_src:.c=.o)
 tbsa_val_obj  +=$(tbsa_val_src_s:.s=.o)
@@ -90,7 +97,7 @@ output:
 	mkdir -p $(OUT_DIR)
 
 pal_lib:
-	cd platform/board/$(TARGET) && make ODIR=$(OUT_DIR) LIBNAME=$(PLIB) ENV=$(ENV)
+	cd platform/board/$(TARGET) && make ODIR=$(OUT_DIR) LIBNAME=$(PLIB) ENV=$(ENV) ARCH=$(ARCH)
 
 $(VLIB): $(tbsa_val_obj)
 	$(AR) -rc $(OUT_DIR)/$@ $^
@@ -108,7 +115,7 @@ tbsa.bin:tbsa.elf
 	mv tbsa.elf $(OUT_DIR)
 	mv tbsa.hex $(OUT_DIR)
 	mv tbsa.map $(OUT_DIR)
-	cd test_pool && make VLIB=$(OUT_DIR)/$(VLIB) PLIB=$(OUT_DIR)/$(PLIB)
+	cd test_pool && make VLIB=$(OUT_DIR)/$(VLIB) PLIB=$(OUT_DIR)/$(PLIB) ARCH=$(ARCH)
 
 tbsa.elf:tbsa_app/tbsa_main.c
 	$(CC) $(CFLAGS) -Tplatform/board/$(TARGET)/linker/tbsa.linker $(LDFLAGS) -o $@ tbsa_app/tbsa_main.c $(SYSLIBS)

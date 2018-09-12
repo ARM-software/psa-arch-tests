@@ -81,19 +81,19 @@ Refer to the [User Guide](docs/Arm_TBSA-v8M_Arch_Test_Validation_Methodology_and
 ## Build steps
 
 To build TBSA-v8M test suite for a given platform, execute the following commands: <br/>
-	1. cd syscomp_tbsa_m <br />
-	2. make TARGET=<platform_name>  <br />
-	   Example: make TARGET=fvp
+	1. cd tbsa-v8m <br />
+	2. make TARGET=<platform_name> ARCH=<main/base><br />
+	   Example: make TARGET=fvp ARCH=main
 
 To build only certain test for a given platform, execute the following commands: <br/>
-    1. cd syscomp_tbsa_m <br />
-    2. make TARGET=<platform_name> SUITE=<test_name> <br />
-       Example: make TARGET=fvp SUITE=boot,crypto,mem
+    1. cd tbsa-v8m <br />
+    2. make TARGET=<platform_name> ARCH=<main/base> SUITE=<test_name> <br />
+       Example: make TARGET=fvp ARCH=main SUITE=boot,crypto,mem
 
 To build for CMSIS environment, execute the following commands:<br/>
-    1. cd syscomp_tbsa_m <br />
-    2. make TARGET=<platform_name> SUITE=<test_name> ENV=<build_environment><br />
-       Example: make TARGET=fvp SUITE=boot,crypto,mem ENV=cmsis <br/>
+    1. cd tbsa-v8m <br />
+    2. make TARGET=<platform_name> ARCH=<main/base> SUITE=<test_name> ENV=<build_environment><br />
+       Example: make TARGET=fvp ARCH=main SUITE=boot,crypto,mem ENV=cmsis <br/>
        Note: Default environment is baremetal
 
 <br /> where <platform_name> is the same as the name of the target specific directory created in the platform/board directory.

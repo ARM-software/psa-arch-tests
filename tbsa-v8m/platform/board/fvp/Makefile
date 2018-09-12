@@ -40,7 +40,7 @@ WDTIMERINCDIR :=../../../platform/peripherals/watchdog/arm/include/
 CMSISINCDIR   :=../../../platform/CMSIS_5/CMSIS/Core/Include/
 CMSISDRVINCDIR:=../../../platform/CMSIS_5/CMSIS/Driver/Include/
 DEVINCDIR     :=../../../platform/CMSIS_5/Device/ARM/ARMv8MML/Include/
-CFLAGS        :=-march=armv8-m.main -mcmse -mthumb -Wall -Werror -O0 -fdata-sections -ffunction-sections \
+CFLAGS        :=-march=armv8-m.$(ARCH) -mcmse -mthumb -Wall -Werror -O0 -fdata-sections -ffunction-sections \
                 -I${PALTARDIR}      \
                 -I${FRAMEINCDIR}    \
                 -I${DPMINCDIR}      \

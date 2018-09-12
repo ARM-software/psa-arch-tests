@@ -40,7 +40,7 @@ void entry_hook(tbsa_val_api_t *val)
     val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
 }
 
-void secure_fault_esr (unsigned long *sf_args)
+void hard_fault_esr (unsigned long *sf_args)
 {
     g_val->print(PRINT_INFO, "\nSecureFault triggered when HUK was accessed from"
                  "non-Trusted world", 0);
@@ -50,7 +50,7 @@ void secure_fault_esr (unsigned long *sf_args)
 }
 
 __attribute__((naked))
-void SF_Handler(void)
+void HF_Handler(void)
 {
     asm volatile("mrs r0, control_ns \n"
                  "mov r1, #0x2       \n"
@@ -58,15 +58,15 @@ void SF_Handler(void)
                  "cmp r0, r1         \n"
                  "beq _psp_ns        \n"
                  "mrs r0, msp_ns     \n"
-                 "b secure_fault_esr \n"
+                 "b hard_fault_esr \n"
                  "_psp_ns:           \n"
                  "mrs r0, psp_ns     \n"
-                 "b secure_fault_esr \n");
+                 "b hard_fault_esr \n");
 }
 
 tbsa_status_t setup_ns_env(void)
 {
-    return g_val->interrupt_setup_handler(EXCP_NUM_SF, 0, SF_Handler);
+    return g_val->interrupt_setup_handler(EXCP_NUM_HF, 0, HF_Handler);
 }
 
 void test_payload(tbsa_val_api_t *val)

@@ -74,7 +74,7 @@ typedef struct {
     tbsa_status_t (*crypto_key_generate)       (uint8_t *key, crypt_t enc_type, uint32_t size);
     tbsa_status_t (*fuse_get_lcs)              (uint32_t *pLcs);
     tbsa_status_t (*crypto_validate_public_key) (crypt_t type, uint32_t *key, uint32_t size, addr_t addr, uint32_t *valid);
-    tbsa_status_t (*crypto_get_key_info)       (key_desc_t **key_info_desc, key_type_t key_type, uint32_t instance);
+    tbsa_status_t (*crypto_get_key_info)       (key_desc_t **key_info_desc, key_type_t key_type, uint32_t *instance);
     tbsa_status_t (*crypto_set_base_addr)      (dev_attr_t attribute);
     tbsa_status_t (*crypto_revoke_key)         (uint32_t index, addr_t addr, uint32_t size);
     tbsa_status_t (*fuse_ops)                  (fuse_ops_t fuse_ops, addr_t addr, uint32_t *data, uint32_t size);
@@ -144,7 +144,7 @@ tbsa_status_t val_is_wd_timer_enabled_nsc (addr_t base_addr);
 
 tbsa_status_t val_crypto_key_generate_nsc        (uint8_t *key, crypt_t enc_type, uint32_t size);
 tbsa_status_t val_crypto_validate_public_key_nsc (crypt_t type, uint32_t *key, uint32_t size, addr_t addr, uint32_t *valid);
-tbsa_status_t val_crypto_get_key_info_nsc        (key_desc_t **key_info_desc, key_type_t key_type, uint32_t instance);
+tbsa_status_t val_crypto_get_key_info_nsc        (key_desc_t **key_info_desc, key_type_t key_type, uint32_t *instance);
 tbsa_status_t val_crypto_set_base_addr_nsc       (dev_attr_t attribute);
 tbsa_status_t val_crypto_revoke_key_nsc          (uint32_t index, addr_t addr, uint32_t size);
 tbsa_status_t val_fuse_get_lcs_nsc               (uint32_t *pLcs);

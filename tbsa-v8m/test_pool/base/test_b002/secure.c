@@ -57,8 +57,8 @@ test_payload(tbsa_val_api_t *val)
             return;
     }
 
-    val->mem_reg_read(ID_PFR1, &read_val);
-    if (read_val & 0xF0) {
+    /* Check for Security Extensions */
+    if (is_sec_ext_enabled()) {
         val->print(PRINT_DEBUG, "Security Extension implemented\n", 0);
     } else {
         val->print(PRINT_ERROR, "Security Extension not implemented\n", 0);

@@ -68,12 +68,12 @@ tt_asm:
 
 ldr_wide_asm:
     ldr r0, [r0]
-    NOP
+    nop
     bx lr
 
 str_wide_asm:
     str r1, [r0]
-    NOP
+    nop
     bx lr
 
 dsb_asm:
