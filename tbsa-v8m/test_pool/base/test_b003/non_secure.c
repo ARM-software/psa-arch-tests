@@ -37,7 +37,9 @@ void entry_hook(tbsa_val_api_t *val)
 void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
-    uint32_t      instance         = 0;
+    uint32_t      instance = 0;
+    uint32_t      pattern1;
+    uint32_t      pattern2;
 
     do {
         status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_SRAM, instance),
@@ -49,8 +51,9 @@ void test_payload(tbsa_val_api_t *val)
 
         if (memory_desc->attribute == MEM_CONFIGURABLE) {
             /* Read the previously written location and check they are scrubbed */
-            if ((*(uint32_t*)(memory_desc->start) != PATTERN1) && \
-                (*(uint32_t*)(memory_desc->end - ((uint32_t)(memory_desc->end) % 0x4) - 0x4 ) != PATTERN2)) {
+            val->mem_read((uint32_t*)(memory_desc->start + memory_desc->ns_offset), WORD, &pattern1);
+            val->mem_read((uint32_t*)(memory_desc->end - ((uint32_t)(memory_desc->end) % 0x4) - 0x4 + memory_desc->ns_offset), WORD, &pattern2);
+            if ((pattern1 != PATTERN1) && (pattern2 != PATTERN2)) {
                 val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
             } else {
                 val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_ERROR);

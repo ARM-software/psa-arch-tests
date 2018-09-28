@@ -98,7 +98,7 @@ tbsa_status_t  val_set_status    (uint32_t status);
 uint32_t       val_get_status    (void);
 
 void           val_system_reset      (system_reset_t reset_type);
-system_reset_t val_system_reset_type (void);
+bool_t         val_system_reset_type (system_reset_t reset_type);
 
 char           *val_get_comp_name(test_id_t test_id);
 

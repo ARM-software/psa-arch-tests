@@ -22,7 +22,7 @@
 #include "val_infra.h"
 
 #define TBSA_ACS_MAJOR_VER    0
-#define TBSA_ACS_MINOR_VER    6
+#define TBSA_ACS_MINOR_VER    7
 
 uint32_t __tbsa_bss_start__;
 uint32_t __tbsa_bss_end__;

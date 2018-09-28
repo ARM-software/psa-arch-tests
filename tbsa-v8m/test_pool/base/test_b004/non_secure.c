@@ -28,6 +28,7 @@ TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_BASE_BASE, 4),
                   exit_hook);
 
 memory_desc_t *memory_desc;
+memory_desc_t *nvram_desc;
 
 uint32_t read_cpuid(void)
 {
@@ -53,13 +54,13 @@ void test_payload(tbsa_val_api_t *val)
     uint32_t      shcsr            = 0UL;
 
     status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVRAM, 0),
-                                   (uint8_t **)&memory_desc,
+                                   (uint8_t **)&nvram_desc,
                                    (uint32_t *)sizeof(memory_desc_t));
     if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
         return;
     }
 
-    status = val->nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
+    status = val->nvram_read(nvram_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
     if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
         return;
     }
@@ -79,13 +80,12 @@ void test_payload(tbsa_val_api_t *val)
                 sram_block_found = TRUE;
 
                 /* Ensure the configurable block is Non-secure */
-
-                if(val->is_secure_address(memory_desc->start)) {
-                    /* Configure a given block of memory as Non-secure one */
-                    status = val->mpc_configure_security_attribute(0, memory_desc->start, memory_desc->end, MEM_NONSECURE);
-                    if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
-                        return;
-                    }
+                status = val->mpc_configure_security_attribute(memory_desc->mpc, \
+                                                               (memory_desc->start + memory_desc->ns_offset), \
+                                                               (memory_desc->end + memory_desc->ns_offset), \
+                                                               MEM_NONSECURE);
+                if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
+                    return;
                 }
 
                 /* Let's run a piece of code in Non-secure mode which returns value zero */
@@ -103,9 +103,12 @@ void test_payload(tbsa_val_api_t *val)
 
                 /* Configure a given block of memory as Secure one, before that */
                 /* let's copy opcodes which shall have valid results when executed from trusted world */
-                val->memcpy((void*)memory_desc->start, (void*)((uint32_t)read_cpuid & ~0x1UL), 0x20);
+                val->memcpy((void*)(memory_desc->start + memory_desc->ns_offset), (void*)((uint32_t)read_cpuid & ~0x1UL), 0x20);
 
-                status = val->mpc_configure_security_attribute(0, memory_desc->start, memory_desc->end, MEM_SECURE);
+                status = val->mpc_configure_security_attribute(memory_desc->mpc, \
+                                                               (memory_desc->start + memory_desc->s_offset), \
+                                                               (memory_desc->end + memory_desc->s_offset), \
+                                                               MEM_SECURE);
                 if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
                     return;
                 }
@@ -121,7 +124,7 @@ void test_payload(tbsa_val_api_t *val)
         }
 
         boot.wb = WARM_BOOT_REQUESTED;
-        status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
+        status = val->nvram_write(nvram_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
         if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
             return;
         }
@@ -132,7 +135,7 @@ void test_payload(tbsa_val_api_t *val)
             return;
         }
 
-        status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SHCSR), &shcsr, sizeof(shcsr));
+        status = val->nvram_write(nvram_desc->start, TBSA_NVRAM_OFFSET(NV_SHCSR), &shcsr, sizeof(shcsr));
         if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
             return;
         }
@@ -146,37 +149,38 @@ void test_payload(tbsa_val_api_t *val)
         /* As per the rule, we cannot execute in secure mode as the memory block is reallocated from
          * Non-trusted to trusted, so we expect fault to occur !
          */
-        val->execute_in_trusted_mode((addr_t)((uint32_t)(memory_desc->start) | 0x1));
+        val->execute_in_trusted_mode(memory_desc->start + memory_desc->s_offset);
         /* Shouldn't come here */
         val->err_check_set(TEST_CHECKPOINT_E, TBSA_STATUS_ERROR);
-        while(1);
-    } else {
-
-        /* If we are here means, we are in second run of this test */
-        boot.wb = BOOT_UNKNOWN;
-        status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
-        if (val->err_check_set(TEST_CHECKPOINT_F, status)) {
-            return;
-        }
-
-        status = val->nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SHCSR), &shcsr, sizeof(shcsr));
-        if (val->err_check_set(TEST_CHECKPOINT_10, status)) {
-            return;
-        }
-
-        /* Restoring faults */
-        status = val->mem_reg_write(SHCSR, shcsr);
-        if (val->err_check_set(TEST_CHECKPOINT_11, status)) {
-            return;
-        }
+        return;
     }
 
-   val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
+    val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
 }
 
 void exit_hook(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
+    boot_t        boot;
+    uint32_t      shcsr = 0UL;
+
+    /* If we are here means, we are in second run of this test */
+    boot.wb = BOOT_UNKNOWN;
+    status = val->nvram_write(nvram_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
+    if (val->err_check_set(TEST_CHECKPOINT_F, status)) {
+        return;
+    }
+
+    status = val->nvram_read(nvram_desc->start, TBSA_NVRAM_OFFSET(NV_SHCSR), &shcsr, sizeof(shcsr));
+    if (val->err_check_set(TEST_CHECKPOINT_10, status)) {
+        return;
+    }
+
+    /* Restoring faults */
+    status = val->mem_reg_write(SHCSR, shcsr);
+    if (val->err_check_set(TEST_CHECKPOINT_11, status)) {
+        return;
+    }
 
     /* Restoring default Handler */
     status = val->interrupt_restore_handler(EXCP_NUM_HF);

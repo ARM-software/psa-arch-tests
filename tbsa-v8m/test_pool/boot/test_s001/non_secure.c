@@ -77,24 +77,27 @@ void test_payload(tbsa_val_api_t *val)
         /* Trying to get the last reset type.
          * Executing in non-secure mode, expecting secure fault
          */
-        val_system_reset_type();
+        val_system_reset_type(WARM_RESET);
+        /* Shouldn't come here */
+        val->err_check_set(TEST_CHECKPOINT_8, TBSA_STATUS_ERROR);
+        return;
     } else {
 
         /* If we are here means, we are in second run of this test */
         boot.wb = BOOT_UNKNOWN;
         status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
-        if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
+        if (val->err_check_set(TEST_CHECKPOINT_9, status)) {
             return;
         }
 
         status = val->nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SHCSR), &shcsr, sizeof(shcsr));
-        if (val->err_check_set(TEST_CHECKPOINT_9, status)) {
+        if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
             return;
         }
 
         /* Restoring faults */
         status = val->mem_reg_write(SHCSR, shcsr);
-        if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
+        if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
             return;
         }
     }
@@ -117,7 +120,7 @@ void exit_hook(tbsa_val_api_t *val)
 
     /* Restoring default Handler */
     status = val->interrupt_restore_handler(EXCP_NUM_HF);
-    if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
         return;
     }
 }
