@@ -249,14 +249,17 @@ typedef struct _MEM_INFO_DESC_ {
 } memory_hdr_t;
 
 typedef struct _MEM_REGION_ {
-  cfg_type_t cfg_type;
-  addr_t     start;
-  addr_t     end;
-  mem_tgt_attr_t attribute;
-  /* Add the DPM index controlling the address range */
-  /* The ordering changed to avoid compiler packing */
-  uint32_t   dpm_index;
-  mem_type_t mem_type;
+    cfg_type_t     cfg_type;
+    addr_t         start;
+    addr_t         end;
+    addr_t         mpc;
+    uint32_t       s_offset;
+    uint32_t       ns_offset;
+    mem_tgt_attr_t attribute;
+    /* Add the DPM index controlling the address range */
+    /* The ordering changed to avoid compiler packing */
+    uint32_t   dpm_index;
+    mem_type_t mem_type;
 } memory_desc_t;
 
 
@@ -264,33 +267,33 @@ typedef struct _MEM_REGION_ {
   Protection units
 **/
 typedef struct _PROT_UNIT_HDR_DESC_ {
-  cfg_type_t cfg_type;
-  uint32_t   num;
+    cfg_type_t cfg_type;
+    uint32_t   num;
 } protection_units_hdr_t ;
 
 typedef struct _PROT_UNIT_INFO_DESC_ {
-  cfg_type_t    cfg_type;
-  addr_t        device_base;
-  dev_attr_t    attribute;
-  uint32_t      intr_id;
-  addr_t        start;
-  addr_t        end;
-  mem_tgt_attr_t mem_attr;
+    cfg_type_t     cfg_type;
+    addr_t         device_base;
+    dev_attr_t     attribute;
+    uint32_t       intr_id;
+    addr_t         start;
+    addr_t         end;
+    mem_tgt_attr_t mem_attr;
 } protection_units_desc_t;
 
 /**
   CRYPTO Information
 **/
 typedef enum {
- ECC                       = 0x1000,
- RSA                       = 0x2000,
- DIFFIE_HELLMAN            = 0x3000,
- NONE                      = 0x4000,
- ASM_MSK                   = 0xF000,
- HASH                      = 0x10000,
- AES                       = 0x20000,
- DES                       = 0x30000,
- SYM_MSK                   = 0xF0000,
+    ECC            = 0x1000,
+    RSA            = 0x2000,
+    DIFFIE_HELLMAN = 0x3000,
+    NONE           = 0x4000,
+    ASM_MSK        = 0xF000,
+    HASH           = 0x10000,
+    AES            = 0x20000,
+    DES            = 0x30000,
+    SYM_MSK        = 0xF0000,
 } crypt_t;
 
 typedef struct _CRYPTO_INFO_NUM_ {
@@ -339,12 +342,12 @@ typedef struct _NETWORK_PER_INFO_NUM_ {
 } network_peripheral_hdr_t;
 
 typedef struct _NETWORK_PER_INFO_DESC_ {
-  cfg_type_t  cfg_type;
-  uint32_t    vendor_id;
-  uint32_t    device_id;
-  addr_t      base;
-  uint32_t    intr_id;
-  dev_attr_t  attribute;
+    cfg_type_t  cfg_type;
+    uint32_t    vendor_id;
+    uint32_t    device_id;
+    addr_t      base;
+    uint32_t    intr_id;
+    dev_attr_t  attribute;
 } network_peripheral_desc_t;
 
 
@@ -353,8 +356,8 @@ typedef struct _NETWORK_PER_INFO_DESC_ {
 **/
 
 typedef struct _CLOCKS_HDR_INFO_ {
-  cfg_type_t cfg_type;
-  uint32_t   num;
+    cfg_type_t cfg_type;
+    uint32_t   num;
 } clocks_hdr_t;
 
 typedef struct _SYS_FREQ_INFO_ {
@@ -369,8 +372,8 @@ typedef struct _SYS_FREQ_INFO_ {
 **/
 
 typedef struct _KEY_INFO_HDR_ {
-  cfg_type_t cfg_type;
-  uint32_t   num;
+    cfg_type_t cfg_type;
+    uint32_t   num;
 } key_hdr_t;
 
 typedef struct _KEY_INFO_DESC_ {
@@ -387,8 +390,8 @@ typedef struct _KEY_INFO_DESC_ {
 **/
 
 typedef struct _FUSE_INFO_HDR_ {
-  cfg_type_t cfg_type;
-  uint32_t   num;
+    cfg_type_t cfg_type;
+    uint32_t   num;
 } fuse_hdr_t;
 
 typedef struct _FUSE_INFO_DESC_ {

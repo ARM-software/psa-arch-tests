@@ -56,19 +56,25 @@ void test_payload(tbsa_val_api_t *val)
             sram_block_found = TRUE;
 
             /* Ensure the configurable block is secure */
-            if(!val->is_secure_address(memory_desc->start)) {
-                /* Configure a given block of memory as secure one */
-                status = val->mpc_configure_security_attribute(0, memory_desc->start, memory_desc->end, MEM_SECURE);
-                if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
-                    return;
-                }
+            status = val->mpc_configure_security_attribute(memory_desc->mpc, \
+                                                           (memory_desc->start + memory_desc->s_offset), \
+                                                           (memory_desc->end + memory_desc->s_offset), \
+                                                           MEM_SECURE);
+            if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
+                return;
             }
+
             /* Writing a known pattern to trusted shared volatile storage */
-            *(uint32_t*)(memory_desc->start)                                 = PATTERN1;
-            *(uint32_t*)(memory_desc->end - ((uint32_t)(memory_desc->end) % 0x4) - 0x4 ) = PATTERN2;
+            val->mem_write((uint32_t*)(memory_desc->start + memory_desc->s_offset), WORD, PATTERN1);
+            val->mem_write((uint32_t*)(memory_desc->end - ((uint32_t)(memory_desc->end) % 0x4) - 0x4 + memory_desc->s_offset), \
+                           WORD, \
+                           PATTERN2);
 
             /* Configure given secure block to non-secure */
-            status = val->mpc_configure_security_attribute(0, memory_desc->start, memory_desc->end, MEM_NONSECURE);
+            status = val->mpc_configure_security_attribute(memory_desc->mpc, \
+                                                           (memory_desc->start + memory_desc->ns_offset), \
+                                                           (memory_desc->end + memory_desc->ns_offset), \
+                                                           MEM_NONSECURE);
             if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
                 return;
             }

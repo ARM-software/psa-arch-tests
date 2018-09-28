@@ -46,7 +46,7 @@ void entry_hook(tbsa_val_api_t *val)
 void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t        status;
-    uint32_t             key_valid = 0, i;
+    uint32_t             key_valid = 0, i, instance = 0;
     uint32_t             key[TBSA_ROTPK_RSA_SIZE], data1[MAX_HASH_SIZE];
     uint32_t             data2[MAX_HASH_SIZE] = {0xDEADDEAD};
     key_desc_t           *key_desc;
@@ -56,7 +56,7 @@ void test_payload(tbsa_val_api_t *val)
         return;
     }
 
-    status = val->crypto_get_key_info((key_desc_t **)&key_desc, ROTPK, 0);
+    status = val->crypto_get_key_info(&key_desc, ROTPK, &instance);
     if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
         return;
     }

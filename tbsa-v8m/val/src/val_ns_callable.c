@@ -45,7 +45,7 @@ TRANSITION_NS_TO_S(uint32_t,      val_execute_in_trusted_mode, addr_t address);
 TRANSITION_NS_TO_S(tbsa_status_t, val_nvram_read, addr_t base, uint32_t offset, void *buffer, int size);
 TRANSITION_NS_TO_S(tbsa_status_t, val_nvram_write, addr_t base, uint32_t offset, void *buffer, int size);
 TRANSITION_NS_TO_S(void,          val_system_reset, system_reset_t reset_type);
-TRANSITION_NS_TO_S(system_reset_t,val_system_reset_type, void);
+TRANSITION_NS_TO_S(bool_t,        val_system_reset_type, system_reset_t reset_type);
 TRANSITION_NS_TO_S(tbsa_status_t, val_firmware_version_update, uint32_t instace, firmware_version_type_t firmware_version_type, uint32_t fw_ver_cnt);
 TRANSITION_NS_TO_S(uint32_t,      val_firmware_version_read, uint32_t instance, firmware_version_type_t firmware_version_type);
 TRANSITION_NS_TO_S(tbsa_status_t, val_test_initialize, tbsa_test_init_t *init);

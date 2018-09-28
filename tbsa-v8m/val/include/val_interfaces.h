@@ -44,8 +44,8 @@ typedef struct {
     uint32_t      (*execute_in_trusted_mode)   (addr_t address);
     tbsa_status_t (*nvram_read)                (addr_t base, uint32_t offset, void *buffer, int size);
     tbsa_status_t (*nvram_write)               (addr_t base, uint32_t offset, void *buffer, int size);
-    void          (*system_reset)              (system_reset_t);
-    system_reset_t(*system_reset_type)         (void);
+    void          (*system_reset)              (system_reset_t reset_type);
+    bool_t        (*system_reset_type)         (system_reset_t reset_type);
     tbsa_status_t (*firmware_version_update)   (uint32_t instance, firmware_version_type_t firmware_version_type, uint32_t fw_ver_cnt);
     uint32_t      (*firmware_version_read)     (uint32_t instance, firmware_version_type_t firmware_version_type);
     tbsa_status_t (*test_initialize)           (tbsa_test_init_t *init);
@@ -155,7 +155,7 @@ tbsa_status_t val_nvram_read_nsc  (addr_t base, uint32_t offset, void *buffer, i
 tbsa_status_t val_nvram_write_nsc (addr_t base, uint32_t offset, void *buffer, int size);
 
 void           val_system_reset_nsc      (system_reset_t reset_type);
-system_reset_t val_system_reset_type_nsc (void);
+bool_t         val_system_reset_type_nsc (system_reset_t reset_type);
 
 tbsa_status_t val_firmware_version_update_nsc (uint32_t instance, firmware_version_type_t firmware_version_type, uint32_t fw_ver_cnt);
 uint32_t      val_firmware_version_read_nsc   (uint32_t instance, firmware_version_type_t firmware_version_type);

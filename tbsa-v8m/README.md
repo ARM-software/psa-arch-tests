@@ -21,8 +21,8 @@ The tests are available as open source. The tests and the corresponding abstract
 
 
 ## Release details
- - Release Version - 0.6
- - Code Quality: Pre-Beta <br />
+ - Release Version - 0.7
+ - Code Quality: Beta <br />
    The suite is in development. This indicates that the suite contains tests which have not been validated on any platform. Please use this opportunity to suggest enhancements and point out errors.
 
  - The TBSA-v8M tests are written for version 1.1 of the TBSA-v8M specification.
@@ -61,7 +61,7 @@ See User guide document to get details on the steps involved in Porting the test
 
 Before starting the test suite build, ensure that the following requirements are met:
 
-- Host Operating System     : Ubuntu
+- Host Operating System     : Ubuntu 16.04.4
 - Scripting tools           : Perl 5.22.1
 - Other open-source tools   : GCC 6.3.1
 
@@ -108,7 +108,7 @@ TBSA build generates two output binaries:
 ## Test Suite Execution
 The following steps describe the execution flow prior to the start of test execution.
 1. The target platform must load the tbsa.elf file.
-2. The suite exectuion begins from the tbsa_entry.
+2. The suite execution begins from the tbsa_entry.
 3. The tests are executed sequentially in a loop in the tbsa_dispatcher function.
 
 
@@ -122,7 +122,7 @@ Arm TBSA-v8M Architecture test suite is distributed under Apache v2.0 License.
  - For feedback, use the GitHub Issue Tracker that is associated with this repository.
  - For support, send an email to support-psa-arch-tests@arm.com with details.
  - Arm licensees can contact Arm directly through their partner managers.
- - Arm welcomes code contributions through GitHub pull requests. For details, see "docs/Contributions.txt".
+ - Arm welcomes code contributions through GitHub pull requests.
 
 --------------
 

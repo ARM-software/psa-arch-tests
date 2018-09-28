@@ -72,7 +72,7 @@ tbsa_status_t setup_ns_env(void)
 void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
-    uint32_t      data, expected_fuse_type, i;
+    uint32_t      data, expected_fuse_type, i, instance = 0;
     uint32_t      key[32];
     key_desc_t    *key_info_huk;
 
@@ -82,7 +82,7 @@ void test_payload(tbsa_val_api_t *val)
         return;
     }
 
-    status = val->crypto_get_key_info((key_desc_t **)&key_info_huk, HUK, 0);
+    status = val->crypto_get_key_info(&key_info_huk, HUK, &instance);
     if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
         return;
     }

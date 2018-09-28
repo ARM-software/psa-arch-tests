@@ -253,7 +253,7 @@ tbsa_status_t val_nvram_init (void)
         return status;
     }
 
-    if ((val_system_reset_type() == COLD_RESET) && (boot.cb != COLD_BOOT_REQUESTED)) {
+    if (val_system_reset_type(COLD_RESET) && (boot.cb != COLD_BOOT_REQUESTED)) {
         test_id = TBSA_TEST_INVALID;
         status = val_nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_TEST), &test_id, sizeof(test_id_t));
         if(status != TBSA_STATUS_SUCCESS) {
@@ -546,16 +546,18 @@ void val_system_reset(system_reset_t reset_type)
 
 /*
     @brief    - Reports the last reset type.
-    @return   - system_reset_t
+    @return   - TRUE/FALSE
 */
-system_reset_t val_system_reset_type(void)
+bool_t val_system_reset_type(system_reset_t reset_type)
 {
-    if(pal_is_cold_reset()) {
-        return COLD_RESET;
-    } else if(pal_is_warm_reset()){
-        return WARM_RESET;
-    } else {
-        return UNKNOWN_RESET;
+    switch (reset_type)
+    {
+        case COLD_RESET:
+            return pal_is_cold_reset();
+        case WARM_RESET:
+            return pal_is_warm_reset();
+        default:
+            return UNKNOWN_RESET;
     }
 }
 
@@ -652,13 +654,14 @@ void val_memset(void *dst, uint32_t str, uint32_t size)
      @param   - addr : Trusted address
      @return  - Trusted code return value
 */
-__attribute__((naked))
 uint32_t val_execute_in_trusted_mode(addr_t address)
 {
-    __asm__("push {lr, r3}\n\t"
-            "mov  r3, r0\n\t"
-            "blx  r3\n\t"
-            "pop  {pc, r3}\n\t");
+    typedef uint32_t (*fun_ptr)(void);
+    fun_ptr fp;
+
+    fp = (fun_ptr)address;
+
+    return fp();
 }
 
 /*
