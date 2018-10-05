@@ -43,7 +43,7 @@ void test_payload(tbsa_val_api_t *val)
     tbsa_status_t   status;
     fuse_desc_t     *fuse_desc;
     uint32_t        rd_data1 = 0, rd_data2 = 0;
-    uint32_t        wr_data1 = 0x0000FFFF, wr_data2 = 0x0000F0F0;
+    uint32_t        wr_data1, wr_data2 = 0xF0F0F0F0;
 
     status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
     if (val->err_check_set(TEST_CHECKPOINT_1, status)) {
@@ -54,6 +54,11 @@ void test_payload(tbsa_val_api_t *val)
     if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
         return;
     }
+
+    if (fuse_desc->def_val == 0)
+        wr_data1 = 0xFFFFFFFF;
+    else
+        wr_data1 = 0x0;
 
     status = val->fuse_ops(FUSE_WRITE, fuse_desc->addr, &wr_data1, fuse_desc->size);
     if (val->err_check_set(TEST_CHECKPOINT_3, status)) {

@@ -57,8 +57,8 @@ void test_payload(tbsa_val_api_t *val)
                 val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
             } else {
                 val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_ERROR);
+                return;
             }
-            break;
         }
         instance++;
     } while(instance < GET_NUM_INSTANCE(memory_desc));

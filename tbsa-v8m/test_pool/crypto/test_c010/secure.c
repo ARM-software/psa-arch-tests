@@ -41,7 +41,7 @@ void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t   status;
     uint32_t        crypto_lcs;
-    uint32_t        i, index = 0;
+    uint32_t        i, default_empty_value, index = 0;
     crypto_hdr_t    *crypto_hdr;
     crypto_desc_t   *crypto_desc;
     fuse_desc_t     *fuse_desc;
@@ -98,8 +98,16 @@ void test_payload(tbsa_val_api_t *val)
         return;
     }
 
+    if (fuse_desc->def_val == 0) {
+        default_empty_value = 0;
+    } else {
+        default_empty_value = 0xFFFFFFFF;
+         for (i = 0; i < fuse_desc->size; i++)
+            wr_data[i] = 0;
+   }
+
     for (i = 0; i < fuse_desc->size; i++) {
-        if (rd_data[i] != 0) {
+        if (rd_data[i] != default_empty_value) {
             val->print(PRINT_ERROR, "\n        Given fuse is not empty", 0);
             val->err_check_set(TEST_CHECKPOINT_7, TBSA_STATUS_INVALID);
             return;

@@ -42,7 +42,7 @@ void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
     uint32_t      i, instance = 0;
-    uint32_t      data, key[32] = {0xdeaddead};
+    uint32_t      data, key[32];
     key_desc_t    *key_info_trust;
     bool_t        key_present = FALSE;
 
@@ -52,7 +52,6 @@ void test_payload(tbsa_val_api_t *val)
     }
 
     do {
-
         status = val->crypto_get_key_info((key_desc_t **)&key_info_trust, TRUST, &instance);
         if (status != TBSA_STATUS_SUCCESS && key_present == FALSE) {
             val->err_check_set(TEST_CHECKPOINT_2, status);
@@ -65,16 +64,22 @@ void test_payload(tbsa_val_api_t *val)
             return;
         }
 
-        data = 0;
-        for(i = 0; i < key_info_trust->size; i++)
-            data += key[i];
+        if (key_info_trust->def_val == 0) {
+            data = 0;
+            for(i = 0; i < key_info_trust->size; i++)
+                data += key[i];
 
-        /* Check that if Trusted key is zero*/
-        if (data) {
-            for (i = 0; i < 32; i++) {
-                if (key[i] != 0xdeaddead) {
+            /* Check that if Trusted key is zero*/
+            if (data) {
+                val->print(PRINT_ERROR, "\n        Trusted key is accessible", 0);
+                val->err_check_set(TEST_CHECKPOINT_4, TBSA_STATUS_ERROR);
+                return;
+            }
+        } else {
+            for (i = 0; i < key_info_trust->size; i++) {
+                if (key[i] != key_info_trust->def_val) {
                     val->print(PRINT_ERROR, "\n        Trusted key is accessible", 0);
-                    val->err_check_set(TEST_CHECKPOINT_4, TBSA_STATUS_ERROR);
+                    val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_ERROR);
                     return;
                 }
             }

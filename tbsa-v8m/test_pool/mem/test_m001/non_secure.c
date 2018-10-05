@@ -47,12 +47,12 @@ void entry_hook(tbsa_val_api_t *val)
 
     /* Disabling SecureFault, UsageFault, BusFault, MemFault temporarily */
     status = val->mem_reg_read(SHCSR, &shcsr);
-    if (val->err_check_set(TEST_CHECKPOINT_1, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
         return;
     }
 
     status = val->mem_reg_write(SHCSR, (shcsr & ~0xF0000));
-    if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
         return;
     }
 
@@ -61,30 +61,19 @@ void entry_hook(tbsa_val_api_t *val)
 
 void test_payload(tbsa_val_api_t *val)
 {
-    uint32_t                data=0, instance=0, prot_unit_num=0;
-    protection_units_hdr_t  *prot_units;
+    uint32_t                data         = 0;
+    uint32_t                instance     = 0;
     protection_units_desc_t *prot_unit_desc;
     tbsa_status_t           status;
-	uint32_t                timeout = TIMEOUT_VALUE;
-    bool_t                  mpc_found = FALSE;
+	uint32_t                timeout      = TIMEOUT_VALUE;
+    bool_t                  mpc_found    = FALSE;
     bool_t                  timeout_flag = FALSE;
 
-
-
-    /* Get MPC configuration */
-    status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_PROTECTION_UNITS, 0, 0),
-									(uint8_t **)&prot_units, (uint32_t *)sizeof(protection_units_hdr_t));
-    if (val->err_check_set(TEST_CHECKPOINT_3, status))
-        return;
-
-    instance = 0;
-    while (prot_unit_num < prot_units->num) {
+    do {
         status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_PROTECTION_UNITS, PROTECTION_UNITS_MPC, instance),
                                         (uint8_t **)&prot_unit_desc, (uint32_t *)sizeof(protection_units_desc_t));
-        if (val->err_check_set(TEST_CHECKPOINT_4, status))
+        if (val->err_check_set(TEST_CHECKPOINT_7, status))
             return;
-
-
 
         if (prot_unit_desc->attribute == SECURE_PROGRAMMABLE) {
 
@@ -99,49 +88,38 @@ void test_payload(tbsa_val_api_t *val)
             while (IS_TEST_PENDING(val->get_status()) && (--timeout));
 
             if(!timeout) {
-                val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_TIMEOUT);
+                val->err_check_set(TEST_CHECKPOINT_8, TBSA_STATUS_TIMEOUT);
                 timeout_flag = TRUE;
             }
-
-            /* Restoring default Handler */
-            status = val->interrupt_restore_handler(EXCP_NUM_HF);
-            if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
-                return;
-            }
-
-            /* Perform a write and read back to make sure that non-secure access went through correctly */
-			val_mem_write(((uint32_t*) (prot_unit_desc->start)), WORD, 0xAABBCCDD);
-
-			status = val_mem_read_wide(((uint32_t*) (prot_unit_desc->start)), &data);
-
-            if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
-                return;
-            }
-
-			if (data != 0xAABBCCDD) {
-				val->err_check_set(TEST_CHECKPOINT_8,TBSA_STATUS_INCORRECT_VALUE);
-                return;
-			}
-
         }
-        prot_unit_num++;
         instance++;
+    } while(instance < GET_NUM_INSTANCE(prot_unit_desc));
+
+    /* Restoring default Handler */
+    status = val->interrupt_restore_handler(EXCP_NUM_HF);
+    if (val->err_check_set(TEST_CHECKPOINT_9, status)) {
+        return;
     }
 
-    if (mpc_found && (timeout_flag != TRUE)) {
+    /* Restoring faults */
+    status = val->mem_reg_write(SHCSR, shcsr);
+    if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
+        return;
+    }
 
+    if (timeout_flag == TRUE) {
+        val->err_check_set(TEST_CHECKPOINT_B, TBSA_STATUS_TIMEOUT);
+        return;
+    }
+
+    if (mpc_found) {
         val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
+    } else {
+        val->err_check_set(TEST_CHECKPOINT_C, TBSA_STATUS_NOT_FOUND);
+        return;
     }
-
 }
 
 void exit_hook(tbsa_val_api_t *val)
 {
-    tbsa_status_t status;
-
-    /* Restoring faults */
-    status = val->mem_reg_write(SHCSR, shcsr);
-    if (val->err_check_set(TEST_CHECKPOINT_9, status)) {
-        return;
-    }
 }

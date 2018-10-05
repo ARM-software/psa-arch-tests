@@ -383,6 +383,7 @@ typedef struct _KEY_INFO_DESC_ {
     addr_t       addr;
     uint32_t     index;
     uint32_t     state;
+    uint32_t     def_val;
 } key_desc_t;
 
 /**
@@ -399,6 +400,7 @@ typedef struct _FUSE_INFO_DESC_ {
     uint32_t     type;
     uint32_t     size;
     addr_t       addr;
+    uint32_t     def_val;
 } fuse_desc_t;
 
 /**

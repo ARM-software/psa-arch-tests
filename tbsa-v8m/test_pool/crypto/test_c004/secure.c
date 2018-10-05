@@ -78,37 +78,50 @@ void test_payload(tbsa_val_api_t *val)
                 return;
             }
 
-            data = 0;
-            /* Check that the static key is non-zero*/
-            for(i = 0; i < key_info_static->size; i++)
-                data += key[i];
+            if (key_info_static->def_val == 0) {
+                data = 0;
+                /* Check that the static key is non-zero*/
+                for(i = 0; i < key_info_static->size; i++)
+                    data += key[i];
 
-            if (!data) {
-                val->print(PRINT_ERROR, "\n        Incorrect Static Key", 0);
-                val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_ERROR);
-                return;
+                if (!data) {
+                    val->print(PRINT_ERROR, "\n        Incorrect Static Key", 0);
+                    val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_ERROR);
+                    return;
+                }
+            } else {
+                for (i = 0; i < key_info_static->size; i++) {
+                    wr_data[i] = 0;
+                    /* Check that the static key is not equal to default value */
+                    if (key[i] == key_info_static->def_val) {
+                        val->print(PRINT_ERROR, "\n        Incorrect HUK", 0);
+                        val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_ERROR);
+                        return;
+                    }
+                }
             }
 
             status = val->fuse_ops(FUSE_WRITE, key_info_static->addr, wr_data, key_info_static->size);
-            if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
+            if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
                 return;
             }
 
             status = val->fuse_ops(FUSE_READ, key_info_static->addr, rd_data, key_info_static->size);
-            if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
+            if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
                 return;
             }
 
             for (i = 0; i < key_info_static->size; i++) {
                 if (key[i] != rd_data[i]) {
                     val->print(PRINT_ERROR, "\n        Able to modify static key", 0);
-                    val->err_check_set(TEST_CHECKPOINT_8, TBSA_STATUS_ERROR);
+                    val->err_check_set(TEST_CHECKPOINT_9, TBSA_STATUS_ERROR);
                     return;
                 }
             }
         } else {
            val->print(PRINT_INFO, "\n        Static key is not open", 0);
         }
+
         instance++;
     } while (instance < GET_NUM_INSTANCE(key_info_static));
     val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
