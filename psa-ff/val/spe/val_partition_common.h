@@ -1,0 +1,496 @@
+/** @file
+ * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * SPDX-License-Identifier : Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+**/
+
+/* Note- This file contains the functions and variables definition which are common to
+   all partitions defined by acs. These functions and variables are declared with static
+   keyword because some fully isolated system may not allow to share code and data segment
+   between partitions and static will help each partition to have its own copy of code and data.
+   Moreover it can prevents symbol names conflict if these functions are separately compiled and
+   linked with each of partitions in fully isolated environment.
+*/
+
+#ifndef _VAL_COMMON_SP_APIS_H_
+#define _VAL_COMMON_SP_APIS_H_
+
+#include "val/common/val.h"
+#include "val_service_defs.h"
+
+/* <manifestfilename.h> Manifest definitions. Only accessible to Secure Partition.
+ * The file name is based on the name of the Secure Partitions manifest file.
+ * The name must not collide with other header files.
+ * Compliance tests expect the below manifest output files implementation from build tool.
+ */
+#include "client_partition_psa.h"
+#include "server_partition_psa.h"
+
+__UNUSED STATIC_DECLARE val_status_t val_print
+                        (print_verbosity_t verbosity, char *string, uint32_t data);
+__UNUSED STATIC_DECLARE val_status_t val_ipc_connect
+                        (uint32_t sid, uint32_t minor_version, psa_handle_t *handle );
+__UNUSED STATIC_DECLARE val_status_t val_ipc_call
+                        (psa_handle_t handle, psa_invec *in_vec, size_t in_len,
+                         psa_outvec *out_vec, size_t out_len);
+__UNUSED STATIC_DECLARE void val_ipc_close
+                        (psa_handle_t handle);
+__UNUSED STATIC_DECLARE val_status_t val_process_connect_request(psa_signal_t sig, psa_msg_t *msg);
+__UNUSED STATIC_DECLARE val_status_t val_process_call_request(psa_signal_t sig, psa_msg_t *msg);
+__UNUSED STATIC_DECLARE val_status_t val_process_disconnect_request
+                        (psa_signal_t sig, psa_msg_t *msg);
+__UNUSED STATIC_DECLARE val_status_t val_execute_secure_tests
+                        (uint32_t test_num, client_test_t *tests_list);
+__UNUSED STATIC_DECLARE val_status_t val_execute_secure_test_func
+                        (psa_handle_t *handle, test_info_t test_info, uint32_t sid);
+__UNUSED STATIC_DECLARE val_status_t val_get_secure_test_result(psa_handle_t *handle);
+__UNUSED STATIC_DECLARE val_status_t val_err_check_set(uint32_t checkpoint, val_status_t status);
+__UNUSED STATIC_DECLARE val_status_t val_nvmem_write(uint32_t offset, void *buffer, int size);
+__UNUSED STATIC_DECLARE val_status_t val_set_boot_flag(boot_state_t state);
+
+__UNUSED static val_api_t val_api = {
+    .print                     = val_print,
+    .err_check_set             = val_err_check_set,
+    .execute_secure_test_func  = val_execute_secure_test_func,
+    .get_secure_test_result    = val_get_secure_test_result,
+    .ipc_connect               = val_ipc_connect,
+    .ipc_call                  = val_ipc_call,
+    .ipc_close                 = val_ipc_close,
+    .set_boot_flag             = val_set_boot_flag,
+};
+
+__UNUSED static psa_api_t psa_api = {
+    .framework_version     = psa_framework_version,
+    .version               = psa_version,
+    .connect               = psa_connect,
+    .call                  = psa_call,
+    .close                 = psa_close,
+};
+
+/**
+    @brief    - Print module. This is client interface API of secure partition
+                val_print_sf API for spe world
+    @param    - verbosity: Print verbosity level
+              - string   : Input string
+              - data     : Value for format specifier
+    @return   - val_status_t
+**/
+STATIC_DECLARE val_status_t val_print(print_verbosity_t verbosity, char *string, uint32_t data)
+{
+    int             string_len = 0;
+    char            *p = string;
+    psa_handle_t    print_handle = 0;
+    psa_status_t    status_of_call = PSA_SUCCESS;
+    val_status_t    status = VAL_STATUS_SUCCESS;
+
+    while (*p != '\0')
+    {
+        string_len++;
+        p++;
+    }
+
+    psa_invec data1[3] = {{&verbosity, 4}, {string, string_len+1}, {&data, 4}};
+    print_handle = psa_connect(DRIVER_UART_SID, 0);
+
+    if (print_handle < 0)
+    {
+        return VAL_STATUS_CONNECTION_FAILED;
+    }
+    else
+    {
+        status_of_call = psa_call(print_handle, data1, 3, NULL, 0);
+        if (status_of_call != PSA_SUCCESS)
+        {
+            status = VAL_STATUS_CALL_FAILED;
+        }
+    }
+    psa_close(print_handle);
+    return status;
+}
+
+/**
+ * @brief Connect to given sid
+   @param  -sid : RoT service id
+   @param  -minor_version : minor_version of RoT service
+   @param  -handle - return connection handle
+ * @return val_status_t
+ */
+STATIC_DECLARE val_status_t val_ipc_connect(uint32_t sid, uint32_t minor_version,
+                                            psa_handle_t *handle )
+{
+    *handle = psa_connect(sid, minor_version);
+
+    if (*handle < 0)
+    {
+        return(VAL_STATUS_CONNECTION_FAILED);
+    }
+
+    return VAL_STATUS_SUCCESS;
+}
+
+/**
+ * @brief Call a connected Root of Trust Service.@n
+ *        The caller must provide an array of ::psa_invec_t structures as the input payload.
+ * @param  handle:   Handle for the connection.
+ * @param  in_vec:   Array of psa_invec structures.
+ * @param  in_len:   Number of psa_invec structures in in_vec.
+ * @param  out_vec:  Array of psa_outvec structures for optional Root of Trust Service response.
+ * @param  out_len:  Number of psa_outvec structures in out_vec.
+ * @return val_status_t
+ */
+STATIC_DECLARE val_status_t val_ipc_call(psa_handle_t handle, psa_invec *in_vec, size_t in_len,
+                                         psa_outvec *out_vec, size_t out_len)
+{
+    psa_status_t call_status = PSA_SUCCESS;
+
+    call_status = psa_call(handle, in_vec, in_len, out_vec, out_len);
+
+    if (call_status != PSA_SUCCESS)
+    {
+        return(VAL_STATUS_CALL_FAILED);
+    }
+
+    return VAL_STATUS_SUCCESS;
+}
+
+/**
+ * @brief Close a connection to a Root of Trust Service.
+ *        Sends the PSA_IPC_DISCONNECT message to the Root of Trust Service so
+          it can clean up resources.
+ * @param handle: Handle for the connection.
+ * @return void
+ */
+STATIC_DECLARE void val_ipc_close(psa_handle_t handle)
+{
+    psa_close(handle);
+}
+
+/**
+ * @brief Proccess a generic connect message to given rot signal.
+   @param  -sig : signal to be processed
+   @param  -msg : return msg info of given signal
+ * @return val_status_t.
+ */
+STATIC_DECLARE val_status_t val_process_connect_request(psa_signal_t sig, psa_msg_t *msg)
+{
+    val_status_t res = VAL_STATUS_ERROR;
+    psa_signal_t signals;
+
+wait1:
+    signals = psa_wait_any(PSA_BLOCK);
+    if (signals & sig)
+    {
+        if (psa_get(sig, msg) != PSA_SUCCESS)
+        {
+            goto wait1;
+        }
+
+        if ((msg->type != PSA_IPC_CONNECT) || (msg->handle <= 0))
+        {
+            val_print(PRINT_ERROR, "\npsa_get failed for PSA_IPC_CONNECT", 0);
+            res = VAL_STATUS_ERROR;
+        }
+        else
+        {
+            res = VAL_STATUS_SUCCESS;
+        }
+    }
+    else
+    {
+        val_print(PRINT_ERROR, "\npsa_wait_any returned with invalid signal value = 0x%x", signals);
+        res = VAL_STATUS_ERROR;
+    }
+    return res;
+}
+
+/**
+ * @brief Proccess a generic call message to given rot signal.
+   @param  -sig : signal to be processed
+   @param  -msg : return msg info of given signal
+ * @return val_status_t
+ */
+STATIC_DECLARE val_status_t val_process_call_request(psa_signal_t sig, psa_msg_t *msg)
+{
+    val_status_t res = VAL_STATUS_ERROR;
+    psa_signal_t signals;
+
+wait2:
+    signals = psa_wait_any(PSA_BLOCK);
+    if (signals & sig)
+    {
+        if (psa_get(sig, msg) != PSA_SUCCESS)
+        {
+            goto wait2;
+        }
+
+        if ((msg->type != PSA_IPC_CALL) || (msg->handle <= 0))
+        {
+            val_print(PRINT_ERROR, "\npsa_get failed for PSA_IPC_CALL", 0);
+            res = VAL_STATUS_ERROR;
+        }
+        else
+        {
+            res = VAL_STATUS_SUCCESS;
+        }
+    }
+    else
+    {
+        val_print(PRINT_ERROR, "\npsa_wait_any returned with invalid signal value = 0x%x", signals);
+        res = VAL_STATUS_ERROR;
+    }
+    return res;
+}
+
+/**
+ * @brief  Proccess a generic disconnect message to given rot signal.
+   @param  -sig : signal to be processed
+   @param  -msg : return msg info of given signal
+ * @return val_status_t
+ */
+STATIC_DECLARE val_status_t val_process_disconnect_request(psa_signal_t sig, psa_msg_t *msg)
+{
+    val_status_t res = VAL_STATUS_ERROR;
+    psa_signal_t signals;
+
+wait3:
+    signals = psa_wait_any(PSA_BLOCK);
+    if (signals & sig)
+    {
+        if (psa_get(sig, msg) != PSA_SUCCESS)
+        {
+            goto wait3;
+        }
+
+        if ((msg->type != PSA_IPC_DISCONNECT) || (msg->handle <= 0))
+        {
+            val_print(PRINT_ERROR, "\npsa_get failed for PSA_IPC_DISCONNECT", 0);
+            res = VAL_STATUS_ERROR;
+        }
+        else
+        {
+            res = VAL_STATUS_SUCCESS;
+        }
+    }
+    else
+    {
+        val_print(PRINT_ERROR, "\npsa_wait_any returned with invalid signal value = 0x%x", signals);
+        res = VAL_STATUS_ERROR;
+    }
+    return res;
+}
+
+/**
+    @brief    - This function executes given list of tests from secure sequentially
+                This covers secure to secure IPC API scenario
+    @param    - test_num  : Test_num
+    @param    - tests_list : list of tests to be executed
+    @return   - val_status_t
+**/
+STATIC_DECLARE val_status_t val_execute_secure_tests(uint32_t test_num, client_test_t *tests_list)
+{
+    val_status_t          status = VAL_STATUS_SUCCESS;
+    val_status_t          test_status = VAL_STATUS_SUCCESS;
+    psa_handle_t          handle;
+    int                   i = 1;
+    test_info_t           test_info;
+
+    test_info.test_num = test_num;
+    val_print(PRINT_TEST, "[Info] Executing tests form secure\n", 0);
+
+    while (tests_list[i] != NULL)
+    {
+
+        /* Handshake with server tests */
+        test_info.block_num = i;
+        status = val_execute_secure_test_func(&handle, test_info, SERVER_TEST_DISPATCHER_SID);
+        if (VAL_ERROR(status))
+        {
+            val_print(PRINT_ERROR,"[Check%d] START\n", i);
+            return status;
+        }
+        else
+        {
+            val_print(PRINT_DEBUG,"[Check%d] START\n", i);
+        }
+
+        /* Execute client tests */
+        test_status = tests_list[i](SECURE);
+
+        /* Retrive Server test status */
+        status = val_get_secure_test_result(&handle);
+
+        status = test_status ? test_status:status;
+        if (VAL_ERROR(status))
+        {
+            val_print(PRINT_ERROR,"[Check%d] FAILED\n", i);
+            return status;
+        }
+        else
+        {
+            val_print(PRINT_DEBUG,"[Check%d] PASSED\n", i);
+        }
+        i++;
+    }
+    return status;
+}
+
+/**
+    @brief    - This function is used to handshake between:
+                - nonsecure client to server test fn
+                - secure client and server test fn
+                - nonsecure client to secure client test fn
+    @param    - handle     : handle returned while connecting given sid
+    @param    - test_info  : Test_num and block_num to be executed
+    @param    - sid        : RoT service to be connected. Partition dispatcher sid
+    @return   - val_status_t
+**/
+STATIC_DECLARE val_status_t val_execute_secure_test_func(psa_handle_t *handle,
+                                                         test_info_t test_info,
+                                                         uint32_t sid)
+{
+    uint32_t        test_data;
+    val_status_t    status = VAL_STATUS_SUCCESS;
+    psa_status_t    status_of_call = PSA_SUCCESS;
+
+    *handle = psa_connect(sid, 0);
+
+    if (*handle < 0)
+    {
+        val_print(PRINT_ERROR, "Could not connect SID. Handle=%x\n", *handle);
+        status = VAL_STATUS_CONNECTION_FAILED;
+    }
+
+    test_data = ((uint32_t)(test_info.test_num) | ((uint32_t)(test_info.block_num) << BLOCK_NUM_POS)
+                | ((uint32_t)(TEST_EXECUTE_FUNC) << ACTION_POS));
+    psa_invec data[1] = {{&test_data, sizeof(test_data)}};
+
+    status_of_call = psa_call(*handle, data, 1, NULL, 0);
+
+    if (status_of_call != PSA_SUCCESS)
+    {
+        status = VAL_STATUS_CALL_FAILED;
+        val_print(PRINT_ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
+        psa_close(*handle);
+    }
+    return status;
+}
+
+/**
+    @brief    - This function is used to retrive the status of previously connected test function
+                using val_execute_secure_test_func
+    @param    - handle     : handle of server function. Handle of Partition dispatcher sid
+    @return   - The status of test functions
+**/
+STATIC_DECLARE val_status_t val_get_secure_test_result(psa_handle_t *handle)
+{
+    uint32_t         test_data;
+    val_status_t     status = VAL_STATUS_SUCCESS;
+    psa_status_t     status_of_call = PSA_SUCCESS;
+
+    test_data = (TEST_RETURN_RESULT << ACTION_POS);
+
+    psa_outvec resp = {&status, sizeof(status)};
+    psa_invec data[1] = {{&test_data, sizeof(test_data)}};
+
+    status_of_call = psa_call(*handle, data, 1, &resp, 1);
+    if (status_of_call != PSA_SUCCESS)
+    {
+        status = VAL_STATUS_CALL_FAILED;
+        val_print(PRINT_ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
+    }
+
+    psa_close(*handle);
+    return status;
+}
+
+/*
+    @brief           - This function checks if the input status argument is an error.
+                       On error, print the checkpoint value
+    @param           - checkpoint      : Test debug checkpoint
+                     - val_status_t   : Test status
+    @return          - returns the input status back to the program.
+*/
+STATIC_DECLARE val_status_t val_err_check_set(uint32_t checkpoint, val_status_t status)
+{
+    if (VAL_ERROR(status))
+    {
+        val_print(PRINT_ERROR, "\tCheckpoint %d : ", checkpoint);
+        val_print(PRINT_ERROR, "Error Code=0x%x \n", status);
+    }
+    else
+    {
+        val_print(PRINT_DEBUG, "\tCheckpoint %d \n", checkpoint);
+    }
+    return status;
+}
+
+/*
+    @brief     - Writes 'size' bytes from buffer into non-volatile memory at a given
+                'base + offset'. This is client interface API of secure partition
+                val_nvmem_write_sf API for spe world
+               - offset    : Offset
+               - buffer    : Pointer to source address
+               - size      : Number of bytes
+    @return    - val_status_t
+*/
+STATIC_DECLARE val_status_t val_nvmem_write(uint32_t offset, void *buffer, int size)
+{
+    nvmem_param_t   nvmem_param;
+    psa_handle_t    handle = 0;
+    psa_status_t    status_of_call = PSA_SUCCESS;
+
+    nvmem_param.nvmem_fn_type = NVMEM_WRITE;
+    nvmem_param.offset = offset;
+    nvmem_param.size = size;
+    psa_invec invec[2] = {{&nvmem_param, sizeof(nvmem_param)}, {buffer, size}};
+
+    handle = psa_connect(DRIVER_NVMEM_SID, 0);
+    if (handle < 0)
+    {
+        return VAL_STATUS_CONNECTION_FAILED;
+    }
+    else
+    {
+        status_of_call = psa_call(handle, invec, 2, NULL, 0);
+        if (status_of_call != PSA_SUCCESS)
+        {
+            psa_close(handle);
+            return VAL_STATUS_CALL_FAILED;
+        }
+    }
+   psa_close(handle);
+   return VAL_STATUS_SUCCESS;
+}
+
+/**
+    @brief    - This function sets the given boot.state value to corresponding
+                boot NVMEM location
+    @param    - state: boot_state_t
+    @return   - val_status_t
+**/
+STATIC_DECLARE val_status_t val_set_boot_flag(boot_state_t state)
+{
+   boot_t           boot;
+   val_status_t     status;
+
+   boot.state = state;
+   status = val_nvmem_write(VAL_NVMEM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
+   if (VAL_ERROR(status))
+   {
+       val_print(PRINT_ERROR, "val_nvmem_write failed Error=0x%x\n", status);
+       return status;
+   }
+   return status;
+}
+#endif

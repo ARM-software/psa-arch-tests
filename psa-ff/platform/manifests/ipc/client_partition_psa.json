@@ -1,0 +1,49 @@
+{
+  "psa_framework_version": 0.10,
+  "name": "CLIENT_PARTITION",
+  "type": "APPLICATION-ROT",
+  "priority": "NORMAL",
+  "id": "0x00000001",
+  "description": "Client partition executing client test func from SPE",
+  "entry_point": "client_main",
+  "stack_size": "0x400",
+  "heap_size": "0x400",
+  "services": [{
+      "name": "CLIENT_TEST_DISPATCHER_SID",
+      "sid": "0x0000FA01",
+      "signal": "CLIENT_TEST_DISPATCHER_SIG",
+      "non_secure_clients": true,
+      "minor_version": 1,
+      "minor_policy": "RELAXED"
+    }
+  ],
+  "extern_sids": [
+    "DRIVER_UART_SID",
+    "DRIVER_NVMEM_SID",
+    "SERVER_TEST_DISPATCHER_SID",
+    "SERVER_UNSPECIFED_MINOR_V_SID",
+    "SERVER_STRICT_MINOR_VERSION_SID",
+    "SERVER_RELAX_MINOR_VERSION_SID",
+    "SERVER_SECURE_CONNECT_ONLY_SID",
+    "SERVER_CONNECTION_DROP_SID"
+  ],
+  "source_files": [
+    "../../../test_suites/partition/ipc/client_partition.c",
+    "../../../test_suites/ipc/test_i001/test_i001.c",
+    "../../../test_suites/ipc/test_i002/test_i002.c",
+    "../../../test_suites/ipc/test_i003/test_i003.c",
+    "../../../test_suites/ipc/test_i004/test_i004.c",
+    "../../../test_suites/ipc/test_i005/test_i005.c",
+    "../../../test_suites/ipc/test_i006/test_i006.c",
+    "../../../test_suites/ipc/test_i007/test_i007.c",
+    "../../../test_suites/ipc/test_i008/test_i008.c",
+    "../../../test_suites/ipc/test_i009/test_i009.c",
+    "../../../test_suites/ipc/test_i010/test_i010.c",
+    "../../../test_suites/ipc/test_i011/test_i011.c",
+    "../../../test_suites/ipc/test_i012/test_i012.c",
+    "../../../test_suites/ipc/test_i024/test_i024.c",
+    "../../../test_suites/ipc/test_i025/test_i025.c",
+    "../../../test_suites/ipc/test_i026/test_i026.c",
+    "../../../test_suites/ipc/test_i027/test_i027.c"
+  ]
+}
