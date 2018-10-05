@@ -119,6 +119,11 @@ void test_payload(tbsa_val_api_t *val)
                 return;
             }
 
+            status = val->interrupt_route(EXCP_NUM_EXT_INT(timer_desc->intr_id), PE_SECURE);
+            if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
+                return;
+            }
+
             /* Initialise the timer */
             status = val->timer_init(timer_desc->base, TIMER_VALUE_US, ((clocks_desc->sys_freq)/1000000));
             // Timeout value assignment - a better strategy needed?
@@ -132,13 +137,13 @@ void test_payload(tbsa_val_api_t *val)
             while (IS_TEST_PENDING(val->get_status()) && (--timeout));
 
             if(!timeout) {
-                val->err_check_set(TEST_CHECKPOINT_4, TBSA_STATUS_TIMEOUT);
+                val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_TIMEOUT);
                 timeout_flag = TRUE;
             }
 
             /* Restoring default Handler */
             status = val->interrupt_restore_handler(EXCP_NUM_EXT_INT(timer_desc->intr_id));
-            if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
+            if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
                 return;
             }
         }
@@ -147,16 +152,16 @@ void test_payload(tbsa_val_api_t *val)
 
     if (trusted_timer_found) {
         if (timeout_flag) {
-            val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_TIMEOUT);
+            val->err_check_set(TEST_CHECKPOINT_7, TBSA_STATUS_TIMEOUT);
             return;
         }
         /* Installing Trusted Fault Handler for NS test */
         status = val->interrupt_setup_handler(EXCP_NUM_HF, 0, HF_Handler);
-        if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
+        if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
             return;
         }
     } else {
-        val->err_check_set(TEST_CHECKPOINT_8, TBSA_STATUS_NOT_FOUND);
+        val->err_check_set(TEST_CHECKPOINT_9, TBSA_STATUS_NOT_FOUND);
         return;
     }
 

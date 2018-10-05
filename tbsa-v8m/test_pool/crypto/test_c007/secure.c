@@ -117,31 +117,41 @@ void test_payload(tbsa_val_api_t *val)
         }
     }
 
-    data = 0;
-    for(i = 0; i < fuse_desc->size; i++)
-        data += key[i];
+    if (fuse_desc->def_val == 0) {
+        data = 0;
+        for(i = 0; i < fuse_desc->size; i++)
+            data += key[i];
 
-    /* Check that if Fuse is Zero*/
-    if (data) {
-        val->print(PRINT_ERROR, "\n        Able to read the confidential fuse", 0);
-        val->err_check_set(TEST_CHECKPOINT_B, TBSA_STATUS_ERROR);
-        return;
+        /* Check that if Fuse is Zero*/
+        if (data) {
+            val->print(PRINT_ERROR, "\n        Able to read the confidential fuse", 0);
+            val->err_check_set(TEST_CHECKPOINT_B, TBSA_STATUS_ERROR);
+            return;
+        }
+    } else {
+        for (i = 0; i < fuse_desc->size; i++) {
+            if (key[i] != fuse_desc->def_val) {
+                val->print(PRINT_ERROR, "\n        Able to read the confidential fuse", 0);
+                val->err_check_set(TEST_CHECKPOINT_C, TBSA_STATUS_ERROR);
+                return;
+            }
+        }
     }
 
     boot.wb = BOOT_UNKNOWN;
     status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
-    if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
         return;
     }
 
     status = val->nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SHCSR), &shcsr, sizeof(shcsr));
-    if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_E, status)) {
         return;
     }
 
     /* Restoring faults */
     status = val->mem_reg_write(SHCSR, shcsr);
-    if (val->err_check_set(TEST_CHECKPOINT_E, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_F, status)) {
         return;
     }
 
@@ -154,7 +164,7 @@ void exit_hook(tbsa_val_api_t *val)
 
     /* Restoring default Handler */
     status = val->interrupt_restore_handler(EXCP_NUM_HF);
-    if (val->err_check_set(TEST_CHECKPOINT_F, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_10, status)) {
         return;
     }
 }

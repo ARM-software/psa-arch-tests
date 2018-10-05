@@ -23,16 +23,17 @@ OBJCOPY:=$(PREFIX)objcopy
 OBJDUMP:=$(PREFIX)objdump
 AS:=$(PREFIX)as
 
-# Test specific macros
-OUT_DIR :=./out/$(TARGET)
-VLIB    :=tbsa_val.a
-PLIB    :=tbsa_pal.a
-
-SUITE :=
-
 # Root folder
 ROOT_DIR:=.
 
+# Test specific macros
+OUT_DIR  :=./out/$(TARGET)
+VLIB     :=tbsa_val.a
+PLIB     :=tbsa_pal.a
+CLEAN_DIR:= $(dir $(wildcard $(ROOT_DIR)/platform/board/*/))
+CLEAN_DIR:= $(filter-out ./, $(CLEAN_DIR))
+
+SUITE :=
 
 .PHONY: all clean
 
@@ -107,6 +108,9 @@ clean:
 	rm -rf $(OUT_DIR)
 	find $(ROOT_DIR) -iname '*.o' -delete
 	cd test_pool && make clean
+	echo $(CLEAN_DIR)
+	$(foreach d, $(CLEAN_DIR), rm -rf $dinclude/;)
+	$(foreach d, $(CLEAN_DIR), rm -rf $dlinker/;)
 
 tbsa.bin:tbsa.elf
 	$(OBJCOPY) $< -O binary $@

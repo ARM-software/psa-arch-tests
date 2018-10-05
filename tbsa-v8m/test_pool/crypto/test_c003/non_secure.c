@@ -75,7 +75,7 @@ void test_payload(tbsa_val_api_t *val)
             return;
         }
 
-        status = val_crypto_set_base_addr(SECURE_PROGRAMMABLE);
+        status = val_crypto_set_base_addr(NONSECURE_PROGRAMMABLE);
         if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
             return;
         }

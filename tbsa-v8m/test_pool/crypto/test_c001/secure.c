@@ -222,6 +222,6 @@ void test_payload(tbsa_val_api_t *val)
 
 void exit_hook(tbsa_val_api_t *val)
 {
-    g_val->interrupt_disable(EXCP_NUM_EXT_INT(soc_peripheral_desc->intr_id));
-    g_val->timer_disable(soc_peripheral_desc->base);
+    val->interrupt_disable(EXCP_NUM_EXT_INT(soc_peripheral_desc->intr_id));
+    val->timer_disable(soc_peripheral_desc->base);
 }

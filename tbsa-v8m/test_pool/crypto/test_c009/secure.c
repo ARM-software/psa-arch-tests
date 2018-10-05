@@ -42,7 +42,8 @@ void test_payload(tbsa_val_api_t *val)
     tbsa_status_t status;
     uint32_t      i;
     uint32_t      fuse_data[32];
-    uint32_t      rd_data[32], wr_data[32] = {0xFFFFFFFF};
+    uint32_t      rd_data[32];
+    uint32_t      wr_data[32];
     fuse_desc_t   *fuse_desc;
 
     status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
@@ -53,6 +54,14 @@ void test_payload(tbsa_val_api_t *val)
     status = val->get_fuse_info((fuse_desc_t **)&fuse_desc, FUSE_LOCKED, 0);
     if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
         return;
+    }
+
+    if (fuse_desc->def_val == 0) {
+        for (i = 0; i < fuse_desc->size; i++)
+            wr_data[i] = 0xFFFFFFFF;
+    } else {
+        for (i = 0; i < fuse_desc->size; i++)
+            wr_data[i] = 0;
     }
 
     status = val->fuse_ops(FUSE_READ, fuse_desc->addr, fuse_data, fuse_desc->size);
@@ -71,7 +80,7 @@ void test_payload(tbsa_val_api_t *val)
     }
 
     /* Check that the fuse is not modified */
-    for (i=0; i<fuse_desc->size; i++) {
+    for (i = 0; i < fuse_desc->size; i++) {
         if (fuse_data[i] != rd_data[i]) {
             val->print(PRINT_ERROR, "\n        Able to modify locked fuse", 0);
             val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_ERROR);
