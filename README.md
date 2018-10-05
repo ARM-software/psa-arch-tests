@@ -20,6 +20,9 @@ The tests are available as open source. The tests and the corresponding abstract
 ### TBSA-v8M
 The test suite for this specification is located in the tbsa-v8m directory of this repository. See [TBSA-v8m Readme](tbsa-v8m/README.md) file for more details.
 
+### Firmware Framework
+The test suite for this specification is located in the psa-ff directory of this repository. See [Firmware Framework Readme](psa-ff/README.md) file for more details.
+
 
 ## License
 
