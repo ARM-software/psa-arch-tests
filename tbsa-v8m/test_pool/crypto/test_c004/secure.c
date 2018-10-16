@@ -17,6 +17,8 @@
 
 #include "val_test_common.h"
 
+#define KEY_SIZE  32
+
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 4),
                   CREATE_TEST_TITLE("Static key must be in an immutable structure"),
@@ -26,7 +28,6 @@ TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 4),
                   exit_hook);
 
 
-tbsa_val_api_t *g_val;
 
 void entry_hook(tbsa_val_api_t *val)
 {
@@ -44,12 +45,11 @@ void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
     uint32_t      data, expected_fuse_type, i, instance = 0;
-    uint32_t      key[32];
-    uint32_t      rd_data[32], wr_data[32] = {0xFFFFFFFF};
+    uint32_t      key[KEY_SIZE];
+    uint32_t      rd_data[KEY_SIZE], wr_data[KEY_SIZE] = {0xFFFFFFFF};
     key_desc_t    *key_info_static;
     bool_t        key_present = FALSE;
 
-    g_val = val;
     status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
     if (val->err_check_set(TEST_CHECKPOINT_1, status)) {
         return;
@@ -59,6 +59,10 @@ void test_payload(tbsa_val_api_t *val)
         status = val->crypto_get_key_info(&key_info_static, STATIC, &instance);
         if (status != TBSA_STATUS_SUCCESS && key_present == FALSE) {
             val->err_check_set(TEST_CHECKPOINT_2, status);
+            return;
+        }
+
+        if (status != TBSA_STATUS_SUCCESS) {
             return;
         }
 
@@ -124,6 +128,7 @@ void test_payload(tbsa_val_api_t *val)
 
         instance++;
     } while (instance < GET_NUM_INSTANCE(key_info_static));
+
     val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
 }
 

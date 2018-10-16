@@ -17,6 +17,7 @@
 
 #include "val_test_common.h"
 
+#define FUSE_SIZE  32
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 9),
                   CREATE_TEST_TITLE("Check if a lockable fuse is fixed in its current state"), 
@@ -41,9 +42,9 @@ void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
     uint32_t      i;
-    uint32_t      fuse_data[32];
-    uint32_t      rd_data[32];
-    uint32_t      wr_data[32];
+    uint32_t      fuse_data[FUSE_SIZE];
+    uint32_t      rd_data[FUSE_SIZE];
+    uint32_t      wr_data[FUSE_SIZE];
     fuse_desc_t   *fuse_desc;
 
     status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);

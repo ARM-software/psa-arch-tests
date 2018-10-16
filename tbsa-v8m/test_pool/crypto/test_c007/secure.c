@@ -17,6 +17,8 @@
 
 #include "val_test_common.h"
 
+#define KEY_SIZE  32
+
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 7),
                   CREATE_TEST_TITLE("A confidential hardware IP fuse must not be readable by any software"),
@@ -60,8 +62,8 @@ void entry_hook(tbsa_val_api_t *val)
 void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
-    uint32_t      data, i;
-    uint32_t      key[32];
+    uint32_t      i;
+    uint32_t      key[KEY_SIZE] = {0};
     fuse_desc_t   *fuse_desc;
     boot_t        boot;
     uint32_t      shcsr = 0UL;
@@ -78,12 +80,12 @@ void test_payload(tbsa_val_api_t *val)
         return;
     }
 
-    status = val->get_fuse_info((fuse_desc_t **)&fuse_desc, FUSE_HW_IP, 0);
-    if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
-        return;
-    }
-
     if (boot.wb != WARM_BOOT_REQUESTED) {
+        status = val->get_fuse_info((fuse_desc_t **)&fuse_desc, FUSE_HW_IP, 0);
+        if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
+            return;
+        }
+
         status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
         if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
             return;
@@ -115,20 +117,7 @@ void test_payload(tbsa_val_api_t *val)
         if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
             return;
         }
-    }
 
-    if (fuse_desc->def_val == 0) {
-        data = 0;
-        for(i = 0; i < fuse_desc->size; i++)
-            data += key[i];
-
-        /* Check that if Fuse is Zero*/
-        if (data) {
-            val->print(PRINT_ERROR, "\n        Able to read the confidential fuse", 0);
-            val->err_check_set(TEST_CHECKPOINT_B, TBSA_STATUS_ERROR);
-            return;
-        }
-    } else {
         for (i = 0; i < fuse_desc->size; i++) {
             if (key[i] != fuse_desc->def_val) {
                 val->print(PRINT_ERROR, "\n        Able to read the confidential fuse", 0);

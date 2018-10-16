@@ -342,3 +342,8 @@ int pal_firmware_version_read(uint32_t instance, uint32_t firmware_version_type)
 {
     return PAL_STATUS_ERROR;
 }
+
+int pal_crypto_revoke_key(uint32_t index, addr_t addr, uint32_t size)
+{
+    return PAL_STATUS_ERROR;
+}

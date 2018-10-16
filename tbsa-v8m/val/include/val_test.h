@@ -51,6 +51,9 @@
 #define TEST_CHECKPOINT_17              0xC17
 #define TEST_CHECKPOINT_18              0xC18
 #define TEST_CHECKPOINT_19              0xC19
+#define TEST_CHECKPOINT_20              0xC20
+#define TEST_CHECKPOINT_21              0xC21
+#define TEST_CHECKPOINT_22              0xC22
 
 #define TBSA_TOTAL_TESTS                200
 #define TBSA_TEST_STATUS_BUF_SIZE       (TBSA_TOTAL_TESTS * sizeof(tbsa_status_buffer_t))

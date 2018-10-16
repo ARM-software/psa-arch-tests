@@ -17,6 +17,7 @@
 
 #include "val_test_common.h"
 
+#define KEY_SIZE  32
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 3),
                   CREATE_TEST_TITLE("HUK should be in Confidential-Lockable-Bulk fuses, accessible only to TW"),
@@ -72,11 +73,16 @@ tbsa_status_t setup_ns_env(void)
 void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
-    uint32_t      data, expected_fuse_type, i, instance = 0;
-    uint32_t      key[32];
+    uint32_t      expected_fuse_type, i, instance = 0;
+    uint32_t      key[KEY_SIZE];
     key_desc_t    *key_info_huk;
 
     g_val = val;
+    status = setup_ns_env();
+    if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
+        return;
+    }
+
     status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
     if (val->err_check_set(TEST_CHECKPOINT_1, status)) {
         return;
@@ -103,34 +109,16 @@ void test_payload(tbsa_val_api_t *val)
             return;
         }
 
-        if (key_info_huk->def_val == 0) {
-            data = 0;
-            /* Check that if HUK is non-zero*/
-            for(i = 0; i < key_info_huk->size; i++)
-                data += key[i];
-
-            if (!data) {
+        for (i = 0; i < key_info_huk->size; i++) {
+            if (key[i] == key_info_huk->def_val) {
                 val->print(PRINT_ERROR, "\n        Incorrect HUK", 0);
-                val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_ERROR);
+                val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_ERROR);
                 return;
-            }
-        } else {
-            for (i = 0; i < key_info_huk->size; i++) {
-                if (key[i] == key_info_huk->def_val) {
-                    val->print(PRINT_ERROR, "\n        Incorrect HUK", 0);
-                    val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_ERROR);
-                    return;
-                }
             }
         }
     } else {
         val->print(PRINT_ERROR, "\n        HUK is not open", 0);
         val->set_status(RESULT_SKIP(1));
-        return;
-    }
-
-    status = setup_ns_env();
-    if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
         return;
     }
 
