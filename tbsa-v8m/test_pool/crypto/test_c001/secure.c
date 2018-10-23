@@ -17,11 +17,11 @@
 
 #include "val_test_common.h"
 
-#define   TIMER_VALUE_US  10 * 1000
+#define   TIMER_VALUE_US  5 * 1000
 #define   KEY_SIZE        32            /*Size in Bytes*/
 
 tbsa_val_api_t        *g_val;
-uint8_t               key[KEY_SIZE] = {0}, g_key_save[KEY_SIZE] = {0};
+uint8_t               g_key[KEY_SIZE] = {0}, g_key_save[KEY_SIZE] = {0};
 soc_peripheral_hdr_t  *soc_peripheral_hdr;
 soc_peripheral_desc_t *soc_peripheral_desc;
 bool_t                s_timer_present = 0;
@@ -93,18 +93,18 @@ static void timer_isr(void)
 
     g_exception_taken++;
     for(i=0; i<KEY_SIZE; i++)
-        key_sum += key[i];
+        key_sum += g_key[i];
 
     if (key_sum == 0) {
         g_val->timer_interrupt_clear(soc_peripheral_desc->base);
     } else {
-        /* Disable the interrupt only if occured 3 or more times */
+        /* Disable the interrupt only if occured 5 or more times */
         if(g_exception_taken >= 5)
         {
             g_val->timer_disable(soc_peripheral_desc->base);
             g_val->interrupt_disable(EXCP_NUM_EXT_INT(soc_peripheral_desc->intr_id));
             for(i=0; i<KEY_SIZE; i++)
-                g_key_save[i] = key[i];
+                g_key_save[i] = g_key[i];
         }
     }
     return;
@@ -191,10 +191,10 @@ void test_payload(tbsa_val_api_t *val)
             }
 
             for(i=0; i<KEY_SIZE; i++) {
-               key[i] = 0;
+               g_key[i] = 0;
                g_key_save[i] = 0;
             }
-            status = val->crypto_key_generate(key, AES, KEY_SIZE);
+            status = val->crypto_key_generate(g_key, AES, KEY_SIZE);
             if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
                 return;
             }
@@ -209,7 +209,7 @@ void test_payload(tbsa_val_api_t *val)
     while (--timeout);
 
     for(i=0; i<KEY_SIZE; i++) {
-        if(key[i] != g_key_save[i]) {
+        if(g_key[i] != g_key_save[i]) {
             val->err_check_set(TEST_CHECKPOINT_E, TBSA_STATUS_ERROR);
             val->print(PRINT_ERROR, "\nKey generation from secure state was interrupted", 0);
             return;
@@ -217,6 +217,7 @@ void test_payload(tbsa_val_api_t *val)
             val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
         }
     }
+
     return;
 }
 

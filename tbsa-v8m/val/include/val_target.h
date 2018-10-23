@@ -152,13 +152,13 @@ typedef struct _TARGET_CFG_HDR_ {
 typedef enum {
     FUSE_CONFIDENTIAL      = 0x10,
     FUSE_LOCKABLE          = 0x20,
-    FUSE_LOCKED            = 0x30,
-    FUSE_PUBLIC            = 0x40,
-    FUSE_USER              = 0x50,
-    FUSE_HW_IP             = 0x60,
-    FUSE_OPEN              = 0x80,
-    FUSE_BITWISE           = 0x100,
-    FUSE_BULK              = 0x200
+    FUSE_LOCKED            = 0x40,
+    FUSE_PUBLIC            = 0x80,
+    FUSE_USER              = 0x100,
+    FUSE_HW_IP             = 0x200,
+    FUSE_OPEN              = 0x400,
+    FUSE_BITWISE           = 0x800,
+    FUSE_BULK              = 0x1000
 } fuse_type_t;
 
 /**
@@ -285,10 +285,10 @@ typedef struct _PROT_UNIT_INFO_DESC_ {
   CRYPTO Information
 **/
 typedef enum {
-    ECC            = 0x1000,
-    RSA            = 0x2000,
-    DIFFIE_HELLMAN = 0x3000,
-    NONE           = 0x4000,
+    ECC            = 0x2000,
+    RSA            = 0x3000,
+    DIFFIE_HELLMAN = 0x4000,
+    NONE           = 0x8000,
     ASM_MSK        = 0xF000,
     HASH           = 0x10000,
     AES            = 0x20000,

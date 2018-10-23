@@ -86,10 +86,12 @@ void entry_hook(tbsa_val_api_t *val)
 
 void test_payload(tbsa_val_api_t *val)
 {
-    uint32_t                instance = 0;
-    memory_hdr_t            *mem;
-    memory_desc_t           *mem_desc;
-    tbsa_status_t           status;
+    uint32_t       instance = 0;
+    uint32_t       mem_num;
+    uint32_t       minor_id = MEMORY_SRAM;
+    memory_hdr_t   *mem;
+    memory_desc_t  *mem_desc;
+    tbsa_status_t  status;
 
     secure_range_found = FALSE;
 
@@ -99,34 +101,28 @@ void test_payload(tbsa_val_api_t *val)
     if (val->err_check_set(TEST_CHECKPOINT_1, status))
         return;
 
-    /* SRAM */
-    while (instance < mem->num) {
-        status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_SRAM, instance),
-                                        (uint8_t **)&mem_desc, (uint32_t *)sizeof(memory_desc_t));
-        if (val->err_check_set(TEST_CHECKPOINT_2, status))
-            return;
+    for (mem_num = 0; mem_num < mem->num;)
+    {
+        instance = 0;
+        do {
+            status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_SRAM, instance),
+                                            (uint8_t **)&mem_desc, (uint32_t *)sizeof(memory_desc_t));
+            if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
+                return;
+            }
 
-        if (mem_desc->attribute == MEM_SECURE) {
-            secure_range_found = TRUE;
-            break;
-        }
-        instance++;
-    }
-
-    /* FLASH */
-    instance = 0;
-    while (instance < mem->num) {
-        status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_FLASH, instance),
-                                        (uint8_t **)&mem_desc, (uint32_t *)sizeof(memory_desc_t));
-        if (val->err_check_set(TEST_CHECKPOINT_3, status))
-            return;
-
-        if (mem_desc->attribute == MEM_SECURE) {
-            secure_range_found = TRUE;
-            break;
-        }
-
-        instance++;
+            if (mem_desc->attribute == MEM_SECURE) {
+                if (val->is_secure_address(mem_desc->start)) {
+                    secure_range_found = TRUE;
+                } else {
+                    val->err_check_set(TEST_CHECKPOINT_3, TBSA_STATUS_ERROR);
+                    return;
+                }
+            }
+            instance++;
+        }while (instance < GET_NUM_INSTANCE(mem_desc));
+        minor_id++;
+        mem_num += GET_NUM_INSTANCE(mem_desc);
     }
 
     if (secure_range_found != TRUE) {
