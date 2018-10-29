@@ -20,6 +20,7 @@
 
 #include "val.h"
 #include "val_client_defs.h"
+#include "pal_interfaces_ns.h"
 
 /* typedef's */
 typedef struct {
@@ -49,7 +50,6 @@ typedef struct {
     val_status_t     (*wd_timer_init)             (wd_timeout_type_t timeout_type);
     val_status_t     (*wd_timer_enable)           (void);
     val_status_t     (*wd_timer_disable)          (void);
-    val_status_t     (*is_wd_timer_enabled)       (void);
     val_status_t     (*set_boot_flag)             (boot_state_t state);
     val_status_t     (*get_boot_flag)             (boot_state_t *state);
     val_status_t     (*crypto_function)           (int type, ...);
@@ -66,7 +66,7 @@ typedef struct {
                                               psa_outvec *out_vec,
                                               size_t out_len
                                               );
-    psa_status_t     (*close)                 (psa_handle_t handle);
+    void     (*close)                 (psa_handle_t handle);
 } psa_api_t;
 
 typedef void (*test_fptr_t)(val_api_t *val, psa_api_t *psa);

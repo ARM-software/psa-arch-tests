@@ -86,7 +86,8 @@ int32_t server_test_zero_length_invec(void)
         return VAL_STATUS_MSG_INSIZE_FAILED;
     }
 
-    if (psa_read(msg.handle, 2, &data[2], msg.in_size[2]) != msg.in_size[2])
+    if ((msg.in_size[2] <= sizeof(data[2])) &&
+        (psa_read(msg.handle, 2, &data[2], msg.in_size[2]) != msg.in_size[2]))
     {
         exit_graceful(msg.handle, -4, 0, 0, 0);
         return VAL_STATUS_READ_FAILED;
@@ -143,7 +144,8 @@ int32_t server_test_zero_length_outvec(void)
         return VAL_STATUS_MSG_INSIZE_FAILED;
     }
 
-    if (psa_read(msg.handle, 0, &data[0], msg.in_size[0]) != msg.in_size[0])
+    if ((msg.in_size[0] <= sizeof(data[0])) &&
+        (psa_read(msg.handle, 0, &data[0], msg.in_size[0]) != msg.in_size[0]))
     {
         exit_graceful(msg.handle, -4, 0, 0, 0);
         return VAL_STATUS_READ_FAILED;
@@ -208,7 +210,8 @@ int32_t server_test_call_read_and_skip(void)
     /* Full size read for invec 0 and invec 1 */
     for (i = 0; i < 2 ; i++)
     {
-       if (psa_read(msg.handle, i, &actual_data[i], msg.in_size[i]) != msg.in_size[i])
+       if ((msg.in_size[i] <= sizeof(actual_data[i])) &&
+           (psa_read(msg.handle, i, &actual_data[i], msg.in_size[i]) != msg.in_size[i]))
        {
            exit_graceful(msg.handle, -4, 0, 0, 0);
            return VAL_STATUS_READ_FAILED;

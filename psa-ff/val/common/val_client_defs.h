@@ -27,14 +27,21 @@
  *  file can be overwritten by passing --include <path_to_psa_client_h> to setup.sh script.
  */
 
-#if ((PSA_API_ELEMENTS_AVAILABLE) || (!VAL_NSPE_BUILD))
-/* <psa_client.h>: Contains the Client API elements. Accessible to all applications */
-#include "psa_client.h"
+#if PSA_IPC_IMPLEMENTED
+/* psa/client.h: Contains the Client API elements. Accessible to all applications */
+#include "psa/client.h"
+
+/* psa_manifest/sid.h:  Macro definitions derived from manifest files that map from RoT Service
+ * names to Service IDs (SIDs).
+ * Partition manifest parse build tool must provide the implementation of this file.
+*/
+#include "psa_manifest/sid.h"
 
 #else
 
+#include "pal_sid.h"
 #include "val.h"
-#define PSA_FRAMEWORK_VERSION       (0x000A)
+#define PSA_FRAMEWORK_VERSION       (0x0100)
 #define PSA_VERSION_NONE            (0)
 #define PSA_SUCCESS                 (0)
 #define PSA_CONNECTION_REFUSED      (INT32_MIN + 1)
@@ -55,27 +62,7 @@ typedef struct psa_outvec {
     size_t len;
 } psa_outvec;
 
-uint32_t psa_framework_version(void);
-uint32_t psa_version(uint32_t sid);
-psa_handle_t psa_connect(uint32_t sid, uint32_t minor_version);
-psa_status_t psa_call(psa_handle_t handle,
-                      const psa_invec *in_vec, size_t in_len,
-                      psa_outvec *out_vec, size_t out_len);
-psa_status_t psa_close(psa_handle_t handle);
-#endif /* #if ((PSA_API_ELEMENTS_AVAILABLE) || (!VAL_NSPE_BUILD)) */
-
-#ifndef VAL_NSPE_BUILD
-/* <psa_sid.h>:  Macro definitions derived from manifest files that provides a mapping
- * from RoT service names to Service IDs (SIDs) for use with the Client API.
- * Partition manifest parse build tool must provide the implementation of this file.
-*/
-#include "psa_sid.h"
-
-#else
-
-#include "pal_sid.h"
-
-#endif /* VAL_NSPE_BUILD */
+#endif /* #if PSA_IPC_IMPLEMENTED */
 
 #define INVALID_SID                     0x0000FA20
 #endif /* _VAL_CLIENT_H_ */

@@ -37,7 +37,7 @@ test_status_buffer_t    g_status_buffer;
  */
 val_status_t val_ipc_connect(uint32_t sid, uint32_t minor_version, psa_handle_t *handle )
 {
-    *handle = psa_connect(sid, minor_version);
+    *handle = pal_ipc_connect(sid, minor_version);
 
     if (*handle < 0)
     {
@@ -63,7 +63,7 @@ val_status_t val_ipc_call(psa_handle_t handle, psa_invec *in_vec, size_t in_len,
 {
     psa_status_t call_status = PSA_SUCCESS;
 
-    call_status = psa_call(handle, in_vec, in_len, out_vec, out_len);
+    call_status = pal_ipc_call(handle, in_vec, in_len, out_vec, out_len);
 
     if (call_status != PSA_SUCCESS)
     {
@@ -82,7 +82,7 @@ val_status_t val_ipc_call(psa_handle_t handle, psa_invec *in_vec, size_t in_len,
  */
 void val_ipc_close(psa_handle_t handle)
 {
-    psa_close(handle);
+    pal_ipc_close(handle);
 }
 /**
     @brief    - This function executes given list of tests from non-secure sequentially
@@ -147,11 +147,13 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
             if (VAL_ERROR(status))
             {
                 val_set_status(RESULT_FAIL(status));
+                if (server_hs == TRUE)
                 val_print(PRINT_ERROR,"[Check%d] FAILED\n", i);
                 return status;
             }
             else
             {
+                if (server_hs == TRUE)
                 val_print(PRINT_DEBUG,"[Check%d] PASSED\n", i);
             }
             i++;
@@ -242,7 +244,7 @@ val_status_t val_execute_secure_test_func(psa_handle_t *handle, test_info_t test
     val_status_t    status = VAL_STATUS_SUCCESS;
     psa_status_t    status_of_call = PSA_SUCCESS;
 
-    *handle = psa_connect(sid, 0);
+    *handle = pal_ipc_connect(sid, 0);
 
     if (*handle < 0)
     {
@@ -254,13 +256,13 @@ val_status_t val_execute_secure_test_func(psa_handle_t *handle, test_info_t test
                 | ((uint32_t)(TEST_EXECUTE_FUNC) << ACTION_POS));
     psa_invec data[1] = {{&test_data, sizeof(test_data)}};
 
-    status_of_call = psa_call(*handle, data, 1, NULL, 0);
+    status_of_call = pal_ipc_call(*handle, data, 1, NULL, 0);
 
     if (status_of_call != PSA_SUCCESS)
     {
         status = VAL_STATUS_CALL_FAILED;
         val_print(PRINT_ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
-        psa_close(*handle);
+        pal_ipc_close(*handle);
     }
     return status;
 }
@@ -282,14 +284,14 @@ val_status_t val_get_secure_test_result(psa_handle_t *handle)
     psa_outvec resp = {&status, sizeof(status)};
     psa_invec data[1] = {{&test_data, sizeof(test_data)}};
 
-    status_of_call = psa_call(*handle, data, 1, &resp, 1);
+    status_of_call = pal_ipc_call(*handle, data, 1, &resp, 1);
     if (status_of_call != PSA_SUCCESS)
     {
         status = VAL_STATUS_CALL_FAILED;
         val_print(PRINT_ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
     }
 
-    psa_close(*handle);
+    pal_ipc_close(*handle);
     return status;
 }
 

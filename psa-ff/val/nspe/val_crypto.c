@@ -15,11 +15,11 @@
  * limitations under the License.
 **/
 
-#include "val_crypto.h"
 #include "val_target.h"
 #include "pal_interfaces_ns.h"
 #include "val_framework.h"
 #include "val_client_defs.h"
+#include "val_crypto.h"
 
 /**
     @brief    - This API will call the requested crypto function

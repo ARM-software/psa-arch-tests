@@ -27,14 +27,10 @@ print_verbosity_t  g_print_level = PRINT_INFO;
     @param    - print_level: g_print_level verbosity
     @return   - val_status_t
 */
-val_status_t val_uart_init_sf(addr_t uart_base_addr, print_verbosity_t print_level)
+val_status_t val_uart_init_sf(addr_t uart_base_addr)
 {
-    val_status_t         status;
-
-    g_print_level = print_level;
-    status = VAL_STATUS_SUCCESS;
     pal_uart_init(uart_base_addr);
-    return status;
+    return VAL_STATUS_SUCCESS;
 }
 /*
     @brief     - This function parses the input string and writes byte by byte to
@@ -43,12 +39,9 @@ val_status_t val_uart_init_sf(addr_t uart_base_addr, print_verbosity_t print_lev
                - data           : Value for Format specifier
     @return    - error status
  */
-val_status_t val_print_sf(print_verbosity_t verbosity, char *string, uint32_t data)
+val_status_t val_print_sf(char *string, uint32_t data)
 {
-    if (verbosity >= g_print_level)
-    {
-        pal_print(string, data);
-    }
+    pal_print(string, data);
     return VAL_STATUS_SUCCESS;
 }
 

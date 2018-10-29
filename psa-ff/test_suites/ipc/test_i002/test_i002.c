@@ -33,8 +33,9 @@ client_test_t test_i002_client_tests_list[] = {
     client_test_psa_call_with_allowed_status_code,
     client_test_identity,
     client_test_spm_concurrent_connect_limit,
-    client_test_psa_wait_any_with_psa_block,
-    client_test_psa_wait_any_with_psa_poll,
+    client_test_psa_block_behave,
+    client_test_psa_poll_behave,
+    client_test_psa_wait_bitmask,
     NULL,
 };
 
@@ -256,12 +257,12 @@ int32_t client_test_spm_concurrent_connect_limit(security_t caller)
    return status;
 }
 
-int32_t client_test_psa_wait_any(void)
+int32_t client_test_psa_wait(void)
 {
    psa_handle_t    handle[CONNECT_NUM] = {0};
    int             i = 0;
 
-   for(i = 0; i < CONNECT_NUM; i++)
+   for (i = 0; i < CONNECT_NUM; i++)
    {
        handle[i] = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
        if (handle[i] != PSA_CONNECTION_REFUSED)
@@ -273,14 +274,39 @@ int32_t client_test_psa_wait_any(void)
    return VAL_STATUS_SUCCESS;
 }
 
-int32_t client_test_psa_wait_any_with_psa_block(security_t caller)
+int32_t client_test_psa_block_behave(security_t caller)
 {
-   val->print(PRINT_TEST, "[Check7] Test psa_wait_any with PSA_BLOCK\n", 0);
-   return (client_test_psa_wait_any());
+   val->print(PRINT_TEST, "[Check7] Test PSA_BLOCK\n", 0);
+   return (client_test_psa_wait());
 }
 
-int32_t client_test_psa_wait_any_with_psa_poll(security_t caller)
+int32_t client_test_psa_poll_behave(security_t caller)
 {
-   val->print(PRINT_TEST, "[Check8] Test psa_wait_any with PSA_POLL\n", 0);
-   return (client_test_psa_wait_any());
+   val->print(PRINT_TEST, "[Check8] Test PSA_POLL\n", 0);
+   return (client_test_psa_wait());
+}
+
+int32_t client_test_psa_wait_bitmask(security_t caller)
+{
+   psa_handle_t     handle = 0;
+
+   val->print(PRINT_TEST, "[Check9] Test psa_wait bitmask\n", 0);
+
+   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
+
+   if (handle != PSA_CONNECTION_REFUSED)
+   {
+       val->print(PRINT_ERROR, "psa_connect failed -1\n", 0);
+       return VAL_STATUS_INVALID_HANDLE;
+   }
+
+   handle = psa->connect(SERVER_RELAX_MINOR_VERSION_SID, 1);
+
+   if (handle != PSA_CONNECTION_REFUSED)
+   {
+       val->print(PRINT_ERROR, "psa_connect failed -2\n", 0);
+       return VAL_STATUS_INVALID_HANDLE;
+   }
+
+   return VAL_STATUS_SUCCESS;
 }

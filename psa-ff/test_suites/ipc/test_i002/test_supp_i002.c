@@ -26,8 +26,9 @@ int32_t server_test_connect_with_allowed_minor_version_policy(void);
 int32_t server_test_psa_call_with_allowed_status_code(void);
 int32_t server_test_identity(void);
 int32_t server_test_spm_concurrent_connect_limit(void);
-int32_t server_test_psa_wait_any_with_psa_block(void);
-int32_t server_test_psa_wait_any_with_psa_poll(void);
+int32_t server_test_psa_block_behave(void);
+int32_t server_test_psa_poll_behave(void);
+int32_t server_test_psa_wait_bitmask(void);
 
 server_test_t test_i002_server_tests_list[] = {
     NULL,
@@ -37,8 +38,9 @@ server_test_t test_i002_server_tests_list[] = {
     server_test_psa_call_with_allowed_status_code,
     server_test_identity,
     server_test_spm_concurrent_connect_limit,
-    server_test_psa_wait_any_with_psa_block,
-    server_test_psa_wait_any_with_psa_poll,
+    server_test_psa_block_behave,
+    server_test_psa_poll_behave,
+    server_test_psa_wait_bitmask,
     NULL,
 };
 
@@ -48,7 +50,7 @@ int32_t server_test_connection_busy_and_reject(void)
     psa_msg_t   msg = {0};
 
     /* Checks performed:
-     * psa_wait_any()- Returns > 0 when at least one signal is asserted
+     * psa_wait()- Returns > 0 when at least one signal is asserted
      * check delivery of PSA_IPC_CONNECT when psa_connect called.
      * And msg.handle must be positive.
     */
@@ -239,15 +241,17 @@ int32_t server_test_spm_concurrent_connect_limit(void)
 
     while (1)
     {
-       signals = psa_wait_any(PSA_BLOCK);
+       signals = psa_wait(PSA_WAIT_ANY, PSA_BLOCK);
        if ((signals & SERVER_UNSPECIFED_MINOR_V_SIG) == 0)
        {
           val_print(PRINT_ERROR,
-                    "psa_wait_any returned with invalid signal value = 0x%x\n", signals);
+                    "psa_wait returned with invalid signal value = 0x%x\n", signals);
           return VAL_STATUS_ERROR;
        }
 
-       psa_get(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+       if (psa_get(SERVER_UNSPECIFED_MINOR_V_SIG, &msg) != PSA_SUCCESS)
+           continue;
+
        switch(msg.type)
        {
            case PSA_IPC_CONNECT:
@@ -269,58 +273,50 @@ int32_t server_test_spm_concurrent_connect_limit(void)
     return status;
 }
 
-int32_t server_test_psa_wait_any_with_psa_block(void)
+int32_t server_test_psa_block_behave(void)
 {
     psa_signal_t    signals = 0;
     psa_msg_t       msg = {0};
-    int             expected_connect_count = 0, while_count = 0;
+    int             i = 0;
 
-    /* Calling psa_wait_any in a loop and comparing the count value
-     * to check whether PSA_BLOCK is not giving polling behaviour
+    /* This is a sanity check - a successful handshaking between client and
+     * server for requested connection represents check pass.
      */
-    while (1)
+
+    /* Debug print */
+    val_err_check_set(TEST_CHECKPOINT_NUM(214), VAL_STATUS_SUCCESS);
+
+    for (i = 0; i < CONNECT_NUM; i++)
     {
-        /* Debug print */
-        val_err_check_set(TEST_CHECKPOINT_NUM(214), VAL_STATUS_SUCCESS);
+wait:
+         /* PSA_BLOCK ored with 0xFF to check timeout[30:0]=RES is ignored by implementation */
+         signals = psa_wait(PSA_WAIT_ANY, PSA_BLOCK);
 
-        /* Ored with 0xFF to check timeout[30:0]=RES is ignored by implementation */
-        signals = psa_wait_any(PSA_BLOCK | 0xFF);
+         /* When MODE is one(PSA_BLOCK), the psa_wait must return non-zero signal value */
+         if ((signals & SERVER_UNSPECIFED_MINOR_V_SIG) == 0)
+         {
+             val_print(PRINT_ERROR,
+                     "psa_wait returned with invalid signal value = 0x%x\n", signals);
+             return VAL_STATUS_ERROR;
+         }
+         else
+         {
+             if (psa_get(SERVER_UNSPECIFED_MINOR_V_SIG, &msg) != PSA_SUCCESS)
+             {
+                 goto wait;
+             }
 
-        /* Count how many times while loop executed */
-        while_count++;
-
-        /* When MODE is one(PSA_BLOCK), the psa_wait_any must return non-zero signal value */
-        if ((signals & SERVER_UNSPECIFED_MINOR_V_SIG) == 0)
-        {
-            val_print(PRINT_ERROR,
-                    "psa_wait_any returned with invalid signal value = 0x%x\n", signals);
-            return VAL_STATUS_ERROR;
-        }
-        else
-        {
-            psa_get(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
-            psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
-
-            /* Count how many times non-zero signal value returned */
-            expected_connect_count++;
-        }
-
-        if (expected_connect_count == CONNECT_NUM)
-        {
-            /* Come out of loop as we reached required connect limit*/
-            break;
-        }
+             psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
+         }
     }
 
-    /* For PSA_BLOCK, expected_connect_count should be equal to while_count. */
-    if (expected_connect_count != while_count)
-    {
-        return VAL_STATUS_SPM_FAILED;
-    }
+    /* Debug print */
+    val_err_check_set(TEST_CHECKPOINT_NUM(215), VAL_STATUS_SUCCESS);
+
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t server_test_psa_wait_any_with_psa_poll(void)
+int32_t server_test_psa_poll_behave(void)
 {
     psa_signal_t    signals = 0, signals_temp = 0;
     psa_msg_t       msg = {0};
@@ -329,45 +325,92 @@ int32_t server_test_psa_wait_any_with_psa_poll(void)
     while (1)
     {
         /* Debug print */
-        val_err_check_set(TEST_CHECKPOINT_NUM(215), VAL_STATUS_SUCCESS);
+        val_err_check_set(TEST_CHECKPOINT_NUM(216), VAL_STATUS_SUCCESS);
 
         /* Loop to receive client request */
         while (signals == 0)
         {
-            signals = psa_wait_any(PSA_POLL);
+            signals = psa_wait(PSA_WAIT_ANY, PSA_POLL);
         }
 
-        /* When MODE is zero(PSA_POLL), the psa_wait_any will return immediately with the current
+        /* When MODE is zero(PSA_POLL), the psa_wait will return immediately with the current
          * signal state, which can be zero if no signals are active. Exepecting following call to
          * return immediately as none of client is making request.
          */
-        signals_temp = psa_wait_any(PSA_POLL);
+        signals_temp = psa_wait(PSA_WAIT_ANY, PSA_POLL);
 
         if (signals_temp == 0)
         {
             val_print(PRINT_ERROR,
-                    "psa_wait_any returned with invalid signals_temp = 0x%x\n", signals_temp);
+                    "psa_wait returned with invalid signals_temp = 0x%x\n", signals_temp);
             return VAL_STATUS_ERROR;
         }
         else if ((signals & SERVER_UNSPECIFED_MINOR_V_SIG) == 0)
         {
             val_print(PRINT_ERROR,
-                    "psa_wait_any returned with invalid signal value = 0x%x\n", signals);
+                    "psa_wait returned with invalid signal value = 0x%x\n", signals);
             return VAL_STATUS_ERROR;
         }
         else
         {
-            psa_get(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+            if (psa_get(SERVER_UNSPECIFED_MINOR_V_SIG, &msg) != PSA_SUCCESS)
+                continue;
             psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
             count++;
             signals = 0;
         }
 
+        /* Come out of loop as we reached required connect limit*/
         if (count == CONNECT_NUM)
-        {
-            /* Come out of loop as we reached required connect limit*/
             break;
-        }
     }
+    return VAL_STATUS_SUCCESS;
+}
+
+int32_t server_test_psa_wait_bitmask(void)
+{
+    psa_signal_t    signals = 0;
+    psa_msg_t       msg = {0};
+    int             loop_cnt = 2;
+    psa_signal_t    signal_mask = (SERVER_UNSPECIFED_MINOR_V_SIG | SERVER_RELAX_MINOR_VERSION_SIG);
+
+    /* Debug print */
+    val_err_check_set(TEST_CHECKPOINT_NUM(217), VAL_STATUS_SUCCESS);
+
+wait1:
+    signals = psa_wait(signal_mask, PSA_BLOCK);
+
+    /* Returned signals value must be subset signals indicated in the signal_mask */
+    if (((signals & signal_mask) == 0) &&
+        ((signals | signal_mask) != signal_mask))
+    {
+        val_print(PRINT_ERROR,
+                "psa_wait returned with invalid signal value = 0x%x\n", signals);
+        return VAL_STATUS_ERROR;
+    }
+    else if (signals & SERVER_UNSPECIFED_MINOR_V_SIG)
+    {
+        if (psa_get(SERVER_UNSPECIFED_MINOR_V_SIG, &msg) != PSA_SUCCESS)
+        {
+            goto wait1;
+        }
+
+        loop_cnt--;
+        psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
+    }
+    else if (signals & SERVER_RELAX_MINOR_VERSION_SIG)
+    {
+        if (psa_get(SERVER_RELAX_MINOR_VERSION_SIG, &msg) != PSA_SUCCESS)
+        {
+            goto wait1;
+        }
+
+        loop_cnt--;
+        psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
+    }
+
+    if (loop_cnt != 0)
+        goto wait1;
+
     return VAL_STATUS_SUCCESS;
 }

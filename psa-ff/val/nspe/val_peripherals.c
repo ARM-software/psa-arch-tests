@@ -24,22 +24,16 @@
 /* Global */
 uint32_t   is_uart_init_done = 0;
 
-/**
-    @brief    - This API will read the necessary target config info
-                and pass it to driver partition to initialise the driver partition
-                global variables
-    @param    - void
-    @return   - error status
-**/
-val_status_t val_target_init(void)
+/*
+    @brief    - Initialize UART.
+                This is client interface API of secure partition UART INIT API.
+    @param    - None
+    @return   - val_status_t
+*/
+val_status_t val_uart_init(void)
 {
-    target_param_t          target_param;
-    val_status_t            status = VAL_STATUS_SUCCESS;
-    psa_handle_t            handle = 0;
-    psa_status_t            status_of_call = PSA_SUCCESS;
     soc_peripheral_desc_t   *uart_desc;
-    soc_peripheral_desc_t   *soc_per_desc;
-    memory_desc_t           *memory_desc;
+    val_status_t            status = VAL_STATUS_SUCCESS;
 
     status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL,
                                     SOC_PERIPHERAL_UART, 0),
@@ -50,83 +44,8 @@ val_status_t val_target_init(void)
          return status;
     }
 
-    target_param.uart_base_addr = uart_desc->base;
-
-    status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL,
-                                    SOC_PERIPHERAL_WATCHDOG, 0),
-                                    (uint8_t **)&soc_per_desc,
-                                    (uint32_t *)sizeof(soc_peripheral_desc_t));
-    if (VAL_ERROR(status))
-    {
-         return status;
-    }
-    target_param.wd_base_addr = soc_per_desc->base;
-    target_param.wd_time_us_low = soc_per_desc->timeout_in_micro_sec_low;
-    target_param.wd_time_us_medium = soc_per_desc->timeout_in_micro_sec_medium;
-    target_param.wd_time_us_high = soc_per_desc->timeout_in_micro_sec_high;
-    target_param.wd_timer_tick_us = soc_per_desc->num_of_tick_per_micro_sec;
-
-    status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVMEM, 0),
-                                   (uint8_t **)&memory_desc,
-                                   (uint32_t *)sizeof(memory_desc_t));
-
-    target_param.nvmem_base_addr = memory_desc->start;
-
-    if (VAL_ERROR(status))
-    {
-         return status;
-    }
-
-    psa_invec invec[1] = {{&target_param, sizeof(target_param)}};
-    handle = psa_connect(DRIVER_TARGET_INIT_SID, 0);
-    if (handle < 0)
-    {
-        return VAL_STATUS_CONNECTION_FAILED;
-    }
-    else
-    {
-        status_of_call = psa_call(handle, invec, 1, NULL, 0);
-        if (status_of_call != PSA_SUCCESS)
-        {
-            psa_close(handle);
-            return VAL_STATUS_CALL_FAILED;
-        }
-    }
-   psa_close(handle);
-   return VAL_STATUS_SUCCESS;
-}
-
-/*
-    @brief    - Initialize UART.
-                This is client interface API of secure partition UART INIT API.
-    @param    - None
-    @return   - val_status_t
-*/
-val_status_t val_uart_init(void)
-{
-    psa_handle_t            print_handle = 0;
-    psa_status_t            status_of_call = PSA_SUCCESS;
-    uint32_t                uart_init_sign = UART_INIT_SIGN;
-    uint32_t                verbosity = VERBOSE;
-
-    psa_invec data[3] = {{&uart_init_sign, sizeof(uart_init_sign)},
-                         {&verbosity, sizeof(verbosity)}};
-
-    print_handle = psa_connect(DRIVER_UART_SID, 0);
-    if (print_handle < 0)
-    {
-        return(VAL_STATUS_CONNECTION_FAILED);
-    }
-
-    status_of_call = psa_call(print_handle, data, 3, NULL, 0);
-    if (status_of_call != PSA_SUCCESS)
-    {
-        return(VAL_STATUS_CALL_FAILED);
-    }
-
     is_uart_init_done = 1;
-    psa_close(print_handle);
-    return VAL_STATUS_SUCCESS;
+    return pal_uart_init_ns(uart_desc->base);
 }
 
 /**
@@ -139,39 +58,11 @@ val_status_t val_uart_init(void)
 **/
 val_status_t val_print(print_verbosity_t verbosity, char *string, uint32_t data)
 {
-    int             string_len = 0;
-    char            *p = string;
-    psa_handle_t    print_handle = 0;
-    psa_status_t    status_of_call = PSA_SUCCESS;
-    val_status_t    status = VAL_STATUS_SUCCESS;
-
     if ((is_uart_init_done == 0) || (verbosity < VERBOSE))
     {
-       return 0;
+       return VAL_STATUS_SUCCESS;
     }
-    while (*p != '\0')
-    {
-        string_len++;
-        p++;
-    }
-
-    psa_invec data1[3] = {{&verbosity, 4}, {string, string_len+1}, {&data, 4}};
-    print_handle = psa_connect(DRIVER_UART_SID, 0);
-
-    if (print_handle < 0)
-    {
-        return VAL_STATUS_CONNECTION_FAILED;
-    }
-    else
-    {
-        status_of_call = psa_call(print_handle, data1, 3, NULL, 0);
-        if (status_of_call != PSA_SUCCESS)
-        {
-            status = VAL_STATUS_CALL_FAILED;
-        }
-    }
-    psa_close(print_handle);
-    return status;
+    return pal_print_ns(string, data);
 }
 
 /**
@@ -196,30 +87,35 @@ val_status_t val_spi_read(addr_t addr, uint8_t *data, uint32_t len)
 **/
 val_status_t val_wd_timer_init(wd_timeout_type_t timeout_type)
 {
-    wd_param_t      wd_param;
-    psa_handle_t    handle = 0;
-    psa_status_t    status_of_call = PSA_SUCCESS;
+   soc_peripheral_desc_t   *soc_per_desc;
+   uint32_t                time_us;
+   val_status_t            status = VAL_STATUS_SUCCESS;
 
-    wd_param.wd_fn_type = WD_INIT_SEQ;
-    wd_param.wd_timeout_type = timeout_type;
-    psa_invec invec[1] = {{&wd_param, sizeof(wd_param)}};
+   status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL,
+                                   SOC_PERIPHERAL_WATCHDOG, 0),
+                                   (uint8_t **)&soc_per_desc,
+                                   (uint32_t *)sizeof(soc_peripheral_desc_t));
+   if (VAL_ERROR(status))
+   {
+        return status;
+   }
 
-    handle = psa_connect(DRIVER_WATCHDOG_SID, 0);
-    if (handle < 0)
-    {
-        return VAL_STATUS_CONNECTION_FAILED;
-    }
-    else
-    {
-        status_of_call = psa_call(handle, invec, 1, NULL, 0);
-        if (status_of_call != PSA_SUCCESS)
-        {
-            psa_close(handle);
-            return VAL_STATUS_CALL_FAILED;
-        }
-    }
-   psa_close(handle);
-   return VAL_STATUS_SUCCESS;
+   if (timeout_type == WD_LOW_TIMEOUT)
+   {
+       time_us =  soc_per_desc->timeout_in_micro_sec_low;
+   }
+   else if (timeout_type == WD_MEDIUM_TIMEOUT)
+   {
+       time_us = soc_per_desc->timeout_in_micro_sec_medium;
+   }
+   else
+   {
+       time_us = soc_per_desc->timeout_in_micro_sec_high;
+   }
+
+   return pal_wd_timer_init_ns(soc_per_desc->base,
+                               time_us,
+                               soc_per_desc->num_of_tick_per_micro_sec);
 }
 
 /**
@@ -229,28 +125,19 @@ val_status_t val_wd_timer_init(wd_timeout_type_t timeout_type)
 **/
 val_status_t val_wd_timer_enable(void)
 {
-    wd_param_t      wd_param;
-    psa_handle_t    handle = 0;
-    psa_status_t    status_of_call = PSA_SUCCESS;
+   soc_peripheral_desc_t   *soc_per_desc;
+   val_status_t            status = VAL_STATUS_SUCCESS;
 
-    wd_param.wd_fn_type = WD_ENABLE_SEQ;
-    psa_invec invec[1] = {{&wd_param, sizeof(wd_param)}};
+   status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL,
+                                   SOC_PERIPHERAL_WATCHDOG, 0),
+                                   (uint8_t **)&soc_per_desc,
+                                   (uint32_t *)sizeof(soc_peripheral_desc_t));
+   if (VAL_ERROR(status))
+   {
+        return status;
+   }
 
-    handle = psa_connect(DRIVER_WATCHDOG_SID, 0);
-    if (handle < 0)
-    {
-        return VAL_STATUS_CONNECTION_FAILED;
-    }else
-    {
-        status_of_call = psa_call(handle, invec, 1, NULL, 0);
-        if (status_of_call != PSA_SUCCESS)
-        {
-            psa_close(handle);
-            return VAL_STATUS_CALL_FAILED;
-        }
-    }
-   psa_close(handle);
-   return VAL_STATUS_SUCCESS;
+   return pal_wd_timer_enable_ns(soc_per_desc->base);
 }
 
 /**
@@ -260,61 +147,19 @@ val_status_t val_wd_timer_enable(void)
 **/
 val_status_t val_wd_timer_disable(void)
 {
-    wd_param_t      wd_param;
-    psa_handle_t    handle = 0;
-    psa_status_t    status_of_call = PSA_SUCCESS;
+   soc_peripheral_desc_t   *soc_per_desc;
+   val_status_t            status = VAL_STATUS_SUCCESS;
 
-    wd_param.wd_fn_type = WD_DISABLE_SEQ;
-    psa_invec invec[1] = {{&wd_param, sizeof(wd_param)}};
+   status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL,
+                                   SOC_PERIPHERAL_WATCHDOG, 0),
+                                   (uint8_t **)&soc_per_desc,
+                                   (uint32_t *)sizeof(soc_peripheral_desc_t));
+   if (VAL_ERROR(status))
+   {
+        return status;
+   }
 
-    handle = psa_connect(DRIVER_WATCHDOG_SID, 0);
-    if (handle < 0)
-    {
-        return VAL_STATUS_CONNECTION_FAILED;
-    }
-    else
-    {
-        status_of_call = psa_call(handle, invec, 1, NULL, 0);
-        if (status_of_call != PSA_SUCCESS)
-        {
-            psa_close(handle);
-            return VAL_STATUS_CALL_FAILED;
-        }
-    }
-   psa_close(handle);
-   return VAL_STATUS_SUCCESS;
-}
-
-/**
-    @brief    - Checks if watchdog enabled. This is client interface API of
-                secure partition val_is_wd_timer_enabled_sf API for nspe world.
-    @return   - error status
-**/
-val_status_t val_is_wd_timer_enabled(void)
-{
-    wd_param_t      wd_param;
-    psa_handle_t    handle = 0;
-    psa_status_t    status_of_call = PSA_SUCCESS;
-
-    wd_param.wd_fn_type = WD_STATUS_SEQ;
-    psa_invec invec[1] = {{&wd_param, sizeof(wd_param)}};
-
-    handle = psa_connect(DRIVER_WATCHDOG_SID, 0);
-    if (handle < 0)
-    {
-        return VAL_STATUS_CONNECTION_FAILED;
-    }
-    else
-    {
-        status_of_call = psa_call(handle, invec, 1, NULL, 0);
-        if (status_of_call != PSA_SUCCESS)
-        {
-            psa_close(handle);
-            return VAL_STATUS_CALL_FAILED;
-        }
-    }
-   psa_close(handle);
-   return VAL_STATUS_SUCCESS;
+   return pal_wd_timer_disable_ns(soc_per_desc->base);
 }
 
 /*
@@ -328,32 +173,19 @@ val_status_t val_is_wd_timer_enabled(void)
 */
 val_status_t val_nvmem_read(uint32_t offset, void *buffer, int size)
 {
-    nvmem_param_t   nvmem_param;
-    psa_handle_t    handle = 0;
-    psa_status_t    status_of_call = PSA_SUCCESS;
+   memory_desc_t   *memory_desc;
+   val_status_t    status = VAL_STATUS_SUCCESS;
 
-    nvmem_param.nvmem_fn_type = NVMEM_READ;
-    nvmem_param.offset = offset;
-    nvmem_param.size = size;
-    psa_invec invec[1] = {{&nvmem_param, sizeof(nvmem_param)}};
-    psa_outvec outvec[1] = {{buffer, size}};
+   status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVMEM, 0),
+                                  (uint8_t **)&memory_desc,
+                                  (uint32_t *)sizeof(memory_desc_t));
 
-    handle = psa_connect(DRIVER_NVMEM_SID, 0);
-    if (handle < 0)
-    {
-        return VAL_STATUS_CONNECTION_FAILED;
-    }
-    else
-    {
-        status_of_call = psa_call(handle, invec, 1, outvec, 1);
-        if (status_of_call != PSA_SUCCESS)
-        {
-            psa_close(handle);
-            return VAL_STATUS_CALL_FAILED;
-        }
-    }
-   psa_close(handle);
-   return VAL_STATUS_SUCCESS;
+   if (VAL_ERROR(status))
+   {
+        return status;
+   }
+
+   return pal_nvmem_read_ns(memory_desc->start, offset, buffer, size);
 }
 
 /*
@@ -367,29 +199,17 @@ val_status_t val_nvmem_read(uint32_t offset, void *buffer, int size)
 */
 val_status_t val_nvmem_write(uint32_t offset, void *buffer, int size)
 {
-    nvmem_param_t   nvmem_param;
-    psa_handle_t    handle = 0;
-    psa_status_t    status_of_call = PSA_SUCCESS;
+   memory_desc_t   *memory_desc;
+   val_status_t    status = VAL_STATUS_SUCCESS;
 
-    nvmem_param.nvmem_fn_type = NVMEM_WRITE;
-    nvmem_param.offset = offset;
-    nvmem_param.size = size;
-    psa_invec invec[2] = {{&nvmem_param, sizeof(nvmem_param)}, {buffer, size}};
+   status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVMEM, 0),
+                                  (uint8_t **)&memory_desc,
+                                  (uint32_t *)sizeof(memory_desc_t));
 
-    handle = psa_connect(DRIVER_NVMEM_SID, 0);
-    if (handle < 0)
-    {
-        return VAL_STATUS_CONNECTION_FAILED;
-    }
-    else
-    {
-        status_of_call = psa_call(handle, invec, 2, NULL, 0);
-        if (status_of_call != PSA_SUCCESS)
-        {
-            psa_close(handle);
-            return VAL_STATUS_CALL_FAILED;
-        }
-    }
-   psa_close(handle);
-   return VAL_STATUS_SUCCESS;
+   if (VAL_ERROR(status))
+   {
+        return status;
+   }
+
+   return pal_nvmem_write_ns(memory_desc->start, offset, buffer, size);
 }

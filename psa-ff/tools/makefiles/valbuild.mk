@@ -19,7 +19,8 @@ include $(SOURCE)/tools/makefiles/toolchain.mk
 INCLUDE= -I$(SOURCE)/val/common/ \
          -I$(SOURCE)/val/nspe/ \
          -I$(SOURCE)/val/spe/ \
-         -I$(SOURCE)/platform/nspe/ \
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/ \
+         -I$(BUILD)/platform/$(TARGET)/
 
 VPATH=$(SOURCE)/val/common/:\
       $(SOURCE)/val/nspe/:\
@@ -39,7 +40,7 @@ build_common: $(SRC_COMMON:%.c=$(BUILD)/val/%.o)
 build_ns: $(SRC_NS:%.c=$(BUILD)/val/%.o)
 
 $(BUILD)/val/%.o : %.c
-	$(CC)  $(INCLUDE)  -DVERBOSE=$(VERBOSE) -o $@ -c $<
+	$(CC)  $(INCLUDE) -DVAL_NSPE_BUILD  -o $@ -c $<
 
 val_nspe.a:
 	$(AR) $(AR_OPTIONS) $(BUILD)/val/val_nspe.a $(BUILD)/val/*.o

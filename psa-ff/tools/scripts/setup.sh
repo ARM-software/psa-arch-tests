@@ -29,7 +29,7 @@ Usage: setup.sh [--source SOURCE_DIR] [--build BUILD_DIR] [--target TARGET] [--s
                 [--include INCLUDE_PATH] [--help|-h]
 
 Arguments Info:
-    --source <SOURCE_DIR>   : SOURCE_DIR pointing to compliance test directory structure.
+    --source <SOURCE_DIR>   : SOURCE_DIR pointing to architecture test suite directory structure.
                               Default is current directory
     --build  <BUILD_DIR>    : To select the build (output) directory. Default: BUILD/ inside current directory
     --target <TARGET>       : Provide target string as argument.
@@ -49,12 +49,13 @@ Arguments Info:
                                 3 - TEST & above.(Default)
                                 4 - WARN & ERROR.
                                 5 - ERROR.
-    --include <INCLUDE_PATH>: Additional directory to be included into compiler search path.
-                              Note - You must provide PSA defined API element header files psa_client.h and psa_service.h
-                              to compile IPC compliance tests. Provide --include <path> where path
-                              pointing to location of PSA defined header files.
+    --include <INCLUDE_PATH>: Additional directory to be included into compiler search path. Provide --include <path>
+                              where path pointing to location of PSA defined header files.
                               You can specify multiple source locations using --include option.
                               Ex: --include <path1>  --include <path2>
+                              Note- If PSA IPC implemented in your platform, include path must point to path
+                              where \"psa/client.h\", \"psa/service.h\" and test partition manifest output files
+                              (\"psa_manifest/sid.h\" and \"psa_manifest/<manifestfilename>.h\") are located.
     --help|-h               : Print this help message
 
 "
@@ -92,7 +93,7 @@ while [  $# -gt 0 ]; do
                   export VERBOSE=$1
                   ;;
        --include )  shift
-                  export INCLUDE=" -I $1/ $INCLUDE "
+                  export INCLUDE="$INCLUDE -I $1/"
                   INCLUDE_PATHS=("${INCLUDE_PATHS[@]}" $1)
                   ;;
        --help | -h | * )
@@ -118,7 +119,7 @@ fi
 
 if [ ! -d "$SOURCE/test_suites" ]
 then
-   echo "Error: Could not find compliance tests directories in current path $SOURCE"
+   echo "Error: Could not find architecture test suite directories in current path $SOURCE"
    exit 1
 fi
 
@@ -146,40 +147,59 @@ else
    echo "Using \$SUITE=$SUITE"
 fi
 
-if [ $SUITE == "ipc" ]
+PSA_IPC_IMPLEMENTED=`grep -c "^ *PSA_IPC_IMPLEMENTED\s*:=\s*1" $SOURCE/platform/targets/$TARGET/Makefile`
+PSA_CRYPTO_IMPLEMENTED=`grep -c "^ *PSA_CRYPTO_IMPLEMENTED\s*:=\s*1" $SOURCE/platform/targets/$TARGET/Makefile`
+
+# Check PSA_IPC_IMPLEMENTED validity
+if [ $SUITE == "ipc" ] && [ $PSA_IPC_IMPLEMENTED == "0" ]
 then
+   echo "Error: PSA_IPC_IMPLEMENTED must be set to 1 for ipc suite
+         in $SOURCE/platform/$TARGET/Makefile"
+   exit 1
+fi
+
+# Check PSA_CRYPTO_IMPLEMENTED validity
+if [ $SUITE == "crypto" ] && [ $PSA_CRYPTO_IMPLEMENTED == "0" ]
+then
+   echo "Error: PSA_CRYPTO_IMPLEMENTED must be set to 1 for crypto suite
+         in $SOURCE/platform/$TARGET/Makefile"
+   exit 1
+fi
+
+if [ $PSA_IPC_IMPLEMENTED == "1" ]
+then
+    # Check --include validity for ipc suite
     if [ -z "$INCLUDE" ]
     then
           echo "Error: --include option is not provided.
-          You must provide PSA defined API element header files psa_client.h and psa_service.h
-          to compile IPC compliance tests. Provide --include <path> where path pointing to
-          location of PSA defined header files.
+          You must provide PSA defined API element header files "psa/client.h" and "psa/service.h"
+          and test partition manifest output files to compile tests and test framework.
+          Provide --include <path> where path pointing to location of required files.
           You can specify multiple source locations using --include option.
           Ex: --include <path1>  --include <path2> "
           exit 1
     else
         for path in "${INCLUDE_PATHS[@]}"
         do
-            if [ -f "$path/psa_client.h" ]
+            if [ -f "$path/psa/client.h" ]
             then
                 export CLIENT_FILE_FOUND=1
             fi
-            if [ -f "$path/psa_service.h" ]
+            if [ -f "$path/psa/service.h" ]
             then
                 export SERVICE_FILE_FOUND=1
             fi
         done
         if [ $CLIENT_FILE_FOUND ==  "0" ]
         then
-            echo "Couldn't find psa_client.h file in paths: ${INCLUDE_PATHS[@]}"
+            echo "Couldn't find psa/client.h file in paths: ${INCLUDE_PATHS[@]}"
             exit 1
         fi
         if [ $SERVICE_FILE_FOUND == "0" ]
         then
-            echo "Couldn't find psa_service.h file in paths: ${INCLUDE_PATHS[@]}"
+            echo "Couldn't find psa/service.h file in paths: ${INCLUDE_PATHS[@]}"
             exit 1
         fi
-        export PSA_API_ELEMENTS_AVAILABLE=1
     fi
 fi
 
@@ -191,11 +211,9 @@ else
    echo "Using \$TOOLCHAIN=$TOOLCHAIN"
 fi
 
-if [ $TOOLCHAIN != "GNUARM" ]
-#if [ $TOOLCHAIN != "GNUARM" ] && [ $TOOLCHAIN != "ARMCLANG" ]
+if [ $TOOLCHAIN != "GNUARM" ] && [ $TOOLCHAIN != "ARMCLANG" ]
 then
-   echo "Error: Unsupported value for --toolchain=$TOOLCHAIN. Supported toolchain is GNUARM"
-   #echo "Error: Unsupported value for --toolchain=$TOOLCHAIN. Supported toolchain are GNUARM and ARMCLANG"
+   echo "Error: Unsupported value for --toolchain=$TOOLCHAIN. Supported toolchain are GNUARM and ARMCLANG"
    exit 1
 fi
 
@@ -231,12 +249,21 @@ else
     export VERBOSE=3
 fi
 
+MAKE_OPTIONS=" SOURCE=$SOURCE "
+MAKE_OPTIONS+=" BUILD=$BUILD "
+MAKE_OPTIONS+=" TARGET=$TARGET "
+MAKE_OPTIONS+=" SUITE=$SUITE "
+MAKE_OPTIONS+=" TOOLCHAIN=$TOOLCHAIN "
+MAKE_OPTIONS+=" CPU_ARCH=$CPU_ARCH "
+MAKE_OPTIONS+=" VERBOSE=$VERBOSE "
+MAKE_OPTIONS+=" PSA_IPC_IMPLEMENTED=$PSA_IPC_IMPLEMENTED "
+MAKE_OPTIONS+=" USER_INCLUDE=\"$INCLUDE\" "
 
 if [ -z "$CLEAN" ]
 then
    #Build VAL/PAL static library and Tests ELFs
-   echo "make -f $SOURCE/tools/makefiles/Makefile SOURCE=$SOURCE BUILD=$BUILD TARGET=$TARGET SUITE=$SUITE TOOLCHAIN=$TOOLCHAIN CPU_ARCH=$CPU_ARCH VERBOSE=$VERBOSE PSA_HEADER_INC=\"$INCLUDE\" all"
-   make -f $SOURCE/tools/makefiles/Makefile SOURCE=$SOURCE BUILD=$BUILD TARGET=$TARGET SUITE=$SUITE TOOLCHAIN=$TOOLCHAIN CPU_ARCH=$CPU_ARCH VERBOSE=$VERBOSE USER_INCLUDE="$INCLUDE" PSA_API_ELEMENTS_AVAILABLE=$PSA_API_ELEMENTS_AVAILABLE all
+   echo "make -f $SOURCE/tools/makefiles/Makefile $MAKE_OPTIONS USER_INCLUDE=\"$INCLUDE\" all "
+   make -f $SOURCE/tools/makefiles/Makefile $MAKE_OPTIONS USER_INCLUDE="$INCLUDE" all
 else
-   make -f $SOURCE/tools/makefiles/Makefile SOURCE=$SOURCE BUILD=$BUILD TARGET=$TARGET SUITE=$SUITE TOOLCHAIN=$TOOLCHAIN CPU_ARCH=$CPU_ARCH VERBOSE=$VERBOSE USER_INCLUDE="$INCLUDE" PSA_API_ELEMENTS_AVAILABLE=$PSA_API_ELEMENTS_AVAILABLE clean
+   make -f $SOURCE/tools/makefiles/Makefile $MAKE_OPTIONS USER_INCLUDE="$INCLUDE" clean
 fi

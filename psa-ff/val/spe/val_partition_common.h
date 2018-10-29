@@ -16,7 +16,7 @@
 **/
 
 /* Note- This file contains the functions and variables definition which are common to
-   all partitions defined by acs. These functions and variables are declared with static
+   all partitions defined by test suite. These functions and variables are declared with static
    keyword because some fully isolated system may not allow to share code and data segment
    between partitions and static will help each partition to have its own copy of code and data.
    Moreover it can prevents symbol names conflict if these functions are separately compiled and
@@ -27,15 +27,16 @@
 #define _VAL_COMMON_SP_APIS_H_
 
 #include "val/common/val.h"
+#include "val/common/val_target.c"
 #include "val_service_defs.h"
 
-/* <manifestfilename.h> Manifest definitions. Only accessible to Secure Partition.
+/* "psa_manifest/<manifestfilename>.h" Manifest definitions. Only accessible to Secure Partition.
  * The file name is based on the name of the Secure Partitions manifest file.
  * The name must not collide with other header files.
  * Compliance tests expect the below manifest output files implementation from build tool.
  */
-#include "client_partition_psa.h"
-#include "server_partition_psa.h"
+#include "psa_manifest/client_partition_psa.h"
+#include "psa_manifest/server_partition_psa.h"
 
 __UNUSED STATIC_DECLARE val_status_t val_print
                         (print_verbosity_t verbosity, char *string, uint32_t data);
@@ -68,6 +69,7 @@ __UNUSED static val_api_t val_api = {
     .ipc_call                  = val_ipc_call,
     .ipc_close                 = val_ipc_close,
     .set_boot_flag             = val_set_boot_flag,
+    .target_get_config         = val_target_get_config,
 };
 
 __UNUSED static psa_api_t psa_api = {
@@ -93,6 +95,12 @@ STATIC_DECLARE val_status_t val_print(print_verbosity_t verbosity, char *string,
     psa_handle_t    print_handle = 0;
     psa_status_t    status_of_call = PSA_SUCCESS;
     val_status_t    status = VAL_STATUS_SUCCESS;
+    uart_fn_type_t  uart_fn = UART_PRINT;
+
+    if (verbosity < VERBOSE)
+    {
+       return VAL_STATUS_SUCCESS;
+    }
 
     while (*p != '\0')
     {
@@ -100,7 +108,7 @@ STATIC_DECLARE val_status_t val_print(print_verbosity_t verbosity, char *string,
         p++;
     }
 
-    psa_invec data1[3] = {{&verbosity, 4}, {string, string_len+1}, {&data, 4}};
+    psa_invec data1[3] = {{&uart_fn, sizeof(uart_fn)}, {string, string_len+1}, {&data, 4}};
     print_handle = psa_connect(DRIVER_UART_SID, 0);
 
     if (print_handle < 0)
@@ -188,7 +196,7 @@ STATIC_DECLARE val_status_t val_process_connect_request(psa_signal_t sig, psa_ms
     psa_signal_t signals;
 
 wait1:
-    signals = psa_wait_any(PSA_BLOCK);
+    signals = psa_wait(PSA_WAIT_ANY, PSA_BLOCK);
     if (signals & sig)
     {
         if (psa_get(sig, msg) != PSA_SUCCESS)
@@ -208,7 +216,7 @@ wait1:
     }
     else
     {
-        val_print(PRINT_ERROR, "\npsa_wait_any returned with invalid signal value = 0x%x", signals);
+        val_print(PRINT_ERROR, "\npsa_wait returned with invalid signal value = 0x%x", signals);
         res = VAL_STATUS_ERROR;
     }
     return res;
@@ -226,7 +234,7 @@ STATIC_DECLARE val_status_t val_process_call_request(psa_signal_t sig, psa_msg_t
     psa_signal_t signals;
 
 wait2:
-    signals = psa_wait_any(PSA_BLOCK);
+    signals = psa_wait(PSA_WAIT_ANY, PSA_BLOCK);
     if (signals & sig)
     {
         if (psa_get(sig, msg) != PSA_SUCCESS)
@@ -246,7 +254,7 @@ wait2:
     }
     else
     {
-        val_print(PRINT_ERROR, "\npsa_wait_any returned with invalid signal value = 0x%x", signals);
+        val_print(PRINT_ERROR, "\npsa_wait returned with invalid signal value = 0x%x", signals);
         res = VAL_STATUS_ERROR;
     }
     return res;
@@ -264,7 +272,7 @@ STATIC_DECLARE val_status_t val_process_disconnect_request(psa_signal_t sig, psa
     psa_signal_t signals;
 
 wait3:
-    signals = psa_wait_any(PSA_BLOCK);
+    signals = psa_wait(PSA_WAIT_ANY, PSA_BLOCK);
     if (signals & sig)
     {
         if (psa_get(sig, msg) != PSA_SUCCESS)
@@ -284,7 +292,7 @@ wait3:
     }
     else
     {
-        val_print(PRINT_ERROR, "\npsa_wait_any returned with invalid signal value = 0x%x", signals);
+        val_print(PRINT_ERROR, "\npsa_wait returned with invalid signal value = 0x%x", signals);
         res = VAL_STATUS_ERROR;
     }
     return res;
@@ -446,29 +454,41 @@ STATIC_DECLARE val_status_t val_err_check_set(uint32_t checkpoint, val_status_t 
 */
 STATIC_DECLARE val_status_t val_nvmem_write(uint32_t offset, void *buffer, int size)
 {
-    nvmem_param_t   nvmem_param;
-    psa_handle_t    handle = 0;
-    psa_status_t    status_of_call = PSA_SUCCESS;
+   nvmem_param_t   nvmem_param;
+   psa_handle_t    handle = 0;
+   psa_status_t    status_of_call = PSA_SUCCESS;
+   val_status_t    status = VAL_STATUS_SUCCESS;
+   memory_desc_t   *memory_desc;
 
-    nvmem_param.nvmem_fn_type = NVMEM_WRITE;
-    nvmem_param.offset = offset;
-    nvmem_param.size = size;
-    psa_invec invec[2] = {{&nvmem_param, sizeof(nvmem_param)}, {buffer, size}};
+   status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVMEM, 0),
+                                 (uint8_t **)&memory_desc,
+                                 (uint32_t *)sizeof(memory_desc_t));
 
-    handle = psa_connect(DRIVER_NVMEM_SID, 0);
-    if (handle < 0)
-    {
-        return VAL_STATUS_CONNECTION_FAILED;
-    }
-    else
-    {
-        status_of_call = psa_call(handle, invec, 2, NULL, 0);
-        if (status_of_call != PSA_SUCCESS)
-        {
-            psa_close(handle);
-            return VAL_STATUS_CALL_FAILED;
-        }
-    }
+   if (VAL_ERROR(status))
+   {
+      return status;
+   }
+
+   nvmem_param.nvmem_fn_type = NVMEM_WRITE;
+   nvmem_param.base = memory_desc->start;
+   nvmem_param.offset = offset;
+   nvmem_param.size = size;
+   psa_invec invec[2] = {{&nvmem_param, sizeof(nvmem_param)}, {buffer, size}};
+
+   handle = psa_connect(DRIVER_NVMEM_SID, 0);
+   if (handle < 0)
+   {
+       return VAL_STATUS_CONNECTION_FAILED;
+   }
+   else
+   {
+       status_of_call = psa_call(handle, invec, 2, NULL, 0);
+       if (status_of_call != PSA_SUCCESS)
+       {
+           psa_close(handle);
+           return VAL_STATUS_CALL_FAILED;
+       }
+   }
    psa_close(handle);
    return VAL_STATUS_SUCCESS;
 }
