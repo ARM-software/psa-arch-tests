@@ -27,51 +27,8 @@
    file can be overwritten by passing  --include <path_to_psa_service_h> to setup.sh script.
   */
 
-#if 1
-/* <psa_service.h>: Secure Partition API elements. Only accessible to Secure Partition */
-#include "psa_service.h"
-
-#else
-#include "val/common/val.h"
-
-#define PSA_POLL            0x00000000U
-#define PSA_BLOCK           0x80000000U
-#define PSA_DOORBELL        0x00000008U
-#define PSA_IPC_CONNECT     1
-#define PSA_IPC_CALL        2
-#define PSA_IPC_DISCONNECT  3
-#define PSA_MAX_IOVEC       4
-#define PSA_ERR_NOMSG       (INT32_MIN + 3)
-
-typedef uint32_t psa_signal_t;
-typedef struct psa_msg_t psa_msg_t;
-
-typedef struct psa_msg_t {
-    uint32_t type;
-    psa_handle_t handle;
-    int32_t client_id;
-    void *rhandle;
-    size_t in_size[PSA_MAX_IOVEC];
-    size_t out_size[PSA_MAX_IOVEC];
-} psa_msg_t;
-
-
-/* The implementation for following PSA service APIs should come from SPM */
-psa_signal_t psa_wait_any(uint32_t timeout);
-psa_signal_t psa_wait_interrupt(psa_signal_t signal_mask, uint32_t timeout);
-void psa_set_rhandle(psa_handle_t msg_handle, void *rhandle);
-psa_status_t psa_get(psa_signal_t signal, psa_msg_t *msg);
-size_t psa_read(psa_handle_t msg_handle, uint32_t invec_idx,
-                    void *buffer, size_t num_bytes);
-size_t psa_skip(psa_handle_t msg_handle, uint32_t invec_idx,
-                    size_t num_bytes);
-void psa_write(psa_handle_t msg_handle, uint32_t outvec_idx,
-                   const void *buffer, size_t num_bytes);
-void psa_reply(psa_handle_t msg_handle, psa_status_t status);
-void psa_notify(int32_t partition_id);
-void psa_clear(psa_signal_t doorbell_signal);
-void psa_eoi(psa_signal_t irq_signal);
-#endif /* #if 1 */
+/* psa/service.h: Secure Partition API elements. Only accessible to Secure Partition */
+#include "psa/service.h"
 
 /* struct of function pointers to uniqify  nspe and spe client interface for test */
 typedef struct {
@@ -84,7 +41,7 @@ typedef struct {
                                               psa_outvec *out_vec,
                                               size_t out_len
                                               );
-    psa_status_t     (*close)                 (psa_handle_t handle);
+    void             (*close)                 (psa_handle_t handle);
 } psa_api_t;
 
 typedef struct {
@@ -100,5 +57,6 @@ typedef struct {
                                             size_t in_len,  psa_outvec *out_vec, size_t out_len);
   void         (*ipc_close)                (psa_handle_t handle);
   val_status_t (*set_boot_flag)            (boot_state_t state);
+  val_status_t (*target_get_config)        (cfg_id_t cfg_id, uint8_t **data, uint32_t *size);
 } val_api_t;
 #endif

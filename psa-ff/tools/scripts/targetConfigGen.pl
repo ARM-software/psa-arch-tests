@@ -44,9 +44,9 @@ $source=$ARGV[0];
 $build=$ARGV[1];
 $target=$ARGV[2];
 $targetConfigPath = "$source/platform/targets/$target/target.cfg";
-$final_output = "$build/platform/$target/pal_database";
+$final_output = "$build/platform/$target/target_database";
 $output_c = "$build/platform/$target/targetConfigGen.c";
-$input_h = "$source/val/nspe/val_target.h";
+$input_h = "$source/val/common/val_target.h";
 
 $final_output_file = undef;
 if($final_output =~ /([0-9a-zA-Z_]+)$/) {
@@ -157,9 +157,9 @@ print OUT "fp \= fopen\(\"",$final_output,"\.h\"\, \"w\"\)\;\n\n";
 #print OUT "fprintf\(fp\, \"#include \\\"pal_fvp_config\.h\\\"\\n\\n\"\)\;\n";
 print OUT "fprintf\(fp\, \"#ifndef ",uc($final_output_file),"\\n\"\)\;\n";
 print OUT "fprintf\(fp\, \"#define ",uc($final_output_file),"\\n\\n\"\)\;\n";
-print OUT "fprintf\(fp\, \"__attribute__\(\(section\(\\\"\.target_config_ns_data\\\"\)\)\)\\n\"\)\;\n";
+#print OUT "fprintf\(fp\, \"__attribute__\(\(section\(\\\"\.target_config_ns_data\\\"\)\)\)\\n\"\)\;\n";
 print OUT "fprintf\(fp\, \"const uint32_t\\n\"\)\;\n";
-print OUT "fprintf\(fp\, \"database[] \= \{\\n\"\)\;\n";
+print OUT "fprintf\(fp\, \"static target_database[] \= \{\\n\"\)\;\n";
 
 # print OUT "fprintf\(fp\, \"0x\%08x\,\\n\"\, \"_CFG\"\)\;\n";
 # print OUT "fprintf\(fp\, \"0x\%08x\,\\n\"\, \" FVP\"\)\;\n";
@@ -228,7 +228,7 @@ print OUT "fprintf\(fp\, \"#endif \\n\"\)\;\n";
 
 print OUT "\nreturn 0;\}\/\/int main";
 
-#generate pal_database.h file
+#generate target_database.h file
 print "gcc $output_c -o $build/platform/$target/targetConfigGen -I$source/val/nspe -I$source/val/common\n";
 system("gcc $output_c -o $build/platform/$target/targetConfigGen -I$source/val/nspe -I$source/val/common") && die ("Failed to compile targetConfigGen.c \n");
 print "./$build/platform/$target/targetConfigGen\n";

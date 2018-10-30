@@ -20,7 +20,7 @@ export SUITE_OUT= $(BUILD)/$(SUITE)
 include $(SOURCE)/tools/makefiles/toolchain.mk
 
 
-all: clean target_cfg gen_linker build simulate
+all: clean target_cfg gen_linker build
 
 #Generate target files from User provided data base
 target_cfg:
@@ -35,11 +35,11 @@ gen_linker:
 
 
 #Build framework archives and test_combine.elf
-build:  pal_nspe.a val_nspe.a test_combine.elf
+build:  build_pal val_nspe.a test_combine.elf partition_build output_list
 
-pal_nspe.a:
+build_pal:
 	@echo  "----------pal build start-------------"
-	make -f $(SOURCE)/platform/nspe/Makefile
+	make -f $(SOURCE)/platform/targets/$(TARGET)/Makefile
 	@echo  "----------pal build complete-------------"
 
 val_nspe.a:
@@ -58,7 +58,36 @@ test.elf:
 	@$(foreach TEST,$(TEST_LIST), make -f $(SOURCE)/tools/makefiles/testbuild.mk  TEST=$(TEST) ;)
 	@echo  "----------test build complete-------------"
 
-simulate:
+partition_build:
+ifeq (${PSA_IPC_IMPLEMENTED}, 1)
+	@echo  "----------test partition build start-------------"
+	make -f $(SOURCE)/tools/makefiles/spbuild.mk
+	@echo  "----------test partition build complete-------------"
+endif
+
+output_list:
+	@echo  ""
+	@echo  "Below are the list of output binaries/libraries. Integrate these bins/libs"
+	@echo  "to your software stack to execute test suite."
+	@echo  ""
+	@echo  "a) NSPE files:"
+	@echo  " $(BUILD)/val/val_nspe.a"
+	@echo  " $(BUILD)/platform/pal_nspe.a"
+	@echo  " $(BUILD)/$(SUITE)/test_elf_combine.bin"
+	@echo  ""
+ifeq (${PSA_IPC_IMPLEMENTED}, 1)
+	@echo  "b) SPE files"
+	@echo  " $(BUILD)/partition/driver_partition.a"
+endif
+ifeq (${SUITE}, ipc)
+	@echo  " $(BUILD)/partition/client_partition.a"
+	@echo  " $(BUILD)/partition/server_partition.a"
+endif
+	@echo  ""
+
+
+
+
 
 clean:
 	@echo  ">>>> Cleaning the build directory..."

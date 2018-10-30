@@ -43,7 +43,7 @@ int32_t server_test_psa_get_with_unasserted_signal(void)
     * timeout entries available in target.cfg.
     */
 
-    if ((psa_wait_any(PSA_BLOCK)) & SERVER_UNSPECIFED_MINOR_V_SIG)
+    if ((psa_wait(PSA_WAIT_ANY, PSA_BLOCK)) & SERVER_UNSPECIFED_MINOR_V_SIG)
     {
         /* Setting boot.state before test check */
         status = val_set_boot_flag(BOOT_EXPECTED_NS);

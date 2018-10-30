@@ -18,7 +18,7 @@
 #ifndef _PAL_WD_CMSDK_H_
 #define _PAL_WD_CMSDK_H_
 
-#include "platform/spe/pal_common.h"
+#include "pal_common.h"
 
 #define WDOG_TIMER_MAX_VALUE           0xFFFFFFFF
 

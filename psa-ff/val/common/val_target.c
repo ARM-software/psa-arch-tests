@@ -15,17 +15,17 @@
  * limitations under the License.
 **/
 
-#include "val_framework.h"
 #include "val_target.h"
-#include "val_peripherals.h"
-#include "pal_interfaces_ns.h"
+#include "target_database.h"
 
+__UNUSED STATIC_DECLARE val_status_t val_print
+                        (print_verbosity_t verbosity, char *string, uint32_t data);
 /**
     @brief    - Returns the base address of target configuration block database.
     @param    - blob     : Populates the base address
     @return   - val_status_t
 **/
-val_status_t val_target_cfg_get_next(void **blob)
+STATIC_DECLARE val_status_t val_target_cfg_get_next(void **blob)
 {
     val_status_t        status = VAL_STATUS_SUCCESS;
     target_cfg_hdr_t    *hdr;
@@ -33,7 +33,7 @@ val_status_t val_target_cfg_get_next(void **blob)
 
     if (*blob == NULL)
     {
-        *blob = pal_target_get_cfg_start();
+        *blob = (void *) &target_database;
         if (blob == NULL)
         {
             return VAL_STATUS_NOT_FOUND;
@@ -68,7 +68,7 @@ val_status_t val_target_cfg_get_next(void **blob)
               - size     : Block size
     @return   - val_status_t
 **/
-val_status_t val_target_get_cfg_blob(cfg_id_t cfg_id, uint8_t **data, uint32_t *size)
+STATIC_DECLARE val_status_t val_target_get_cfg_blob(cfg_id_t cfg_id, uint8_t **data, uint32_t *size)
 {
     val_status_t    status;
     void            *config_blob = NULL;
@@ -123,7 +123,7 @@ val_status_t val_target_get_cfg_blob(cfg_id_t cfg_id, uint8_t **data, uint32_t *
   @return - data contains the information of type specific to a
             config id.
 **/
-val_status_t val_target_get_config(cfg_id_t cfg_id, uint8_t **data, uint32_t *size)
+STATIC_DECLARE val_status_t val_target_get_config(cfg_id_t cfg_id, uint8_t **data, uint32_t *size)
 {
     val_status_t status;
 

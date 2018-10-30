@@ -22,101 +22,11 @@
 
 typedef server_test_t (*server_test_list_t);
 
-__WEAK extern server_test_t test_i001_server_tests_list[];
-__WEAK extern server_test_t test_i002_server_tests_list[];
-__WEAK extern server_test_t test_i003_server_tests_list[];
-__WEAK extern server_test_t test_i004_server_tests_list[];
-__WEAK extern server_test_t test_i005_server_tests_list[];
-__WEAK extern server_test_t test_i006_server_tests_list[];
-__WEAK extern server_test_t test_i007_server_tests_list[];
-__WEAK extern server_test_t test_i008_server_tests_list[];
-__WEAK extern server_test_t test_i009_server_tests_list[];
-__WEAK extern server_test_t test_i010_server_tests_list[];
-__WEAK extern server_test_t test_i011_server_tests_list[];
-__WEAK extern server_test_t test_i012_server_tests_list[];
-__WEAK extern server_test_t test_i013_server_tests_list[];
-__WEAK extern server_test_t test_i014_server_tests_list[];
-__WEAK extern server_test_t test_i015_server_tests_list[];
-__WEAK extern server_test_t test_i016_server_tests_list[];
-__WEAK extern server_test_t test_i017_server_tests_list[];
-__WEAK extern server_test_t test_i018_server_tests_list[];
-__WEAK extern server_test_t test_i019_server_tests_list[];
-__WEAK extern server_test_t test_i020_server_tests_list[];
-__WEAK extern server_test_t test_i021_server_tests_list[];
-__WEAK extern server_test_t test_i022_server_tests_list[];
-__WEAK extern server_test_t test_i023_server_tests_list[];
-__WEAK extern server_test_t test_i024_server_tests_list[];
-__WEAK extern server_test_t test_i025_server_tests_list[];
-__WEAK extern server_test_t test_i026_server_tests_list[];
-__WEAK extern server_test_t test_i027_server_tests_list[];
-__WEAK extern server_test_t test_i028_server_tests_list[];
-__WEAK extern server_test_t test_i029_server_tests_list[];
-__WEAK extern server_test_t test_i030_server_tests_list[];
-__WEAK extern server_test_t test_i031_server_tests_list[];
-__WEAK extern server_test_t test_i032_server_tests_list[];
-__WEAK extern server_test_t test_i033_server_tests_list[];
-__WEAK extern server_test_t test_i034_server_tests_list[];
-__WEAK extern server_test_t test_i035_server_tests_list[];
-__WEAK extern server_test_t test_i036_server_tests_list[];
-__WEAK extern server_test_t test_i037_server_tests_list[];
-__WEAK extern server_test_t test_i038_server_tests_list[];
-__WEAK extern server_test_t test_i039_server_tests_list[];
-__WEAK extern server_test_t test_i040_server_tests_list[];
-__WEAK extern server_test_t test_i041_server_tests_list[];
-__WEAK extern server_test_t test_i042_server_tests_list[];
-__WEAK extern server_test_t test_i043_server_tests_list[];
-__WEAK extern server_test_t test_i044_server_tests_list[];
-__WEAK extern server_test_t test_i045_server_tests_list[];
-__WEAK extern server_test_t test_i046_server_tests_list[];
+#include "server_tests_list_declare.inc"
 
 server_test_list_t server_ipc_test_list[] = {
     NULL,
-    test_i001_server_tests_list,
-    test_i002_server_tests_list,
-    test_i003_server_tests_list,
-    test_i004_server_tests_list,
-    test_i005_server_tests_list,
-    test_i006_server_tests_list,
-    test_i007_server_tests_list,
-    test_i008_server_tests_list,
-    test_i009_server_tests_list,
-    test_i010_server_tests_list,
-    test_i011_server_tests_list,
-    test_i012_server_tests_list,
-    test_i013_server_tests_list,
-    test_i014_server_tests_list,
-    test_i015_server_tests_list,
-    test_i016_server_tests_list,
-    test_i017_server_tests_list,
-    test_i018_server_tests_list,
-    test_i019_server_tests_list,
-    test_i020_server_tests_list,
-    test_i021_server_tests_list,
-    test_i022_server_tests_list,
-    test_i023_server_tests_list,
-    test_i024_server_tests_list,
-    test_i025_server_tests_list,
-    test_i026_server_tests_list,
-    test_i027_server_tests_list,
-    test_i028_server_tests_list,
-    test_i029_server_tests_list,
-    test_i030_server_tests_list,
-    test_i031_server_tests_list,
-    test_i032_server_tests_list,
-    test_i033_server_tests_list,
-    test_i034_server_tests_list,
-    test_i035_server_tests_list,
-    test_i036_server_tests_list,
-    test_i037_server_tests_list,
-    test_i038_server_tests_list,
-    test_i039_server_tests_list,
-    test_i040_server_tests_list,
-    test_i041_server_tests_list,
-    test_i042_server_tests_list,
-    test_i043_server_tests_list,
-    test_i044_server_tests_list,
-    test_i045_server_tests_list,
-    test_i046_server_tests_list,
+#include "server_tests_list.inc"
     NULL,
 };
 #endif

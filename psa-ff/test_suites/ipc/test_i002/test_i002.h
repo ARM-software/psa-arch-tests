@@ -37,6 +37,7 @@ int32_t client_test_connect_with_allowed_minor_version_policy(security_t);
 int32_t client_test_psa_call_with_allowed_status_code(security_t);
 int32_t client_test_identity(security_t);
 int32_t client_test_spm_concurrent_connect_limit(security_t);
-int32_t client_test_psa_wait_any_with_psa_block(security_t);
-int32_t client_test_psa_wait_any_with_psa_poll(security_t);
+int32_t client_test_psa_block_behave(security_t);
+int32_t client_test_psa_poll_behave(security_t);
+int32_t client_test_psa_wait_bitmask(security_t);
 #endif

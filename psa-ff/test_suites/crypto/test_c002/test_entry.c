@@ -27,8 +27,7 @@ psa_api_t *psa = NULL;
 
 void test_entry(val_api_t *val_api, psa_api_t *psa_api)
 {
-    int32_t   i, status = VAL_STATUS_SUCCESS;
-    bool_t    destroy_status = TRUE;
+    int32_t   status = VAL_STATUS_SUCCESS;
 
     val = val_api;
     psa = psa_api;
@@ -49,21 +48,6 @@ void test_entry(val_api_t *val_api, psa_api_t *psa_api)
     }
 
 test_exit:
-    val->print(PRINT_DEBUG, "\tPSA destroy all the key slot\n", 0);
-    for (i = 1; i <= MAX_KEY_SLOT; i++)
-    {
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, i);
-        if (status != PSA_SUCCESS)
-        {
-            val->print(PRINT_ERROR, "\tPSA destroy key failed for slot number: %d\n", i);
-            destroy_status = FALSE;
-        }
-    }
-
-    if (destroy_status)
-    {
-        val->print(PRINT_DEBUG, "\tPSA all the key slot successfully destroyed\n", 0);
-    }
-
+    val->crypto_function(VAL_CRYPTO_FREE);
     val->test_exit();
 }

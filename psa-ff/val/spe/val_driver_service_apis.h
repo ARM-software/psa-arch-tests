@@ -23,15 +23,15 @@
 #include "val_service_defs.h"
 #include "pal_interfaces_s.h"
 
-/* <manifestfilename.h> Manifest definitions. Only accessible to Secure Partition.
+/* "psa_manifest/<manifestfilename>.h" Manifest definitions. Only accessible to Secure Partition.
  * The file name is based on the name of the Secure Partitions manifest file.
  * The name must not collide with other header files.
  * Compliance tests expect the below manifest output files implementation from build tool.
  */
-#include "driver_partition_psa.h"
+#include "psa_manifest/driver_partition_psa.h"
 
-val_status_t val_uart_init_sf(addr_t uart_base_addr, print_verbosity_t print_level);
-val_status_t val_print_sf(print_verbosity_t verbosity, char *string, uint32_t data);
+val_status_t val_uart_init_sf(addr_t uart_base_addr);
+val_status_t val_print_sf(char *string, uint32_t data);
 val_status_t val_wd_timer_init_sf(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us);
 val_status_t val_wd_timer_enable_sf(addr_t base_addr);
 val_status_t val_wd_timer_disable_sf(addr_t base_addr);

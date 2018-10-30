@@ -31,8 +31,13 @@ $ns_test_start_addr = undef;
 
 if($toolchain eq "GNUARM")
 {
-    $linker_in  = "$source/tools/makefiles/test.linker";
+    $linker_in  = "$source/tools/makefiles/linker/test.linker";
     $linker_out = "$suite_out/.test.linker";
+}
+else
+{
+    $linker_in  = "$source/tools/makefiles/linker/test.sct";
+    $linker_out = "$suite_out/.test.sct";
 }
 
 open(IN, $targetConfigPath) or die "Unable to open $targetConfigPath $!";
@@ -44,6 +49,7 @@ while(<IN>) {
     }
 }
 close IN;
+
 if(defined($ns_test_start_addr))
 {
     open(IN, $linker_in) or die "Unable to open $linker_in $!";
@@ -51,6 +57,8 @@ if(defined($ns_test_start_addr))
     while(<IN>) {
         if($_ =~ /^TEST_START/){
             print OUT "TEST_START = $ns_test_start_addr;\n";
+        }elsif($_ =~ /#define *TEST_CODE_START/){
+            print OUT "#define TEST_CODE_START $ns_test_start_addr\n";
         }else{
             print OUT "$_";
         }

@@ -18,3 +18,8 @@ CC_SOURCE  = test_entry.c test_i019.c
 CC_OPTIONS =
 AS_SOURCE  =
 AS_OPTIONS =
+
+CC_SOURCE_SPE  = test_i019.c test_supp_i019.c
+CC_OPTIONS_SPE =
+AS_SOURCE_SPE  =
+AS_OPTIONS_SPE =
