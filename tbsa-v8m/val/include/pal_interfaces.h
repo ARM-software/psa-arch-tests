@@ -448,4 +448,14 @@ int pal_firmware_version_update(uint32_t instance, uint32_t firmware_version_typ
     @return   - error status
 **/
 int pal_firmware_version_read(uint32_t instance, uint32_t firmware_version_type);
+
+/**
+    @brief    - Revoke the given key
+    @param    - index   : Index of the key
+                addr    : Address of the key
+                size    : Size of the key
+    @return   - error status
+**/
+int pal_crypto_revoke_key(uint32_t index, addr_t addr, uint32_t size);
+
 #endif /* PAL_INTERFACES_H */

@@ -17,6 +17,8 @@
 
 #include "val_test_common.h"
 
+#define KEY_SIZE  32
+
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 5),
                   CREATE_TEST_TITLE("A fuse should only transit to programmed state"),
@@ -42,8 +44,9 @@ void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t   status;
     fuse_desc_t     *fuse_desc;
-    uint32_t        rd_data1 = 0, rd_data2 = 0;
-    uint32_t        wr_data1 = 0x0000FFFF, wr_data2 = 0x0000F0F0;
+    uint32_t        i;
+    uint32_t        rd_data1[KEY_SIZE] = {0}, rd_data2[KEY_SIZE] = {0};
+    uint32_t        wr_data1[KEY_SIZE] = {0}, wr_data2[KEY_SIZE] = {0xF0F0F0F0};
 
     status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
     if (val->err_check_set(TEST_CHECKPOINT_1, status)) {
@@ -55,41 +58,48 @@ void test_payload(tbsa_val_api_t *val)
         return;
     }
 
-    status = val->fuse_ops(FUSE_WRITE, fuse_desc->addr, &wr_data1, fuse_desc->size);
+    if (fuse_desc->def_val == 0) {
+        for (i = 0; i < fuse_desc->size; i++)
+            wr_data1[i] = 0xFFFFFFFF;
+    }
+
+    status = val->fuse_ops(FUSE_WRITE, fuse_desc->addr, wr_data1, fuse_desc->size);
     if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
         return;
     }
 
-    status = val->fuse_ops(FUSE_READ, fuse_desc->addr, &rd_data1, fuse_desc->size);
+    status = val->fuse_ops(FUSE_READ, fuse_desc->addr, rd_data1, fuse_desc->size);
     if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
         return;
     }
 
-    if (rd_data1 != wr_data1)
-    {
-        val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_WRITE_ERROR);
-        return;
+    for (i = 0; i < fuse_desc->size; i++) {
+        if (rd_data1[i] != wr_data1[i]) {
+            val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_WRITE_ERROR);
+            return;
+        }
     }
 
-    status = val->fuse_ops(FUSE_WRITE, fuse_desc->addr, &wr_data2, fuse_desc->size);
+    status = val->fuse_ops(FUSE_WRITE, fuse_desc->addr, wr_data2, fuse_desc->size);
     if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
         return;
     }
 
-    status = val->fuse_ops(FUSE_READ, fuse_desc->addr, &rd_data2, fuse_desc->size);
+    status = val->fuse_ops(FUSE_READ, fuse_desc->addr, rd_data2, fuse_desc->size);
     if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
         return;
     }
 
-    if (rd_data2 != rd_data1)
-    {
-        val->print(PRINT_ERROR, "\n        Able to modify programmable bits", 0);
-        val->err_check_set(TEST_CHECKPOINT_8, TBSA_STATUS_ERROR);
-        return;
+    for (i = 0; i < fuse_desc->size; i++) {
+        if (rd_data2[i] != rd_data1[i])
+        {
+            val->print(PRINT_ERROR, "\n        Able to modify programmable bits", 0);
+            val->err_check_set(TEST_CHECKPOINT_8, TBSA_STATUS_ERROR);
+            return;
+        }
     }
 
     val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
-
 }
 
 void exit_hook(tbsa_val_api_t *val)

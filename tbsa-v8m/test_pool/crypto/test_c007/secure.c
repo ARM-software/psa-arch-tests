@@ -17,6 +17,8 @@
 
 #include "val_test_common.h"
 
+#define KEY_SIZE  32
+
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 7),
                   CREATE_TEST_TITLE("A confidential hardware IP fuse must not be readable by any software"),
@@ -60,8 +62,8 @@ void entry_hook(tbsa_val_api_t *val)
 void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
-    uint32_t      data, i;
-    uint32_t      key[32];
+    uint32_t      i;
+    uint32_t      key[KEY_SIZE] = {0};
     fuse_desc_t   *fuse_desc;
     boot_t        boot;
     uint32_t      shcsr = 0UL;
@@ -78,12 +80,12 @@ void test_payload(tbsa_val_api_t *val)
         return;
     }
 
-    status = val->get_fuse_info((fuse_desc_t **)&fuse_desc, FUSE_HW_IP, 0);
-    if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
-        return;
-    }
-
     if (boot.wb != WARM_BOOT_REQUESTED) {
+        status = val->get_fuse_info((fuse_desc_t **)&fuse_desc, FUSE_HW_IP, 0);
+        if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
+            return;
+        }
+
         status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
         if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
             return;
@@ -115,33 +117,30 @@ void test_payload(tbsa_val_api_t *val)
         if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
             return;
         }
-    }
 
-    data = 0;
-    for(i = 0; i < fuse_desc->size; i++)
-        data += key[i];
-
-    /* Check that if Fuse is Zero*/
-    if (data) {
-        val->print(PRINT_ERROR, "\n        Able to read the confidential fuse", 0);
-        val->err_check_set(TEST_CHECKPOINT_B, TBSA_STATUS_ERROR);
-        return;
+        for (i = 0; i < fuse_desc->size; i++) {
+            if (key[i] != fuse_desc->def_val) {
+                val->print(PRINT_ERROR, "\n        Able to read the confidential fuse", 0);
+                val->err_check_set(TEST_CHECKPOINT_C, TBSA_STATUS_ERROR);
+                return;
+            }
+        }
     }
 
     boot.wb = BOOT_UNKNOWN;
     status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
-    if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
         return;
     }
 
     status = val->nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SHCSR), &shcsr, sizeof(shcsr));
-    if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_E, status)) {
         return;
     }
 
     /* Restoring faults */
     status = val->mem_reg_write(SHCSR, shcsr);
-    if (val->err_check_set(TEST_CHECKPOINT_E, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_F, status)) {
         return;
     }
 
@@ -154,7 +153,7 @@ void exit_hook(tbsa_val_api_t *val)
 
     /* Restoring default Handler */
     status = val->interrupt_restore_handler(EXCP_NUM_HF);
-    if (val->err_check_set(TEST_CHECKPOINT_F, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_10, status)) {
         return;
     }
 }

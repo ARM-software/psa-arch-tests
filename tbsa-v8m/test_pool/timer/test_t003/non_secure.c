@@ -100,17 +100,18 @@ void test_payload(tbsa_val_api_t *val)
                 /* Issuing cold boot request */
                 val->system_reset(COLD_RESET);
                 /* Shouldn't come here */
-                val->print(PRINT_ERROR, "\n\tShouldn't comer here", 0);
-                while(TRUE);
+                val->print(PRINT_ERROR, "\n\t  Shouldn't comer here", 0);
+                val->err_check_set(TEST_CHECKPOINT_9, TBSA_STATUS_ERROR);
+                return;
             }
 
             /* Check for validity of TRTC ? */
             if (val->is_rtc_synced_to_server(soc_per_desc->base)) {
                 if (!val->is_rtc_trustable(soc_per_desc->base)) {
-                    val->err_check_set(TEST_CHECKPOINT_9, TBSA_STATUS_INCORRECT_VALUE);
+                    val->err_check_set(TEST_CHECKPOINT_A, TBSA_STATUS_INCORRECT_VALUE);
                     boot.cb = BOOT_UNKNOWN;
                     status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SPAD), &boot, sizeof(boot));
-                    if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
+                    if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
                         return;
                     }
                     break;
@@ -118,10 +119,10 @@ void test_payload(tbsa_val_api_t *val)
             } else {
                 if (val->is_rtc_trustable(soc_per_desc->base)) {
                     /* When there is outage of power to the TRTC, TRTC is not trusted */
-                    val->err_check_set(TEST_CHECKPOINT_B, TBSA_STATUS_INCORRECT_VALUE);
+                    val->err_check_set(TEST_CHECKPOINT_C, TBSA_STATUS_INCORRECT_VALUE);
                     boot.cb = BOOT_UNKNOWN;
                     status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SPAD), &boot, sizeof(boot));
-                    if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
+                    if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
                         return;
                     }
                     break;
@@ -139,12 +140,12 @@ void test_payload(tbsa_val_api_t *val)
 
     /* Disabling SecureFault, UsageFault, BusFault, MemFault temporarily */
     status = val->mem_reg_read(SHCSR, &shcsr);
-    if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_E, status)) {
         return;
     }
 
     status = val->mem_reg_write(SHCSR, (shcsr & ~0xF0000));
-    if (val->err_check_set(TEST_CHECKPOINT_E, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_F, status)) {
         return;
     }
 
@@ -153,7 +154,7 @@ void test_payload(tbsa_val_api_t *val)
         status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, SOC_PERIPHERAL_RTC, instance),
                                         (uint8_t **)&soc_per_desc,
                                         (uint32_t *)sizeof(soc_peripheral_desc_t));
-        if (val->err_check_set(TEST_CHECKPOINT_F, status)) {
+        if (val->err_check_set(TEST_CHECKPOINT_10, status)) {
             break;
         }
 
@@ -180,7 +181,7 @@ void test_payload(tbsa_val_api_t *val)
 
     /* Restoring faults */
     status = val->mem_reg_write(SHCSR, shcsr);
-    if (val->err_check_set(TEST_CHECKPOINT_10, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_11, status)) {
         return;
     }
 
@@ -193,7 +194,7 @@ void exit_hook(tbsa_val_api_t *val)
 
     /* Restoring default Handler */
     status = val->interrupt_restore_handler(EXCP_NUM_HF);
-    if (val->err_check_set(TEST_CHECKPOINT_11, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_12, status)) {
         return;
     }
 }

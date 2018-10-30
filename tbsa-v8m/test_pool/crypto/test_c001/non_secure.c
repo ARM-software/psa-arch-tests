@@ -17,11 +17,11 @@
 
 #include "val_test_common.h"
 
-#define   TIMER_VALUE_US  10 * 1000
+#define   TIMER_VALUE_US   5 * 1000
 #define   KEY_SIZE        32            /*Size in Bytes*/
 
 tbsa_val_api_t        *g_val;
-uint8_t               key[KEY_SIZE] = {0}, g_key_save[KEY_SIZE] = {0};
+uint8_t               g_key[KEY_SIZE] = {0}, g_key_save[KEY_SIZE] = {0};
 soc_peripheral_hdr_t  *soc_peripheral_hdr;
 soc_peripheral_desc_t *soc_peripheral_desc;
 bool_t                timer_present = 0;
@@ -53,20 +53,33 @@ tbsa_status_t reinit_timer(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
 
+    for(int i=0; i<KEY_SIZE; i++)
+        g_key_save[i] = 0;
+
     g_timer = g_timer - 1000;
+    status = val->interrupt_disable(EXCP_NUM_EXT_INT(soc_peripheral_desc->intr_id));
+    if (val->err_check_set(TEST_CHECKPOINT_15, status)) {
+        return status;
+    }
+
     status = val->timer_disable(soc_peripheral_desc->base);
-    if (val->err_check_set(TEST_CHECKPOINT_13, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_16, status)) {
         return status;
     }
 
     /* Reinit the timer */
     status = val->timer_init(soc_peripheral_desc->base, g_timer , ((clocks_desc->sys_freq)/1000000));
-    if (val->err_check_set(TEST_CHECKPOINT_14, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_17, status)) {
+        return status;
+    }
+
+    status = val->interrupt_enable(EXCP_NUM_EXT_INT(soc_peripheral_desc->intr_id));
+    if (val->err_check_set(TEST_CHECKPOINT_18, status)) {
         return status;
     }
 
     status = val->timer_enable(soc_peripheral_desc->base);
-    if (val->err_check_set(TEST_CHECKPOINT_15, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_19, status)) {
         return status;
     }
 
@@ -80,7 +93,7 @@ static void ns_timer_isr(void)
 
     g_exception_taken++;
     for(i=0; i<KEY_SIZE; i++)
-        key_sum += key[i];
+        key_sum += g_key[i];
 
     if (key_sum == 0) {
         g_val->timer_interrupt_clear(soc_peripheral_desc->base);
@@ -91,7 +104,7 @@ static void ns_timer_isr(void)
             g_val->timer_disable(soc_peripheral_desc->base);
             g_val->interrupt_disable(EXCP_NUM_EXT_INT(soc_peripheral_desc->intr_id));
             for(i=0; i<KEY_SIZE; i++)
-                g_key_save[i] = key[i];
+                g_key_save[i] = g_key[i];
         }
     }
     return;
@@ -105,14 +118,14 @@ tbsa_status_t program_timer(tbsa_val_api_t *val)
     status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, 0, 0),
                                     (uint8_t **)&soc_peripheral_hdr,
                                     (uint32_t *)sizeof(soc_peripheral_hdr_t));
-    if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_10, status)) {
         return status;
     }
 
     status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_CLOCKS, CLOCKS_SYS_FREQ, 0),
                                     (uint8_t **)&clocks_desc,
                                     (uint32_t *)sizeof(clocks_desc_t));
-    if (val->err_check_set(TEST_CHECKPOINT_E, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_11, status)) {
         return status;
     }
 
@@ -121,11 +134,11 @@ tbsa_status_t program_timer(tbsa_val_api_t *val)
         status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, SOC_PERIPHERAL_TIMER, index),
                                         (uint8_t **)&soc_peripheral_desc,
                                         (uint32_t *)sizeof(soc_peripheral_desc_t));
-        if (val->err_check_set(TEST_CHECKPOINT_F, status)) {
+        if (val->err_check_set(TEST_CHECKPOINT_12, status)) {
             return status;
         }
 
-        if (soc_peripheral_desc->attribute != NONSECURE_PROGRAMMABLE) {
+        if (soc_peripheral_desc->attribute != SECURE_PROGRAMMABLE) {
             index++;
             continue;
         }
@@ -133,15 +146,10 @@ tbsa_status_t program_timer(tbsa_val_api_t *val)
 
         /* Installing Timer Handler */
         status = val->interrupt_setup_handler(EXCP_NUM_EXT_INT(soc_peripheral_desc->intr_id), 0, ns_timer_isr);
-        if (val->err_check_set(TEST_CHECKPOINT_10, status)) {
+        if (val->err_check_set(TEST_CHECKPOINT_13, status)) {
             return status;
         }
 
-        /* Initialise the timer */
-        status = val->timer_init(soc_peripheral_desc->base, TIMER_VALUE_US, ((clocks_desc->sys_freq)/1000000));
-        if (val->err_check_set(TEST_CHECKPOINT_11, status)) {
-            return status;
-        }
         break;
     }
     if (timer_present)
@@ -155,16 +163,16 @@ void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
     g_val = val;
-    uint32_t i, timeout=0x1000;
+    uint32_t i, timeout = 1000;
 
-    status = val->crypto_set_base_addr(NONSECURE_PROGRAMMABLE);
-    if (val->err_check_set(TEST_CHECKPOINT_1, status)) {
+    status = val_crypto_set_base_addr(NONSECURE_PROGRAMMABLE);
+    if (val->err_check_set(TEST_CHECKPOINT_F, status)) {
         return;
     }
 
     status = program_timer(val);
-    if (val->err_check_set(TEST_CHECKPOINT_12, status)) {
-        return;
+    if (val->err_check_set(TEST_CHECKPOINT_14, status)) {
+        goto exit;
     }
 
     /* Check if we receive at least 3 interrupts before the atomic
@@ -179,42 +187,44 @@ void test_payload(tbsa_val_api_t *val)
                 g_reinit_taken++;
 
             status = reinit_timer(val);
-            if (val->err_check_set(TEST_CHECKPOINT_16, status)) {
-                return;
+            if (val->err_check_set(TEST_CHECKPOINT_20, status)) {
+                goto exit;
             }
 
             for(i=0; i<KEY_SIZE; i++) {
-               key[i] = 0;
+               g_key[i] = 0;
                g_key_save[i] = 0;
             }
-            status = val->crypto_key_generate(key, AES, KEY_SIZE);
-            if (val->err_check_set(TEST_CHECKPOINT_17, status)) {
-                return;
+            status = val_crypto_key_generate(g_key, AES, KEY_SIZE);
+            if (val->err_check_set(TEST_CHECKPOINT_21, status)) {
+                goto exit;
             }
 
         } else {
             val->set_status(RESULT_SKIP(1));
             val->print(PRINT_ERROR, "\nUnable to receive any interrupts", 0);
-            return;
+            goto exit;
         }
     }
 
     while (--timeout);
 
     for(i=0; i<KEY_SIZE; i++) {
-        if(key[i] != g_key_save[i]) {
-            val->err_check_set(TEST_CHECKPOINT_18, TBSA_STATUS_ERROR);
+        if(g_key[i] != g_key_save[i]) {
+            val->err_check_set(TEST_CHECKPOINT_22, TBSA_STATUS_ERROR);
             val->print(PRINT_ERROR, "\nKey generation from secure state was interrupted", 0);
-            return;
+            goto exit;
         } else {
             val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
         }
     }
+
+exit:
+    val->timer_disable(soc_peripheral_desc->base);
+    val->interrupt_disable(EXCP_NUM_EXT_INT(soc_peripheral_desc->intr_id));
     return;
 }
 
 void exit_hook(tbsa_val_api_t *val)
 {
-    g_val->timer_disable(soc_peripheral_desc->base);
-    g_val->interrupt_disable(EXCP_NUM_EXT_INT(soc_peripheral_desc->intr_id));
 }

@@ -17,6 +17,7 @@
 
 #include "val_test_common.h"
 
+#define FUSE_SIZE  32
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 11),
                   CREATE_TEST_TITLE("Check a confidential SW receipient fuse is readable by privileged software."),
@@ -54,7 +55,7 @@ void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t   status;
     fuse_desc_t     *fuse_desc;
-    uint32_t        data[32], data1[32] = {0};
+    uint32_t        data[FUSE_SIZE], data1[FUSE_SIZE] = {0};
     boot_t          boot;
     uint32_t        shcsr = 0UL;
     uint32_t        control, i;
@@ -117,8 +118,8 @@ void test_payload(tbsa_val_api_t *val)
             return;
         }
 
-        for (i=0; i<fuse_desc->size; i++) {
-            if (data[i] == 0) {
+        for (i = 0; i < fuse_desc->size; i++) {
+            if (data[i] == fuse_desc->def_val) {
                 val->print(PRINT_ERROR, "\n        The given fuse is empty", 0);
                 val->err_check_set(TEST_CHECKPOINT_B, TBSA_STATUS_ERROR);
                 return;
@@ -136,7 +137,7 @@ void test_payload(tbsa_val_api_t *val)
             return;
         }
 
-        for (i=0; i<fuse_desc->size; i++) {
+        for (i = 0; i < fuse_desc->size; i++) {
             if (data1[i] == data[i]) {
                 val->print(PRINT_ERROR, "\n        Able to access confidential fuse in unprivilege mode", 0);
                 val->err_check_set(TEST_CHECKPOINT_D, TBSA_STATUS_ERROR);

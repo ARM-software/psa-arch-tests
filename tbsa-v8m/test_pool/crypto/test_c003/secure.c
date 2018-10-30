@@ -17,6 +17,7 @@
 
 #include "val_test_common.h"
 
+#define KEY_SIZE  32
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 3),
                   CREATE_TEST_TITLE("HUK should be in Confidential-Lockable-Bulk fuses, accessible only to TW"),
@@ -42,7 +43,7 @@ void entry_hook(tbsa_val_api_t *val)
 
 void hard_fault_esr (unsigned long *sf_args)
 {
-    g_val->print(PRINT_INFO, "\nSecureFault triggered when HUK was accessed from"
+    g_val->print(PRINT_INFO, "\nHardFault triggered when HUK was accessed from"
                  "non-Trusted world", 0);
 
     /* Updating the return address in the stack frame in order to avoid periodic fault */
@@ -72,11 +73,16 @@ tbsa_status_t setup_ns_env(void)
 void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
-    uint32_t      data, expected_fuse_type, i, instance = 0;
-    uint32_t      key[32];
+    uint32_t      expected_fuse_type, i, instance = 0;
+    uint32_t      key[KEY_SIZE];
     key_desc_t    *key_info_huk;
 
     g_val = val;
+    status = setup_ns_env();
+    if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
+        return;
+    }
+
     status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
     if (val->err_check_set(TEST_CHECKPOINT_1, status)) {
         return;
@@ -93,34 +99,26 @@ void test_payload(tbsa_val_api_t *val)
         val->print(PRINT_ERROR, "\n        Fuse type in which HUK stored is non-compliant", 0);
         val->print(PRINT_ERROR, "\n        Fuse type %x", key_info_huk->type);
         val->print(PRINT_ERROR, "\n        Expected Fuse type %x", expected_fuse_type);
-        val->err_check_set(TEST_CHECKPOINT_4, TBSA_STATUS_ERROR);
+        val->err_check_set(TEST_CHECKPOINT_3, TBSA_STATUS_ERROR);
         return;
     }
 
     if ((key_info_huk->state & FUSE_OPEN) == FUSE_OPEN) {
         status = val->fuse_ops(FUSE_READ, key_info_huk->addr, key, key_info_huk->size);
-        if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
+        if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
             return;
         }
 
-        data = 0;
-        /* Check that if HUK is non-zero*/
-        for(i = 0; i < key_info_huk->size; i++)
-            data += key[i];
-
-        if (!data) {
-            val->print(PRINT_ERROR, "\n        Incorrect HUK", 0);
-            val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_ERROR);
-            return;
+        for (i = 0; i < key_info_huk->size; i++) {
+            if (key[i] == key_info_huk->def_val) {
+                val->print(PRINT_ERROR, "\n        Incorrect HUK", 0);
+                val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_ERROR);
+                return;
+            }
         }
     } else {
         val->print(PRINT_ERROR, "\n        HUK is not open", 0);
         val->set_status(RESULT_SKIP(1));
-        return;
-    }
-
-    status = setup_ns_env();
-    if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
         return;
     }
 

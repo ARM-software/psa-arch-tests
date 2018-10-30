@@ -17,6 +17,8 @@
 
 #include "val_test_common.h"
 
+#define KEY_SIZE  32
+
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 6),
                   CREATE_TEST_TITLE("A Trusted HK must not be directly accessible by any software."),
@@ -42,7 +44,7 @@ void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
     uint32_t      i, instance = 0;
-    uint32_t      data, key[32] = {0xdeaddead};
+    uint32_t      key[KEY_SIZE];
     key_desc_t    *key_info_trust;
     bool_t        key_present = FALSE;
 
@@ -52,12 +54,14 @@ void test_payload(tbsa_val_api_t *val)
     }
 
     do {
-
         status = val->crypto_get_key_info((key_desc_t **)&key_info_trust, TRUST, &instance);
         if (status != TBSA_STATUS_SUCCESS && key_present == FALSE) {
             val->err_check_set(TEST_CHECKPOINT_2, status);
             return;
         }
+
+        if (status != TBSA_STATUS_SUCCESS)
+            return;
 
         key_present = TRUE;
         status = val->fuse_ops(FUSE_READ, key_info_trust->addr, key, key_info_trust->size);
@@ -65,18 +69,11 @@ void test_payload(tbsa_val_api_t *val)
             return;
         }
 
-        data = 0;
-        for(i = 0; i < key_info_trust->size; i++)
-            data += key[i];
-
-        /* Check that if Trusted key is zero*/
-        if (data) {
-            for (i = 0; i < 32; i++) {
-                if (key[i] != 0xdeaddead) {
-                    val->print(PRINT_ERROR, "\n        Trusted key is accessible", 0);
-                    val->err_check_set(TEST_CHECKPOINT_4, TBSA_STATUS_ERROR);
-                    return;
-                }
+        for (i = 0; i < key_info_trust->size; i++) {
+            if (key[i] != key_info_trust->def_val) {
+                val->print(PRINT_ERROR, "\n        Trusted key is accessible", 0);
+                val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_ERROR);
+                return;
             }
         }
 

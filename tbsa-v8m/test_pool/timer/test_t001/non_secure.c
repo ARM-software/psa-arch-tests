@@ -51,12 +51,12 @@ void test_payload(tbsa_val_api_t *val)
 
     /* Disabling SecureFault, UsageFault, BusFault, MemFault temporarily */
     status = val->mem_reg_read(SHCSR, &shcsr);
-    if (val->err_check_set(TEST_CHECKPOINT_9, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
         return;
     }
 
     status = val->mem_reg_write(SHCSR, (shcsr & ~0xF0000));
-    if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
         return;
     }
 
@@ -64,7 +64,7 @@ void test_payload(tbsa_val_api_t *val)
         status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, SOC_PERIPHERAL_TIMER, instance),
                                         (uint8_t **)&timer_desc,
                                         (uint32_t *)sizeof(soc_peripheral_desc_t));
-        if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
+        if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
             return;
         }
 
@@ -94,7 +94,7 @@ void test_payload(tbsa_val_api_t *val)
 
     /* Restoring faults */
     status = val->mem_reg_write(SHCSR, shcsr);
-    if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
         return;
     }
 
@@ -107,7 +107,7 @@ void exit_hook(tbsa_val_api_t *val)
 
     /* Restoring default Handler */
     status = val->interrupt_restore_handler(EXCP_NUM_HF);
-    if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_E, status)) {
         return;
     }
 }

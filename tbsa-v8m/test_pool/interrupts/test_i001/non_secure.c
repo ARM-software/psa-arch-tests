@@ -72,28 +72,34 @@ void test_payload(tbsa_val_api_t *val)
             return;
         }
 
-        /* Route to trusted target in non-trusted mode */
-        status = val_interrupt_route(EXCP_NUM_EXT_INT(timer_desc->intr_id), PE_NONSECURE);
+        /* Route to trusted target in trusted mode */
+        status = val->interrupt_route(EXCP_NUM_EXT_INT(timer_desc->intr_id), PE_SECURE);
         if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
+            return;
+        }
+
+        /* Route to non-trusted target in non-trusted mode */
+        status = val_interrupt_route(EXCP_NUM_EXT_INT(timer_desc->intr_id), PE_NONSECURE);
+        if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
             return;
         }
 
         /* Read pending bit in non-trusted mode */
         status = val_interrupt_get_pending_status(EXCP_NUM_EXT_INT(timer_desc->intr_id), &pend_state);
-        if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
+        if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
             return;
         }
 
         if (!pend_state) {
             /* Route to non-trusted target in trusted mode */
             status = val->interrupt_route(EXCP_NUM_EXT_INT(timer_desc->intr_id), PE_NONSECURE);
-            if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
+            if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
                 return;
             }
 
             /* Read pending bit in non-trusted mode */
             status = val_interrupt_get_pending_status(EXCP_NUM_EXT_INT(timer_desc->intr_id), &pend_state);
-            if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
+            if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
                 return;
             }
 
@@ -101,7 +107,7 @@ void test_payload(tbsa_val_api_t *val)
                 val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
             } else {
                 /* Shouldn't come here */
-                val->err_check_set(TEST_CHECKPOINT_7, TBSA_STATUS_ERROR);
+                val->err_check_set(TEST_CHECKPOINT_8, TBSA_STATUS_ERROR);
             }
         } else {
             /* Shouldn't come here */

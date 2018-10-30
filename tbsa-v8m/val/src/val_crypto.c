@@ -183,8 +183,7 @@ tbsa_status_t val_crypto_set_base_addr(dev_attr_t attribute)
 **/
 tbsa_status_t val_crypto_revoke_key(uint32_t index, addr_t addr, uint32_t size)
 {
-    /* TBD */
-    return TBSA_STATUS_ERROR;
+    return pal_crypto_revoke_key(index, addr, size);
 }
 
 /*

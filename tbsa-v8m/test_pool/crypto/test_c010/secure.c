@@ -17,6 +17,7 @@
 
 #include "val_test_common.h"
 
+#define FUSE_SIZE  32
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 10),
                   CREATE_TEST_TITLE("Check blowing fuses when the device has left the manufacturing facility."),
@@ -45,7 +46,7 @@ void test_payload(tbsa_val_api_t *val)
     crypto_hdr_t    *crypto_hdr;
     crypto_desc_t   *crypto_desc;
     fuse_desc_t     *fuse_desc;
-    uint32_t        rd_data[32], wr_data[32] = {0xFFFFFFFF};
+    uint32_t        rd_data[FUSE_SIZE], wr_data[FUSE_SIZE] = {0xFFFFFFFF};
 
     status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
     if (val->err_check_set(TEST_CHECKPOINT_1, status)) {
@@ -98,8 +99,13 @@ void test_payload(tbsa_val_api_t *val)
         return;
     }
 
+    if (fuse_desc->def_val != 0) {
+         for (i = 0; i < fuse_desc->size; i++)
+            wr_data[i] = 0;
+   }
+
     for (i = 0; i < fuse_desc->size; i++) {
-        if (rd_data[i] != 0) {
+        if (rd_data[i] != fuse_desc->def_val) {
             val->print(PRINT_ERROR, "\n        Given fuse is not empty", 0);
             val->err_check_set(TEST_CHECKPOINT_7, TBSA_STATUS_INVALID);
             return;

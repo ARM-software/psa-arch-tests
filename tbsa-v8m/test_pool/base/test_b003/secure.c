@@ -78,8 +78,6 @@ void test_payload(tbsa_val_api_t *val)
             if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
                 return;
             }
-
-            break;
         }
         instance++;
     } while(instance < GET_NUM_INSTANCE(memory_desc));
