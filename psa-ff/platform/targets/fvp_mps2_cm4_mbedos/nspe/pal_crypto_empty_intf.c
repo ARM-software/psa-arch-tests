@@ -15,27 +15,17 @@
  * limitations under the License.
 **/
 
-#ifndef _PAL_COMMON_H_
-#define _PAL_COMMON_H_
 
-#include <string.h>
-#include <stdint.h>
-#include <stdlib.h>
-/* typedef's */
-typedef signed   char      int8_t;
-typedef unsigned char      uint8_t;
-typedef signed   short     int16_t;
-typedef unsigned short     uint16_t;
-typedef signed   long      int32_t;
-typedef unsigned long      uint32_t;
-typedef unsigned long long uint64_t;
-typedef uint8_t            bool_t;
-typedef uint32_t           addr_t;
-typedef uint32_t           test_id_t;
-typedef char               char8_t;
-typedef uint32_t           cfg_id_t;
+#include "pal_common.h"
+#include "pal_crypto_intf.h"
 
-#define addr_t uint32_t
-#define bool_t uint8_t
-
-#endif /* _PAL_COMMON_H_ */
+/**
+    @brief    - This API will call the requested crypto function
+    @param    - type    : function code
+                valist  : variable argument list
+    @return   - error status
+**/
+psa_status_t pal_crypto_function(int type, va_list valist)
+{
+    return PAL_STATUS_UNSUPPORTED_FUNC;
+}

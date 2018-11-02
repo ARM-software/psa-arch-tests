@@ -1,5 +1,5 @@
 {
-  "psa_framework_version": 0.10,
+  "psa_framework_version": 1.0,
   "name": "DRIVER_PARTITION",
   "type": "APPLICATION-ROT",
   "priority": "NORMAL",
@@ -61,9 +61,9 @@
       "permission": "READ-WRITE"
     }
   ],
-  "source_files": [
-    "../../../test_suites/partition/common/driver_partition.c",
-    "../../../val/spe/val_driver_service_apis.c",
-    "../../../platform/spe/pal_driver_intf.c"
-  ]
+  "linker_pattern": {
+    "object_list": [
+    "driver_partition.a"
+    ]
+  }
 }

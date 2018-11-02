@@ -33,7 +33,7 @@ An example of the input configuration file is as shown.
     watchdog.0.intr_id = 0xFF;
     watchdog.0.permission = TYPE_READ_WRITE;
 
-  More details on the structure of the input can be obtained from val/nspe/val_target.h.
+  More details on the structure of the input can be obtained from val/common/val_target.h.
 
 **Note**:
   Test suite needs access to the following peripherals and the services of these peripherals are implemented as RoT services in the driver partition.
@@ -49,23 +49,34 @@ An example of the input configuration file is as shown.
 ----------------
 
   - Create a new directory in platform/targets/<platform_name>. For reference, see the existing platform fvp_mps2_cm4_mbedos directory.
-  - Copy platform/targets/fvp_mps2_cm4_mbedos/target.cfg file into your <platform_name> folder and update it with your platform detail. Refer val/nspe/val_target.h for structure details.
-  - Update mmio_regions information available in platform/manifests/common/driver_partition_psa.json manifest file with your platform information. mmio_regions detail must match with device detail provided in the target.cfg file.
-  - The test suite specified "sid" and partition "id" are provided in manifest files available in platform/manifests/ directory. You can update them if they are clashing with your system defined sid and partition-id values. You may need to update platform/nspe/pal_sid.h file for any change in test suite provided SID values.
+  - cp -rf platform/targets/fvp_mps2_cm4_mbedos/ platform/targets/<platform_name>/
+  - Update platform/targets/<platform_name>/target.cfg with your platform detail. Refer val/common/val_target.h for structure details.
+  - Update mmio_regions information available in platform/targets/<platform_name>/manifests/common/driver_partition_psa.json manifest file with your platform information. mmio_regions detail must match with device detail provided in the target.cfg file.
+  - The test suite specified "sid" and partition "id" are provided in manifest files available in platform/manifests/ directory. You can update them if they are clashing with your system defined sid and partition-id values. You may need to update platform/targets/<platform_name>/nspe/pal_sid.h file for any change in test suite provided SID values.
+  - Update platform/nspe/Makefile appropriately to select correct instances of PAL files for compilation. This make file is invoked as part of test suite build tool(./setup.sh) step and it creates <build_dir>/BUILD/platform/pal_nspe.a archive and respective object for SPE files at <build_dir>/BUILD/platform/spe/\*\_driver_sp.o. Later, these SPE objects are used by spbuild.mk to create appropriate SPE partition archive file.
   - Refer "PAL API list" section to view list of PAL API that must be ported for your target platform. These APIs definitions are available in nspe/pal_\*\_intf.c and spe/pal_\*_intf.c files. These APIs are written for fvp_mps2_cm4_mbedos platform. You can reuse the code if it works for your platform. Otherwise you must port them for your platform specific peripherals.
-  - Update platform/nspe/Makefile appropriately for platform/nspe/ code compilation. This make file is invoked as part of test suite build tool(./setup.sh) step and it creates <build_dir>/BUILD/platform/pal_nspe.a archive.
-  - The code available in platform/spe/ is part of driver partition and it must be compiled by your partition build tool by processing the platform/manifests/common/driver_partition_psa.json manifest file. See "Compiling compliance partition sources" section for more detail.
 
 ## PAL API list
   These functions will require implementation for the target platform. <br />
 
 - Following are the list of PAL APIs used in NSPE: <br />
 
-| No | Prototype                                                 | Description                                          | Parameters                          |
-|----|-----------------------------------------------------------|------------------------------------------------------|-------------------------------------|
-| 01 | int pal_spi_read(addr_t addr, uint8_t *data, uint32_t len);| This function will read peripherals using SPI commands| addr : address of the peripheral<br/>data : read buffer<br/>len  : length of the read buffer in bytes<br/>|
-| 02 | void *pal_target_get_cfg_start(void);                     | provides the database source location.               | void <br/>                          |
-| 03 | uint32_t pal_crypto_function(int type, va_list valist);   | This API will call the requested crypto function     | type    : function code<br/>valist  : variable argument list<br/>        |
+| No | Prototype                                                                                                                   | Description                                                            | Parameters                                               |
+|----|-----------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------|----------------------------------------------------------|
+| 01 | int pal_spi_read(addr_t addr, uint8_t *data, uint32_t len);                                                                 | This function will read peripherals using SPI commands                 | addr : address of the peripheral<br/>data : read buffer<br/>len  : length of the read buffer in bytes<br/>                    |
+| 02 | uint32_t pal_ipc_framework_version(void);                                                                                   | Retrieve the version of the PSA Framework API that is implemented.     | void<br/>                                                |
+| 03 | uint32_t pal_ipc_version(uint32_t sid);                                                                                     | Retrieve the minor version of a Root of Trust Service by its SID.      | sid The Root of Trust Service ID<br/>                    |
+| 04 | psa_handle_t pal_ipc_connect(uint32_t sid, uint32_t minor_version);                                                         | Connect to given sid.                                                  | sid : RoT service id<br/>minor_version : minor_version of RoT service<br/>                                |
+| 05 | psa_status_t pal_ipc_call(psa_handle_t handle, const psa_invec *in_vec, size_t in_len,  psa_outvec *out_vec, size_t out_len);| Call a connected Root of Trust Service.                                | handle:   Handle for the connection.<br/>in_vec:   Array of psa_invec structures.<br/>in_len:   Number of psa_invec structures in in_vec.<br/>out_vec:  Array of psa_outvec structures for optional Root of Trust Service response.<br/>out_len:  Number of psa_outvec structures in out_vec.<br/>                |
+| 06 | void pal_ipc_close(psa_handle_t handle);                                                                                    | Close a connection to a Root of Trust Service.                         | handle Handle for the connection.<br/>                   |
+| 07 | int pal_uart_init_ns(uint32_t uart_base_addr);                                                                              | This function initializes the UART                                     | uart base addr<br/>                                      |
+| 08 | int pal_print_ns(char *str, uint32_t data);                                                                                 | This function parses the input string and writes bytes into UART TX FIFO| str      : Input String<br/>data     : Value for format specifier<br/>                             |
+| 09 | int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us);                                       | Initializes an hardware watchdog timer                                 | base_addr       : Base address of the watchdog module<br/>time_us         : Time in micro seconds<br/>timer_tick_us   : Number of ticks per micro second<br/>|
+| 10 | int pal_wd_timer_enable_ns(addr_t base_addr);                                                                               | Enables a hardware watchdog timer                                      | base_addr       : Base address of the watchdog module<br/>|
+| 11 | int pal_wd_timer_disable_ns(addr_t base_addr);                                                                              | Disables a hardware watchdog timer                                     | base_addr  : Base address of the watchdog module<br/>    |
+| 12 | int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size);                                                | Reads from given non-volatile address.                                 | base    : Base address of nvmem<br/>offset  : Offset<br/>buffer  : Pointer to source address<br/>size    : Number of bytes<br/>                     |
+| 13 | int pal_nvmem_write_ns(addr_t base, uint32_t offset, void *buffer, int size);                                               | Writes into given non-volatile address.                                | base    : Base address of nvmem<br/>offset  : Offset<br/>buffer  : Pointer to source address<br/>size    : Number of bytes<br/>                     |
+| 14 | uint32_t pal_crypto_function(int type, va_list valist);                                                                     | This API will call the requested crypto function                       | type    : function code<br/>valist  : variable argument list<br/>                             |
 
 - Following are the list of PAL APIs used in SPE: <br />
 
@@ -78,19 +89,7 @@ An example of the input configuration file is as shown.
 | 05 | int  pal_wd_timer_disable(addr_t base_addr);                                      | Disables a hardware watchdog timer                                                | base_addr     : Base address of the watchdog module<br/> |
 | 06 | int  pal_wd_timer_is_enabled(addr_t base_addr);                                   | Checks whether hardware watchdog timer is enabled                                 | base_addr     : Base address of the watchdog module<br/> |
 | 07 | int  pal_nvmem_write(addr_t base, uint32_t offset, void *buffer, int size);       | Writes 'size' bytes from buffer into non-volatile memory at a given 'base + offset'| base      : Base address of NV MEM<br/>offset    : Offset<br/>buffer    : Pointer to source address<br/>size      : Number of bytes<br/>                  |
-| 08 | int  pal_nvmem_read(addr_t base, uint32_t offset, void *buffer, int size);        | Reads 'size' bytes from non-volatile memory at a given                            | base      : Base address of NV MEM<br/>offset    : Offset<br/>buffer    : Pointer to source address<br/>size      : Number of bytes<br/>                  |
-
-## Compiling compliance partition sources
-
-- Your build tool must conform to manifest rules specified in PSA FF specification. Refer PSA FF specification for more details.
-- The compliance required partition manifest files are available in platform/manifests/common and platform/manifests/ipc directory. Use these paths to search and process compliance provided partition manifest files using your build tool.
-- Compliance partition source code requires your build tool to gererate following header files when your process the manifest files and those must be available when compiling partition source code: <br />
-    - A private header file with \<manifestfilename.h\> naming convention per manifest containing macros that maps names to signals<br />
-    - A global header file with \<psa_sid.h\> as name that contains SIDs macros of all manifests<br />
-- Your build tool must provide the implementation of PSA defined psa_client.h and psa_service.h header files to partition sources.
-- Compliance partition source code includes header files with path relative to psa-ff directory. Therefore, when you compile the sources, your build tool must supply the full path of psa-ff directory to the compiler header file seach path.
-- You must integrate compliance partition code with your software stack containing SPM so that partition code get access to PSA defined client and RoT service APIs.
-
+| 08 | int  pal_nvmem_read(addr_t base, uint32_t offset, void *buffer, int size);       | Reads 'size' bytes from non-volatile memory at a given                            | base      : Base address of NV MEM<br/>offset    : Offset<br/>buffer    : Pointer to source address<br/>size      : Number of bytes<br/>                  |
 
 ## License
 Arm PSA FF Architecture test suite is distributed under Apache v2.0 License.

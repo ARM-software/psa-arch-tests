@@ -29,7 +29,7 @@ void client_main(void)
     while (1)
     {
         status = VAL_STATUS_SUCCESS;
-        signals = psa_wait_any(PSA_BLOCK);
+        signals = psa_wait(PSA_WAIT_ANY, PSA_BLOCK);
 
         if (signals & CLIENT_TEST_DISPATCHER_SIG)
         {
@@ -48,7 +48,8 @@ void client_main(void)
                     }
                     break;
                 case PSA_IPC_CALL:
-                    if (psa_read(msg.handle, 0, &test_data, msg.in_size[0]) != sizeof(test_data))
+                    if ((msg.in_size[0] <= sizeof(test_data)) &&
+                        (psa_read(msg.handle, 0, &test_data, msg.in_size[0]) != sizeof(test_data)))
                     {
                         val_print(PRINT_ERROR, "could not read dispatcher payload\n", 0);
                         status = VAL_STATUS_READ_FAILED;

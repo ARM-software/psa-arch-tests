@@ -15,9 +15,7 @@
   * limitations under the License.
  **/
 
-#include "drivers/uart/pal_uart.c"
-#include "drivers/nvmem/pal_nvmem.c"
-#include "drivers/watchdog/pal_wd_cmsdk.c"
+#include "pal_driver_intf.h"
 
 /**
     @brief    - This function initializes the UART

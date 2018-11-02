@@ -29,11 +29,6 @@ void val_entry(void)
 {
     test_id_t       test_id;
 
-    if (VAL_ERROR(val_target_init()))
-    {
-        goto exit;
-    }
-
     if (VAL_ERROR(val_uart_init()))
     {
         goto exit;

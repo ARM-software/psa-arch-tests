@@ -119,6 +119,7 @@ typedef uint32_t            cfg_id_t;
 #define VAL_NVMEM_OFFSET(nvmem_idx)    (nvmem_idx * VAL_NVMEM_BLOCK_SIZE)
 
 #define UART_INIT_SIGN 0xff
+#define UART_PRINT_SIGN 0xfe
 
 /* enums */
 typedef enum {
@@ -165,6 +166,11 @@ typedef enum {
     NVMEM_READ             = 0x1,
     NVMEM_WRITE            = 0x2,
 } nvmem_fn_type_t;
+
+typedef enum {
+    UART_INIT             = 0x1,
+    UART_PRINT            = 0x2,
+} uart_fn_type_t;
 
 /* enums to report test sub-state */
 typedef enum {
@@ -220,25 +226,17 @@ typedef struct {
 
 typedef struct {
     wd_fn_type_t wd_fn_type;
-    wd_timeout_type_t  wd_timeout_type;
+    addr_t       wd_base_addr;
+    uint32_t     wd_time_us;
+    uint32_t     wd_timer_tick_us;
 } wd_param_t;
 
 typedef struct {
     nvmem_fn_type_t nvmem_fn_type;
-    uint32_t offset;
-    int size;
+    addr_t          base;
+    uint32_t        offset;
+    int             size;
 } nvmem_param_t;
-
-typedef struct {
-    addr_t wd_base_addr;
-    uint32_t wd_time_us_low;
-    uint32_t wd_time_us_medium;
-    uint32_t wd_time_us_high;
-    uint32_t wd_timer_tick_us;
-    addr_t nvmem_base_addr;
-    addr_t uart_base_addr;
-} target_param_t;
-
 
 typedef struct {
     uint16_t test_num;

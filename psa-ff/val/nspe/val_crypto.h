@@ -21,6 +21,12 @@
 #include "val.h"
 #include <stdarg.h>
 
+#if PSA_IPC_IMPLEMENTED
+#include "psa/client.h"
+#else
+typedef int32_t psa_status_t;
+#endif
+
 #define BYTES_TO_BITS(byte)             (byte * 8)
 /* Size */
 #define AES_16B_KEY_SIZE                16
@@ -45,6 +51,7 @@
 
 /* Key Type */
 #define PSA_KEY_TYPE_RAW_DATA                   ((psa_key_type_t)0x50000001)
+#define PSA_KEY_TYPE_DERIVE                     ((psa_key_type_t)0x52000000)
 #define PSA_KEY_TYPE_CATEGORY_MASK              ((psa_key_type_t)0x70000000)
 #define PSA_KEY_TYPE_CATEGORY_SYMMETRIC         ((psa_key_type_t)0x40000000)
 #define PSA_KEY_TYPE_PAIR_FLAG                  ((psa_key_type_t)0x10000000)
@@ -75,7 +82,17 @@
 #define PSA_ALG_RSA_PKCS1V15_SIGN_BASE          ((psa_algorithm_t)0x10020000)
 #define PSA_ALG_ECDSA_BASE                      ((psa_algorithm_t)0x10060000)
 #define PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION  ((psa_algorithm_t)0x12000000)
+#define PSA_ALG_RSA_PKCS1V15_CRYPT              ((psa_algorithm_t)0x12020000)
+#define PSA_ALG_HMAC_BASE                       ((psa_algorithm_t)0x02800000)
+#define PSA_ALG_CIPHER_MAC_BASE                 ((psa_algorithm_t)0x02c00000)
+#define PSA_ALG_CBC_MAC                         ((psa_algorithm_t)0x02c00001)
+#define PSA_ALG_CMAC                            ((psa_algorithm_t)0x02c00002)
+#define PSA_ALG_GMAC                            ((psa_algorithm_t)0x02c00003)
+#define PSA_ALG_CFB                             ((psa_algorithm_t)0x04c00002)
+#define PSA_ALG_CCM                             ((psa_algorithm_t)0x06001001)
+#define PSA_ALG_GCM                             ((psa_algorithm_t)0x06001002)
 #define PSA_ALG_RSA_PKCS1V15_SIGN_RAW           PSA_ALG_RSA_PKCS1V15_SIGN_BASE
+#define PSA_ALG_HKDF_BASE                       ((psa_algorithm_t)0x30000100)
 #define PSA_KEY_USAGE_INVALID                   0xFFFFFFFF
 #define PSA_ALG_INVALID                         0xFFFFFFFF
 
@@ -197,10 +214,13 @@
     (((type) & ~PSA_KEY_TYPE_ECC_CURVE_MASK) ==                         \
      PSA_KEY_TYPE_ECC_PUBLIC_KEY_BASE)
 
+/*Macro to build an HMAC algorithm */
+#define PSA_ALG_HKDF(hash_alg)                                  \
+    (PSA_ALG_HKDF_BASE | ((hash_alg) & PSA_ALG_HASH_MASK))
+
 typedef uint16_t psa_ecc_curve_t;
 typedef uint32_t psa_key_usage_t;
 typedef uint32_t psa_algorithm_t;
-typedef int32_t psa_status_t;
 typedef uint32_t psa_key_type_t;
 typedef uint32_t psa_key_slot_t;
 typedef uint32_t psa_key_lifetime_t;
@@ -227,6 +247,15 @@ enum crypto_function_code {
     VAL_CRYPTO_HASH_VERIFY              = 0x13,
     VAL_CRYPTO_HASH_FINISH              = 0x14,
     VAL_CRYPTO_HASH_ABORT               = 0x15,
+    VAL_CRYPTO_GENERATE_KEY             = 0x16,
+    VAL_CRYPTO_GENERATOR_READ           = 0x17,
+    VAL_CRYPTO_KEY_DERIVATION           = 0x18,
+    VAL_CRYPTO_GET_GENERATOR_CAPACITY   = 0x19,
+    VAL_CRYPTO_GENERATOR_IMPORT_KEY     = 0x20,
+    VAL_CRYPTO_GENERATOR_ABORT          = 0x21,
+    VAL_CRYPTO_AEAD_ENCRYPT             = 0x22,
+    VAL_CRYPTO_MAC_SIGN_SETUP,
+    VAL_CRYPTO_FREE                     = 0xFE,
 };
 
 struct psa_key_policy_s {
@@ -281,8 +310,81 @@ typedef struct {
                                      0: Use SHA-512, or 1: Use SHA-384. */
 } mbedtls_sha512_context;
 
-struct psa_hash_operation_s
-{
+typedef struct mbedtls_cipher_base_t mbedtls_cipher_base_t;
+
+/**
+ * \brief     Supported {cipher type, cipher mode} pairs.
+ *
+ * \warning   RC4 and DES are considered weak ciphers and their use
+ *            constitutes a security risk. Arm recommends considering stronger
+ *            ciphers instead.
+ */
+typedef enum {
+    MBEDTLS_CIPHER_NONE = 0,             /**< Placeholder to mark the end of cipher-pair lists. */
+    MBEDTLS_CIPHER_NULL,                 /**< The identity stream cipher. */
+    MBEDTLS_CIPHER_AES_128_ECB,          /**< AES cipher with 128-bit ECB mode. */
+    MBEDTLS_CIPHER_AES_192_ECB,          /**< AES cipher with 192-bit ECB mode. */
+    MBEDTLS_CIPHER_AES_256_ECB,          /**< AES cipher with 256-bit ECB mode. */
+    MBEDTLS_CIPHER_AES_128_CBC,          /**< AES cipher with 128-bit CBC mode. */
+    MBEDTLS_CIPHER_AES_192_CBC,          /**< AES cipher with 192-bit CBC mode. */
+    MBEDTLS_CIPHER_AES_256_CBC,          /**< AES cipher with 256-bit CBC mode. */
+    MBEDTLS_CIPHER_AES_128_CFB128,       /**< AES cipher with 128-bit CFB128 mode. */
+    MBEDTLS_CIPHER_AES_192_CFB128,       /**< AES cipher with 192-bit CFB128 mode. */
+    MBEDTLS_CIPHER_AES_256_CFB128,       /**< AES cipher with 256-bit CFB128 mode. */
+    MBEDTLS_CIPHER_AES_128_CTR,          /**< AES cipher with 128-bit CTR mode. */
+    MBEDTLS_CIPHER_AES_192_CTR,          /**< AES cipher with 192-bit CTR mode. */
+    MBEDTLS_CIPHER_AES_256_CTR,          /**< AES cipher with 256-bit CTR mode. */
+    MBEDTLS_CIPHER_AES_128_GCM,          /**< AES cipher with 128-bit GCM mode. */
+    MBEDTLS_CIPHER_AES_192_GCM,          /**< AES cipher with 192-bit GCM mode. */
+    MBEDTLS_CIPHER_AES_256_GCM,          /**< AES cipher with 256-bit GCM mode. */
+    MBEDTLS_CIPHER_CAMELLIA_128_ECB,     /**< Camellia cipher with 128-bit ECB mode. */
+    MBEDTLS_CIPHER_CAMELLIA_192_ECB,     /**< Camellia cipher with 192-bit ECB mode. */
+    MBEDTLS_CIPHER_CAMELLIA_256_ECB,     /**< Camellia cipher with 256-bit ECB mode. */
+    MBEDTLS_CIPHER_CAMELLIA_128_CBC,     /**< Camellia cipher with 128-bit CBC mode. */
+    MBEDTLS_CIPHER_CAMELLIA_192_CBC,     /**< Camellia cipher with 192-bit CBC mode. */
+    MBEDTLS_CIPHER_CAMELLIA_256_CBC,     /**< Camellia cipher with 256-bit CBC mode. */
+    MBEDTLS_CIPHER_CAMELLIA_128_CFB128,  /**< Camellia cipher with 128-bit CFB128 mode. */
+    MBEDTLS_CIPHER_CAMELLIA_192_CFB128,  /**< Camellia cipher with 192-bit CFB128 mode. */
+    MBEDTLS_CIPHER_CAMELLIA_256_CFB128,  /**< Camellia cipher with 256-bit CFB128 mode. */
+    MBEDTLS_CIPHER_CAMELLIA_128_CTR,     /**< Camellia cipher with 128-bit CTR mode. */
+    MBEDTLS_CIPHER_CAMELLIA_192_CTR,     /**< Camellia cipher with 192-bit CTR mode. */
+    MBEDTLS_CIPHER_CAMELLIA_256_CTR,     /**< Camellia cipher with 256-bit CTR mode. */
+    MBEDTLS_CIPHER_CAMELLIA_128_GCM,     /**< Camellia cipher with 128-bit GCM mode. */
+    MBEDTLS_CIPHER_CAMELLIA_192_GCM,     /**< Camellia cipher with 192-bit GCM mode. */
+    MBEDTLS_CIPHER_CAMELLIA_256_GCM,     /**< Camellia cipher with 256-bit GCM mode. */
+    MBEDTLS_CIPHER_DES_ECB,              /**< DES cipher with ECB mode. */
+    MBEDTLS_CIPHER_DES_CBC,              /**< DES cipher with CBC mode. */
+    MBEDTLS_CIPHER_DES_EDE_ECB,          /**< DES cipher with EDE ECB mode. */
+    MBEDTLS_CIPHER_DES_EDE_CBC,          /**< DES cipher with EDE CBC mode. */
+    MBEDTLS_CIPHER_DES_EDE3_ECB,         /**< DES cipher with EDE3 ECB mode. */
+    MBEDTLS_CIPHER_DES_EDE3_CBC,         /**< DES cipher with EDE3 CBC mode. */
+    MBEDTLS_CIPHER_BLOWFISH_ECB,         /**< Blowfish cipher with ECB mode. */
+    MBEDTLS_CIPHER_BLOWFISH_CBC,         /**< Blowfish cipher with CBC mode. */
+    MBEDTLS_CIPHER_BLOWFISH_CFB64,       /**< Blowfish cipher with CFB64 mode. */
+    MBEDTLS_CIPHER_BLOWFISH_CTR,         /**< Blowfish cipher with CTR mode. */
+    MBEDTLS_CIPHER_ARC4_128,             /**< RC4 cipher with 128-bit mode. */
+    MBEDTLS_CIPHER_AES_128_CCM,          /**< AES cipher with 128-bit CCM mode. */
+    MBEDTLS_CIPHER_AES_192_CCM,          /**< AES cipher with 192-bit CCM mode. */
+    MBEDTLS_CIPHER_AES_256_CCM,          /**< AES cipher with 256-bit CCM mode. */
+    MBEDTLS_CIPHER_CAMELLIA_128_CCM,     /**< Camellia cipher with 128-bit CCM mode. */
+    MBEDTLS_CIPHER_CAMELLIA_192_CCM,     /**< Camellia cipher with 192-bit CCM mode. */
+    MBEDTLS_CIPHER_CAMELLIA_256_CCM,     /**< Camellia cipher with 256-bit CCM mode. */
+} mbedtls_cipher_type_t;
+
+/** Supported cipher modes. */
+typedef enum {
+    MBEDTLS_MODE_NONE = 0,               /**< None. */
+    MBEDTLS_MODE_ECB,                    /**< The ECB cipher mode. */
+    MBEDTLS_MODE_CBC,                    /**< The CBC cipher mode. */
+    MBEDTLS_MODE_CFB,                    /**< The CFB cipher mode. */
+    MBEDTLS_MODE_OFB,                    /**< The OFB cipher mode - unsupported. */
+    MBEDTLS_MODE_CTR,                    /**< The CTR cipher mode. */
+    MBEDTLS_MODE_GCM,                    /**< The GCM cipher mode. */
+    MBEDTLS_MODE_STREAM,                 /**< The stream cipher mode. */
+    MBEDTLS_MODE_CCM,                    /**< The CCM cipher mode. */
+} mbedtls_cipher_mode_t;
+
+struct psa_hash_operation_s {
     psa_algorithm_t alg;
     union
     {
@@ -297,8 +399,165 @@ struct psa_hash_operation_s
     } ctx;
 };
 
+typedef struct {
+    /** Full cipher identifier. For example,
+     * MBEDTLS_CIPHER_AES_256_CBC.
+     */
+    mbedtls_cipher_type_t type;
+
+    /** The cipher mode. For example, MBEDTLS_MODE_CBC. */
+    mbedtls_cipher_mode_t mode;
+
+    /** The cipher key length, in bits. This is the
+     * default length for variable sized ciphers.
+     * Includes parity bits for ciphers like DES.
+     */
+    unsigned int key_bitlen;
+
+    /** Name of the cipher. */
+    const char *name;
+
+    /** IV or nonce size, in Bytes.
+     * For ciphers that accept variable IV sizes,
+     * this is the recommended size.
+     */
+    unsigned int iv_size;
+
+    /** Bitflag comprised of MBEDTLS_CIPHER_VARIABLE_IV_LEN and
+     *  MBEDTLS_CIPHER_VARIABLE_KEY_LEN indicating whether the
+     *  cipher supports variable IV or variable key sizes, respectively.
+     */
+    int flags;
+
+    /** The block size, in Bytes. */
+    unsigned int block_size;
+
+    /** Struct for base cipher information and functions. */
+    const mbedtls_cipher_base_t *base;
+
+} mbedtls_cipher_info_t;
+
+/** Type of operation. */
+typedef enum {
+    MBEDTLS_OPERATION_NONE = -1,
+    MBEDTLS_DECRYPT = 0,
+    MBEDTLS_ENCRYPT,
+} mbedtls_operation_t;
+
+/** Maximum length of any IV, in Bytes. */
+#define MBEDTLS_MAX_IV_LENGTH      16
+/** Maximum block size of any cipher, in Bytes. */
+#define MBEDTLS_MAX_BLOCK_LENGTH   16
+
+#if defined(MBEDTLS_SHA512_C)
+#define PSA_HASH_MAX_SIZE 64
+#define PSA_HMAC_MAX_HASH_BLOCK_SIZE 128
+#else
+#define PSA_HASH_MAX_SIZE 32
+#define PSA_HMAC_MAX_HASH_BLOCK_SIZE 64
+#endif
+
+/**
+ * Generic cipher context.
+ */
+typedef struct {
+    /** Information about the associated cipher. */
+    const mbedtls_cipher_info_t *cipher_info;
+
+    /** Key length to use. */
+    int key_bitlen;
+
+    /** Operation that the key of the context has been
+     * initialized for.
+     */
+    mbedtls_operation_t operation;
+
+#if defined(MBEDTLS_CIPHER_MODE_WITH_PADDING)
+    /** Padding functions to use, if relevant for
+     * the specific cipher mode.
+     */
+    void (*add_padding)(unsigned char *output, size_t olen, size_t data_len);
+    int (*get_padding)(unsigned char *input, size_t ilen, size_t *data_len);
+#endif
+
+    /** Buffer for input that has not been processed yet. */
+    unsigned char unprocessed_data[MBEDTLS_MAX_BLOCK_LENGTH];
+
+    /** Number of Bytes that have not been processed yet. */
+    size_t unprocessed_len;
+
+    /** Current IV or NONCE_COUNTER for CTR-mode. */
+    unsigned char iv[MBEDTLS_MAX_IV_LENGTH];
+
+    /** IV size in Bytes, for ciphers with variable-length IVs. */
+    size_t iv_size;
+
+    /** The cipher-specific context. */
+    void *cipher_ctx;
+
+#if defined(MBEDTLS_CMAC_C)
+    /** CMAC-specific context. */
+    mbedtls_cmac_context_t *cmac_ctx;
+#endif
+} mbedtls_cipher_context_t;
+
+typedef struct {
+        /** The hash context. */
+        struct psa_hash_operation_s hash_ctx;
+        /** The HMAC part of the context. */
+        uint8_t opad[PSA_HMAC_MAX_HASH_BLOCK_SIZE];
+} psa_hmac_internal_data;
+
+struct psa_mac_operation_s {
+    psa_algorithm_t alg;
+    unsigned int key_set : 1;
+    unsigned int iv_required : 1;
+    unsigned int iv_set : 1;
+    unsigned int has_input : 1;
+    unsigned int is_sign : 1;
+    uint8_t mac_size;
+    union {
+        unsigned dummy; /* Make the union non-empty even with no supported algorithms. */
+#if defined(MBEDTLS_MD_C)
+        psa_hmac_internal_data hmac;
+#endif
+#if defined(MBEDTLS_CMAC_C)
+        mbedtls_cipher_context_t cmac;
+#endif
+    } ctx;
+};
+
+typedef struct {
+    uint8_t *info;
+    size_t info_length;
+    psa_hmac_internal_data hmac;
+    uint8_t prk[PSA_HASH_MAX_SIZE];
+    uint8_t output_block[PSA_HASH_MAX_SIZE];
+#if PSA_HASH_MAX_SIZE > 0xff
+#error "PSA_HASH_MAX_SIZE does not fit in uint8_t"
+#endif
+    uint8_t offset_in_block;
+    uint8_t block_number;
+} psa_hkdf_generator_t;
+
+struct psa_crypto_generator_s {
+    psa_algorithm_t alg;
+    size_t capacity;
+    union {
+        struct {
+            uint8_t *data;
+            size_t size;
+        } buffer;
+#if defined(MBEDTLS_MD_C)
+        psa_hkdf_generator_t hkdf;
+#endif
+    } ctx;
+};
+
 typedef struct psa_hash_operation_s psa_hash_operation_t;
 typedef struct psa_key_policy_s psa_key_policy_t;
+typedef struct psa_mac_operation_s psa_mac_operation_t;
+typedef struct psa_crypto_generator_s psa_crypto_generator_t;
 
 val_status_t val_crypto_function(int type, ...);
 int32_t val_crypto_key_type_is_raw(psa_key_type_t type);

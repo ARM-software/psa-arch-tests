@@ -21,37 +21,18 @@ void driver_main(void)
 {
     psa_signal_t    signals = 0;
     psa_msg_t       msg = {0};
-    uint32_t        verbosity = 0, data = 0, arg1=0;
+    uint32_t        data = 0;
+    uart_fn_type_t  uart_fn;
     nvmem_param_t   nvmem_param;
     char            string[256] = {0};
     uint8_t         buffer[256] = {0};
     wd_param_t      wd_param;
-    uint32_t        timeout;
-    target_param_t  target_param;
+    addr_t          uart_base;
 
     while (1)
     {
         val_status_t fn_status = VAL_STATUS_SUCCESS;
-        signals = psa_wait_any(PSA_BLOCK);
-
-        /* Initialise target init variables */
-        if (signals & DRIVER_TARGET_INIT_SIG)
-        {
-            psa_get(DRIVER_TARGET_INIT_SIG, &msg);
-            switch (msg.type)
-            {
-                case PSA_IPC_CONNECT:
-                    psa_reply(msg.handle, PSA_SUCCESS);
-                    break;
-                case PSA_IPC_CALL:
-                    psa_read(msg.handle, 0, &target_param, msg.in_size[0]);
-                    psa_reply(msg.handle, PSA_SUCCESS);
-                    break;
-                case PSA_IPC_DISCONNECT:
-                    psa_reply(msg.handle, PSA_SUCCESS);
-                    break;
-            }
-        }
+        signals = psa_wait(PSA_WAIT_ANY, PSA_BLOCK);
 
         /* Service Print functionality */
         if (signals & DRIVER_UART_SIG)
@@ -63,20 +44,31 @@ void driver_main(void)
                     psa_reply(msg.handle, PSA_SUCCESS);
                     break;
                 case PSA_IPC_CALL:
-                    psa_read(msg.handle, 0, &arg1, msg.in_size[0]);
-                    if (arg1 == UART_INIT_SIGN)
+                    if ((msg.in_size[0] > sizeof(uart_fn))
+                        && (msg.in_size[1] > sizeof(string))
+                        && (msg.in_size[2] > sizeof(data)))
                     {
-                        /* arg1=base_addr, arg2=print_level */
-                        psa_read(msg.handle, 1, &verbosity, msg.in_size[1]);
-                        fn_status = val_uart_init_sf(target_param.uart_base_addr, verbosity);
+                        /* buffer overflow */
+                        psa_reply(msg.handle, VAL_STATUS_ERROR);
+                        break;
                     }
                     else
                     {
-                        /* arg1=verbosity, arg2=string, arg3=DATA */
-                        verbosity = arg1;
+                        psa_read(msg.handle, 0, &uart_fn, msg.in_size[0]);
+                    }
+
+                    if (uart_fn == UART_INIT)
+                    {
+                        /* arg2=uart_base */
+                        psa_read(msg.handle, 1, &uart_base, msg.in_size[1]);
+                        fn_status = val_uart_init_sf(uart_base);
+                    }
+                    else
+                    {
+                        /* arg2=string, arg3=DATA */
                         psa_read(msg.handle, 1, &string, msg.in_size[1]);
                         psa_read(msg.handle, 2, &data, msg.in_size[2]);
-                        fn_status = val_print_sf(verbosity, string, data);
+                        fn_status = val_print_sf(string, data);
                     }
                     if (VAL_ERROR(fn_status))
                     {
@@ -100,35 +92,35 @@ void driver_main(void)
             switch (msg.type)
             {
                 case PSA_IPC_CALL:
-                    psa_read(msg.handle, 0, &wd_param, msg.in_size[0]);
+                    if (msg.in_size[0] > sizeof(wd_param))
+                    {
+                        /* buffer overflow */
+                        psa_reply(msg.handle, VAL_STATUS_ERROR);
+                        val_print_sf("msg.in_size[0] buffer overflow\n", 0);
+                        break;
+                    }
+                    else
+                    {
+                        psa_read(msg.handle, 0, &wd_param, msg.in_size[0]);
+                    }
+
                     if (wd_param.wd_fn_type == WD_INIT_SEQ)
                     {
-                        if (wd_param.wd_timeout_type == WD_LOW_TIMEOUT)
-                        {
-                            timeout = target_param.wd_time_us_low;
-                        }
-                        else if (wd_param.wd_timeout_type == WD_MEDIUM_TIMEOUT)
-                        {
-                            timeout = target_param.wd_time_us_medium;
-                        }
-                        else
-                        {
-                            timeout = target_param.wd_time_us_high;
-                        }
-                        fn_status = val_wd_timer_init_sf(target_param.wd_base_addr, timeout,
-                                                            target_param.wd_timer_tick_us);
+                        fn_status = val_wd_timer_init_sf(wd_param.wd_base_addr,
+                                                         wd_param.wd_time_us,
+                                                         wd_param.wd_timer_tick_us);
                     }
                     else if (wd_param.wd_fn_type == WD_ENABLE_SEQ)
                     {
-                        fn_status = val_wd_timer_enable_sf(target_param.wd_base_addr);
+                        fn_status = val_wd_timer_enable_sf(wd_param.wd_base_addr);
                     }
                     else if (wd_param.wd_fn_type == WD_DISABLE_SEQ)
                     {
-                        fn_status = val_wd_timer_disable_sf(target_param.wd_base_addr);
+                        fn_status = val_wd_timer_disable_sf(wd_param.wd_base_addr);
                     }
                     else if (wd_param.wd_fn_type == WD_STATUS_SEQ)
                     {
-                        fn_status = val_is_wd_timer_enabled_sf(target_param.wd_base_addr);
+                        fn_status = val_is_wd_timer_enabled_sf(wd_param.wd_base_addr);
                     }
                     if (fn_status == VAL_STATUS_SUCCESS)
                     {
@@ -153,18 +145,42 @@ void driver_main(void)
             switch (msg.type)
             {
                 case PSA_IPC_CALL:
-                    psa_read(msg.handle, 0, &nvmem_param, msg.in_size[0]);
+                    if (msg.in_size[0] > sizeof(nvmem_param))
+                    {
+                        /* buffer overflow */
+                        psa_reply(msg.handle, VAL_STATUS_ERROR);
+                        val_print_sf("msg.in_size[0] buffer overflow\n", 0);
+                        break;
+                    }
+                    else
+                    {
+                        psa_read(msg.handle, 0, &nvmem_param, msg.in_size[0]);
+                    }
+
                     if (nvmem_param.nvmem_fn_type == NVMEM_READ)
                     {
-                        fn_status = val_nvmem_read_sf(target_param.nvmem_base_addr,
-                                                      nvmem_param.offset, buffer, nvmem_param.size);
+                        fn_status = val_nvmem_read_sf(nvmem_param.base,
+                                                      nvmem_param.offset,
+                                                      buffer,
+                                                      nvmem_param.size);
                         psa_write(msg.handle, 0, (const void*) buffer, msg.out_size[0]);
                     }
                     else
                     {
-                        psa_read(msg.handle, 1, (void*) buffer, msg.in_size[1]);
-                        fn_status = val_nvmem_write_sf(target_param.nvmem_base_addr,
-                                                      nvmem_param.offset, buffer, nvmem_param.size);
+                        if (msg.in_size[1] > sizeof(buffer))
+                        {
+                            /* buffer overflow */
+                            fn_status = VAL_STATUS_ERROR;
+                            val_print_sf("msg.in_size[1] buffer overflow\n", 0);
+                        }
+                        else
+                        {
+                            psa_read(msg.handle, 1, (void*) buffer, msg.in_size[1]);
+                            fn_status = val_nvmem_write_sf(nvmem_param.base,
+                                                           nvmem_param.offset,
+                                                           buffer,
+                                                           nvmem_param.size);
+                        }
                     }
                     if (fn_status == VAL_STATUS_SUCCESS)
                     {
@@ -184,8 +200,8 @@ void driver_main(void)
 
         if (signals == 0)
         {
-            val_print_sf(PRINT_ERROR,
-                    "psa_wait_any returned zero for PSA_BLOCK. Entering into infinite loop\n", 0);
+            val_print_sf("psa_wait returned zero for PSA_BLOCK. Entering into infinite loop\n",
+                         0);
             while (1);
         }
     }

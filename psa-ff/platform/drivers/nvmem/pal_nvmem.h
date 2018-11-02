@@ -15,26 +15,12 @@
  * limitations under the License.
 **/
 
+#ifndef _PAL_NVMEM_H_
+#define _PAL_NVMEM_H_
+
 #include "pal_common.h"
-#include "pal_database.h"
 
-/**
-    @brief    - provides the database source location.
-    @return   - Returns base address of database
-**/
-void *pal_target_get_cfg_start(void)
-{
-    return (void *)database;
-}
+int nvmem_write(addr_t base, uint32_t offset, void *buffer, int size);
+int nvmem_read(addr_t base, uint32_t offset, void *buffer, int size);
 
-/**
-    @brief    - This function will read peripherals using SPI commands
-    @param    - addr : address of the peripheral
-                data : read buffer
-                len  : length of the read buffer in bytes
-    @return   - error status
-**/
-int pal_spi_read(addr_t addr, uint8_t *data, uint32_t len)
-{
-    return 0xFF;
-}
+#endif /* PAL_NVMEM_H */

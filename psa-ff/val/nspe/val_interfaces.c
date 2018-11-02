@@ -43,7 +43,6 @@ const val_api_t val_api = {
     .wd_timer_init             = val_wd_timer_init,
     .wd_timer_enable           = val_wd_timer_enable,
     .wd_timer_disable          = val_wd_timer_disable,
-    .is_wd_timer_enabled       = val_is_wd_timer_enabled,
     .set_boot_flag             = val_set_boot_flag,
     .get_boot_flag             = val_get_boot_flag,
     .crypto_function           = val_crypto_function,
@@ -51,9 +50,9 @@ const val_api_t val_api = {
 };
 
 const psa_api_t psa_api = {
-    .framework_version     = psa_framework_version,
-    .version               = psa_version,
-    .connect               = psa_connect,
-    .call                  = psa_call,
-    .close                 = psa_close,
+    .framework_version     = pal_ipc_framework_version,
+    .version               = pal_ipc_version,
+    .connect               = pal_ipc_connect,
+    .call                  = pal_ipc_call,
+    .close                 = pal_ipc_close,
 };

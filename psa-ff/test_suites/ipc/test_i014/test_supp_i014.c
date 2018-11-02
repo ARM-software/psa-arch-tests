@@ -44,7 +44,7 @@ int32_t server_test_psa_get_called_twice(void)
     */
 
 wait:
-    if ((psa_wait_any(PSA_BLOCK)) & SERVER_UNSPECIFED_MINOR_V_SIG)
+    if ((psa_wait(PSA_WAIT_ANY, PSA_BLOCK)) & SERVER_UNSPECIFED_MINOR_V_SIG)
     {
         /* First psa_get call */
         if (psa_get(SERVER_UNSPECIFED_MINOR_V_SIG, &msg) != PSA_SUCCESS)

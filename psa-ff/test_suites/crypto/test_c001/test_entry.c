@@ -48,5 +48,6 @@ void test_entry(val_api_t *val_api, psa_api_t *psa_api)
     }
 
 test_exit:
+    val->crypto_function(VAL_CRYPTO_FREE);
     val->test_exit();
 }
