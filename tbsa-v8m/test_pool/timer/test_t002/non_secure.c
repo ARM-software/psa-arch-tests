@@ -48,12 +48,12 @@ void entry_hook(tbsa_val_api_t *val)
 
     /* Disabling SecureFault, UsageFault, BusFault, MemFault temporarily */
     status = val->mem_reg_read(SHCSR, &shcsr);
-    if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
         return;
     }
 
     status = val->mem_reg_write(SHCSR, (shcsr & ~0xF0000));
-    if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
         return;
     }
 
@@ -73,7 +73,7 @@ void test_payload(tbsa_val_api_t *val)
     status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, 0, 0),
                                     (uint8_t **)&soc_per,
                                     (uint32_t *)sizeof(soc_peripheral_hdr_t));
-    if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
         return;
     }
 
@@ -82,7 +82,11 @@ void test_payload(tbsa_val_api_t *val)
         status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, SOC_PERIPHERAL_WATCHDOG, instance),
                                         (uint8_t **)&soc_per_desc,
                                         (uint32_t *)sizeof(soc_peripheral_desc_t));
-        if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
+        if (trusted_wd_timer_found && (status == TBSA_STATUS_NOT_FOUND)) {
+            break;
+        }
+
+        if (val->err_check_set(TEST_CHECKPOINT_E, status)) {
             return;
         }
 
@@ -115,14 +119,8 @@ void test_payload(tbsa_val_api_t *val)
         /* wait here till pending status is cleared by secure fault */
         while (IS_TEST_PENDING(val->get_status()));
 
-        /* Restoring default Handler */
-        status = val->interrupt_restore_handler(EXCP_NUM_HF);
-        if (val->err_check_set(TEST_CHECKPOINT_E, status)) {
-            return;
-        }
-
-        /* successfully verified, break now */
-        break;
+        /* moving to next watchdog instance */
+        instance++;
     }
 
     if (!trusted_wd_timer_found) {
@@ -135,9 +133,15 @@ void exit_hook(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
 
+    /* Restoring default Handler */
+    status = val->interrupt_restore_handler(EXCP_NUM_HF);
+    if (val->err_check_set(TEST_CHECKPOINT_F, status)) {
+        return;
+    }
+
     /* Restoring faults */
     status = val->mem_reg_write(SHCSR, shcsr);
-    if (val->err_check_set(TEST_CHECKPOINT_F, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_10, status)) {
         return;
     }
 }

@@ -38,7 +38,7 @@ typedef struct
 {
     uint32_t wb:8;
     uint32_t cb:8;
-    uint32_t res1:8;
+    uint32_t wdogb:8;
     uint32_t res2:8;
 }boot_t;
 
@@ -63,7 +63,12 @@ typedef enum
     COLD_BOOT_REQUESTED             = 0x8,
     COLD_BOOT_COMPLETED             = 0x9,
     COLD_BOOT_SUPPORT_NOT_AVAILABLE = 0xA,
-    BOOT_UNKNOWN                    = 0xB
+    WDOG_BOOT_UNKNOWN               = 0xB,
+    WDOG_BOOT_SUPPORT_AVAILABLE     = 0xC,
+    WDOG_BOOT_REQUESTED             = 0xD,
+    WDOG_BOOT_COMPLETED             = 0xE,
+    WDOG_BOOT_SUPPORT_NOT_AVAILABLE = 0xF,
+    BOOT_UNKNOWN                    = 0x10
 }boot_state_t;
 
 typedef enum
@@ -77,12 +82,11 @@ typedef enum
 {
     NV_TEST     = 0x0,
     NV_TEST_CNT = 0x1,
-    NV_WDOG     = 0x2,
-    NV_BOOT     = 0x3,
-    NV_DPM1     = 0x4,
-    NV_DPM2     = 0x5,
-    NV_SHCSR    = 0x6,
-    NV_SPAD     = 0x7,
+    NV_BOOT     = 0x2,
+    NV_DPM1     = 0x3,
+    NV_DPM2     = 0x4,
+    NV_SHCSR    = 0x5,
+    NV_SPAD     = 0x6,
 }nvram_index_t;
 
 /* prototypes */

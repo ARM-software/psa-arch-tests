@@ -17,7 +17,7 @@
 
 #include "val_test_common.h"
 
-#define   TIMER_VALUE_US  5 * 1000
+#define   TIMER_VALUE_US  1 * 10
 #define   KEY_SIZE        32            /*Size in Bytes*/
 
 tbsa_val_api_t        *g_val;
@@ -56,7 +56,7 @@ tbsa_status_t reinit_timer(tbsa_val_api_t *val)
     for(int i=0; i<KEY_SIZE; i++)
         g_key_save[i] = 0;
 
-    g_timer = g_timer - 1000;
+    g_timer = g_timer - 1;
     status = val->interrupt_disable(EXCP_NUM_EXT_INT(soc_peripheral_desc->intr_id));
     if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
         return status;

@@ -18,7 +18,7 @@
 #include "val_test_common.h"
 
 #define WDOG_TIMEOUT_VALUE_IN_US        (1 * 1000 * 1000)   /* 1sec : 1 * 1000 * 1000 */
-#define TIMEOUT_VALUE                   0xFFFFFFFF
+#define TIMEOUT_VALUE                   0xFFFFFF
 
 /**
   Publish these functions to the external world as associated to this test ID
@@ -104,12 +104,12 @@ void test_payload(tbsa_val_api_t *val)
     }
 
     /* Read the non-volatile flag and check for the pattern which was updated in the previous ran */
-    status = val->nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_WDOG), &boot, sizeof(boot_t));
+    status = val->nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
     if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
         return;
     }
 
-    if (boot.wb == WARM_BOOT_REQUESTED) {
+    if (boot.wdogb == WDOG_BOOT_REQUESTED) {
         /* There was watchdog reset previously */
         val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
         setup_ns_env();
@@ -129,6 +129,10 @@ void test_payload(tbsa_val_api_t *val)
             status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, SOC_PERIPHERAL_WATCHDOG, instance),
                                             (uint8_t **)&soc_per_desc,
                                             (uint32_t *)sizeof(soc_peripheral_desc_t));
+            if (trusted_wd_timer_found && (status == TBSA_STATUS_NOT_FOUND)) {
+                break;
+            }
+
             if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
                 return;
             }
@@ -147,15 +151,23 @@ void test_payload(tbsa_val_api_t *val)
             /* Check whether trusted watchdog timer is enabled ? */
             status = val->is_wd_timer_enabled(soc_per_desc->base);
             if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
+                val->print(PRINT_ERROR, "\n\r\tWatchdog not enabled when control reached tbsa_entry()", 0);
                 return;
             }
+
+            /* Disable the watchdog now */
+            status = val->wd_timer_disable(soc_per_desc->base);
+            if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
+                return;
+            }
+
             /* check for all the available trusted watchdog timers */
             instance++;
         }
 
         if (!trusted_wd_timer_found) {
             /* We did not find any trusted watchdog */
-            val->err_check_set(TEST_CHECKPOINT_6, status);
+            val->err_check_set(TEST_CHECKPOINT_7, status);
             val->set_status(RESULT_FAIL(status));
             return;
         }
@@ -171,16 +183,16 @@ void test_payload(tbsa_val_api_t *val)
         status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_CLOCKS, CLOCKS_SYS_FREQ, 0),
                                         (uint8_t **)&clocks_desc,
                                         (uint32_t *)sizeof(clocks_desc_t));
-        if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
+        if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
             return;
         }
 
         per_num  = 0;
         instance = 0;
         while (per_num < soc_per->num) {
-            boot.wb = WARM_BOOT_REQUESTED;
-            status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_WDOG), &boot, sizeof(boot_t));
-            if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
+            boot.wdogb = WDOG_BOOT_REQUESTED;
+            status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
+            if (val->err_check_set(TEST_CHECKPOINT_9, status)) {
                 return;
             }
 
@@ -203,6 +215,7 @@ void test_payload(tbsa_val_api_t *val)
             while(timeout--);
 
             /* If we reached here means, the watchdog reset did not happen as expected so fail the test */
+            val->print(PRINT_ERROR, "\n\r\tWatchdog couldn't reset the system", 0);
             val->set_status(RESULT_FAIL(status));
             return;
         }
@@ -211,4 +224,12 @@ void test_payload(tbsa_val_api_t *val)
 
 void exit_hook(tbsa_val_api_t *val)
 {
+    tbsa_status_t status;
+    boot_t        boot;
+
+    boot.wdogb = BOOT_UNKNOWN;
+    status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
+    if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
+        return;
+    }
 }

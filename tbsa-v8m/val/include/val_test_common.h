@@ -22,25 +22,25 @@
 
 /* Macro's */
 #define TBSA_BASE_BASE                  0
-#define TBSA_0_STR			"\n\n------------------------------- Base Tests            -------------------------------"
+#define TBSA_0_STR			"\n\n\r------------------------------- Base Tests            -------------------------------"
 #define TBSA_TRUSTED_BOOT_BASE          1
-#define TBSA_1_STR			"\n\n------------------------------- Trusted Boot Tests    -------------------------------"
+#define TBSA_1_STR			"\n\n\r------------------------------- Trusted Boot Tests    -------------------------------"
 #define TBSA_CRYPTO_BASE                2
-#define TBSA_2_STR			"\n\n------------------------------- Crypto Tests          -------------------------------"
+#define TBSA_2_STR			"\n\n\r------------------------------- Crypto Tests          -------------------------------"
 #define TBSA_DEBUG_BASE                 3
-#define TBSA_3_STR			"\n\n------------------------------- Debug Tests           -------------------------------"
+#define TBSA_3_STR			"\n\n\r------------------------------- Debug Tests           -------------------------------"
 #define TBSA_EIP_BASE                   4
-#define TBSA_4_STR			"\n\n------------------------------- EIP Tests             -------------------------------"
+#define TBSA_4_STR			"\n\n\r------------------------------- EIP Tests             -------------------------------"
 #define TBSA_INTERRUPTS_BASE            5
-#define TBSA_5_STR			"\n\n------------------------------- Interrupts Tests      -------------------------------"
+#define TBSA_5_STR			"\n\n\r------------------------------- Interrupts Tests      -------------------------------"
 #define TBSA_SECURE_RAM_BASE            6
-#define TBSA_6_STR			"\n\n------------------------------- Secure RAM Tests      -------------------------------"
+#define TBSA_6_STR			"\n\n\r------------------------------- Secure RAM Tests      -------------------------------"
 #define TBSA_PERIPHERALS_BASE           7
-#define TBSA_7_STR			"\n\n------------------------------- Peripherals Tests     -------------------------------"
+#define TBSA_7_STR			"\n\n\r------------------------------- Peripherals Tests     -------------------------------"
 #define TBSA_TRUSTED_TIMERS_BASE        8
-#define TBSA_8_STR			"\n\n------------------------------- Trusted Timers Tests  -------------------------------"
+#define TBSA_8_STR			"\n\n\r------------------------------- Trusted Timers Tests  -------------------------------"
 #define TBSA_VERSION_COUNTERS_BASE      9
-#define TBSA_9_STR			"\n\n------------------------------- Version Counters Tests-------------------------------"
+#define TBSA_9_STR			"\n\n\r------------------------------- Version Counters Tests-------------------------------"
 
 #define TBSA_MAX_TEST_PER_COMP          20
 #define TBSA_GET_COMP_NUM(test_id)      ((test_id - (test_id % TBSA_MAX_TEST_PER_COMP)) / TBSA_MAX_TEST_PER_COMP)

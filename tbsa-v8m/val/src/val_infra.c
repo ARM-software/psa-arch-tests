@@ -291,7 +291,7 @@ test_id_t val_nvram_get_last_id (void)
         return TBSA_TEST_INVALID;
     }
 
-    if ((boot.wb == WARM_BOOT_REQUESTED) || (boot.cb == COLD_BOOT_REQUESTED)) {
+    if ((boot.wb == WARM_BOOT_REQUESTED) || (boot.cb == COLD_BOOT_REQUESTED) || (boot.wdogb == WDOG_BOOT_REQUESTED)) {
         status = val_nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_TEST), &test_id, sizeof(test_id_t));
         if(status != TBSA_STATUS_SUCCESS) {
             val_print(PRINT_ERROR, "\n\tNVRAM read error", 0);
@@ -462,7 +462,7 @@ tbsa_status_t val_report_status(test_id_t test_id)
             break;
 
         case TBSA_TEST_FAIL:
-            val_print(PRINT_TEST, "\n\t\t                                                                 FAIL", 0);
+            val_print(PRINT_TEST, "\n\r                                                                                 FAIL", 0);
             break;
 
         case TBSA_TEST_SKIP:
@@ -512,11 +512,11 @@ uint32_t val_get_status(void)
 tbsa_status_t val_err_check_set(uint32_t checkpoint, tbsa_status_t status)
 {
     if (TBSA_ERROR(status)) {
-        val_print(PRINT_ERROR, "\n        Checkpoint %x : ", checkpoint);
+        val_print(PRINT_ERROR, "\n\r        Checkpoint %x : ", checkpoint);
         val_print(PRINT_ERROR, "Status = %x", status);
         val_set_status(RESULT_FAIL(status));
     } else {
-        val_print(PRINT_DEBUG, "\n        Checkpoint %x : ", checkpoint);
+        val_print(PRINT_DEBUG, "\n\r        Checkpoint %x : ", checkpoint);
     }
 
     return status;
