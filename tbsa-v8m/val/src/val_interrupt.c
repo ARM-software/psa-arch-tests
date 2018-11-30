@@ -91,8 +91,8 @@ tbsa_isr_vector g_tbsa_ns_isr_vector[MAX_EXCP_NUM] =
 __attribute__((section(".tbsa_ns_text")))
 void TBSA_NS_default_sys_handler (void)
 {
-    val_print_nsc(PRINT_ALWAYS, "\n\t---- Default NS Handler ----", 0);
-    val_print_nsc(PRINT_ALWAYS, "\n\tEntering standby\n", 0);
+    val_print_nsc(PRINT_ALWAYS, "\n\r\t---- Default NS Handler ----", 0);
+    val_print_nsc(PRINT_ALWAYS, "\n\r\tEntering standby\n", 0);
     while(1)
     {
     }
@@ -104,8 +104,8 @@ void TBSA_NS_default_sys_handler (void)
 **/
 void TBSA_S_NMI_Handler (void)
 {
-    val_print(PRINT_ALWAYS, "\n\t---- NMI Handler ----", 0);
-    val_print(PRINT_ALWAYS, "\n\tEntering standby\n", 0);
+    val_print(PRINT_ALWAYS, "\n\r\t---- NMI Handler ----", 0);
+    val_print(PRINT_ALWAYS, "\n\r\tEntering standby\n", 0);
     while(1)
     {
     }
@@ -120,9 +120,9 @@ void TBSA_S_HardFault_Handler (void)
     uint32_t hfsr;
 
     val_mem_reg_read(HFSR, &hfsr);
-    val_print(PRINT_ALWAYS, "\n\t---- Hard Fault Handler ----", 0);
-    val_print(PRINT_ALWAYS, "\n\tHFSR\t\t: 0x%x", hfsr);
-    val_print(PRINT_ALWAYS, "\n\tEntering standby\n", 0);
+    val_print(PRINT_ALWAYS, "\n\r\t---- Hard Fault Handler ----", 0);
+    val_print(PRINT_ALWAYS, "\n\r\tHFSR\t\t: 0x%x", hfsr);
+    val_print(PRINT_ALWAYS, "\n\r\tEntering standby\n", 0);
     while(1)
     {
     }
@@ -135,12 +135,12 @@ void TBSA_S_HardFault_Handler (void)
 void TBSA_S_MemManage_Handler (void)
 {
     uint32_t mmfsr, mmfar;
-    val_print(PRINT_ALWAYS, "\n\t---- MemManage Fault Handler ----", 0);
+    val_print(PRINT_ALWAYS, "\n\r\t---- MemManage Fault Handler ----", 0);
     val_mem_reg_read(CFSR, &mmfsr);
-    val_print(PRINT_ALWAYS, "\n\tMMFSR = 0x%x", mmfsr & 0xFF);
+    val_print(PRINT_ALWAYS, "\n\r\tMMFSR = 0x%x", mmfsr & 0xFF);
     val_mem_reg_read(MMFAR, &mmfar);
-    val_print(PRINT_ALWAYS, "\n\tMMFAR = 0x%x", mmfar);
-    val_print(PRINT_ALWAYS, "\n\tEntering standby\n", 0);
+    val_print(PRINT_ALWAYS, "\n\r\tMMFAR = 0x%x", mmfar);
+    val_print(PRINT_ALWAYS, "\n\r\tEntering standby\n", 0);
 
     while(1)
     {
@@ -154,12 +154,12 @@ void TBSA_S_MemManage_Handler (void)
 void TBSA_S_BusFault_Handler (void)
 {
     uint32_t bfsr, bfar;
-    val_print(PRINT_ALWAYS, "\n\t---- Bus Fault Handler ----", 0);
+    val_print(PRINT_ALWAYS, "\n\r\t---- Bus Fault Handler ----", 0);
     val_mem_reg_read(CFSR, &bfsr);
-    val_print(PRINT_ALWAYS, "\n\tBFSR = 0x%x", (bfsr >> 8) & 0xFF);
+    val_print(PRINT_ALWAYS, "\n\r\tBFSR = 0x%x", (bfsr >> 8) & 0xFF);
     val_mem_reg_read(BFAR, &bfar);
-    val_print(PRINT_ALWAYS, "\n\tBFAR = 0x%x", bfar);
-    val_print(PRINT_ALWAYS, "\n\tEntering standby\n", 0);
+    val_print(PRINT_ALWAYS, "\n\r\tBFAR = 0x%x", bfar);
+    val_print(PRINT_ALWAYS, "\n\r\tEntering standby\n", 0);
 
     while(1)
     {
@@ -174,10 +174,10 @@ void TBSA_S_BusFault_Handler (void)
 void TBSA_S_UsageFault_Handler (void)
 {
     uint32_t ufsr;
-    val_print(PRINT_ALWAYS, "\n\t---- Usage Fault Handler ----", 0);
+    val_print(PRINT_ALWAYS, "\n\r\t---- Usage Fault Handler ----", 0);
     val_mem_reg_read(CFSR, &ufsr);
-    val_print(PRINT_ALWAYS, "\n\tUFSR = 0x%x", ufsr >> 16);
-    val_print(PRINT_ALWAYS, "\n\tEntering standby\n", 0);
+    val_print(PRINT_ALWAYS, "\n\r\tUFSR = 0x%x", ufsr >> 16);
+    val_print(PRINT_ALWAYS, "\n\r\tEntering standby\n", 0);
 
     while(1)
     {
@@ -193,12 +193,12 @@ void TBSA_S_SecureFault_Handler (void)
 {
     uint32_t sf_dump;
 
-    val_print(PRINT_ALWAYS, "\n\t---- Secure Fault Handler ----", 0);
+    val_print(PRINT_ALWAYS, "\n\r\t---- Secure Fault Handler ----", 0);
     val_mem_reg_read(SFSR, &sf_dump);
-    val_print(PRINT_ALWAYS, "\n\tSFSR\t\t: 0x%x", sf_dump);
+    val_print(PRINT_ALWAYS, "\n\r\tSFSR\t\t: 0x%x", sf_dump);
     val_mem_reg_read(SFAR, &sf_dump);
-    val_print(PRINT_ALWAYS, "\n\tSFAR\t\t: 0x%x", sf_dump);
-    val_print(PRINT_ALWAYS, "\n\tEntering standby\n", 0);
+    val_print(PRINT_ALWAYS, "\n\r\tSFAR\t\t: 0x%x", sf_dump);
+    val_print(PRINT_ALWAYS, "\n\r\tEntering standby\n", 0);
     while(1)
     {
     }
@@ -211,8 +211,8 @@ void TBSA_S_SecureFault_Handler (void)
 **/
 void TBSA_S_SVC_Handler (void)
 {
-    val_print(PRINT_ALWAYS, "\n\t---- SVC Handler ----", 0);
-    val_print(PRINT_ALWAYS, "\n\tEntering standby\n", 0);
+    val_print(PRINT_ALWAYS, "\n\r\t---- SVC Handler ----", 0);
+    val_print(PRINT_ALWAYS, "\n\r\tEntering standby\n", 0);
     while(1)
     {
     }
@@ -224,8 +224,8 @@ void TBSA_S_SVC_Handler (void)
 **/
 void TBSA_S_DebugMon_Handler (void)
 {
-    val_print(PRINT_ALWAYS, "\n\t---- DebugMonitor Handler ----", 0);
-    val_print(PRINT_ALWAYS, "\n\tEntering standby\n", 0);
+    val_print(PRINT_ALWAYS, "\n\r\t---- DebugMonitor Handler ----", 0);
+    val_print(PRINT_ALWAYS, "\n\r\tEntering standby\n", 0);
     while(1)
     {
     }
@@ -237,8 +237,8 @@ void TBSA_S_DebugMon_Handler (void)
 **/
 void TBSA_S_PendSV_Handler (void)
 {
-    val_print(PRINT_ALWAYS, "\n\t---- PendSV Handler ----", 0);
-    val_print(PRINT_ALWAYS, "\n\tEntering standby\n", 0);
+    val_print(PRINT_ALWAYS, "\n\r\t---- PendSV Handler ----", 0);
+    val_print(PRINT_ALWAYS, "\n\r\tEntering standby\n", 0);
     while(1)
     {
     }
@@ -250,8 +250,8 @@ void TBSA_S_PendSV_Handler (void)
 **/
 void TBSA_S_SysTick_Handler (void)
 {
-    val_print(PRINT_ALWAYS, "\n\t---- SysTick Handler ----", 0);
-    val_print(PRINT_ALWAYS, "\n\tEntering standby\n", 0);
+    val_print(PRINT_ALWAYS, "\n\r\t---- SysTick Handler ----", 0);
+    val_print(PRINT_ALWAYS, "\n\r\tEntering standby\n", 0);
     while(1)
     {
     }
@@ -263,8 +263,8 @@ void TBSA_S_SysTick_Handler (void)
 **/
 void TBSA_S_default_sys_handler (void)
 {
-    val_print(PRINT_ALWAYS, "\n\t---- Reserved Handler ----", 0);
-    val_print(PRINT_ALWAYS, "\n\tEntering standby\n", 0);
+    val_print(PRINT_ALWAYS, "\n\r\t---- Reserved Handler ----", 0);
+    val_print(PRINT_ALWAYS, "\n\r\tEntering standby\n", 0);
     while(1)
     {
     }
@@ -276,8 +276,8 @@ void TBSA_S_default_sys_handler (void)
 **/
 void TBSA_S_default_ext_int_handler (void)
 {
-    val_print(PRINT_ALWAYS, "\n\t---- External Interrupt Handler ----", 0);
-    val_print(PRINT_ALWAYS, "\n\tEntering standby\n", 0);
+    val_print(PRINT_ALWAYS, "\n\r\t---- External Interrupt Handler ----", 0);
+    val_print(PRINT_ALWAYS, "\n\r\tEntering standby\n", 0);
     while(1)
     {
     }

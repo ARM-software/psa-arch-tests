@@ -76,22 +76,19 @@ void test_payload(tbsa_val_api_t *val)
             goto exit;
         }
 
-        status = val_crypto_set_base_addr(NONSECURE_PROGRAMMABLE);
-        if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
-            goto exit;
-        }
+        val_crypto_set_base_addr(NONSECURE_PROGRAMMABLE);
 
-       /* Setup secure fault handler is setup, in secure version of the test to recover from
+        /* Setup secure fault handler is setup, in secure version of the test to recover from
            exception caused by accessing Trusted only accessible key.*/
         status = val_fuse_ops(FUSE_READ, key_info_huk->addr, key_ns, key_info_huk->size);
-        if (val->err_check_set(TEST_CHECKPOINT_E, status)) {
+        if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
             goto exit;
         }
 
         for(i = 0; i < key_info_huk->size; i++) {
             if (key[i] == key_ns[i]) {
                 val->print(PRINT_ERROR, "\n        HUK was accessible by non-Trusted code", 0);
-                val->err_check_set(TEST_CHECKPOINT_F, TBSA_STATUS_ERROR);
+                val->err_check_set(TEST_CHECKPOINT_E, TBSA_STATUS_ERROR);
                 goto exit;
             }
         }
@@ -106,7 +103,7 @@ void test_payload(tbsa_val_api_t *val)
 exit:
     /* Restoring faults */
     status = val->mem_reg_write(SHCSR, shcsr);
-    if (val->err_check_set(TEST_CHECKPOINT_10, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_F, status)) {
         return;
     }
 

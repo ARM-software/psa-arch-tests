@@ -95,11 +95,11 @@ void tbsa_dispatcher(test_id_t test_id_prev)
         if (TBSA_GET_COMP_NUM(test_id_prev) != TBSA_GET_COMP_NUM(test_id)) {
             val_print(PRINT_ALWAYS, val_get_comp_name(test_id), 0);
         }
-        val_print(PRINT_ALWAYS, "\n\n%d : ", test_id);
+        val_print(PRINT_ALWAYS, "\n\n\r%d : ", test_id);
         val_print(PRINT_ALWAYS, ((tbsa_test_info_t *)g_s_test_info_addr)->ref_tag, 0);
-        val_print(PRINT_ALWAYS, "      ", 0);
+        val_print(PRINT_ALWAYS, "\r      ", 0);
         val_print(PRINT_ALWAYS, ((tbsa_test_info_t *)g_s_test_info_addr)->title, 0);
-        val_print(PRINT_ALWAYS, "      # Secure    ", 0);
+        val_print(PRINT_ALWAYS, "\r      # Secure    ", 0);
 
         val_execute_test_fn(test_id, ENTRY_FUNC_HOOK_S);
 
@@ -112,7 +112,7 @@ void tbsa_dispatcher(test_id_t test_id_prev)
         val_execute_test_fn(test_id, EXIT_FUNC_HOOK_S);
 
         val_report_status(test_id);
-        val_print(PRINT_ALWAYS, "\n      # Non Secure", 0);
+        val_print(PRINT_ALWAYS, "\n\r      # Non Secure", 0);
 
         if (IS_TEST_PASS(val_get_status()))
         {

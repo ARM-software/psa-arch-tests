@@ -65,13 +65,29 @@ void test_payload(tbsa_val_api_t *val)
         return;
     }
 
+    /* Disabling SecureFault, UsageFault, BusFault, MemFault temporarily */
+    status = val->mem_reg_read(SHCSR, &shcsr);
+    if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
+        return;
+    }
+
+    status = val->nvram_write(nvram_desc->start, TBSA_NVRAM_OFFSET(NV_SHCSR), &shcsr, sizeof(shcsr));
+    if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
+        return;
+    }
+
+    status = val->mem_reg_write(SHCSR, (shcsr & ~0xF0000));
+    if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
+        return;
+    }
+
     if (boot.wb != WARM_BOOT_REQUESTED) {
 
         do {
             status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_SRAM, instance),
                                             (uint8_t **)&memory_desc,
                                             (uint32_t *)sizeof(memory_desc_t));
-            if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
+            if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
                 return;
             }
 
@@ -84,20 +100,20 @@ void test_payload(tbsa_val_api_t *val)
                                                                (memory_desc->start + memory_desc->ns_offset), \
                                                                (memory_desc->end + memory_desc->ns_offset), \
                                                                MEM_NONSECURE);
-                if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
+                if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
                     return;
                 }
 
                 /* Let's run a piece of code in Non-secure mode which returns value zero */
                 if (read_cpuid()) {
                     /* Flag incorrect value error */
-                    val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_INCORRECT_VALUE);
+                    val->err_check_set(TEST_CHECKPOINT_9, TBSA_STATUS_INCORRECT_VALUE);
                     return;
                 }
 
                 /* Ensure we have sufficient space to run a piece of code in trusted mode */
                 if ((memory_desc->end - memory_desc->start) < 0x20 ) {
-                    val->err_check_set(TEST_CHECKPOINT_7, TBSA_STATUS_INSUFFICIENT_SIZE);
+                    val->err_check_set(TEST_CHECKPOINT_A, TBSA_STATUS_INSUFFICIENT_SIZE);
                     return;
                 }
 
@@ -109,7 +125,7 @@ void test_payload(tbsa_val_api_t *val)
                                                                (memory_desc->start + memory_desc->s_offset), \
                                                                (memory_desc->end + memory_desc->s_offset), \
                                                                MEM_SECURE);
-                if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
+                if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
                     return;
                 }
 
@@ -119,28 +135,12 @@ void test_payload(tbsa_val_api_t *val)
         } while(instance < GET_NUM_INSTANCE(memory_desc));
 
         if (!sram_block_found) {
-            val->err_check_set(TEST_CHECKPOINT_9, TBSA_STATUS_NOT_FOUND);
+            val->err_check_set(TEST_CHECKPOINT_C, TBSA_STATUS_NOT_FOUND);
             return;
         }
 
         boot.wb = WARM_BOOT_REQUESTED;
         status = val->nvram_write(nvram_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
-        if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
-            return;
-        }
-
-        /* Disabling SecureFault, UsageFault, BusFault, MemFault temporarily */
-        status = val->mem_reg_read(SHCSR, &shcsr);
-        if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
-            return;
-        }
-
-        status = val->nvram_write(nvram_desc->start, TBSA_NVRAM_OFFSET(NV_SHCSR), &shcsr, sizeof(shcsr));
-        if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
-            return;
-        }
-
-        status = val->mem_reg_write(SHCSR, (shcsr & ~0xF0000));
         if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
             return;
         }
