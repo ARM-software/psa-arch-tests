@@ -29,6 +29,7 @@ SECTIONS
 {
     .text :
     {
+        __tbsa_text_start__ = .;
         *(.text)
         *(.text*)
         *(.rodata)
@@ -36,6 +37,7 @@ SECTIONS
 
         KEEP(*(.init))
         KEEP(*(.fini))
+        __tbsa_text_end__ = .;
     } > TBSA_TEXT
 
     __tbsa_data_src_start__ = .;
@@ -81,10 +83,12 @@ SECTIONS
 
     .tbsa_ns_text :
     {
+        __tbsa_ns_text_start__ = .;
         *(.text)
         *(.text*)
         *(.rodata)
         *(.rodata*)
+        __tbsa_ns_text_end__ = .;
     } > TBSA_NS_TEXT
 
     .tbsa_nsc_entry_points :
@@ -96,8 +100,14 @@ SECTIONS
         __tbsa_nsc_entry_points_end__ = .;
     } > TBSA_NSC_TEXT
 
-    __TBSA_S_StackTop  = ORIGIN(TBSA_DATA) + LENGTH(TBSA_DATA);
-    __TBSA_NS_StackTop = ORIGIN(TBSA_NS_DATA) + LENGTH(TBSA_NS_DATA);
-    __TBSA_S_StackLimit  = ORIGIN(TBSA_DATA) + LENGTH(TBSA_DATA) - 0x400;
-    __TBSA_NS_StackLimit = ORIGIN(TBSA_NS_DATA) + LENGTH(TBSA_NS_DATA) - 0x400;
+    __TBSA_S_StackTop      = ORIGIN(TBSA_DATA) + LENGTH(TBSA_DATA);
+    __TBSA_NS_StackTop     = ORIGIN(TBSA_NS_DATA) + LENGTH(TBSA_NS_DATA);
+    __TBSA_S_StackLimit    = ORIGIN(TBSA_DATA) + LENGTH(TBSA_DATA) - 0x400;
+    __TBSA_NS_StackLimit   = ORIGIN(TBSA_NS_DATA) + LENGTH(TBSA_NS_DATA) - 0x400;
+
+    __tbsa_test_s_start__  = TBSA_TEST_S_START;
+    __tbsa_test_s_end__    = TBSA_TEST_S_END;
+    __tbsa_test_ns_start__ = TBSA_TEST_NS_START;
+    __tbsa_test_ns_end__   = TBSA_TEST_NS_END;
+
 }

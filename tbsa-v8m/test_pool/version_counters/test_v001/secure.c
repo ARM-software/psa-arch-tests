@@ -33,7 +33,7 @@ void
 hard_fault_esr (unsigned long *sf_args)
 {
     /* Issue system warm reset */
-    g_val->system_reset(WARM_RESET);
+    g_val->system_reset(COLD_RESET);
 
     /* Shouldn't come here */
     while(1);

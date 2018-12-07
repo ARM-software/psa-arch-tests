@@ -29,7 +29,7 @@ addr_t               g_test_binary_src_addr;
 uint32_t             g_test_binary_in_ram;
 tbsa_status_buffer_t g_test_status_buffer[TBSA_TOTAL_TESTS];
 bool_t               g_vtor_relocated_from_rom;
-addr_t               g_stdio_uart_base_addr;
+addr_t               g_stdio_uart_base_addr = NULL;
 
 /* externs*/
 extern tbsa_isr_vector      g_tbsa_s_isr_vector;
@@ -253,9 +253,19 @@ tbsa_status_t val_nvram_init (void)
         return status;
     }
 
-    if (val_system_reset_type(COLD_RESET) && (boot.cb != COLD_BOOT_REQUESTED)) {
+    if (val_system_reset_type(COLD_RESET) && \
+        (boot.cb != COLD_BOOT_REQUESTED) &&  \
+        (boot.wb != WARM_BOOT_REQUESTED) &&  \
+        (boot.wdogb != WDOG_BOOT_REQUESTED)) {
         test_id = TBSA_TEST_INVALID;
         status = val_nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_TEST), &test_id, sizeof(test_id_t));
+        if(status != TBSA_STATUS_SUCCESS) {
+            return status;
+        }
+        boot.wb    = BOOT_UNKNOWN;
+        boot.cb    = BOOT_UNKNOWN;
+        boot.wdogb = BOOT_UNKNOWN;
+        status = val_nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
         if(status != TBSA_STATUS_SUCCESS) {
             return status;
         }
@@ -317,23 +327,34 @@ tbsa_status_t val_infra_init(test_id_t *test_id)
     memory_desc_t         *bootrom_desc;
     soc_peripheral_desc_t *uart_desc;
     uint32_t              vtor;
+    uint32_t              instance = 0;
 
     val_mem_reg_write(SYST_CSR, 0x0);
     val_mem_reg_write(SYST_CSR_NS, 0x0);
 
     /* It is assumed that UART instance 0 is used for flushing print messages */
-    status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, SOC_PERIPHERAL_UART, 0),
-                                   (uint8_t **)&uart_desc,
-                                   (uint32_t *)sizeof(soc_peripheral_desc_t));
-    if (status != TBSA_STATUS_SUCCESS) {
-        return status;
-    }
+    do{
+        status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, SOC_PERIPHERAL_UART, instance),
+                                       (uint8_t **)&uart_desc,
+                                       (uint32_t *)sizeof(soc_peripheral_desc_t));
+        if(status != TBSA_STATUS_SUCCESS) {
+            return status;
+        }
 
-    g_stdio_uart_base_addr = uart_desc->base;
+        if(uart_desc->stdio) {
+            g_stdio_uart_base_addr = uart_desc->base;
+            status = val_uart_init(g_stdio_uart_base_addr);
+            if(status != TBSA_STATUS_SUCCESS) {
+                return status;
+            }
+            break;
+        }
 
-    status = val_uart_init(g_stdio_uart_base_addr);
-    if(status != TBSA_STATUS_SUCCESS) {
-        return status;
+        instance++;
+    }while(instance < GET_NUM_INSTANCE(uart_desc));
+
+    if(g_stdio_uart_base_addr == NULL) {
+        return TBSA_STATUS_ERROR;
     }
 
     status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_BOOTROM, 0),
@@ -407,7 +428,7 @@ tbsa_status_t val_infra_exit(void)
     }
 
     val_print(PRINT_ALWAYS, "\n\r", 0);
-    for(int i=0; i < strlen(val_get_comp_name(CREATE_TEST_ID(TBSA_BASE_BASE, 1))); i++) {
+    for(int i=3; i < strlen(val_get_comp_name(CREATE_TEST_ID(TBSA_BASE_BASE, 1))); i++) {
         val_print(PRINT_ALWAYS, "-", 0);
     }
 
@@ -417,7 +438,7 @@ tbsa_status_t val_infra_exit(void)
     val_print(PRINT_ALWAYS, "\n\rSkip        : %d", test_count.skip_cnt);
 
     val_print(PRINT_ALWAYS, "\n\r", 0);
-    for(int i=0; i < strlen(val_get_comp_name(CREATE_TEST_ID(TBSA_BASE_BASE, 1))); i++) {
+    for(int i=3; i < strlen(val_get_comp_name(CREATE_TEST_ID(TBSA_BASE_BASE, 1))); i++) {
         val_print(PRINT_ALWAYS, "-", 0);
     }
 

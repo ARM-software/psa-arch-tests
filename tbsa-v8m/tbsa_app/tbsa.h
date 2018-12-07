@@ -24,10 +24,22 @@
 #define TBSA_ACS_MAJOR_VER    0
 #define TBSA_ACS_MINOR_VER    7
 
+uint32_t __tbsa_text_start__;
+uint32_t __tbsa_text_end__;
 uint32_t __tbsa_bss_start__;
 uint32_t __tbsa_bss_end__;
 uint32_t __tbsa_data_src_start__;
 uint32_t __tbsa_data_start__;
 uint32_t __tbsa_data_end__;
+uint32_t __tbsa_nsc_entry_points_start__;
+uint32_t __tbsa_nsc_entry_points_end__;
+uint32_t __tbsa_ns_data_start__;
+uint32_t __tbsa_ns_data_end__;
+uint32_t __tbsa_ns_text_start__;
+uint32_t __tbsa_ns_text_end__;
+uint32_t __tbsa_test_s_start__;
+uint32_t __tbsa_test_s_end__;
+uint32_t __tbsa_test_ns_start__;
+uint32_t __tbsa_test_ns_end__;
 
 #endif /* _TBSA_H_ */

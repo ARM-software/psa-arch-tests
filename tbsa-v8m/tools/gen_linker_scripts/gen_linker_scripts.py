@@ -124,6 +124,20 @@ update_addr(dst_tbsa_linker, "TBSA_NSC_TEXT_START", \
                               nsc_addr)
 update_addr(dst_tbsa_linker, "TBSA_NSC_TEXT_LENGTH", \
                               TBSA_NSC_TEXT_LENGTH)
+update_addr(dst_tbsa_linker, "TBSA_TEST_S_START", \
+                              s_test_addr)
+update_addr(dst_tbsa_linker, "TBSA_TEST_S_END", \
+                              hex(int(s_test_addr, 16) + \
+                                 (int(TBSA_TEST_INFO_LENGTH[:TBSA_TEST_INFO_LENGTH.find("K")])*1024) + \
+                                 (int(TBSA_TEST_TEXT_LENGTH[:TBSA_TEST_TEXT_LENGTH.find("K")])*1024) + \
+                                 (int(TBSA_TEST_DATA_LENGTH[:TBSA_TEST_DATA_LENGTH.find("K")])*1024)))
+update_addr(dst_tbsa_linker, "TBSA_TEST_NS_START", \
+                              ns_test_addr)
+update_addr(dst_tbsa_linker, "TBSA_TEST_NS_END", \
+                              hex(int(ns_test_addr, 16) + \
+                                 (int(TBSA_TEST_INFO_LENGTH[:TBSA_TEST_INFO_LENGTH.find("K")])*1024) + \
+                                 (int(TBSA_TEST_TEXT_LENGTH[:TBSA_TEST_TEXT_LENGTH.find("K")])*1024) + \
+                                 (int(TBSA_TEST_DATA_LENGTH[:TBSA_TEST_DATA_LENGTH.find("K")])*1024)))
 
 # Updating S test linker script with address from target configuration file
 update_addr(dst_test_s_linker, "TBSA_TEST_INFO_START", \
