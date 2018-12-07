@@ -110,7 +110,7 @@ void test_payload(tbsa_val_api_t *val)
                 if (!val->is_rtc_trustable(soc_per_desc->base)) {
                     val->err_check_set(TEST_CHECKPOINT_A, TBSA_STATUS_INCORRECT_VALUE);
                     boot.cb = BOOT_UNKNOWN;
-                    status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SPAD), &boot, sizeof(boot));
+                    status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot));
                     if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
                         return;
                     }
@@ -121,7 +121,7 @@ void test_payload(tbsa_val_api_t *val)
                     /* When there is outage of power to the TRTC, TRTC is not trusted */
                     val->err_check_set(TEST_CHECKPOINT_C, TBSA_STATUS_INCORRECT_VALUE);
                     boot.cb = BOOT_UNKNOWN;
-                    status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SPAD), &boot, sizeof(boot));
+                    status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot));
                     if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
                         return;
                     }
@@ -191,10 +191,17 @@ void test_payload(tbsa_val_api_t *val)
 void exit_hook(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
+    boot_t        boot;
 
     /* Restoring default Handler */
     status = val->interrupt_restore_handler(EXCP_NUM_HF);
     if (val->err_check_set(TEST_CHECKPOINT_12, status)) {
+        return;
+    }
+
+    boot.cb = BOOT_UNKNOWN;
+    status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot));
+    if (val->err_check_set(TEST_CHECKPOINT_13, status)) {
         return;
     }
 }

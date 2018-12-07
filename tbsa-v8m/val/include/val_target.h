@@ -330,6 +330,7 @@ typedef struct _SOC_PER_INFO_DESC_ {
     uint32_t           intr_id;
     interrupt_target_t intr_target;
     addr_t             clk_src;
+    uint32_t           stdio;
     dev_attr_t         attribute;
 } soc_peripheral_desc_t;
 
@@ -421,7 +422,6 @@ typedef struct _MISCELLANEOUS_INFO_DESC_ {
     addr_t                  nsc_addr;
     addr_t                  s_test_addr;
     addr_t                  ns_test_addr;
-    uint32_t                warm_support;
     firmware_version_type_t fw_ver_type;
     uint32_t                fw_ver_cnt_max;
 } miscellaneous_desc_t;

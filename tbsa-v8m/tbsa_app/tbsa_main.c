@@ -39,11 +39,32 @@ void tbsa_main (void)
         val_print(PRINT_ERROR, "\nVal Infra Init failed with error = %x ", status);
         goto exit;
     }
-    val_print(PRINT_ALWAYS, "\n\rTBSA Compliance Suite",0);
+    val_print(PRINT_ALWAYS, "\n\rTBSA Architecture Test Suite",0);
     val_print(PRINT_ALWAYS, "\n\rVersion :\t%d.", TBSA_ACS_MAJOR_VER);
-    val_print(PRINT_ALWAYS, "%d\n\n", TBSA_ACS_MINOR_VER);
+    val_print(PRINT_ALWAYS, "%d", TBSA_ACS_MINOR_VER);
+
+    val_print(PRINT_ALWAYS, "\n", 0);
+    val_print(PRINT_ALWAYS, "\n\r+----------------------------------------------------------------+", 0);
+    val_print(PRINT_ALWAYS, "\n\r|                       TBSA Memory Layout                       |", 0);
+    val_print(PRINT_ALWAYS, "\n\r+----------------------------------------------------------------+", 0);
+    val_print(PRINT_ALWAYS, "\n\r| Main App S_Text      : start - 0x%X\t", (uint32_t)&__tbsa_text_start__);
+    val_print(PRINT_ALWAYS, "end - 0x%X |", (uint32_t)&__tbsa_text_end__);
+    val_print(PRINT_ALWAYS, "\n\r| Main App S_Data      : start - 0x%X\t", (uint32_t)&__tbsa_data_start__);
+    val_print(PRINT_ALWAYS, "end - 0x%X |", (uint32_t)&__tbsa_bss_end__);
+    val_print(PRINT_ALWAYS, "\n\r| Main App NSC_Text    : start - 0x%X\t", (uint32_t)&__tbsa_nsc_entry_points_start__);
+    val_print(PRINT_ALWAYS, "end - 0x%X |", (uint32_t)&__tbsa_nsc_entry_points_end__);
+    val_print(PRINT_ALWAYS, "\n\r| Main App NS_Data     : start - 0x%X\t", (uint32_t)&__tbsa_ns_data_start__);
+    val_print(PRINT_ALWAYS, "end - 0x%X |", (uint32_t)&__tbsa_ns_data_end__);
+    val_print(PRINT_ALWAYS, "\n\r| Main App NS_Text     : start - 0x%X\t", (uint32_t)&__tbsa_ns_text_start__);
+    val_print(PRINT_ALWAYS, "end - 0x%X |", (uint32_t)&__tbsa_ns_text_end__);
+    val_print(PRINT_ALWAYS, "\n\r| Secure Test          : start - 0x%X\t", (uint32_t)&__tbsa_test_s_start__);
+    val_print(PRINT_ALWAYS, "end - 0x%X |", (uint32_t)&__tbsa_test_s_end__);
+    val_print(PRINT_ALWAYS, "\n\r| Non-secure Test      : start - 0x%X\t", (uint32_t)&__tbsa_test_ns_start__);
+    val_print(PRINT_ALWAYS, "end - 0x%X |", (uint32_t)&__tbsa_test_ns_end__);
+    val_print(PRINT_ALWAYS, "\n\r+----------------------------------------------------------------+", 0);
 
 
+    val_print(PRINT_ALWAYS, "\n\n\r+++ Starting tests +++", 0);
     /* Call the dispatcher routine*/
     tbsa_dispatcher(test_id_prev);
     val_print(PRINT_ALWAYS, "\n\n\rEntering standby\n", 0);
