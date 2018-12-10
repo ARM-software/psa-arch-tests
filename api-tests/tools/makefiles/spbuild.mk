@@ -46,7 +46,7 @@ mkdir:
 	@mkdir -p $(BUILD)/partition/
 
 gen_secure_tests_list:
-	@perl $(SOURCE)/tools/scripts/gen_secure_tests_list.pl $(BUILD) $(BUILD)/$(SUITE)/.testlist.txt
+	@perl $(SOURCE)/tools/scripts/gen_secure_tests_list.pl $(BUILD) $(SUITE_OUT)/.testlist.txt
 
 compile_c: $(CC_SOURCE:%.c=$(BUILD)/partition/%.o)
 compile_asm: $(AS_SOURCE:%.s=$(BUILD)/partition/%.o)
@@ -58,10 +58,10 @@ $(BUILD)/partition/%.o : %.s
 	$(AS) -o $@ $<
 
 client_partition.a:
-	$(AR) $(AR_OPTIONS) $(BUILD)/partition/client_partition.a $(BUILD)/partition/client_partition.o $(BUILD)/$(SUITE)/test*/test_i*_spe.o
+	$(AR) $(AR_OPTIONS) $(BUILD)/partition/client_partition.a $(BUILD)/partition/client_partition.o $(SUITE_OUT)/test*/test_i*_spe.o
 
 server_partition.a:
-	$(AR) $(AR_OPTIONS) $(BUILD)/partition/server_partition.a $(BUILD)/partition/server_partition.o $(BUILD)/$(SUITE)/test*/test_supp_*_spe.o
+	$(AR) $(AR_OPTIONS) $(BUILD)/partition/server_partition.a $(BUILD)/partition/server_partition.o $(SUITE_OUT)/test*/test_supp_*_spe.o
 
 driver_partition.a:
 	$(AR) $(AR_OPTIONS) $(BUILD)/partition/driver_partition.a $(BUILD)/platform/spe/*_driver_sp.o $(BUILD)/partition/driver_partition.o $(BUILD)/partition/val_driver_service_apis.o

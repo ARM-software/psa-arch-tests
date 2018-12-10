@@ -23,8 +23,7 @@ use List::MoreUtils 'uniq';
 print "\n>>>> Combining test ELFs... \n";
 
 #Inputs
-$suite = $ARGV[0];
-$test_list_file = $ARGV[1];
+$test_list_file = $ARGV[0];
 
 @suite_out =  split("/.testlist.txt", $test_list_file);
 

@@ -15,7 +15,7 @@ This document provides details on the porting steps and the PAL APIs.
 
   You must populate your system configuration and provide it as an input to test suite.
 
-This is captured in a single static input configuration file that is named as target.cfg. This file is available at psa-ff/platform/targets/<platform_name>/. <br />
+This is captured in a single static input configuration file that is named as target.cfg. This file is available at api-tests/platform/targets/<platform_name>/. <br />
 
 An example of the input configuration file is as shown.
 
