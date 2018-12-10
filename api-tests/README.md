@@ -1,42 +1,51 @@
 
-# PSA Firmware Framework : Architecture Test Suite
+# PSA APIs : Architecture Test Suite
 
 ## Introduction
 
-### PSA FF Specification
+### PSA APIs
 
-Arm Platform Security Architecture (PSA) is a holistic set of threat models, security analysis, hardware and firmware architecture specifications, and an open source firmware reference implementation. PSA provides a recipe, based on industry best practice, that allows security to be consistently designed in, at both a hardware and firmware level.
+Arm Platform Security Architecture (PSA) is a holistic set of threat models, security analysis, hardware and firmware architecture specifications, and an open source firmware reference implementation. PSA provides a recipe, based on industry best practice, that allows security to be consistently designed in, at both a hardware and firmware level. One of the PSA goals is to make IoT security easier and quicker for everyone. This means having reliable, consistent APIs and useful built-in security functions for device manufacturers and the developer community. These PSA APIs provides a consistent developer experience hiding the underlying complexity of the security system.
 
-The PSA Firmware Framework defines a standard programming environment and firmware interfaces for implementing and accessing security services within a device's Root of Trust.
+The PSA APIs Specification consists of following set of APIs:
 
-The Firmware Framework specification: <br />
--   provides requirements for the SPM
--   defines a standard runtime environment for developing protected RoT Services, including the programming interfaces
-    provided by the SPM for implementing and using RoT Services
--   defines the standard interfaces for the PSA RoT Services.
+#### PSA Firmware Framework (PSA-FF)
 
-For more information, download the [PSA FF Specification](https://pages.arm.com/psa-resources-ff.html?_ga=2.97388575.1220230133.1540547473-1540784585.1540547382)
+The PSA-FF defines a standard interface and framework, to isolate trusted functionality withinconstrained IoT devices.
+
+The framework provides:
+- Architecture that describes isolated runtime environments (partitions) for trusted and untrusted firmware.
+- A standard model for describing the functionality and resources in each partition.
+- A secure IPC interface to request services from other partitions.
+- A model that describes how the partitions can interact with one another, as well as the hardware and the firmware framework implementation, itself.
+- A standard interfaces for the PSA RoT Services.
+
+This specification enables the development of secure firmware functionality that can be reused on different devices that use any conforming implementation of the Firmware Framework. For more information, download the [PSA FF Specification](https://pages.arm.com/psa-resources-ff.html?_ga=2.97388575.1220230133.1540547473-1540784585.1540547382)
+
+#### PSA Application RoT APIs
+
+PSA defines security service APIs for application developers. Some of these services are Crypto Services, Attestation Services, and Secure Storage Services. For more information, refer the [PSA Application RoT APIs specifications](../specification/)
 
 ### Architecture Test Suite
 
-The Architecture Test Suite is a set of examples of the invariant behaviours that are specified by the PSA FF Specification. Use this suite to verify that these behaviours are implemented correctly in your system.
+The Architecture Test Suite is a set of examples of the invariant behaviours that are specified by the PSA APIs Specifications. Use this suite to verify that these behaviours are implemented correctly in your system.
 
-PSA FF Architecture Test Suite contains the tests that are self-checking, portable C-based tests with directed stimulus.
+PSA APIs Architecture Test Suite contains the tests that are self-checking, portable C-based tests with directed stimulus.
 
 The tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license allowing for external contribution.
 
 ## Release Update
  - Release Version - 0.5
- - The tests are written for version 1.0-Beta-0 of the PSA FF specification.
- - Code Quality: Alpha <br />
-   This indicates the suite is in development and it contains tests which have not been validated on any platform. Please use this opportunity to suggest enhancements and point out errors.
- - Current release contains the test suite for IPC and Crypto tests.
+ - Code Quality - Alpha. This indicates the suite is in development and it contains tests which have not been validated on any platform. Please use this opportunity to suggest enhancements and point out errors.
+ - Current release contains:
+   1. **IPC tests** are written for version 1.0-Beta-0 of the PSA FF specification.
+   2. **Crypto tests** are written for the crypto service APIs defined in the [psa/crypto.h](../specification/a-rot/include/crypto.h)
  - This test suite is not a substitute for design verification.
  - To review the test logs, Arm licensees can contact Arm directly through their partner managers.
 
 ## Layers
 
-PSA FF Architecture Test Suite uses a layered software-stack approach to enable porting across different test platforms. The constituents of the layered stack are: <br />
+PSA APIs Architecture Test Suite uses a layered software-stack approach to enable porting across different test platforms. The constituents of the layered stack are: <br />
 -   Test suite
 -   Validation Abstraction Layer (VAL)
 -   Platform Abstraction Layer (PAL)
@@ -74,9 +83,9 @@ Refer to the [Validation Methodology](docs/Arm_PSA_FF_Arch_Test_Validation_Metho
 
 ### Build steps
 
-To build PSA FF test suite for a given platform, execute the following commands:
+To build PSA APIs test suite for a given platform, execute the following commands:
 
-1. cd psa-ff
+1. cd api-tests
 2. Using your secure partition build tool, parse following test suite partition manifest files and generate necessary manifest output files. Refer "psa_framework_version" field of manifest to view the version of the PSA Firmware Framework specification this manifest conforms to and your build tool must conform to manifest rules specified in that version of specification.<br />
    <br />Test suite manifest to be parsed:<br />
    - platform/targets/<platform_name>/manifests/common/driver_partition_psa.json
@@ -101,18 +110,21 @@ To build PSA FF test suite for a given platform, execute the following commands:
 Refer ./tools/scripts/setup.sh --help to know more about options.
 
 ### Build output
-PSA FF test suite build generates following output binaries:<br />
+PSA APIs test suite build generates following output binaries:<br />
 
 NSPE libraries:<br />
 1. <build_dir>/BUILD/val/val_nspe.a
 2. <build_dir>/BUILD/platform/pal_nspe.a
-3. <build_dir>/BUILD/<suite_name>/test_elf_combine.bin
+3. <build_dir>/BUILD/<top_level_suite>/<suite_name>/test_elf_combine.bin
 
 SPE libraries:<br />
 1. <build_dir>/BUILD/partition/driver_partition.a
 - Additional SPE libraries explicitly for IPC tests
 2. <build_dir>/BUILD/partition/client_partition.a
 3. <build_dir>/BUILD/partition/server_partition.a
+
+<br />  where:
+- <top_level_suite> is either ff (Firmware Framework) or a-rot (Application RoT) suite.
 
 ### Binaries integration into your platform
 
@@ -125,13 +137,13 @@ SPE libraries:<br />
 The following steps describe the execution flow prior to the start of test execution: <br />
 
 1. The target platform must load above binaries into appropriate memory. <br />
-2. The System Under Test (SUT) would boot to an environment which intializes SPM and PSA FF partitions are ready to accept requests. <br />
+2. The System Under Test (SUT) would boot to an environment which intializes SPM and test suite partitions are ready to accept requests. <br />
 3. On the non-secure side, the SUT - boot software would give control to the test suite entry point- *void val_entry(void);* as an application entry point. <br />
 4. The tests are executed sequentially in a loop in the test_dispatcher function. <br />
 
 ## License
 
-Arm PSA FF Architecture test suite is distributed under Apache v2.0 License.
+Arm PSA APIs Architecture test suite is distributed under Apache v2.0 License.
 
 
 ## Feedback, contributions, and support

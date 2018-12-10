@@ -14,8 +14,14 @@
 # * limitations under the License.
 #**/
 
-export SUITE_IN= $(SOURCE)/test_suites/$(SUITE)
-export SUITE_OUT= $(BUILD)/$(SUITE)
+ifeq (${SUITE}, ipc)
+SUITE_DIR = ff/$(SUITE)
+else
+SUITE_DIR = a-rot/$(SUITE)
+endif
+
+export SUITE_IN= $(SOURCE)/test_suites/$(SUITE_DIR)
+export SUITE_OUT= $(BUILD)/$(SUITE_DIR)
 
 include $(SOURCE)/tools/makefiles/toolchain.mk
 
@@ -38,20 +44,23 @@ gen_linker:
 build:  build_pal val_nspe.a test_combine.elf partition_build output_list
 
 build_pal:
+	@echo  ""
 	@echo  "----------pal build start-------------"
 	make -f $(SOURCE)/platform/targets/$(TARGET)/Makefile
 	@echo  "----------pal build complete-------------"
 
 val_nspe.a:
+	@echo  ""
 	@echo  "----------val build start-------------"
 	make -f $(SOURCE)/tools/makefiles/valbuild.mk
 	@echo  "----------val build complete-------------"
 
 test_combine.elf: test.elf
-	perl $(SOURCE)/tools/scripts/test_elf_combine.pl $(SUITE) $(SUITE_OUT)/.testlist.txt
+	perl $(SOURCE)/tools/scripts/test_elf_combine.pl $(SUITE_OUT)/.testlist.txt
 	hexdump -v -e ' 1/4 "%08X" "\n"' $(SUITE_OUT)/test_elf_combine.bin > $(SUITE_OUT)/test_elf_combine.hex
 
 test.elf:
+	@echo  ""
 	@echo  "----------test build start-------------"
 	@mkdir -p $(SUITE_OUT)/
 	@$(eval TEST_LIST := $(shell grep "^test" $(SUITE_IN)/testsuite.db > $(SUITE_OUT)/.testlist.txt ; cat $(SUITE_OUT)/.testlist.txt))
@@ -60,6 +69,7 @@ test.elf:
 
 partition_build:
 ifeq (${PSA_IPC_IMPLEMENTED}, 1)
+	@echo  ""
 	@echo  "----------test partition build start-------------"
 	make -f $(SOURCE)/tools/makefiles/spbuild.mk
 	@echo  "----------test partition build complete-------------"
@@ -73,7 +83,7 @@ output_list:
 	@echo  "a) NSPE files:"
 	@echo  " $(BUILD)/val/val_nspe.a"
 	@echo  " $(BUILD)/platform/pal_nspe.a"
-	@echo  " $(BUILD)/$(SUITE)/test_elf_combine.bin"
+	@echo  " $(SUITE_OUT)/test_elf_combine.bin"
 	@echo  ""
 ifeq (${PSA_IPC_IMPLEMENTED}, 1)
 	@echo  "b) SPE files"
@@ -84,10 +94,6 @@ ifeq (${SUITE}, ipc)
 	@echo  " $(BUILD)/partition/server_partition.a"
 endif
 	@echo  ""
-
-
-
-
 
 clean:
 	@echo  ">>>> Cleaning the build directory..."

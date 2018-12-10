@@ -11,7 +11,7 @@ For more information, visit the PSA webpage [here](https://developer.arm.com/pro
 
 ## Architecture test suite
 
-The current implementation of the Architecture test suite contains tests for the TBSA-v8M specification. Arm licensees may contact their partner manager to obtain a copy of this specification. <br />
+The current implementation of the Architecture test suite contains tests for following PSA specifications. Arm licensees may contact their partner manager to obtain a copy of this specification. <br />
 
 Future versions of the test suite will be enhanced to include tests for other specifications of the Platform Security Architecture.
 
@@ -20,8 +20,8 @@ The tests are available as open source. The tests and the corresponding abstract
 ### TBSA-v8M
 The test suite for this specification is located in the tbsa-v8m directory of this repository. See [TBSA-v8m Readme](tbsa-v8m/README.md) file for more details.
 
-### Firmware Framework
-The test suite for this specification is located in the psa-ff directory of this repository. See [Firmware Framework Readme](psa-ff/README.md) file for more details.
+### PSA APIs
+The test suite for this specification is located in the api-tests directory of this repository. See [PSA APIs Tests Readme](api-tests/README.md) file for more details.
 
 
 ## License
