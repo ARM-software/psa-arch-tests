@@ -1,9 +1,9 @@
 
-# Porting Guide - PSA FF Architecture Test Suite
+# Porting Guide - PSA APIs Architecture Test Suite
 -----------------------------------------------------
 
 ## Introduction
-The PSA FF Architecture test suite contains a platform abstraction layer (PAL) which abstracts platform specific information from the tests.
+The PSA APIs Architecture test suite contains a platform abstraction layer (PAL) which abstracts platform specific information from the tests.
  - The PAL layer interface functions need to be implemented/ported to the target platform.
  - The target config file must be created/updated to match the details of the target platform.
 
@@ -35,16 +35,6 @@ An example of the input configuration file is as shown.
 
   More details on the structure of the input can be obtained from val/common/val_target.h.
 
-**Note**:
-  Test suite needs access to the following peripherals and the services of these peripherals are implemented as RoT services in the driver partition.
-  - One UART to print nspe and spe messages
-  - One Watchdog timer to help recovery from any fatal error conditions
-  - Non-volatile memory support to preserve test status over watchdog timer reset
-
-### Create a new target
-
-  Since PSA FF test suite is agnostic to various system targets, before building the tests, you must port the files mentioned in the following steps.
-
 **Procedure**
 ----------------
 
@@ -56,6 +46,15 @@ An example of the input configuration file is as shown.
   - Update platform/nspe/Makefile appropriately to select correct instances of PAL files for compilation. This make file is invoked as part of test suite build tool(./setup.sh) step and it creates <build_dir>/BUILD/platform/pal_nspe.a archive and respective object for SPE files at <build_dir>/BUILD/platform/spe/\*\_driver_sp.o. Later, these SPE objects are used by spbuild.mk to create appropriate SPE partition archive file.
   - Refer "PAL API list" section to view list of PAL API that must be ported for your target platform. These APIs definitions are available in nspe/pal_\*\_intf.c and spe/pal_\*_intf.c files. These APIs are written for fvp_mps2_cm4_mbedos platform. You can reuse the code if it works for your platform. Otherwise you must port them for your platform specific peripherals.
 
+**Note**:
+  Test suite needs access to the following peripherals. For IPC tests, the services of these peripherals are implemented as RoT services in the driver partition. If you are compiling crypto tests, you must set PSA_IPC_IMPLEMENTED to 0 in the platform/targets/<platform_name>/Makefile. This selects the non-secure PAL instances for the driver services and eliminates IPC dependancy for crypto tests.
+  - One UART to print nspe and spe messages
+  - One Watchdog timer to help recovery from any fatal error conditions
+  - Non-volatile memory support to preserve test status over watchdog timer reset
+
+### Create a new target
+
+  Since Test suite is agnostic to various system targets, before building the tests, you must port the files mentioned in the following steps.
 ## PAL API list
   These functions will require implementation for the target platform. <br />
 
@@ -92,7 +91,7 @@ An example of the input configuration file is as shown.
 | 08 | int  pal_nvmem_read(addr_t base, uint32_t offset, void *buffer, int size);       | Reads 'size' bytes from non-volatile memory at a given                            | base      : Base address of NV MEM<br/>offset    : Offset<br/>buffer    : Pointer to source address<br/>size      : Number of bytes<br/>                  |
 
 ## License
-Arm PSA FF Architecture test suite is distributed under Apache v2.0 License.
+Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 

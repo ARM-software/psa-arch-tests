@@ -18,6 +18,17 @@
 #ifndef _PAL_CLIENT_API_H_
 #define _PAL_CLIENT_API_H_
 
+#if PSA_IPC_IMPLEMENTED
+/* psa/client.h: Contains the Client API elements. Accessible to all applications */
+#include "psa/client.h"
+
+/* psa_manifest/sid.h:  Macro definitions derived from manifest files that map from RoT Service
+ * names to Service IDs (SIDs).
+ * Partition manifest parse build tool must provide the implementation of this file.
+*/
+#include "psa_manifest/sid.h"
+
+#else
 #include "pal_common.h"
 
 #define PSA_VERSION_NONE            (0)
@@ -49,6 +60,7 @@ psa_status_t psa_call(psa_handle_t handle,
                       psa_outvec *out_vec,
                       size_t out_len);
 void psa_close(psa_handle_t handle);
+#endif /* PSA_IPC_IMPLEMENTED */
 
 uint32_t pal_ipc_framework_version(void);
 uint32_t pal_ipc_version(uint32_t sid);
