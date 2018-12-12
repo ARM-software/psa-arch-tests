@@ -17,10 +17,10 @@
 ifeq (${SUITE}, ipc)
 SUITE_DIR = ff/$(SUITE)
 else
-SUITE_DIR = a-rot/$(SUITE)
+SUITE_DIR = dev_apis/$(SUITE)
 endif
 
-export SUITE_IN= $(SOURCE)/test_suites/$(SUITE_DIR)
+export SUITE_IN= $(SOURCE)/$(SUITE_DIR)
 export SUITE_OUT= $(BUILD)/$(SUITE_DIR)
 
 include $(SOURCE)/tools/makefiles/toolchain.mk
@@ -85,15 +85,13 @@ output_list:
 	@echo  " $(BUILD)/platform/pal_nspe.a"
 	@echo  " $(SUITE_OUT)/test_elf_combine.bin"
 	@echo  ""
-ifeq (${PSA_IPC_IMPLEMENTED}, 1)
+ifeq (${SUITE}, ipc)
 	@echo  "b) SPE files"
 	@echo  " $(BUILD)/partition/driver_partition.a"
-endif
-ifeq (${SUITE}, ipc)
 	@echo  " $(BUILD)/partition/client_partition.a"
 	@echo  " $(BUILD)/partition/server_partition.a"
-endif
 	@echo  ""
+endif
 
 clean:
 	@echo  ">>>> Cleaning the build directory..."

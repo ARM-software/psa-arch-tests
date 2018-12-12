@@ -20,16 +20,16 @@ INCLUDE= -I$(SOURCE)/val/common/ \
          -I$(SOURCE)/val/nspe/ \
          -I$(SOURCE)/val/spe/ \
          -I$(SOURCE)/ \
-         -I$(SOURCE)/test_suites/partition/common/ \
-         -I$(SOURCE)/test_suites/partition/ipc/ \
+         -I$(SOURCE)/ff/partition/common/ \
+         -I$(SOURCE)/ff/partition/ipc/ \
          -I$(BUILD)/partition/ \
          -I$(BUILD)/platform/$(TARGET)/
 
 VPATH=$(SOURCE)/val/common/:\
       $(SOURCE)/val/nspe/:\
       $(SOURCE)/val/spe/:\
-      $(SOURCE)/test_suites/partition/common/: \
-      $(SOURCE)/test_suites/partition/ipc/
+      $(SOURCE)/ff/partition/common/: \
+      $(SOURCE)/ff/partition/ipc/
 
 
 CC_SOURCE += driver_partition.c val_driver_service_apis.c

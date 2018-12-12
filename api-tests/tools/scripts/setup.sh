@@ -117,7 +117,7 @@ else
    echo "setting \$SOURCE to $SOURCE"
 fi
 
-if [ ! -d "$SOURCE/test_suites" ]
+if [ ! -d "$SOURCE/dev_apis" ] || [ ! -d "$SOURCE/ff" ]
 then
    echo "Error: Could not find architecture test suite directories in current path $SOURCE"
    exit 1

@@ -28,8 +28,10 @@ SRC_C_NSPE= pal_driver_ns_intf.c
 
 ifeq (${PSA_IPC_IMPLEMENTED},1)
 SRC_C_NSPE += pal_client_api_intf.c
+SRC_C_NSPE += pal_driver_ipc_intf.c
 else
 SRC_C_NSPE += pal_client_api_empty_intf.c
+SRC_C_NSPE += pal_driver_ns_intf.c pal_nvmem.c pal_uart.c pal_wd_cmsdk.c
 endif
 
 ifeq (${PSA_CRYPTO_IMPLEMENTED},1)

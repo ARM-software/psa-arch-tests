@@ -54,3 +54,10 @@
 |     | | |    | PSA_ERROR_BUFFER_TOO_SMALL  | Calling this function with a hash buffer whose size is less than the algorithm output should return error   | Buffer size less than required   |
 |     | test_c015 | psa_hash_abort | Abort a hash operation.     | PSA_SUCCESS  | 1. Initialize the PSA crypto library  <br /> 2. Start a multipart hash operation  <br /> 3. Abort a hash operation     | 1. MD2  <br /> 2. MD4  <br /> 3. MD5  <br /> 4. RIPEMD160  <br /> 5. SHA1  <br /> 6. SHA224  <br /> 7. SHA256  <br /> 8. SHA384  <br /> 9. SHA512  |
 |     | | |    | PSA_ERROR_INVALID_ARGUMENT  | Calling psa_hash_finish after calling psa_hash_abort should return error |    |
+
+# License
+Arm PSA test suite is distributed under Apache v2.0 License.
+
+--------------
+
+*Copyright (c) 2018, Arm Limited and Contributors. All rights reserved.*
