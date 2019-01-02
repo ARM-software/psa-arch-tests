@@ -17,10 +17,15 @@
 #ifndef _TEST027_CLIENT_TESTS_H_
 #define _TEST027_CLIENT_TESTS_H_
 
+#include "val_client_defs.h"
+
 #ifdef NONSECURE_TEST_BUILD
-#include "val.h"
+#define test_entry CONCAT(test_entry_,i027)
+#define val CONCAT(val,test_entry)
+#define psa CONCAT(psa,test_entry)
 #else
-#include "val/common/val_client_defs.h"
+#define val CONCAT(val,_client_sp)
+#define psa CONCAT(psa,_client_sp)
 #endif
 
 extern val_api_t *val;

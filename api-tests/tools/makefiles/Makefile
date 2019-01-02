@@ -26,7 +26,7 @@ export SUITE_OUT= $(BUILD)/$(SUITE_DIR)
 include $(SOURCE)/tools/makefiles/toolchain.mk
 
 
-all: clean target_cfg gen_linker build
+all: clean target_cfg gen_linker process_testsuite.db build
 
 #Generate target files from User provided data base
 target_cfg:
@@ -36,8 +36,12 @@ target_cfg:
 
 #Read target.cfg and update the addresses in linker script
 gen_linker:
-	mkdir -p $(SUITE_OUT)/;
+	mkdir -p $(SUITE_OUT)/ $(BUILD)/val/ $(BUILD)/partition/ ;
 	perl $(SOURCE)/tools/scripts/process_test_linker_file.pl $(SOURCE) $(SUITE_OUT) ${TARGET} $(TOOLCHAIN)
+
+process_testsuite.db:
+	$(eval TEST_LIST := $(shell grep "^test" $(SUITE_IN)/testsuite.db > $(SUITE_OUT)/.testlist.txt ; cat $(SUITE_OUT)/.testlist.txt))
+	perl $(SOURCE)/tools/scripts/gen_tests_list.pl $(BUILD) $(SUITE_OUT)/.testlist.txt $(SUITE)
 
 
 #Build framework archives and test_combine.elf
@@ -58,12 +62,11 @@ val_nspe.a:
 test_combine.elf: test.elf
 	perl $(SOURCE)/tools/scripts/test_elf_combine.pl $(SUITE_OUT)/.testlist.txt
 	hexdump -v -e ' 1/4 "%08X" "\n"' $(SUITE_OUT)/test_elf_combine.bin > $(SUITE_OUT)/test_elf_combine.hex
+	$(AR) $(AR_OPTIONS) $(SUITE_OUT)/test_combine.a $(SUITE_OUT)/test*/test_*_nspe.o
 
 test.elf:
 	@echo  ""
 	@echo  "----------test build start-------------"
-	@mkdir -p $(SUITE_OUT)/
-	@$(eval TEST_LIST := $(shell grep "^test" $(SUITE_IN)/testsuite.db > $(SUITE_OUT)/.testlist.txt ; cat $(SUITE_OUT)/.testlist.txt))
 	@$(foreach TEST,$(TEST_LIST), make -f $(SOURCE)/tools/makefiles/testbuild.mk  TEST=$(TEST) ;)
 	@echo  "----------test build complete-------------"
 
@@ -83,7 +86,11 @@ output_list:
 	@echo  "a) NSPE files:"
 	@echo  " $(BUILD)/val/val_nspe.a"
 	@echo  " $(BUILD)/platform/pal_nspe.a"
+ifeq (${TEST_COMBINE_ARCHIVE}, 1)
+	@echo  " $(SUITE_OUT)/test_combine.a"
+else
 	@echo  " $(SUITE_OUT)/test_elf_combine.bin"
+endif
 	@echo  ""
 ifeq (${SUITE}, ipc)
 	@echo  "b) SPE files"

@@ -20,6 +20,7 @@
 echo ""
 
 declare -a INCLUDE_PATHS
+export TEST_COMBINE_ARCHIVE=0
 export CLIENT_FILE_FOUND=0
 export SERVICE_FILE_FOUND=0
 HELP="
@@ -91,6 +92,9 @@ while [  $# -gt 0 ]; do
                   ;;
        --verbose )  shift
                   export VERBOSE=$1
+                  ;;
+       --archive_tests )
+                  export TEST_COMBINE_ARCHIVE=1
                   ;;
        --include )  shift
                   export INCLUDE="$INCLUDE -I $1/"
@@ -256,6 +260,7 @@ MAKE_OPTIONS+=" SUITE=$SUITE "
 MAKE_OPTIONS+=" TOOLCHAIN=$TOOLCHAIN "
 MAKE_OPTIONS+=" CPU_ARCH=$CPU_ARCH "
 MAKE_OPTIONS+=" VERBOSE=$VERBOSE "
+MAKE_OPTIONS+=" TEST_COMBINE_ARCHIVE=$TEST_COMBINE_ARCHIVE "
 MAKE_OPTIONS+=" PSA_IPC_IMPLEMENTED=$PSA_IPC_IMPLEMENTED "
 MAKE_OPTIONS+=" USER_INCLUDE=\"$INCLUDE\" "
 
