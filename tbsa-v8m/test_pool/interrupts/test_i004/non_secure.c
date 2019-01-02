@@ -136,8 +136,8 @@ void test_payload(tbsa_val_api_t *val)
     if(source_to_check) {
         val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
     } else {
-        val->print(PRINT_ERROR, "\n\tNo available resource to check", 0);
-        val->err_check_set(TEST_CHECKPOINT_C, TBSA_STATUS_NOT_FOUND);
+        val->print(PRINT_ALWAYS, "\n\r\tNo available resource to check", 0);
+        val->set_status(RESULT_SKIP(status));
     }
 }
 

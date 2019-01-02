@@ -487,7 +487,7 @@ tbsa_status_t val_report_status(test_id_t test_id)
             break;
 
         case TBSA_TEST_SKIP:
-            val_print(PRINT_TEST, "\n\t\t                                                                 SKIP", 0);
+            val_print(PRINT_TEST, "\n\r                                                                                 SKIP", 0);
             break;
 
         case TBSA_TEST_PENDING:
