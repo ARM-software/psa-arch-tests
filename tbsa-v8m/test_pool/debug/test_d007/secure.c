@@ -45,8 +45,9 @@ void test_payload(tbsa_val_api_t *val)
     uint32_t      unique_id[10]={-1}, certificate_valid[10]={-1};
     dpm_hdr_t     *dpm_hdr;
     dpm_desc_t    *dpm_desc;
+    bool_t        unlock_token_certificate = FALSE;
 
-    status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_DPM, DPM_DPM, 0),
+    status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_DPM, 0, 0),
                                     (uint8_t **)&dpm_hdr, (uint32_t *)sizeof(dpm_hdr_t));
     if (val->err_check_set(TEST_CHECKPOINT_1, status)) {
         return;
@@ -54,7 +55,7 @@ void test_payload(tbsa_val_api_t *val)
 
     /* Check if DPM is present.*/
     if (!dpm_hdr->num) {
-        val->print(PRINT_ERROR, "\nNo DPM present in the platform", 0);
+        val->print(PRINT_ERROR, "\n\r\tNo DPM present in the platform", 0);
         val->err_check_set(TEST_CHECKPOINT_2, TBSA_STATUS_NOT_FOUND);
         return;
     }
@@ -83,40 +84,45 @@ void test_payload(tbsa_val_api_t *val)
                 }
 
             if (certificate_valid[dpm_instance]) {
-                 /* Get the unique ID from the certificate*/
-                 unique_id[dpm_instance] = val->crypto_get_uniqueID_from_certificate(dpm_desc->certificate_addr, dpm_desc->public_key_addr, dpm_desc->certificate_size, dpm_desc->public_key_size);
+                /* Get the unique ID from the certificate*/
+                unique_id[dpm_instance] = val->crypto_get_uniqueID_from_certificate(dpm_desc->certificate_addr, dpm_desc->public_key_addr, dpm_desc->certificate_size, dpm_desc->public_key_size);
 
-                 /* Check whether the key and certificate has an authenticated field for DPM  */
-                 status = val->crypto_get_dpm_from_key(dpm_desc->public_key_addr, dpm_desc->public_key_size, &dpm_field_from_key);
-                 if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
-                     return;
-                 }
+                /* Check whether the key and certificate has an authenticated field for DPM  */
+                status = val->crypto_get_dpm_from_key(dpm_desc->public_key_addr, dpm_desc->public_key_size, &dpm_field_from_key);
+                if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
+                    return;
+                }
 
-                 status = val->crypto_get_dpm_from_certificate(dpm_desc->certificate_addr, dpm_desc->certificate_size, &dpm_field_from_certificate);
-                 if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
-                     return;
-                 }
+                status = val->crypto_get_dpm_from_certificate(dpm_desc->certificate_addr, dpm_desc->certificate_size, &dpm_field_from_certificate);
+                if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
+                    return;
+                }
 
-                 if (dpm_field_from_key != dpm_field_from_certificate) {
-                     val->err_check_set(TEST_CHECKPOINT_8,1);
-                     return;
-                 }
+                if (dpm_field_from_key != dpm_field_from_certificate) {
+                    val->err_check_set(TEST_CHECKPOINT_8,1);
+                    return;
+                }
             }
         }
-     }
+    }
 
-     /* Compare the ID of each certificate to make sure that it is unique*/
-     for(id_check = 0; id_check < dpm_total_instance; id_check++) {
-         if (certificate_valid[id_check] == TRUE) {
-             for (int j=(id_check+1); j<(dpm_total_instance); j++) {
-                 if (unique_id[id_check] == unique_id[j]) {
-                     val->err_check_set(TEST_CHECKPOINT_9, 1);
-                     return;
-                 }
-             }
-          }
-     }
+    if (unlock_token_certificate == FALSE) {
+        val->set_status(RESULT_SKIP(TBSA_STATUS_NOT_FOUND));
+        val->print(PRINT_ALWAYS, "\n\r\tDPM available are not TOKEN CERTIFICATE based", 0);
+        return;
+    }
 
+    /* Compare the ID of each certificate to make sure that it is unique */
+    for(id_check = 0; id_check < dpm_total_instance; id_check++) {
+        if (certificate_valid[id_check] == TRUE) {
+            for (int j=(id_check+1); j<(dpm_total_instance); j++) {
+                if (unique_id[id_check] == unique_id[j]) {
+                    val->err_check_set(TEST_CHECKPOINT_9, 1);
+                    return;
+                }
+            }
+        }
+    }
 
     val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
     return;

@@ -43,6 +43,7 @@ void test_payload(tbsa_val_api_t *val)
     uint32_t      dpm_instance, target_dpm, dpm_status, dpm_enable, dpm_lock;
     dpm_hdr_t     *dpm_hdr;
     dpm_desc_t    *dpm_desc, *target_dpm_desc;
+    bool_t        unlock_token_password = FALSE;
 
     status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_DPM, 0, 0),
                                     (uint8_t **)&dpm_hdr, (uint32_t *)sizeof(dpm_hdr_t));
@@ -52,7 +53,7 @@ void test_payload(tbsa_val_api_t *val)
 
     /* Check if DPM is present.*/
     if (!dpm_hdr->num) {
-        val->print(PRINT_ERROR, "\nNo DPM present in the platform", 0);
+        val->print(PRINT_ERROR, "\n\t\rNo DPM present in the platform", 0);
         val->err_check_set(TEST_CHECKPOINT_2, TBSA_STATUS_NOT_FOUND);
         return;
     }
@@ -66,14 +67,16 @@ void test_payload(tbsa_val_api_t *val)
         }
 
         if (dpm_desc->unlock_token == TOKEN_PASSWD) {
+            unlock_token_password = TRUE;
+
             /* Compare if the password size is greater than 16 bytes (128-bits) */
             if (dpm_desc->passwd_size < 16) {
-                val->print(PRINT_ERROR, "\n        Password size for unlock token is less than 128 bits for DPM %d", dpm_desc->index);
+                val->print(PRINT_ERROR, "\n\r\tPassword size for unlock token is less than 128 bits for DPM %d", dpm_desc->index);
                 val->set_status(RESULT_FAIL(TBSA_STATUS_ERROR));
                 return;
             }
             if (dpm_hdr->num == 1) {
-                val->print(PRINT_DEBUG, "\n        Unique passwd unlock token since only one DPM is present", 0);
+                val->print(PRINT_DEBUG, "\n\r\tUnique password unlock token since only one DPM is present", 0);
                 val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
                 return;
             }
@@ -117,7 +120,7 @@ void test_payload(tbsa_val_api_t *val)
                         return;
                     }
                     if ((dpm_status & dpm_enable) != dpm_enable) {
-                        val->print(PRINT_ERROR, "\n        Password of DPM %d was able to unlock DPM", dpm_desc->index);
+                        val->print(PRINT_ERROR, "\n\r\tPassword of DPM %d was able to unlock DPM", dpm_desc->index);
                         val->print(PRINT_ERROR, "%d", target_dpm_desc->index);
                         val->set_status(RESULT_FAIL(TBSA_STATUS_SUCCESS));
                         return;
@@ -128,7 +131,13 @@ void test_payload(tbsa_val_api_t *val)
         }
     }
 
-    val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
+    if (unlock_token_password) {
+        val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
+    } else {
+        val->set_status(RESULT_SKIP(TBSA_STATUS_NOT_FOUND));
+        val->print(PRINT_ALWAYS, "\n\r\tDPM available are not TOKEN PASSWORD based", 0);
+    }
+
     return;
 }
 
