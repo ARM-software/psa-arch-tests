@@ -20,7 +20,7 @@ For more information on Architecture Test Suite specification, refer the [Valida
 ## Release Update
  - Release Version - 0.5
  - Code Quality - Alpha. This indicates the suite is in development and it contains tests which have not been validated on any platform. Please use this opportunity to suggest enhancements and point out errors.
- - Current release contains **Crypto tests** that are written for the crypto service APIs defined in the [psa/crypto.h](../../api-specs/a-rot/include/crypto.h)
+ - Current release contains **Crypto tests** that are written for the crypto service APIs defined in the [crypto.h](../../api-specs/include/crypto.h)
  - This test suite is not a substitute for design verification.
  - To review the test logs, Arm licensees can contact Arm directly through their partner managers.
 

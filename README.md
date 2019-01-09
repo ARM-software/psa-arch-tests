@@ -9,6 +9,10 @@ The Platform Security Architecture (PSA) is a holistic set of threat models, sec
 
 For more information, visit the PSA webpage [here](https://developer.arm.com/products/architecture/platform-security-architecture)
 
+### PSA APIs specifications
+
+PSA APIs reference header files are located at [api-specs](api-specs/include) directory.
+
 ## Architecture test suite
 
 The current implementation of the Architecture test suite contains tests for following PSA specifications. Arm licensees may contact their partner manager to obtain a copy of this specification. <br />
