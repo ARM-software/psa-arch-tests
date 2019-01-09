@@ -24,7 +24,8 @@ INCLUDE= -I$(SOURCE)/val/common/ \
          -I$(SOURCE)/platform/targets/$(TARGET)/nspe/ \
          -I$(BUILD)/platform/$(TARGET)/ \
          -I$(SUITE_IN)/$(TEST)/\
-         -I$(SUITE_IN)/include/
+         -I$(SUITE_IN)/include/ \
+         -I$(BUILD)/val/
 
 VPATH=$(SOURCE)/val/common/:\
       $(SOURCE)/val/nspe/:\

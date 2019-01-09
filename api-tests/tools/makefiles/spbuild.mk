@@ -36,7 +36,7 @@ CC_SOURCE += driver_partition.c val_driver_service_apis.c
 
 ifeq (${SUITE}, ipc)
 CC_SOURCE += client_partition.c server_partition.c
-all:  mkdir gen_secure_tests_list compile_c compile_asm driver_partition.a client_partition.a server_partition.a
+all:  mkdir compile_c compile_asm driver_partition.a client_partition.a server_partition.a
 else
 all:  mkdir compile_c compile_asm driver_partition.a
 endif
@@ -44,9 +44,6 @@ endif
 
 mkdir:
 	@mkdir -p $(BUILD)/partition/
-
-gen_secure_tests_list:
-	@perl $(SOURCE)/tools/scripts/gen_secure_tests_list.pl $(BUILD) $(SUITE_OUT)/.testlist.txt
 
 compile_c: $(CC_SOURCE:%.c=$(BUILD)/partition/%.o)
 compile_asm: $(AS_SOURCE:%.s=$(BUILD)/partition/%.o)

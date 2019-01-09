@@ -17,13 +17,11 @@
 #ifndef _TEST_C014_CLIENT_TESTS_H_
 #define _TEST_C014_CLIENT_TESTS_H_
 
-#ifdef NONSECURE_TEST_BUILD
-#include "val.h"
-#else
-#include "val/common/val_client_defs.h"
-#endif
-
 #include "val_crypto.h"
+
+#define test_entry CONCAT(test_entry_,c014)
+#define val CONCAT(val,test_entry)
+#define psa CONCAT(psa,test_entry)
 
 extern val_api_t *val;
 extern psa_api_t *psa;

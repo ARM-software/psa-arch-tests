@@ -126,6 +126,7 @@ int val_copy_elf(uint32_t saddr, uint32_t *info_addr)
 **/
 val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
 {
+#ifndef TEST_COMBINE_ARCHIVE
     test_header_t   test_header;
     addr_t          flash_addr = combine_test_binary_addr;
 
@@ -214,6 +215,41 @@ val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
 
     *test_id = test_header.test_id;
     return VAL_STATUS_SUCCESS;
+
+#else /* TEST_COMBINE_ARCHIVE */
+
+    int             i;
+    val_test_info_t test_list[] = {
+#include "test_entry_list.inc"
+                                  {VAL_INVALID_TEST_ID, NULL}
+                                  };
+
+    for (i = 0; i < (sizeof(test_list)/sizeof(test_list[0])); i++)
+    {
+        if (test_id_prev == VAL_INVALID_TEST_ID)
+        {
+            *test_id = test_list[i].test_id;
+            g_test_info_addr = (addr_t) test_list[i].entry_addr;
+            return VAL_STATUS_SUCCESS;
+        }
+        else if (test_id_prev == test_list[i].test_id)
+        {
+            *test_id = test_list[i+1].test_id;
+            g_test_info_addr = (addr_t) test_list[i+1].entry_addr;
+            return VAL_STATUS_SUCCESS;
+        }
+        else if (test_list[i].test_id == VAL_INVALID_TEST_ID)
+        {
+            val_print(PRINT_DEBUG, "\n\nNo more valid tests found. Exiting.", 0);
+            *test_id = VAL_INVALID_TEST_ID;
+            return VAL_STATUS_SUCCESS;
+        }
+    }
+
+    *test_id = VAL_INVALID_TEST_ID;
+    val_print(PRINT_ERROR, "\n\nError: No more valid tests found. Exiting.", 0);
+    return VAL_STATUS_LOAD_ERROR;
+#endif /* TEST_COMBINE_ARCHIVE */
 }
 
 /**
@@ -224,7 +260,11 @@ val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
 **/
 val_status_t val_get_test_entry_addr(addr_t *paddr)
 {
+#ifndef TEST_COMBINE_ARCHIVE
     *paddr = (addr_t)(((val_test_info_t *)g_test_info_addr)->entry_addr);
+#else
+    *paddr = g_test_info_addr;
+#endif
     return VAL_STATUS_SUCCESS;
 }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
 **/
 
-ENTRY(acs_test_info)
+ENTRY(TEST_START)
 
 TEST_START = 0x2004F000;
 

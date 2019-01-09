@@ -16,8 +16,8 @@
 **/
 
 #include "client_partition.h"
-val_api_t *val = &val_api;
-psa_api_t *psa = &psa_api;
+val_api_t *val_client_sp = &val_api;
+psa_api_t *psa_client_sp = &psa_api;
 
 void client_main(void)
 {
