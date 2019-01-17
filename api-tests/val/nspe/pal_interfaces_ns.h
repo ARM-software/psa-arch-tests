@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -151,5 +151,37 @@ int pal_nvmem_write_ns(addr_t base, uint32_t offset, void *buffer, int size);
  *               valist  : variable argument list
  *   @return   - error status
 **/
-uint32_t pal_crypto_function(int type, va_list valist);
+int32_t pal_crypto_function(int type, va_list valist);
+
+/**
+ *   @brief    - This API will call the requested internal trusted storage function
+ *   @param    - type    : function code
+ *               valist  : variable argument list
+ *   @return   - error status
+**/
+uint32_t pal_its_function(int type, va_list valist);
+
+/**
+ *   @brief    - This API will call the requested protected storage function
+ *   @param    - type    : function code
+ *               valist  : variable argument list
+ *   @return   - error status
+**/
+uint32_t pal_ps_function(int type, va_list valist);
+
+/**
+ *   @brief    - This API will call the requested attestation function
+ *   @param    - type    : function code
+ *               valist  : variable argument list
+ *   @return   - error status
+**/
+int32_t pal_attestation_function(int type, va_list valist);
+
+/**
+ *   @brief    - Terminates the simulation at the end of all tests completion.
+ *               By default, it put cpus into power down mode.
+ *   @param    - void
+ *   @return   - void
+**/
+void pal_terminate_simulation(void);
 #endif

@@ -1,4 +1,4 @@
-# * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,11 +27,19 @@ INCLUDE= -I$(SOURCE)/val/common/ \
          -I$(SUITE_IN)/include/ \
          -I$(BUILD)/val/
 
+ifeq (${SUITE}, protected_storage)
+INCLUDE += -I$(SUITE_IN)/../internal_trusted_storage/$(TEST)
+endif
+
 VPATH=$(SOURCE)/val/common/:\
       $(SOURCE)/val/nspe/:\
       $(SOURCE)/val/spe/:\
       $(SUITE_IN)/$(TEST)/:\
-      $(SUITE_IN)/include/
+      $(SUITE_IN)/include/:
+
+ifeq (${SUITE}, protected_storage)
+VPATH += $(SUITE_IN)/../internal_trusted_storage/$(TEST)/
+endif
 
 
 all:  mkdir compile_c_nspe compile_asm_nspe test.elf compile_c_spe compile_asm_spe
@@ -53,7 +61,7 @@ compile_c_spe: $(CC_SOURCE_SPE:%.c=$(SUITE_OUT)/$(TEST)/%_spe.o)
 compile_asm_spe: $(AS_SOURCE_SPE:%.s=$(SUITE_OUT)/$(TEST)/%_spe.o)
 
 $(SUITE_OUT)/$(TEST)/%_spe.o : %.c
-	$(CC) -o $@ -c $<
+	$(CC) -DSPE_BUILD -o $@ -c $<
 
 $(SUITE_OUT)/$(TEST)/%_spe.o : %.s
 	$(AS) -o $@ $<
@@ -62,7 +70,6 @@ test.elf:
 ifeq (${TOOLCHAIN}, GNUARM)
 	$(LD) -Xlinker -Map=$(SUITE_OUT)/$(TEST)/test.map -o $(SUITE_OUT)/$(TEST)/test.elf -T$(SUITE_OUT)/.test.linker $(SUITE_OUT)/$(TEST)/*_nspe.o
 else
-	cpp -x assembler-with-cpp -w -E -o $(SUITE_OUT)/.test.sct.tmp $(SUITE_OUT)/.test.sct ; cp $(SUITE_OUT)/.test.sct.tmp  $(SUITE_OUT)/.test.sct
 	$(LD)  --scatter=$(SUITE_OUT)/.test.sct  --list=$(SUITE_OUT)/$(TEST)/test.map -o $(SUITE_OUT)/$(TEST)/test.elf  $(SUITE_OUT)/$(TEST)/*_nspe.o
 endif
 	$(DS)  $(SUITE_OUT)/$(TEST)/test.elf >  $(SUITE_OUT)/$(TEST)/test.disass

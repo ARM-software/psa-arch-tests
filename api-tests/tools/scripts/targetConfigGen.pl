@@ -37,8 +37,6 @@
 # NOTE: Only C-style single line commenting is permitted inside targetConfig.cfg
 #---------------------------------------------------------------------
 
-use List::MoreUtils qw(uniq);
-
 print "\n>>>> Generating targetConfig data base... \n";
 $source=$ARGV[0];
 $build=$ARGV[1];
@@ -54,6 +52,11 @@ if($final_output =~ /([0-9a-zA-Z_]+)$/) {
 }
 
 @unique_devices = undef;
+
+sub uniq {
+    my %seen;
+    grep !$seen{$_}++, @_;
+}
 
 open(IN, $targetConfigPath) or die "Unable to open $targetConfigPath $!";
 open(OUT, '>', $output_c) or die "Unable to open: $!";
@@ -229,7 +232,7 @@ print OUT "fprintf\(fp\, \"#endif \\n\"\)\;\n";
 print OUT "\nreturn 0;\}\/\/int main";
 
 #generate target_database.h file
-print "gcc $output_c -o $build/platform/$target/targetConfigGen -I$source/val/nspe -I$source/val/common\n";
-system("gcc $output_c -o $build/platform/$target/targetConfigGen -I$source/val/nspe -I$source/val/common") && die ("Failed to compile targetConfigGen.c \n");
+print "gcc -DTARGET_CFG_BUILD $output_c -o $build/platform/$target/targetConfigGen -I$source/val/nspe -I$source/val/common -I$source/platform/targets/$target/nspe/\n";
+system("gcc -DTARGET_CFG_BUILD $output_c -o $build/platform/$target/targetConfigGen -I$source/val/nspe -I$source/val/common -I$source/platform/targets/$target/nspe/") && die ("Failed to compile targetConfigGen.c \n");
 print "./$build/platform/$target/targetConfigGen\n";
 system("./$build/platform/$target/targetConfigGen ") && die ("Failed to generate targetConfig data base \n");

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,7 +29,7 @@ int pal_wd_cmsdk_init(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us
     /* Disable Timer */
     ((wd_timer_t *)base_addr)->CTRL = 0x0;
 
-    if (time_us == 0 )
+    if (time_us == 0)
     {
         ((wd_timer_t *)base_addr)->LOAD = 0;
     }
@@ -48,10 +48,8 @@ int pal_wd_cmsdk_init(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us
 **/
 int pal_wd_cmsdk_enable(addr_t base_addr)
 {
-    /* Enable Interrupt */
-    ((wd_timer_t *)base_addr)->CTRL = Watchdog_CTRL_INTEN_Msk;
-    /* Enable Reset */
-    ((wd_timer_t *)base_addr)->CTRL |= Watchdog_CTRL_RESEN_Msk;
+    /* Enable counter by enabling intr and reset */
+     ((wd_timer_t *)base_addr)->CTRL = (Watchdog_CTRL_INTEN_Msk | Watchdog_CTRL_RESEN_Msk);
 
     return 0;
 }

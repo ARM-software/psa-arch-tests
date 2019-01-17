@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +15,8 @@
  * limitations under the License.
 **/
 
-#ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
 #include "val_target.h"
-#else
-#include "val/common/val_client_defs.h"
-#include "val/spe/val_partition_common.h"
-#endif
-
 #include "test_c010.h"
 #include "test_data.h"
 #include "val_crypto.h"
@@ -34,35 +28,35 @@ client_test_t test_c010_crypto_list[] = {
     NULL,
 };
 
-int g_test_count;
+static int g_test_count = 1;
 
 int32_t psa_get_key_lifetime_test(security_t caller)
 {
-    int32_t             status = VAL_STATUS_SUCCESS;
     uint8_t             *key_data;
     psa_key_policy_t    policy;
     int                 num_checks = sizeof(check1)/sizeof(check1[0]);
-    uint32_t            i;
+    int32_t             i, status;
     psa_key_lifetime_t  lifetime;
 
-    g_test_count = 1;
-
     /* Initialize the PSA crypto library*/
-    if (val->crypto_function(VAL_CRYPTO_INIT) != PSA_SUCCESS)
-    {
-        return VAL_STATUS_INIT_FAILED;
-    }
-
-    /* Initialize a key policy structure to a default that forbids all
-     * usage of the key
-     */
-    val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
+    status = val->crypto_function(VAL_CRYPTO_INIT);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
 
     /* Set the key data buffer to the input base on algorithm */
     for (i = 0; i < num_checks; i++)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
+
+        /* Initialize a key policy structure to a default that forbids all
+         * usage of the key
+         */
+        val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
+
+        /* Setting up the watchdog timer for each check */
+        status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
+        TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
+
         if (PSA_KEY_TYPE_IS_RSA(check1[i].key_type))
          {
             if (check1[i].key_type == PSA_KEY_TYPE_RSA_KEYPAIR)
@@ -98,47 +92,25 @@ int32_t psa_get_key_lifetime_test(security_t caller)
         val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check1[i].usage,
                                                                         check1[i].key_alg);
 
-        /* Set the usage policy on a key slot */
-        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_slot, &policy);
-        if (status != PSA_SUCCESS)
-        {
-            val->print(PRINT_ERROR, "\tPSA set key policy failed\n", 0);
-            return status;
-        }
+        /* Allocate a key slot for a transient key */
+        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check1[i].key_type,
+                                                   check1[i].key_length, &check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(3));
 
-        /* Change the lifetime of a key slot */
-        status = val->crypto_function(VAL_CRYPTO_SET_KEY_LIFETIME, check1[i].key_slot,
-                                                               check1[i].lifetime);
-        if (status != PSA_SUCCESS)
-        {
-            val->print(PRINT_ERROR, "\tPSA set key lifetime failed\n", 0);
-            return status;
-        }
+        /* Set the usage policy on a key slot */
+        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_handle, &policy);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
         /* Import the key data into the key slot */
-        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, check1[i].key_slot,
-                                            check1[i].key_type, key_data, check1[i].key_length);
-        if (status != PSA_SUCCESS)
-        {
-            val->print(PRINT_ERROR, "\tPSA import key failed\n", 0);
-            return status;
-        }
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, check1[i].key_handle,
+                                      check1[i].key_type, key_data, check1[i].key_length);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
         /* Get the lifetime of a key slot */
-        status = val->crypto_function(VAL_CRYPTO_GET_KEY_LIFETIME, check1[i].key_slot,
-                                                                            &lifetime);
-        if (status != PSA_SUCCESS)
-        {
-            val->print(PRINT_ERROR, "\tPSA get key lifetime failed\n", 0);
-            return status;
-        }
+        status = val->crypto_function(VAL_CRYPTO_GET_KEY_LIFETIME, check1[i].key_handle, &lifetime);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
-        if (lifetime != check1[i].lifetime)
-        {
-            val->print(PRINT_ERROR, "\tKey lifetime mismatch\n", 0);
-            return VAL_STATUS_DATA_MISMATCH;
-        }
-
+        TEST_ASSERT_EQUAL(lifetime, check1[i].lifetime, TEST_CHECKPOINT_NUM(7));
     }
 
     return VAL_STATUS_SUCCESS;
@@ -146,36 +118,52 @@ int32_t psa_get_key_lifetime_test(security_t caller)
 
 int32_t psa_get_key_lifetime_negative_test(security_t caller)
 {
-    int32_t             status = VAL_STATUS_SUCCESS;
     int                 num_checks = sizeof(check2)/sizeof(check2[0]);
-    uint32_t            i;
+    int32_t             i, status;
     psa_key_lifetime_t  lifetime;
     psa_key_policy_t    policy;
 
     /* Initialize the PSA crypto library*/
-    if (val->crypto_function(VAL_CRYPTO_INIT) != PSA_SUCCESS)
-    {
-        return VAL_STATUS_INIT_FAILED;
-    }
-
-    /* Initialize a key policy structure to a default that forbids all
-    * usage of the key
-    */
-    val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
+    status = val->crypto_function(VAL_CRYPTO_INIT);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
 
     for (i = 0; i < num_checks; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
-        val->print(PRINT_TEST, check2[i].test_desc, 0);
+        /* Initialize a key policy structure to a default that forbids all
+         * usage of the key
+         */
+        val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
+
+        /* Setting up the watchdog timer for each check */
+        status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
+        TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
+
+        val->print(PRINT_TEST, "[Check %d] Test psa_get_key_lifetime with invalid key handle\n",
+                                                                                  g_test_count++);
+        /* Get the lifetime of a key slot */
+        status = val->crypto_function(VAL_CRYPTO_GET_KEY_LIFETIME, check2[i].key_handle, &lifetime);
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));
+
+        val->print(PRINT_TEST, "[Check %d] Test psa_get_key_lifetime with zero as key handle\n",
+                                                                                  g_test_count++);
+        /* Get the lifetime of a key slot */
+        status = val->crypto_function(VAL_CRYPTO_GET_KEY_LIFETIME, 0, &lifetime);
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
+
+        val->print(PRINT_TEST, "[Check %d] Test psa_get_key_lifetime with empty key handle\n",
+                                                                                  g_test_count++);
+        /* Allocate a key slot for a transient key */
+        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check2[i].key_type,
+                                                   check2[i].key_length, &check2[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+
+        /* Set the usage policy on a key slot */
+        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check2[i].key_handle, &policy);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
         /* Get the lifetime of a key slot */
-        status = val->crypto_function(VAL_CRYPTO_GET_KEY_LIFETIME, check2[i].key_slot,
-                                                               &lifetime);
-        if (status != check2[i].expected_status)
-        {
-            val->print(PRINT_ERROR, "\tPSA get key lifetime failed\n", 0);
-            return VAL_STATUS_INVALID;
-        }
+        status = val->crypto_function(VAL_CRYPTO_GET_KEY_LIFETIME, check2[i].key_handle, &lifetime);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
      }
 
      return VAL_STATUS_SUCCESS;

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,17 @@
 #include "val_target.h"
 #include "target_database.h"
 
+#ifdef USE_RAW_PRINT_FOR_DRIVER_PARTITION
+#define val_print(x, y, z)                        \
+       do {                                       \
+           if (x >= VERBOSE)                      \
+              val_print_sf(y,z);                  \
+       } while(0)
+#else
 __UNUSED STATIC_DECLARE val_status_t val_print
                         (print_verbosity_t verbosity, char *string, uint32_t data);
+#endif
+
 /**
     @brief    - Returns the base address of target configuration block database.
     @param    - blob     : Populates the base address

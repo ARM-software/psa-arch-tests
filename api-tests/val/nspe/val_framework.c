@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -113,7 +113,7 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
 
     if (boot.state == BOOT_NOT_EXPECTED || boot.state == BOOT_EXPECTED_CRYPTO)
     {
-        val_print(PRINT_TEST,"[Info] Executing tests form non-secure\n", 0);
+        val_print(PRINT_TEST,"[Info] Executing tests from non-secure\n", 0);
         while (tests_list[i] != NULL)
         {
             if (server_hs == TRUE)
@@ -125,7 +125,7 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
                 if (VAL_ERROR(status))
                 {
                     val_set_status(RESULT_FAIL(status));
-                    val_print(PRINT_ERROR,"[Check%d] START\n", i);
+                    val_print(PRINT_DEBUG,"[Check%d] START\n", i);
                     return status;
                 }
                 else
@@ -144,18 +144,27 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
             }
 
             status = test_status ? test_status:status;
-            if (VAL_ERROR(status))
+            if (IS_TEST_SKIP(status))
+            {
+                val_set_status(status);
+                if (server_hs == TRUE)
+                    val_print(PRINT_DEBUG, "[Check%d] SKIPPED\n", i);
+                return status;
+            }
+            else if (VAL_ERROR(status))
             {
                 val_set_status(RESULT_FAIL(status));
                 if (server_hs == TRUE)
-                val_print(PRINT_ERROR,"[Check%d] FAILED\n", i);
+                    val_print(PRINT_DEBUG, "[Check%d] FAILED\n", i);
+
                 return status;
             }
             else
             {
                 if (server_hs == TRUE)
-                val_print(PRINT_DEBUG,"[Check%d] PASSED\n", i);
+                    val_print(PRINT_DEBUG, "[Check%d] PASSED\n", i);
             }
+
             i++;
         }
    }
@@ -165,7 +174,7 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
        status = VAL_STATUS_SUCCESS;
        if (boot.state != BOOT_EXPECTED_S)
        {
-            val_print(PRINT_DEBUG,"[Check1] PASSED\n", 0);
+            val_print(PRINT_DEBUG, "[Check1] PASSED\n", 0);
        }
    }
    return status;
@@ -210,6 +219,11 @@ val_status_t val_switch_to_secure_client(uint32_t test_num)
 
        /* Retrive secure client test status */
        status = val_get_secure_test_result(&handle);
+       if (IS_TEST_SKIP(status))
+       {
+            val_set_status(status);
+            return status;
+       }
        if (VAL_ERROR(status))
        {
            goto exit;
@@ -219,7 +233,7 @@ val_status_t val_switch_to_secure_client(uint32_t test_num)
    else
    {
        /* If we are here means, we are in third run of this test */
-       val_print(PRINT_DEBUG,"[Check1] PASSED\n", 0);
+       val_print(PRINT_DEBUG, "[Check1] PASSED\n", 0);
        return VAL_STATUS_SUCCESS;
    }
 
@@ -245,7 +259,6 @@ val_status_t val_execute_secure_test_func(psa_handle_t *handle, test_info_t test
     psa_status_t    status_of_call = PSA_SUCCESS;
 
     *handle = pal_ipc_connect(sid, 0);
-
     if (*handle < 0)
     {
         val_print(PRINT_ERROR, "Could not connect SID. Handle=%x\n", *handle);
@@ -257,13 +270,13 @@ val_status_t val_execute_secure_test_func(psa_handle_t *handle, test_info_t test
     psa_invec data[1] = {{&test_data, sizeof(test_data)}};
 
     status_of_call = pal_ipc_call(*handle, data, 1, NULL, 0);
-
     if (status_of_call != PSA_SUCCESS)
     {
         status = VAL_STATUS_CALL_FAILED;
         val_print(PRINT_ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
         pal_ipc_close(*handle);
     }
+
     return status;
 }
 
@@ -328,6 +341,7 @@ uint32_t val_report_status(void)
             break;
 
         case TEST_SKIP:
+            state = TEST_SKIP;
             val_print(PRINT_ALWAYS, "TEST RESULT: SKIPPED (Skip Code=0x%x)\n", status);
             break;
 
@@ -429,6 +443,7 @@ void val_test_init(uint32_t test_num, char8_t *desc, uint32_t test_bitfield)
                                   (uint32_t *)sizeof(miscellaneous_desc_t));
    if (VAL_ERROR(status))
    {
+       val_print(PRINT_ERROR, "val_target_get_config failed Error=0x%x\n", status);
        return;
    }
 
@@ -468,14 +483,19 @@ void val_test_init(uint32_t test_num, char8_t *desc, uint32_t test_bitfield)
 
 void val_test_exit(void)
 {
-    val_wd_timer_disable();
+    val_status_t    status;
 
+    val_wd_timer_disable();
+    status = val_get_status();
     /* return if test skipped or failed */
-    if (IS_TEST_SKIP(val_get_status()) || IS_TEST_FAIL(val_get_status()))
+    if (IS_TEST_FAIL(status) || IS_TEST_SKIP(status))
     {
-       return;
+        return;
     }
-    val_set_status(RESULT_END(VAL_STATUS_SUCCESS));
+    else
+    {
+        val_set_status(RESULT_END(VAL_STATUS_SUCCESS));
+    }
 }
 
 /**

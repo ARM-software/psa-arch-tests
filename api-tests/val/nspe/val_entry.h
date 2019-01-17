@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,10 +21,10 @@
 #include "val_framework.h"
 
 #define PSA_ACS_MAJOR_VER    0
-#define PSA_ACS_MINOR_VER    5
+#define PSA_ACS_MINOR_VER    7
 
 /**
-    @brief    - PSA C main function, does VAL init and calls test dispatcher
+    @brief    - PSA Test Suite C main function, does VAL init and calls test dispatcher
     @param    - None
     @return   - void
 **/

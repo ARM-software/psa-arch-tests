@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ typedef struct {
     psa_status_t            expected_status;
 } test_data;
 
-test_data check1[] = {
+static test_data check1[] = {
 {"Test psa_hash_abort with MD2 algorithm\n",
  PSA_ALG_MD2, PSA_SUCCESS,
 },

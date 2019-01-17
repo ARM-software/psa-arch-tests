@@ -1,4 +1,4 @@
-# * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,7 @@ VPATH=$(SOURCE)/val/common/:\
       $(SOURCE)/val/spe/
 
 SRC_COMMON=
-SRC_NS= val_entry.c val_dispatcher.c val_framework.c val_crypto.c val_interfaces.c val_peripherals.c val_target.c
+SRC_NS= val_entry.c val_dispatcher.c val_framework.c val_crypto.c val_interfaces.c val_peripherals.c val_target.c val_protected_storage.c val_internal_trusted_storage.c val_attestation.c
 
 all: build
 

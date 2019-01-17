@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -88,13 +88,22 @@ void client_main(void)
                     break;
                 default:
                     val_print(PRINT_ERROR, "Unexpected message type %d!", (int)(msg.type));
-                    while (1);
+                    TEST_PANIC();
             }
+        }
+        /* Server_partition requests client to connect to SERVER_SECURE_CONNECT_ONLY_SID */
+        else if (signals & PSA_DOORBELL)
+        {
+            if (psa_connect(SERVER_SECURE_CONNECT_ONLY_SID, 2) != PSA_CONNECTION_REFUSED)
+            {
+               val_print(PRINT_ERROR, "psa_connect failed \n", 0);
+            }
+            psa_clear();
         }
         else
         {
             val_print(PRINT_ERROR, "In client_partition, Control shouldn't have reach here\n", 0);
-            while (1);
+            TEST_PANIC();
         }
     }
 }

@@ -1,0 +1,82 @@
+/** @file
+ * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * SPDX-License-Identifier : Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+**/
+
+#include "val_interfaces.h"
+#include "val_target.h"
+#include "test_s009.h"
+#ifdef ITS_TEST
+#include "test_its_data.h"
+#elif PS_TEST
+#include "test_ps_data.h"
+#endif
+
+#define TEST_BUFF_SIZE 20
+
+client_test_t test_s009_sst_list[] = {
+    NULL,
+    psa_sst_set_bad_pointer_check,
+    NULL,
+};
+
+static psa_sst_uid_t uid = UID_BASE_VALUE + 10;
+static uint8_t write_buff[TEST_BUFF_SIZE] = {0x99, 0x01, 0x02, 0x03, 0x04, 0x23, 0xF6, 0x07, 0x08, \
+                                  0x0D, 0x70, 0xA1, 0xFF, 0xFF, 0x14, 0x73, 0x46, 0x97, 0xE8, 0xDD};
+
+int32_t psa_sst_set_bad_pointer_check(security_t caller)
+{
+    uint32_t status;
+
+    /* Set data for uid with length 0 and NULL pointer */
+    val->print(PRINT_TEST, "[Check 1] Call Set api with NULL write buffer\n", 0);
+    status = SST_FUNCTION(s009_data[1].api, uid, 0, NULL, 0);
+    TEST_ASSERT_EQUAL(status, s009_data[1].status, TEST_CHECKPOINT_NUM(1));
+
+    /* Call the GET_INFO function and match the attributes */
+    status = SST_FUNCTION(s009_data[2].api, uid, &info);
+    TEST_ASSERT_EQUAL(status, s009_data[2].status, TEST_CHECKPOINT_NUM(2));
+
+    /* Set data for uid with length 0 and valid write buffer */
+    val->print(PRINT_TEST, "[Check 2] Create UID with zero data length\n", 0);
+    status = SST_FUNCTION(s009_data[3].api, uid, 0, write_buff, 0);
+    TEST_ASSERT_EQUAL(status, s009_data[3].status, TEST_CHECKPOINT_NUM(3));
+
+    /* Set data for uid with length 0 and NULL pointer */
+    val->print(PRINT_TEST, "[Check 3] Try to set NULL buffer for uid with data length\n", 0);
+    status = SST_FUNCTION(s009_data[4].api, uid, 0, NULL, 0);
+    TEST_ASSERT_EQUAL(status, s009_data[4].status, TEST_CHECKPOINT_NUM(4));
+
+    /* Call the GET_INFO function and match the attributes */
+    status = SST_FUNCTION(s009_data[5].api, uid, &info);
+    TEST_ASSERT_EQUAL(status, s009_data[5].status, TEST_CHECKPOINT_NUM(5));
+    TEST_ASSERT_EQUAL(info.size, 0, TEST_CHECKPOINT_NUM(6));
+
+    /* Call get api with NULL read buffer and valid uid */
+    val->print(PRINT_TEST, "[Check 4] Call get api with NULL read buffer\n", 0);
+    status = SST_FUNCTION(s009_data[7].api, uid, 0, 0, NULL);
+    TEST_ASSERT_EQUAL(status, s009_data[7].status, TEST_CHECKPOINT_NUM(7));
+
+    /* Call the GET_INFO function with NULL info pointer */
+    val->print(PRINT_TEST, "[Check 5] Call get_info api with NULL info pointer\n", 0);
+    status = SST_FUNCTION(s009_data[8].api, uid, NULL);
+    TEST_ASSERT_EQUAL(status, s009_data[8].status, TEST_CHECKPOINT_NUM(8));
+
+    /* Remove the uid  */
+    status = SST_FUNCTION(s009_data[9].api, uid);
+    TEST_ASSERT_EQUAL(status, s009_data[9].status, TEST_CHECKPOINT_NUM(9));
+
+    return VAL_STATUS_SUCCESS;
+}

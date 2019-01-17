@@ -13,16 +13,9 @@ The Architecture Test Suite is a set of examples of the invariant behaviours tha
 
 The Architecture Test Suite contains the tests that are self-checking, portable C-based tests with directed stimulus.
 
-The tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license allowing for external contribution.
+The tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license allowing for external contribution. This test suite is not a substitute for design verification. To review the test logs, Arm licensees can contact Arm directly through their partner managers.
 
-For more information on Architecture Test Suite specification, refer the [Validation Methodology](../docs/Arm_PSA_FF_Arch_Test_Validation_Methodology.pdf) document.
-
-## Release Update
- - Release Version - 0.5
- - Code Quality - Alpha. This indicates the suite is in development and it contains tests which have not been validated on any platform. Please use this opportunity to suggest enhancements and point out errors.
- - Current release contains **Crypto tests** that are written for the crypto service APIs defined in the [crypto.h](../../api-specs/include/crypto.h)
- - This test suite is not a substitute for design verification.
- - To review the test logs, Arm licensees can contact Arm directly through their partner managers.
+For more information on Architecture Test Suite specification, refer the [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf) document.
 
 ## Tests Scenarios
 
@@ -39,7 +32,7 @@ Please make sure you have all required software installed as explained in the [s
 
 ### Porting steps
 
-Refer to the [Porting Guide](../docs/porting_guide.md) document for porting steps.
+Refer to the [PSA Developer APIs Test Suite Porting Guide](../docs/porting_guide_dev_apis.md) document for porting steps.
 
 ### Build steps
 
@@ -54,15 +47,15 @@ cd api-tests
 -   <platform_name> is the same as the name of the target specific directory created in the platform/targets/ directory.  <br />
 -   <cpu_architecture_version> is the Arm Architecture version name for which test binaries should be compiled. For example, Armv7M, Armv8M-Baseline and Armv8M-Mainline Architecture.  <br />
 -   <suite_name> is the suite name and it is same as the suite name available in test_suites/ directory. <br />
--   <include_path> is an additional directory to be included into compiler search path. **Note** - To run crypto tests, include path must point to path where "psa/crypto.h" is located in your build system.<br />
+-   <include_path> is an additional directory to be included into compiler search path. Note- You must provide Developer APIs header file implementation to Test Suite build system using this option. For example - To compiler Crypto tests, include path must point to path where "psa/crypto.h" is located in your build system.<br />
 -   <build_dir> is an output directory to keep build files.
 
 Refer ./tools/scripts/setup.sh --help to know more about options.
 
-*To compile crypto tests for fvp_mps2_cm4_mbedos platform*
+*To compile crypto tests for tgt_dev_apis_mbedos_fvp_mps2_m4 platform*
 ```
 cd api-tests
-./tools/scripts/setup.sh --target fvp_mps2_cm4_mbedos --cpu_arch armv7m --suite crypto --build BUILD_CRYPTO --include <include_path>
+./tools/scripts/setup.sh --target tgt_dev_apis_mbedos_fvp_mps2_m4 --cpu_arch armv7m --suite crypto --build BUILD_CRYPTO --include <include_path>
 ```
 
 ### Build output
@@ -100,5 +93,5 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2019, Arm Limited and Contributors. All rights reserved.*
 

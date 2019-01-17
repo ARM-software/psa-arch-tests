@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -164,7 +164,7 @@ val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
 
             if (test_header.start_marker == VAL_TEST_END_MARKER)
             {
-                val_print(PRINT_ERROR, "\n\nNo more valid tests found. Exiting..", 0);
+                val_print(PRINT_DEBUG, "\n\nNo more valid tests found. Exiting..", 0);
                 *test_id = VAL_INVALID_TEST_ID;
                 return VAL_STATUS_SUCCESS;
             }
@@ -194,14 +194,14 @@ val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
 
     if (test_header.start_marker == VAL_TEST_END_MARKER)
     {
-        val_print(PRINT_ERROR, "\n\nNo more valid tests found. Exiting.", 0);
+        val_print(PRINT_DEBUG, "\n\nNo more valid tests found. Exiting.", 0);
         *test_id = VAL_INVALID_TEST_ID;
         return VAL_STATUS_SUCCESS;
     }
 
     if (test_header.start_marker != VAL_TEST_START_MARKER)
     {
-        val_print(PRINT_ERROR, "\n\nNo valid test binary found. Exiting.", 0);
+        val_print(PRINT_ERROR, "\n\nError: No valid test binary found. Exiting.", 0);
         *test_id = VAL_INVALID_TEST_ID;
         return VAL_STATUS_LOAD_ERROR;
     }
@@ -293,11 +293,17 @@ char * val_get_comp_name(test_id_t test_id)
     switch (VAL_GET_COMP_NUM(test_id))
     {
         case VAL_FF_BASE:
-            return "\nRunning... IPC Suite";
+            return "IPC Suite";
         case VAL_CRYPTO_BASE:
-            return "\nRunning... Crypto Suite";
+            return "Crypto Suite";
+        case VAL_PROTECTED_STORAGE_BASE:
+            return "Protected Storage Suite";
+        case VAL_INTERNAL_TRUSTED_STORAGE_BASE:
+            return "Internal Trusted Storage Suite";
+        case VAL_INITIAL_ATTESTATION_BASE:
+            return "Attestation Suite";
         default:
-            return "No Component";
+            return "Unknown Suite";
     }
 }
 
@@ -334,7 +340,7 @@ void val_dispatcher(test_id_t test_id_prev)
         status = val_get_boot_flag(&boot.state);
         if (VAL_ERROR(status))
         {
-            break;
+            return;
         }
 
         /* Did last run test hang and system re-booted due to watchdog timeout and
@@ -348,6 +354,7 @@ void val_dispatcher(test_id_t test_id_prev)
             if (VAL_ERROR(status))
             {
                 val_print(PRINT_ERROR, "\n\tNVMEM read error", 0);
+                return;
             }
         }
         /* Did last run test hang and system reset due to watchdog timeout but
@@ -363,13 +370,18 @@ void val_dispatcher(test_id_t test_id_prev)
             if (VAL_ERROR(status))
             {
                 val_print(PRINT_ERROR, "\n\tNVMEM read error", 0);
+                return;
             }
         }
         else
         {
             status = val_test_load(&test_id, test_id_prev);
 
-            if (test_id == VAL_INVALID_TEST_ID || VAL_ERROR(status))
+            if (VAL_ERROR(status))
+            {
+                return;
+            }
+            else if (test_id == VAL_INVALID_TEST_ID)
             {
                 break;
             }
@@ -379,11 +391,12 @@ void val_dispatcher(test_id_t test_id_prev)
             if (VAL_ERROR(status))
             {
                 val_print(PRINT_ERROR, "\n\tNVMEM write error", 0);
-                break;
+                return;
             }
 
             if (VAL_GET_COMP_NUM(test_id_prev) != VAL_GET_COMP_NUM(test_id))
             {
+                val_print(PRINT_ALWAYS, "\nRunning.. ", 0);
                 val_print(PRINT_ALWAYS, val_get_comp_name(test_id), 0);
                 val_print(PRINT_ALWAYS, "\n******************************************\n", 0);
             }
@@ -394,7 +407,7 @@ void val_dispatcher(test_id_t test_id_prev)
                 status = val_set_boot_flag(BOOT_NOT_EXPECTED);
                 if (VAL_ERROR(status))
                 {
-                    break;
+                    return;
                 }
             }
             val_execute_test_fn();
@@ -406,7 +419,7 @@ void val_dispatcher(test_id_t test_id_prev)
         status = val_set_boot_flag(BOOT_UNKNOWN);
         if (VAL_ERROR(status))
         {
-            break;
+            return;
         }
 
         /* Prepare suite summary data structure */
@@ -414,7 +427,7 @@ void val_dispatcher(test_id_t test_id_prev)
         if (VAL_ERROR(status))
         {
             val_print(PRINT_ERROR, "\n\tNVMEM read error", 0);
-            break;
+            return;
         }
 
         switch (test_result)
@@ -437,7 +450,7 @@ void val_dispatcher(test_id_t test_id_prev)
         if (VAL_ERROR(status))
         {
             val_print(PRINT_ERROR, "\n\tNVMEM write error", 0);
-            break;
+            return;
         }
 
         test_id_prev = test_id;
@@ -446,7 +459,7 @@ void val_dispatcher(test_id_t test_id_prev)
         if (VAL_ERROR(status))
         {
             val_print(PRINT_ERROR, "\n\tNVMEM write error", 0);
-            break;
+            return;
         }
 
    } while(1);
@@ -458,14 +471,16 @@ void val_dispatcher(test_id_t test_id_prev)
        return;
    }
 
-   val_print(PRINT_ALWAYS, "\n\n************ REGRESSION SUMMARY **********\n", 0);
+   val_print(PRINT_ALWAYS, "\n************ ", 0);
+   val_print(PRINT_ALWAYS, val_get_comp_name(test_id_prev), 0);
+   val_print(PRINT_ALWAYS, " Report **********\n", 0);
    val_print(PRINT_ALWAYS, "TOTAL TESTS     : %d\n", test_count.pass_cnt + test_count.fail_cnt
             + test_count.skip_cnt + test_count.sim_error_cnt);
    val_print(PRINT_ALWAYS, "TOTAL PASSED    : %d\n", test_count.pass_cnt);
    val_print(PRINT_ALWAYS, "TOTAL SIM ERROR : %d\n", test_count.sim_error_cnt);
    val_print(PRINT_ALWAYS, "TOTAL FAILED    : %d\n", test_count.fail_cnt);
    val_print(PRINT_ALWAYS, "TOTAL SKIPPED   : %d\n", test_count.skip_cnt);
-   val_print(PRINT_ALWAYS, "\n******************************************\n", 0);
+   val_print(PRINT_ALWAYS, "******************************************\n", 0);
 }
 
 

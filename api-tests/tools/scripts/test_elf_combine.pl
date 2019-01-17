@@ -18,7 +18,6 @@
 
 use File::Find;
 use File::Basename;
-use List::MoreUtils 'uniq';
 
 print "\n>>>> Combining test ELFs... \n";
 

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +15,8 @@
  * limitations under the License.
 **/
 
-#ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
 #include "val_target.h"
-#else
-#include "val/common/val_client_defs.h"
-#include "val/spe/val_partition_common.h"
-#endif
-
 #include "test_c007.h"
 #include "test_data.h"
 #include "val_crypto.h"
@@ -34,34 +28,35 @@ client_test_t test_c007_crypto_list[] = {
     NULL,
 };
 
-int g_test_count;
+static int g_test_count = 1;
 
 int32_t psa_set_key_policy_test(security_t caller)
 {
-    int32_t          status = VAL_STATUS_SUCCESS;
     uint8_t          *key_data;
     psa_key_policy_t policy, expected_policy;
     int              num_checks = sizeof(check1)/sizeof(check1[0]);
-    uint32_t         i;
-
-    g_test_count = 1;
+    int32_t          i, status;
 
     /* Initialize the PSA crypto library*/
-    if (val->crypto_function(VAL_CRYPTO_INIT) != PSA_SUCCESS)
-    {
-        return VAL_STATUS_INIT_FAILED;
-    }
-
-    /* Initialize a key policy structure to a default that forbids all
-     * usage of the key
-     */
-    val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
+    status = val->crypto_function(VAL_CRYPTO_INIT);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
 
     /* Set the key data buffer to the input base on algorithm */
     for (i = 0; i < num_checks; i++)
     {
+
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
+
+        /* Initialize a key policy structure to a default that forbids all
+         * usage of the key
+         */
+        val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
+
+        /* Setting up the watchdog timer for each check */
+        status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
+        TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
+
         if (PSA_KEY_TYPE_IS_RSA(check1[i].key_type))
         {
             if (check1[i].key_type == PSA_KEY_TYPE_RSA_KEYPAIR)
@@ -97,38 +92,33 @@ int32_t psa_set_key_policy_test(security_t caller)
         val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check1[i].usage,
                                                                          check1[i].key_alg);
 
+        /* Allocate a key slot for a transient key */
+        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check1[i].key_type,
+                                                   check1[i].key_length, &check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+
         /* Set the usage policy on a key slot */
-        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_slot, &policy);
-        if (status != PSA_SUCCESS)
-        {
-            val->print(PRINT_ERROR, "\tPSA set key policy failed\n", 0);
-            return status;
-        }
+        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_handle, &policy);
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
+
+        if (check1[i].expected_status != PSA_SUCCESS)
+            continue;
 
         /* Import the key data into the key slot */
-        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, check1[i].key_slot, check1[i].key_type,
-                                                                key_data, check1[i].key_length);
-        if (status != PSA_SUCCESS)
-        {
-            val->print(PRINT_ERROR, "\tPSA import key failed\n", 0);
-            return status;
-        }
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, check1[i].key_handle,
+                                      check1[i].key_type, key_data, check1[i].key_length);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
         /*  Get the usage policy for a key slot */
-        status = val->crypto_function(VAL_CRYPTO_GET_KEY_POLICY, check1[i].key_slot,
-                                                                                &expected_policy);
-        if (status != PSA_SUCCESS)
-        {
-            val->print(PRINT_ERROR, "\tPSA get key policy failed\n", 0);
-            return status;
-        }
+        status = val->crypto_function(VAL_CRYPTO_GET_KEY_POLICY, check1[i].key_handle,
+                                      &expected_policy);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
-        if ((expected_policy.usage != check1[i].usage) ||
-            (expected_policy.alg !=  check1[i].key_alg))
-        {
-            val->print(PRINT_ERROR, "\tPolicy data Mismatch\n", 0);
-            return VAL_STATUS_DATA_MISMATCH;
-        }
+        /* Check if the usage is same as programmed */
+        TEST_ASSERT_EQUAL(expected_policy.usage, check1[i].usage, TEST_CHECKPOINT_NUM(7));
+
+        /* Check if the algorithm is same as programmed */
+        TEST_ASSERT_EQUAL(expected_policy.alg, check1[i].key_alg, TEST_CHECKPOINT_NUM(8));
     }
 
     return VAL_STATUS_SUCCESS;
@@ -136,16 +126,13 @@ int32_t psa_set_key_policy_test(security_t caller)
 
 int32_t psa_set_key_policy_negative_test(security_t caller)
 {
-    int32_t          status = VAL_STATUS_SUCCESS;
     int              num_checks = sizeof(check2)/sizeof(check2[0]);
-    uint32_t         i;
+    int32_t          i, status;
     psa_key_policy_t policy;
 
     /* Initialize the PSA crypto library*/
-    if (val->crypto_function(VAL_CRYPTO_INIT) != PSA_SUCCESS)
-    {
-        return VAL_STATUS_INIT_FAILED;
-    }
+    status = val->crypto_function(VAL_CRYPTO_INIT);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
 
     /* Initialize a key policy structure to a default that forbids all
     * usage of the key
@@ -154,20 +141,49 @@ int32_t psa_set_key_policy_negative_test(security_t caller)
 
     for (i = 0; i < num_checks; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
-        val->print(PRINT_TEST, check2[i].test_desc, 0);
+        val->print(PRINT_TEST, "[Check %d] Test psa_set_key_policy with unallocated key handle\n",
+                                                                                  g_test_count++);
+        /* Setting up the watchdog timer for each check */
+        status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
+        TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-       /* Set the usage policy on a key slot */
-       val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check2[i].usage,
+        /* Set the usage policy on a key slot */
+        val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check2[i].usage,
                                                                            check2[i].key_alg);
+        /* Set the usage policy on a key slot */
+        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check2[i].key_handle, &policy);
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));
 
-       /* Set the usage policy on a key slot */
-       status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check2[i].key_slot, &policy);
-       if (status != check2[i].expected_status)
-       {
-           val->print(PRINT_ERROR, "\tPSA set key policy should have failed but succeeded\n", 0);
-           return VAL_STATUS_ERROR;
-       }
+        val->print(PRINT_TEST, "[Check %d] Test psa_set_key_policy with zero as key handle\n",
+                                                                                  g_test_count++);
+        /* Set the usage policy on a key slot */
+        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, 0, &policy);
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
+
+        val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
+
+        /* Set the usage policy on a key slot */
+        val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check2[i].usage,
+                                                                           check2[i].key_alg);
+        val->print(PRINT_TEST, "[Check %d] Test psa_set_key_policy with already occupied handle\n",
+                                                                                  g_test_count++);
+        /* Allocate a key slot for a transient key */
+        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check2[i].key_type,
+                                                   check2[i].key_length, &check2[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+
+        /* Set the usage policy on a key slot */
+        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check2[i].key_handle, &policy);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
+
+        /* Import the key data into the key slot */
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, check2[i].key_handle,
+                                      check2[i].key_type, check2[i].key_data, check2[i].key_length);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+
+        /* Set the usage policy on a key slot */
+        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check2[i].key_handle, &policy);
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_OCCUPIED_SLOT, TEST_CHECKPOINT_NUM(8));
     }
 
     return VAL_STATUS_SUCCESS;

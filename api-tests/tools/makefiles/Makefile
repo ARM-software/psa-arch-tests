@@ -1,4 +1,4 @@
-# * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,13 +92,15 @@ else
 	@echo  " $(SUITE_OUT)/test_elf_combine.bin"
 endif
 	@echo  ""
-ifeq (${SUITE}, ipc)
+ifeq (${PSA_IPC_IMPLEMENTED}, 1)
 	@echo  "b) SPE files"
 	@echo  " $(BUILD)/partition/driver_partition.a"
+endif
+ifeq (${SUITE}, ipc)
 	@echo  " $(BUILD)/partition/client_partition.a"
 	@echo  " $(BUILD)/partition/server_partition.a"
-	@echo  ""
 endif
+	@echo  ""
 
 clean:
 	@echo  ">>>> Cleaning the build directory..."

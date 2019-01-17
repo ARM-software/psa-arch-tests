@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,9 @@
 
 #ifndef _CLIENT_PART_H_
 #define _CLIENT_PART_H_
-#include "val/common/val_client_defs.h"
-#include "val/spe/val_partition_common.h"
+
+#include "val_client_defs.h"
+#include "val_partition_common.h"
 
 typedef client_test_t (*client_test_list_t);
 

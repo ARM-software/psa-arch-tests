@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,6 @@ int32_t server_test_identity(void);
 int32_t server_test_spm_concurrent_connect_limit(void);
 int32_t server_test_psa_block_behave(void);
 int32_t server_test_psa_poll_behave(void);
-int32_t server_test_psa_wait_bitmask(void);
 
 server_test_t test_i002_server_tests_list[] = {
     NULL,
@@ -40,7 +39,6 @@ server_test_t test_i002_server_tests_list[] = {
     server_test_spm_concurrent_connect_limit,
     server_test_psa_block_behave,
     server_test_psa_poll_behave,
-    server_test_psa_wait_bitmask,
     NULL,
 };
 
@@ -70,7 +68,7 @@ int32_t server_test_connection_busy_and_reject(void)
     }
 
     /* Rejecting connection to check behaviour of PSA_CONNECTION_REFUSED */
-    psa_reply(msg.handle, PSA_CONNECTION_BUSY);
+    psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
     return status;
 }
 
@@ -364,53 +362,5 @@ int32_t server_test_psa_poll_behave(void)
         if (count == CONNECT_NUM)
             break;
     }
-    return VAL_STATUS_SUCCESS;
-}
-
-int32_t server_test_psa_wait_bitmask(void)
-{
-    psa_signal_t    signals = 0;
-    psa_msg_t       msg = {0};
-    int             loop_cnt = 2;
-    psa_signal_t    signal_mask = (SERVER_UNSPECIFED_MINOR_V_SIG | SERVER_RELAX_MINOR_VERSION_SIG);
-
-    /* Debug print */
-    val_err_check_set(TEST_CHECKPOINT_NUM(217), VAL_STATUS_SUCCESS);
-
-wait1:
-    signals = psa_wait(signal_mask, PSA_BLOCK);
-
-    /* Returned signals value must be subset signals indicated in the signal_mask */
-    if (((signals & signal_mask) == 0) &&
-        ((signals | signal_mask) != signal_mask))
-    {
-        val_print(PRINT_ERROR,
-                "psa_wait returned with invalid signal value = 0x%x\n", signals);
-        return VAL_STATUS_ERROR;
-    }
-    else if (signals & SERVER_UNSPECIFED_MINOR_V_SIG)
-    {
-        if (psa_get(SERVER_UNSPECIFED_MINOR_V_SIG, &msg) != PSA_SUCCESS)
-        {
-            goto wait1;
-        }
-
-        loop_cnt--;
-        psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
-    }
-    else if (signals & SERVER_RELAX_MINOR_VERSION_SIG)
-    {
-        if (psa_get(SERVER_RELAX_MINOR_VERSION_SIG, &msg) != PSA_SUCCESS)
-        {
-            goto wait1;
-        }
-
-        loop_cnt--;
-        psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
-    }
-
-    if (loop_cnt != 0)
-        goto wait1;
-
     return VAL_STATUS_SUCCESS;
 }

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -91,13 +91,13 @@ void server_main(void)
                     break;
                 default:
                     val_print(PRINT_ERROR, "Unexpected message type %d!", (int)(msg.type));
-                    while (1);
+                    TEST_PANIC();
             }
         }
         else
         {
             val_print(PRINT_ERROR, "In server_partition, Control shouldn't have reach here\n", 0);
-            while (1);
+            TEST_PANIC();
         }
     }
 }

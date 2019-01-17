@@ -1,4 +1,4 @@
-# * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,9 @@ INCLUDE= -I$(SOURCE)/val/common/ \
          -I$(SOURCE)/ff/partition/common/ \
          -I$(SOURCE)/ff/partition/ipc/ \
          -I$(BUILD)/partition/ \
-         -I$(BUILD)/platform/$(TARGET)/
+         -I$(BUILD)/platform/$(TARGET)/ \
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe \
+         -I$(SOURCE)/platform/targets/$(TARGET)/spe
 
 VPATH=$(SOURCE)/val/common/:\
       $(SOURCE)/val/nspe/:\
@@ -49,7 +51,7 @@ compile_c: $(CC_SOURCE:%.c=$(BUILD)/partition/%.o)
 compile_asm: $(AS_SOURCE:%.s=$(BUILD)/partition/%.o)
 
 $(BUILD)/partition/%.o : %.c
-	$(CC) -o $@ -c $<
+	$(CC) -DSPE_BUILD -o $@ -c $<
 
 $(BUILD)/partition/%.o : %.s
 	$(AS) -o $@ $<

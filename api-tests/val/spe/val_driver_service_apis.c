@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,10 @@
 
 
 #include "val_driver_service_apis.h"
+#include "val/common/val_target.c"
 
 print_verbosity_t  g_print_level = PRINT_INFO;
+static int is_uart_init_done = 0;
 
 /* UART APIs */
 /*
@@ -30,6 +32,7 @@ print_verbosity_t  g_print_level = PRINT_INFO;
 val_status_t val_uart_init_sf(addr_t uart_base_addr)
 {
     pal_uart_init(uart_base_addr);
+    is_uart_init_done = 1;
     return VAL_STATUS_SUCCESS;
 }
 /*
@@ -41,7 +44,11 @@ val_status_t val_uart_init_sf(addr_t uart_base_addr)
  */
 val_status_t val_print_sf(char *string, uint32_t data)
 {
-    pal_print(string, data);
+    if (is_uart_init_done == 1)
+    {
+        /* Do not print until uart_init is complete */
+        pal_print(string, data);
+    }
     return VAL_STATUS_SUCCESS;
 }
 
@@ -132,4 +139,63 @@ val_status_t val_nvmem_write_sf(addr_t base, uint32_t offset, void *buffer, int 
     {
         return VAL_STATUS_ERROR;
     }
+}
+
+/**
+    @brief    - This function sets the given boot.state value to corresponding
+                boot NVMEM location
+    @param    - state: boot_state_t
+    @return   - val_status_t
+**/
+val_status_t val_driver_private_set_boot_flag_fn(boot_state_t state)
+{
+   boot_t           boot;
+   val_status_t     status;
+   memory_desc_t   *memory_desc;
+
+   status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVMEM, 0),
+                                  (uint8_t **)&memory_desc,
+                                  (uint32_t *)sizeof(memory_desc_t));
+
+   if (VAL_ERROR(status))
+   {
+        return status;
+   }
+
+   boot.state = state;
+   status = val_nvmem_write_sf(memory_desc->start,
+                               VAL_NVMEM_OFFSET(NV_BOOT),
+                               &boot,
+                               sizeof(boot_t));
+   if (VAL_ERROR(status))
+   {
+       val_print_sf("val_nvmem_write_sf failed Error=0x%x\n", status);
+       return status;
+   }
+   return status;
+}
+
+/**
+    @brief    - This function initialises the driver reserved mmio region
+    @param    - void
+    @return   - val_status_t
+**/
+val_status_t val_init_driver_memory(void)
+{
+   val_status_t     status;
+   memory_desc_t   *memory_desc;
+
+   status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
+                                  MEMORY_DRIVER_PARTITION_MMIO, 0),
+                                  (uint8_t **)&memory_desc,
+                                  (uint32_t *)sizeof(memory_desc_t));
+   if (VAL_ERROR(status))
+   {
+        return status;
+   }
+
+   /* Init driver mmio space to 0 to avoid uninit access */
+   memset((uint32_t *)memory_desc->start, 0, (memory_desc->end - memory_desc->start + 1));
+
+   return VAL_STATUS_SUCCESS;
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+/* Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,8 +21,8 @@ TEST_START = 0x2004F000;
 MEMORY
 {
     TEST_INFO  (R)  : ORIGIN = TEST_START, LENGTH = 0x100
-    TEST_TEXT  (RX) : ORIGIN = TEST_START +0x100, LENGTH = 0xE00
-    TEST_DATA  (RW) : ORIGIN = TEST_START +0xF00, LENGTH = 0x1300
+    TEST_TEXT  (RX) : ORIGIN = TEST_START +0x100, LENGTH = 0x1400
+    TEST_DATA  (RW) : ORIGIN = TEST_START +0x1500, LENGTH = 0x1800
 }
 
 SECTIONS
