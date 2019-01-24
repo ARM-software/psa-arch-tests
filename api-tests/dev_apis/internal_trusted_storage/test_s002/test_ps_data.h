@@ -48,7 +48,7 @@ static test_data s002_data[] = {
  "Index not used as check for get info flag",0,0
 },
 {
- "validate the data using get api", VAL_PS_GET, PSA_PS_SUCCESS
+ "Validate the data using get api", VAL_PS_GET, PSA_PS_SUCCESS
 },
 {
  "Index not used",0,0
@@ -66,22 +66,22 @@ static test_data s002_data[] = {
  "Index not used as check for get info flag",0,0
 },
 {
- "validate the data using get api after flag change", VAL_PS_GET, PSA_PS_SUCCESS
+ "Validate the data using get api after flag change", VAL_PS_GET, PSA_PS_SUCCESS
 },
 {
  "Index not used",0,0
 },
 {
- " storage should not be removed after WRITE_ONCE flag", VAL_PS_REMOVE, PSA_PS_ERROR_WRITE_ONCE
+ "Storage should not be removed after WRITE_ONCE flag", VAL_PS_REMOVE, PSA_PS_ERROR_WRITE_ONCE
 },
 {
  "Create a valid storage with different uid and flag value WRITE_ONCE ", VAL_PS_SET, PSA_PS_SUCCESS
 },
 {
- "storage should not be removed", VAL_PS_REMOVE, PSA_PS_ERROR_WRITE_ONCE
+ "Storage should not be removed", VAL_PS_REMOVE, PSA_PS_ERROR_WRITE_ONCE
 },
 {
- "validate the data using get api after flag change", VAL_PS_GET, PSA_PS_SUCCESS
+ "Validate the data using get api after flag change", VAL_PS_GET, PSA_PS_SUCCESS
 },
 {
  "Index not used",0,0
@@ -96,7 +96,7 @@ static test_data s002_data[] = {
  "Index not used as check for get info flag",0,0
 },
 {
- "try to set different size for same uid and flag value ", VAL_PS_SET, PSA_PS_ERROR_WRITE_ONCE
+ "Try to set different size for same uid and flag value ", VAL_PS_SET, PSA_PS_ERROR_WRITE_ONCE
 },
 {
  "storage should not be removed", VAL_PS_REMOVE, PSA_PS_ERROR_WRITE_ONCE
@@ -111,13 +111,16 @@ static test_data s002_data[] = {
  "Index not used as check for get info flag",0,0
 },
 {
- "validate the data using get api after flag change", VAL_PS_GET, PSA_PS_SUCCESS
+ "Validate the data using get api after flag change", VAL_PS_GET, PSA_PS_SUCCESS
 },
 {
  "Index not used",0,0
 },
 {
  "Setting flag to zero for uid should fail ", VAL_PS_SET, PSA_PS_ERROR_WRITE_ONCE
+},
+{
+ "Storage should not be removed", VAL_PS_REMOVE, PSA_PS_ERROR_WRITE_ONCE
 },
 {
  "Check that the WRITE_ONCE flag is preserved", VAL_PS_GET_INFO, PSA_PS_SUCCESS
@@ -129,4 +132,4 @@ static test_data s002_data[] = {
  "Index not used as check for get info flag",0,0
 },
 };
-#endif /* _TEST_S001_PS_DATA_TESTS_H_ */
+#endif /* _TEST_S002_PS_DATA_TESTS_H_ */

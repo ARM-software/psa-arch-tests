@@ -27,6 +27,7 @@ enum ps_function_code {
     PAL_PS_REMOVE                       = 0x4,
     PAL_PS_CREATE                       = 0x5,
     PAL_PS_SET_EXTENDED                 = 0x6,
+    PAL_PS_GET_SUPPORT                  = 0x7,
 };
 
 uint32_t pal_ps_function(int type, va_list valist);

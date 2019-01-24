@@ -223,6 +223,7 @@ typedef enum {
   VAL_STATUS_BOOT_EXPECTED_BUT_FAILED    = 0x28,
   VAL_STATUS_INIT_ALREADY_DONE           = 0x29,
   VAL_STATUS_HEAP_NOT_AVAILABLE          = 0x2A,
+  VAL_STATUS_UNSUPPORTED                 = 0x2B,
   VAL_STATUS_ERROR_MAX                   = INT_MAX,
 } val_status_t;
 

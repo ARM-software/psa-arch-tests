@@ -38,13 +38,13 @@ static test_data s005_data[] = {
  "Create a valid storage entity ", VAL_PS_SET, PSA_PS_SUCCESS
 },
 {
- "validate the data using get api", VAL_PS_GET, PSA_PS_SUCCESS
+ "Validate the data using get api", VAL_PS_GET, PSA_PS_SUCCESS
 },
 {
  "Index not used",0,0
 },
 {
- "validate the data attributes get_info api", VAL_PS_GET_INFO, PSA_PS_SUCCESS
+ "Validate the data attributes get_info api", VAL_PS_GET_INFO, PSA_PS_SUCCESS
 },
 {
  "Index not used",0,0

@@ -48,7 +48,7 @@ static test_data s002_data[] = {
  "Index not used as check for get info flag",0,0
 },
 {
- "validate the data using get api", VAL_ITS_GET, PSA_ITS_SUCCESS
+ "Validate the data using get api", VAL_ITS_GET, PSA_ITS_SUCCESS
 },
 {
  "Index not used",0,0
@@ -72,16 +72,16 @@ static test_data s002_data[] = {
  "Index not used",0,0
 },
 {
- " storage should not be removed after WRITE_ONCE flag", VAL_ITS_REMOVE, PSA_ITS_ERROR_WRITE_ONCE
+ "Storage should not be removed after WRITE_ONCE flag", VAL_ITS_REMOVE, PSA_ITS_ERROR_WRITE_ONCE
 },
 {
  "Create a valid storage with different uid and flag value WRITE_ONCE ", VAL_ITS_SET, PSA_ITS_SUCCESS
 },
 {
- "storage should not be removed", VAL_ITS_REMOVE, PSA_ITS_ERROR_WRITE_ONCE
+ "Storage should not be removed", VAL_ITS_REMOVE, PSA_ITS_ERROR_WRITE_ONCE
 },
 {
- "validate the data using get api after flag change", VAL_ITS_GET, PSA_ITS_SUCCESS
+ "Validate the data using get api after flag change", VAL_ITS_GET, PSA_ITS_SUCCESS
 },
 {
  "Index not used",0,0
@@ -96,10 +96,10 @@ static test_data s002_data[] = {
  "Index not used as check for get info flag",0,0
 },
 {
- "try to set different size for same uid and flag value ", VAL_ITS_SET, PSA_ITS_ERROR_WRITE_ONCE
+ "Try to set different size for same uid and flag value ", VAL_ITS_SET, PSA_ITS_ERROR_WRITE_ONCE
 },
 {
- "storage should not be removed", VAL_ITS_REMOVE, PSA_ITS_ERROR_WRITE_ONCE
+ "Storage should not be removed", VAL_ITS_REMOVE, PSA_ITS_ERROR_WRITE_ONCE
 },
 {
  "Call the get_info api to validate the flag change", VAL_ITS_GET_INFO, PSA_ITS_SUCCESS

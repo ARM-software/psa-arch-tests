@@ -39,7 +39,7 @@ static test_data s006_data[] = {
  "Create a valid storage entity with different flag values ", VAL_ITS_SET, PSA_ITS_SUCCESS
 },
 {
- "validate the flag value get_info api", VAL_ITS_GET_INFO, PSA_ITS_SUCCESS
+ "Validate the flag value get_info api", VAL_ITS_GET_INFO, PSA_ITS_SUCCESS
 },
 {
  "Index not used",0,0

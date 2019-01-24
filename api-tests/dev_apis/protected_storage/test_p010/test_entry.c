@@ -17,10 +17,10 @@
 
 #include "val_interfaces.h"
 #include "val_target.h"
-#include "test_s007.h"
+#include "test_p010.h"
 
-#define TEST_NUM  VAL_CREATE_TEST_ID(VAL_STORAGE_BASE, 7)
-#define TEST_DESC "Incorrect Size error check\n"
+#define TEST_NUM  VAL_CREATE_TEST_ID(VAL_PROTECTED_STORAGE_BASE, 10)
+#define TEST_DESC "Invalid Key error check\n"
 
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;
@@ -40,8 +40,9 @@ void test_entry(val_api_t *val_api, psa_api_t *psa_api)
         goto test_exit;
     }
 
-    /* Execute list of tests available in test[num]_secure_storage_list from Non-secure side*/
-    status = val->execute_non_secure_tests(TEST_NUM, test_s007_sst_list, FALSE);
+    /* Execute list of tests available in test[num]_protected_storage_list from Non-secure side*/
+    status = val->execute_non_secure_tests(TEST_NUM, test_p010_sst_list, FALSE);
+
     if (VAL_ERROR(status))
     {
         goto test_exit;
