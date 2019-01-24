@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,8 +26,8 @@
 #ifndef _VAL_COMMON_SP_APIS_H_
 #define _VAL_COMMON_SP_APIS_H_
 
-#include "val/common/val.h"
-#include "val/common/val_target.c"
+#include "val.h"
+#include "val_target.c"
 #include "val_service_defs.h"
 
 /* "psa_manifest/<manifestfilename>.h" Manifest definitions. Only accessible to Secure Partition.
@@ -206,7 +206,7 @@ wait1:
 
         if ((msg->type != PSA_IPC_CONNECT) || (msg->handle <= 0))
         {
-            val_print(PRINT_ERROR, "\npsa_get failed for PSA_IPC_CONNECT", 0);
+            val_print(PRINT_ERROR, "\tpsa_get failed for PSA_IPC_CONNECT\n", 0);
             res = VAL_STATUS_ERROR;
         }
         else
@@ -216,7 +216,7 @@ wait1:
     }
     else
     {
-        val_print(PRINT_ERROR, "\npsa_wait returned with invalid signal value = 0x%x", signals);
+        val_print(PRINT_ERROR, "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
         res = VAL_STATUS_ERROR;
     }
     return res;
@@ -244,7 +244,7 @@ wait2:
 
         if ((msg->type != PSA_IPC_CALL) || (msg->handle <= 0))
         {
-            val_print(PRINT_ERROR, "\npsa_get failed for PSA_IPC_CALL", 0);
+            val_print(PRINT_ERROR, "\tpsa_get failed for PSA_IPC_CALL\n", 0);
             res = VAL_STATUS_ERROR;
         }
         else
@@ -254,7 +254,7 @@ wait2:
     }
     else
     {
-        val_print(PRINT_ERROR, "\npsa_wait returned with invalid signal value = 0x%x", signals);
+        val_print(PRINT_ERROR, "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
         res = VAL_STATUS_ERROR;
     }
     return res;
@@ -282,7 +282,7 @@ wait3:
 
         if ((msg->type != PSA_IPC_DISCONNECT) || (msg->handle <= 0))
         {
-            val_print(PRINT_ERROR, "\npsa_get failed for PSA_IPC_DISCONNECT", 0);
+            val_print(PRINT_ERROR, "\tpsa_get failed for PSA_IPC_DISCONNECT\n", 0);
             res = VAL_STATUS_ERROR;
         }
         else
@@ -292,7 +292,7 @@ wait3:
     }
     else
     {
-        val_print(PRINT_ERROR, "\npsa_wait returned with invalid signal value = 0x%x", signals);
+        val_print(PRINT_ERROR, "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
         res = VAL_STATUS_ERROR;
     }
     return res;
@@ -314,7 +314,7 @@ STATIC_DECLARE val_status_t val_execute_secure_tests(uint32_t test_num, client_t
     test_info_t           test_info;
 
     test_info.test_num = test_num;
-    val_print(PRINT_TEST, "[Info] Executing tests form secure\n", 0);
+    val_print(PRINT_TEST, "[Info] Executing tests from secure\n", 0);
 
     while (tests_list[i] != NULL)
     {
@@ -339,9 +339,14 @@ STATIC_DECLARE val_status_t val_execute_secure_tests(uint32_t test_num, client_t
         status = val_get_secure_test_result(&handle);
 
         status = test_status ? test_status:status;
+        if (IS_TEST_SKIP(status))
+        {
+            val_print(PRINT_DEBUG, "[Check%d] SKIPPED\n", i);
+            return status;
+        }
         if (VAL_ERROR(status))
         {
-            val_print(PRINT_ERROR,"[Check%d] FAILED\n", i);
+            val_print(PRINT_DEBUG,"[Check%d] FAILED\n", i);
             return status;
         }
         else

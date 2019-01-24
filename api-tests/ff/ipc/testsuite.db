@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,5 +66,25 @@ test_i043
 test_i044
 test_i045
 test_i046
+test_i047
+test_i048
+test_i049
+test_i050
+test_i051
+test_i052
+test_i053
+test_i054
+test_i055
+test_i056
+test_i057
+test_i058
+test_i059
+test_i060
+test_i061
+test_i062
+test_i063
+test_i064
+test_i065
+test_i066
 
 (END)

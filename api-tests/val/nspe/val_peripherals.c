@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -100,7 +100,11 @@ val_status_t val_wd_timer_init(wd_timeout_type_t timeout_type)
         return status;
    }
 
-   if (timeout_type == WD_LOW_TIMEOUT)
+   if (timeout_type == WD_CRYPTO_TIMEOUT)
+   {
+       time_us =  soc_per_desc->timeout_in_micro_sec_crypto;
+   }
+   else if (timeout_type == WD_LOW_TIMEOUT)
    {
        time_us =  soc_per_desc->timeout_in_micro_sec_low;
    }
@@ -161,6 +165,31 @@ val_status_t val_wd_timer_disable(void)
 
    return pal_wd_timer_disable_ns(soc_per_desc->base);
 }
+
+val_status_t val_wd_reprogram_timer(wd_timeout_type_t timeout_type)
+{
+    val_status_t    status = VAL_STATUS_SUCCESS;
+
+    /* Disable watchdog Timer */
+    val_wd_timer_disable();
+
+    /* Initialise watchdog */
+    status = val_wd_timer_init(timeout_type);
+    if (VAL_ERROR(status))
+    {
+        return status;
+    }
+
+    /* Enable watchdog Timer */
+    status = val_wd_timer_enable();
+    if (VAL_ERROR(status))
+    {
+        return status;
+    }
+
+    return status;
+}
+
 
 /*
     @brief     - Reads 'size' bytes from Non-volatile memory at a given. This is client interface

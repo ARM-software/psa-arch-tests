@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
-#ifndef _TEST043_CLIENT_TESTS_H_
-#define _TEST043_CLIENT_TESTS_H_
+#ifndef _TEST_I043_CLIENT_TESTS_H_
+#define _TEST_I043_CLIENT_TESTS_H_
 
 #include "val_client_defs.h"
 

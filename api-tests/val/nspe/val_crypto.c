@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,7 @@
                 ...  : variable number of arguments
     @return   - Error status
 **/
-val_status_t val_crypto_function(int type, ...)
+int32_t val_crypto_function(int type, ...)
 {
     va_list      valist;
     val_status_t status;
@@ -36,18 +36,4 @@ val_status_t val_crypto_function(int type, ...)
     status = pal_crypto_function(type, valist);
     va_end(valist);
     return status;
-}
-
-/**
-    @brief    - Checks if the key type is of raw bits
-    @param    - type : type of the key
-    @return   - True : If key type is raw bits
-                False: If key type is not raw bits
-**/
-int32_t val_crypto_key_type_is_raw(psa_key_type_t type)
-{
-    psa_key_type_t category = type & PSA_KEY_TYPE_CATEGORY_MASK;
-
-    return (category == PSA_KEY_TYPE_RAW_DATA ||
-            category == PSA_KEY_TYPE_CATEGORY_SYMMETRIC);
 }

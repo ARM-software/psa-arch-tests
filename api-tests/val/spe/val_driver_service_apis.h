@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,8 @@
 #ifndef _VAL_DRIVER_PARTITION_APIS_H_
 #define _VAL_DRIVER_PARTITION_APIS_H_
 
-#include "val/common/val.h"
-#include "val/common/val_client_defs.h"
+#include "val.h"
+#include "val_client_defs.h"
 #include "val_service_defs.h"
 #include "pal_interfaces_s.h"
 
@@ -30,6 +30,8 @@
  */
 #include "psa_manifest/driver_partition_psa.h"
 
+#define USE_RAW_PRINT_FOR_DRIVER_PARTITION 1
+
 val_status_t val_uart_init_sf(addr_t uart_base_addr);
 val_status_t val_print_sf(char *string, uint32_t data);
 val_status_t val_wd_timer_init_sf(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us);
@@ -38,4 +40,6 @@ val_status_t val_wd_timer_disable_sf(addr_t base_addr);
 val_status_t val_is_wd_timer_enabled_sf(addr_t base_addr);
 val_status_t val_nvmem_read_sf(addr_t base, uint32_t offset, void *buffer, int size);
 val_status_t val_nvmem_write_sf(addr_t base, uint32_t offset, void *buffer, int size);
+val_status_t val_driver_private_set_boot_flag_fn(boot_state_t state);
+val_status_t val_init_driver_memory(void);
 #endif

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
-#ifndef _TEST002_CLIENT_TESTS_H_
-#define _TEST002_CLIENT_TESTS_H_
+#ifndef _TEST_I002_CLIENT_TESTS_H_
+#define _TEST_I002_CLIENT_TESTS_H_
 
 #include "val_client_defs.h"
 
@@ -44,5 +44,4 @@ int32_t client_test_identity(security_t);
 int32_t client_test_spm_concurrent_connect_limit(security_t);
 int32_t client_test_psa_block_behave(security_t);
 int32_t client_test_psa_poll_behave(security_t);
-int32_t client_test_psa_wait_bitmask(security_t);
 #endif

@@ -22,16 +22,9 @@ The Architecture Test Suite is a set of examples of the invariant behaviours tha
 
 The Architecture Test Suite contains the tests that are self-checking, portable C-based tests with directed stimulus.
 
-The tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license allowing for external contribution.
+The tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license allowing for external contribution. This test suite is not a substitute for design verification. To review the test logs, Arm licensees can contact Arm directly through their partner managers.
 
-For more information on Architecture Test Suite specification, refer the [Validation Methodology](../docs/Arm_PSA_FF_Arch_Test_Validation_Methodology.pdf) document.
-
-## Release Update
- - Release Version - 0.5
- - Code Quality - Alpha. This indicates the suite is in development and it contains tests which have not been validated on any platform. Please use this opportunity to suggest enhancements and point out errors.
- - Current release contains **IPC tests** that are written for version 1.0-Beta-0 of the PSA FF specification.
- - This test suite is not a substitute for design verification.
- - To review the test logs, Arm licensees can contact Arm directly through their partner managers.
+For more information on Architecture Test Suite specification, refer the [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf) document.
 
 ## Tests Scenarios
 
@@ -48,7 +41,7 @@ Please make sure you have all required software installed as explained in the [s
 
 ### Porting steps
 
-Refer to the [Porting Guide](../docs/porting_guide.md) document for porting steps.
+Refer to the [PSA-FF Test Suite Porting Guide](../docs/porting_guide_ff.md) document for porting steps.
 
 ### Build steps
 
@@ -71,15 +64,15 @@ To build test suite for a given platform, execute the following commands:
 -   <platform_name> is the same as the name of the target specific directory created in the platform/targets/ directory.  <br />
 -   <cpu_architecture_version> is the Arm Architecture version name for which test binaries should be compiled. For example, Armv7M, Armv8M-Baseline and Armv8M-Mainline Architecture.  <br />
 -   <suite_name> is the suite name and it is same as the suite name available in test_suites/ directory. <br />
--   <include_path> is an additional directory to be included into compiler search path. Note- To compile ipc tests, include path must point to path where "psa/client.h", "psa/service.h" and test partition manifest output files("psa_manifest/sid.h" and "psa_manifest/<manifestfilename>.h") are located in your build system.<br />
+-   <include_path> is an additional directory to be included into compiler search path. Note- To compile ipc tests, include path must point to path where "psa/client.h", "psa/service.h" and test partition manifest output files(``"psa_manifest/sid.h" and "psa_manifest/<manifestfilename>.h"``) are located in your build system.<br />
 -   <build_dir> is an output directory to keep build files.
 
 Refer ./tools/scripts/setup.sh --help to know more about options.
 
-*To compile ipc tests for fvp_mps2_cm4_mbedos platform*
+*To compile ipc tests for tgt_ff_mbedos_fvp_mps2_m4 platform*
 ```
 cd api-tests
-./tools/scripts/setup.sh --target fvp_mps2_cm4_mbedos --cpu_arch armv7m --suite ipc --build BUILD_IPC --include <include_path1> --include <include_path2>
+./tools/scripts/setup.sh --target tgt_ff_mbedos_fvp_mps2_m4 --cpu_arch armv7m --suite ipc --build BUILD_IPC --include <include_path1> --include <include_path2>
 ```
 
 ### Build output
@@ -124,5 +117,5 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2019, Arm Limited and Contributors. All rights reserved.*
 

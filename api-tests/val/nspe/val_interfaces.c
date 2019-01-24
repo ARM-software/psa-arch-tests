@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,9 @@
 #include "val_peripherals.h"
 #include "val_target.h"
 #include "val_crypto.h"
+#include "val_internal_trusted_storage.h"
+#include "val_protected_storage.h"
+#include "val_attestation.h"
 
 /*VAL APIs to be used by test */
 const val_api_t val_api = {
@@ -43,10 +46,13 @@ const val_api_t val_api = {
     .wd_timer_init             = val_wd_timer_init,
     .wd_timer_enable           = val_wd_timer_enable,
     .wd_timer_disable          = val_wd_timer_disable,
+    .wd_reprogram_timer        = val_wd_reprogram_timer,
     .set_boot_flag             = val_set_boot_flag,
     .get_boot_flag             = val_get_boot_flag,
     .crypto_function           = val_crypto_function,
-    .crypto_key_type_is_raw    = val_crypto_key_type_is_raw,
+    .its_function              = val_its_function,
+    .ps_function               = val_ps_function,
+    .attestation_function      = val_attestation_function,
 };
 
 const psa_api_t psa_api = {

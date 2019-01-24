@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +19,8 @@
 #include "val_interfaces.h"
 #include "val_target.h"
 #else
-#include "val/common/val_client_defs.h"
-#include "val/spe/val_partition_common.h"
+#include "val_client_defs.h"
+#include "val_partition_common.h"
 #endif
 
 #include "test_i002.h"
@@ -35,7 +35,6 @@ client_test_t test_i002_client_tests_list[] = {
     client_test_spm_concurrent_connect_limit,
     client_test_psa_block_behave,
     client_test_psa_poll_behave,
-    client_test_psa_wait_bitmask,
     NULL,
 };
 
@@ -284,29 +283,4 @@ int32_t client_test_psa_poll_behave(security_t caller)
 {
    val->print(PRINT_TEST, "[Check8] Test PSA_POLL\n", 0);
    return (client_test_psa_wait());
-}
-
-int32_t client_test_psa_wait_bitmask(security_t caller)
-{
-   psa_handle_t     handle = 0;
-
-   val->print(PRINT_TEST, "[Check9] Test psa_wait bitmask\n", 0);
-
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
-
-   if (handle != PSA_CONNECTION_REFUSED)
-   {
-       val->print(PRINT_ERROR, "psa_connect failed -1\n", 0);
-       return VAL_STATUS_INVALID_HANDLE;
-   }
-
-   handle = psa->connect(SERVER_RELAX_MINOR_VERSION_SID, 1);
-
-   if (handle != PSA_CONNECTION_REFUSED)
-   {
-       val->print(PRINT_ERROR, "psa_connect failed -2\n", 0);
-       return VAL_STATUS_INVALID_HANDLE;
-   }
-
-   return VAL_STATUS_SUCCESS;
 }

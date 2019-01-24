@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,6 @@
 #define _TEST_C004_CLIENT_TESTS_H_
 
 #include "val_crypto.h"
-
 #define test_entry CONCAT(test_entry_,c004)
 #define val CONCAT(val,test_entry)
 #define psa CONCAT(psa,test_entry)
@@ -28,5 +27,5 @@ extern psa_api_t *psa;
 extern client_test_t test_c004_crypto_list[];
 
 int32_t test_psa_export_public_key(security_t caller);
-int32_t test_psa_export_public_key_slot(security_t caller);
+int32_t test_psa_export_public_key_handle(security_t caller);
 #endif /* _TEST_C004_CLIENT_TESTS_H_ */

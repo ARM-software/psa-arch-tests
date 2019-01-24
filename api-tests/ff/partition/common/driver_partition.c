@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,17 +17,26 @@
 
 #include "val/spe/val_driver_service_apis.h"
 
+int32_t driver_test_psa_eoi_with_non_intr_signal(void);
+int32_t driver_test_psa_eoi_with_unasserted_signal(void);
+int32_t driver_test_psa_eoi_with_multiple_signals(void);
+
 void driver_main(void)
 {
-    psa_signal_t    signals = 0;
-    psa_msg_t       msg = {0};
-    uint32_t        data = 0;
-    uart_fn_type_t  uart_fn;
-    nvmem_param_t   nvmem_param;
-    char            string[256] = {0};
-    uint8_t         buffer[256] = {0};
-    wd_param_t      wd_param;
-    addr_t          uart_base;
+    psa_signal_t        signals = 0;
+    psa_msg_t           msg = {0};
+    uint32_t            data = 0;
+    uart_fn_type_t      uart_fn;
+    nvmem_param_t       nvmem_param;
+    test_intr_fn_id_t   test_intr_fn_id;
+    char                string[256] = {0};
+    uint8_t             buffer[256] = {0};
+    wd_param_t          wd_param;
+    addr_t              uart_base;
+
+    /* Initialised driver mmio space */
+    if (val_init_driver_memory())
+        TEST_PANIC();
 
     while (1)
     {
@@ -86,7 +95,7 @@ void driver_main(void)
         }
 
         /* Service Watchdog functionality */
-        if (signals & DRIVER_WATCHDOG_SIG)
+        else if (signals & DRIVER_WATCHDOG_SIG)
         {
             psa_get(DRIVER_WATCHDOG_SIG, &msg);
             switch (msg.type)
@@ -139,7 +148,7 @@ void driver_main(void)
         }
 
          /* Service NVMEM functionality */
-        if (signals & DRIVER_NVMEM_SIG)
+        else if (signals & DRIVER_NVMEM_SIG)
         {
             psa_get(DRIVER_NVMEM_SIG, &msg);
             switch (msg.type)
@@ -197,12 +206,129 @@ void driver_main(void)
                     break;
             }
         }
-
-        if (signals == 0)
+        /* SID reserved for interrupt testing */
+        else if (signals & TEST_INTR_SIG)
         {
-            val_print_sf("psa_wait returned zero for PSA_BLOCK. Entering into infinite loop\n",
-                         0);
-            while (1);
+            psa_get(TEST_INTR_SIG, &msg);
+            switch (msg.type)
+            {
+                case PSA_IPC_CALL:
+                    if (msg.in_size[0] > sizeof(test_intr_fn_id_t))
+                    {
+                        /* buffer overflow */
+                        psa_reply(msg.handle, VAL_STATUS_ERROR);
+                        val_print_sf("msg.in_size[0] buffer overflow\n", 0);
+                        break;
+                    }
+                    else
+                    {
+                        psa_read(msg.handle, 0, &test_intr_fn_id, msg.in_size[0]);
+                    }
+
+                    switch (test_intr_fn_id)
+                    {
+                        case TEST_PSA_EOI_WITH_NON_INTR_SIGNAL:
+                             driver_test_psa_eoi_with_non_intr_signal();
+                             psa_reply(msg.handle, VAL_STATUS_ERROR);
+                             break;
+                        case TEST_PSA_EOI_WITH_UNASSERTED_SIGNAL:
+                             driver_test_psa_eoi_with_unasserted_signal();
+                             psa_reply(msg.handle, VAL_STATUS_ERROR);
+                             break;
+                        case TEST_PSA_EOI_WITH_MULTIPLE_SIGNALS:
+                             driver_test_psa_eoi_with_multiple_signals();
+                             psa_reply(msg.handle, VAL_STATUS_ERROR);
+                             break;
+                        case TEST_INTR_SERVICE:
+                             break;
+                    }
+                    break;
+                case PSA_IPC_CONNECT:
+                case PSA_IPC_DISCONNECT:
+                    psa_reply(msg.handle, PSA_SUCCESS);
+                    break;
+            }
+        }
+        else
+        {
+            val_print_sf("Unexpected signal value=0x%x. Entering into infinite loop\n",
+                         signals);
+            TEST_PANIC();
         }
     }
+}
+
+int32_t driver_test_psa_eoi_with_non_intr_signal(void)
+{
+    /* Setting boot.state before test check */
+    if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_NS))
+    {
+        val_print_sf("\tFailed to set boot flag before check\n", 0);
+        return VAL_STATUS_ERROR;
+    }
+
+    /* psa_eoi should not return as signal is non-interrupt signal*/
+    psa_eoi(PSA_DOORBELL);
+
+    /* Control shouldn't have reached here */
+    val_print_sf("\tCheck for psa_eoi(non_intr_sig) failed\n", 0);
+
+    /* Resetting boot.state to catch unwanted reboot */
+    if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_BUT_FAILED))
+    {
+        val_print_sf("\tFailed to set boot flag after check\n", 0);
+        return VAL_STATUS_ERROR;
+    }
+
+    return VAL_STATUS_SPM_FAILED;
+}
+
+int32_t driver_test_psa_eoi_with_unasserted_signal(void)
+{
+    /* Setting boot.state before test check */
+    if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_NS))
+    {
+        val_print_sf("\tFailed to set boot flag before check\n", 0);
+        return VAL_STATUS_ERROR;
+    }
+
+    /* psa_eoi should not return as DRIVER_UART_INTR_SIG is unasserted */
+    psa_eoi(DRIVER_UART_INTR_SIG);
+
+    /* Control shouldn't have reached here */
+    val_print_sf("\tCheck for psa_eoi(multiple_signals) failed\n", 0);
+
+    /* Resetting boot.state to catch unwanted reboot */
+    if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_BUT_FAILED))
+    {
+        val_print_sf("\tFailed to set boot flag after check\n", 0);
+        return VAL_STATUS_ERROR;
+    }
+
+    return VAL_STATUS_SPM_FAILED;
+}
+
+int32_t driver_test_psa_eoi_with_multiple_signals(void)
+{
+    /* Setting boot.state before test check */
+    if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_NS))
+    {
+        val_print_sf("\tFailed to set boot flag before check\n", 0);
+        return VAL_STATUS_ERROR;
+    }
+
+    /* psa_eoi should not return as irq_signal is provided with multiple signals */
+    psa_eoi(DRIVER_UART_INTR_SIG|TEST_INTR_SIG);
+
+    /* Control shouldn't have reached here */
+    val_print_sf("\tCheck for psa_eoi(multiple_signals) failed\n", 0);
+
+    /* Resetting boot.state to catch unwanted reboot */
+    if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_BUT_FAILED))
+    {
+        val_print_sf("\tFailed to set boot flag after check\n", 0);
+        return VAL_STATUS_ERROR;
+    }
+
+    return VAL_STATUS_SPM_FAILED;
 }

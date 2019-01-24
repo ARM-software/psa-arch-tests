@@ -19,6 +19,16 @@ The test suite for this specification is located in the ff directory of this rep
 ### PSA Developer APIs
 The test suite for this specification is located in the dev_apis directory of this repository. See [PSA Developer APIs Readme](dev_apis/README.md) file for more details.
 
+## Release Update
+ - Release Version - 0.7
+ - Code Quality: Pre-Beta. Please use this opportunity to suggest enhancements and point out errors.
+ - Current release contains following Developer APIs tests:
+ 1. **Crypto tests** that are written for the crypto service APIs defined in the [crypto.h](../api-specs/include/crypto.h)
+ 2. **Protected Storage tests** that are written for the protected storage service APIs defined in the [protected_storage.h](../api-specs/include/protected_storage.h)
+ 3. **Internal Trusted Storage tests** that are written for the internal trusted storage service APIs defined in the [internal_trusted_storage.h](../api-specs/include/internal_trusted_storage.h)
+ - Current release contains following PSA-FF tests:
+ 1. **IPC tests** that are written for version 1.0-Beta-0 of the PSA FF specification.
+
 ## License
 
 Arm PSA test suite is distributed under Apache v2.0 License.
@@ -33,4 +43,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2019, Arm Limited and Contributors. All rights reserved.*

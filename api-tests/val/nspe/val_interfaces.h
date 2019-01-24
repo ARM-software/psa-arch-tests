@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,10 +50,13 @@ typedef struct {
     val_status_t     (*wd_timer_init)             (wd_timeout_type_t timeout_type);
     val_status_t     (*wd_timer_enable)           (void);
     val_status_t     (*wd_timer_disable)          (void);
+    val_status_t     (*wd_reprogram_timer)        (wd_timeout_type_t timeout_type);
     val_status_t     (*set_boot_flag)             (boot_state_t state);
     val_status_t     (*get_boot_flag)             (boot_state_t *state);
-    val_status_t     (*crypto_function)           (int type, ...);
-    int32_t          (*crypto_key_type_is_raw)    (uint32_t type);
+    int32_t          (*crypto_function)           (int type, ...);
+    uint32_t         (*its_function)              (int type, ...);
+    uint32_t         (*ps_function)               (int type, ...);
+    int32_t          (*attestation_function)      (int type, ...);
 } val_api_t;
 
 typedef struct {
@@ -66,7 +69,7 @@ typedef struct {
                                               psa_outvec *out_vec,
                                               size_t out_len
                                               );
-    void     (*close)                 (psa_handle_t handle);
+    void             (*close)                 (psa_handle_t handle);
 } psa_api_t;
 
 typedef void (*test_fptr_t)(val_api_t *val, psa_api_t *psa);
@@ -77,7 +80,6 @@ typedef struct {
 } val_test_info_t;
 
 #include "test_entry_fn_declare_list.inc"
-void test_entry(val_api_t *val, psa_api_t *psa);
-void test_payload(val_api_t *val, psa_api_t *psa);
 
+void test_entry(val_api_t *val, psa_api_t *psa);
 #endif

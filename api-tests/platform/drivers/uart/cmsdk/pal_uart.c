@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +41,7 @@ void pal_uart_cmsdk_init(uint32_t uart_base_addr)
 static int pal_uart_cmsdk_is_tx_empty(void)
 {
     /* Note: Check for empty TX FIFO */
-    return (!((uart_t *) g_uart)->STATE & CMSDK_UART_STATE_TXBF_Msk);
+    return (!(((uart_t *) g_uart)->STATE & CMSDK_UART_STATE_TXBF_Msk));
 }
 
 /**

@@ -19,8 +19,8 @@
 #include "val_interfaces.h"
 #include "val_target.h"
 #else
-#include "val/common/val_client_defs.h"
-#include "val/spe/val_partition_common.h"
+#include "val_client_defs.h"
+#include "val_partition_common.h"
 #endif
 
 #include "test_i036.h"

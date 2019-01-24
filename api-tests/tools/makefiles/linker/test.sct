@@ -1,4 +1,4 @@
-/* Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+/* Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,16 +15,16 @@
 **/
 
 #define TEST_CODE_START 0x0
-#define TEST_INFO_SIZE  0x8
-#define TEST_TEXT_SIZE  0xD00
-#define TEST_DATA_SIZE  0x1300
+#define TEST_INFO_SIZE  0x100
+#define TEST_TEXT_SIZE  0x1400
+#define TEST_DATA_SIZE  0x1800
 
 LR_CODE TEST_CODE_START
 {
 
     ER_CODE TEST_CODE_START (TEST_INFO_SIZE+TEST_TEXT_SIZE+TEST_DATA_SIZE)
     {
-        test_entry.o(.acs_test_info +FIRST)
+        test_entry_nspe.o(.acs_test_info +FIRST)
         * (+CODE)
         * (+RO)
         * (+ZI +RW)

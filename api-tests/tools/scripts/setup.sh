@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-
 #/** @file
-# * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,13 +19,36 @@
 echo ""
 
 declare -a INCLUDE_PATHS
+export SUITE=" "
 export TEST_COMBINE_ARCHIVE=0
 export CLIENT_FILE_FOUND=0
 export SERVICE_FILE_FOUND=0
+export CRYPTO_FILE_FOUND=0
+export PROTECTED_STORAGE_FILE_FOUND=0
+export INTERNAL_TRUSTED_STORAGE_FILE_FOUND=0
+export INITIAL_ATTESTATION_FILE_FOUND=0
+
+IPC_HEADER_FILE_REQ="If PSA IPC implemented in your platform, include path must point to path
+where \"psa/client.h\", \"psa/service.h\" and test partition manifest output files
+(\"psa_manifest/sid.h\" and \"psa_manifest/<manifestfilename>.h\") are located.
+"
+CRYPTO_HEADER_FILE_REQ="If PSA CRYPTO APIs are implemented into your platform then you must provide
+\"psa/crypto.h\" file to setup.sh script using --include option to compile tests and framework.
+"
+PS_HEADER_FILE_REQ="If PSA PROTECTED STORAGE APIs are implemented into your platform then you must provide
+\"psa/protected_storage.h\" file to setup.sh script using --include option to compile tests and framework.
+"
+ITS_HEADER_FILE_REQ="If PSA INTERNAL_TRUSTED_STORAGE APIs are implemented into your platform then you must provide
+\"psa/internal_trusted_storage.h\" file to setup.sh script using --include option to compile tests and framework.
+"
+ATTESTATION_HEADER_FILE_REQ="If PSA INITIAL_ATTESTATION APIs are implemented into your platform then you must provide
+\"psa/initial_attestation.h\" file to setup.sh script using --include option to compile tests and framework.
+"
+
 HELP="
 
 Usage: setup.sh [--source SOURCE_DIR] [--build BUILD_DIR] [--target TARGET] [--suite SUITE]
-                [--toolchain TOOLCHAIN] [--cpu_arch CPU_ARCH] [--clean] [--verbose PRINT_LEVEL]
+                [--toolchain TOOLCHAIN] [--cpu_arch CPU_ARCH] [--verbose PRINT_LEVEL]
                 [--include INCLUDE_PATH] [--help|-h]
 
 Arguments Info:
@@ -36,28 +58,31 @@ Arguments Info:
     --target <TARGET>       : Provide target string as argument.
                               target.cfg file corresponding to input string must be avaiable at
                               platform/targets/<TARGET>/
-    --suite <SUITE>         : Compile tests for given suite. Support values are ipc and crypto.
-                              Default is ipc suite.
-    --toolchain <TOOLCHAIN> : Build using the given TOOLCHAIN. Supported value is GNUARM (GNU Arm Embedded).
-                              Future release will be extended to support ARMCLANG (ARM Compiler 6.x).
+    --suite <SUITE>         : Compile tests for given suite. Support values are:
+                              ipc, crypto, internal_trusted_storage and protected_storage.
+    --toolchain <TOOLCHAIN> : Build using the given TOOLCHAIN.
+                              Supported values are GNUARM (GNU Arm Embedded) and ARMCLANG (ARM Compiler 6.x).
     --cpu_arch <CPU_ARCH>   : Provide cpu arch string as argument.
                               Supported CPU arch are armv8m_ml, armv8m_bl and armv7m.
-    --clean                 : Clean the build directory
     --verbose <PRINT_LEVEL> : Print verbosity level
                               Supported print levels are:
                                 1 - INFO & above.
                                 2 - DEBUG & above.
-                                3 - TEST & above.(Default)
-                                4 - WARN & ERROR.
+                                3 - TEST & above.
+                                4 - WARN & ERROR.(Default)
                                 5 - ERROR.
     --include <INCLUDE_PATH>: Additional directory to be included into compiler search path. Provide --include <path>
                               where path pointing to location of PSA defined header files.
                               You can specify multiple source locations using --include option.
                               Ex: --include <path1>  --include <path2>
-                              Note- If PSA IPC implemented in your platform, include path must point to path
-                              where \"psa/client.h\", \"psa/service.h\" and test partition manifest output files
-                              (\"psa_manifest/sid.h\" and \"psa_manifest/<manifestfilename>.h\") are located.
     --help|-h               : Print this help message
+
+Notes:
+1. $IPC_HEADER_FILE_REQ
+2. $CRYPTO_HEADER_FILE_REQ
+3. $PS_HEADER_FILE_REQ
+4. $ITS_HEADER_FILE_REQ
+5. $ATTESTATION_HEADER_FILE_REQ
 
 "
 
@@ -87,9 +112,6 @@ while [  $# -gt 0 ]; do
        --cpu_arch )  shift
                   export CPU_ARCH=$1
                   ;;
-       --clean )
-                  export CLEAN=1
-                  ;;
        --verbose )  shift
                   export VERBOSE=$1
                   ;;
@@ -100,12 +122,12 @@ while [  $# -gt 0 ]; do
                   export INCLUDE="$INCLUDE -I $1/"
                   INCLUDE_PATHS=("${INCLUDE_PATHS[@]}" $1)
                   ;;
-       --help | -h | * )
+       --help | -h )
                   echo "$HELP"
                   exit 1
                   ;;
                * )
-                  echo "Error: Invaid argument"
+                  echo "Error: Invaid argument $1"
                   echo "$HELP"
                   exit 1
         esac
@@ -143,22 +165,26 @@ else
    echo "Using \$TARGET=$TARGET"
 fi
 
-if [ -z "$SUITE" ]
+if [ "$SUITE" != "ipc" ] && [ "$SUITE" != "crypto" ] &&  [ "$SUITE" != "protected_storage" ] &&
+   [ "$SUITE" != "internal_trusted_storage" ] &&  [ "$SUITE" != "initial_attestation" ]
 then
-   export SUITE=ipc
-   echo "--suite option is not provided, hence using default value \$SUITE=$SUITE"
-else
-   echo "Using \$SUITE=$SUITE"
+   echo "Error: Unsupported value for --suite=$SUITE.
+   Refer help message to see supported suites"
+   exit 1
 fi
 
-PSA_IPC_IMPLEMENTED=`grep -c "^ *PSA_IPC_IMPLEMENTED\s*:=\s*1" $SOURCE/platform/targets/$TARGET/Makefile`
-PSA_CRYPTO_IMPLEMENTED=`grep -c "^ *PSA_CRYPTO_IMPLEMENTED\s*:=\s*1" $SOURCE/platform/targets/$TARGET/Makefile`
+PLATFORM_MAKEFILE=$SOURCE/platform/targets/$TARGET/Makefile
+PSA_IPC_IMPLEMENTED=`grep -c "^ *PSA_IPC_IMPLEMENTED\s*:=\s*1" $PLATFORM_MAKEFILE`
+PSA_CRYPTO_IMPLEMENTED=`grep -c "^ *PSA_CRYPTO_IMPLEMENTED\s*:=\s*1" $PLATFORM_MAKEFILE`
+PSA_PROTECTED_STORAGE_IMPLEMENTED=`grep -c "^ *PSA_PROTECTED_STORAGE_IMPLEMENTED\s*:=\s*1" $PLATFORM_MAKEFILE`
+PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED=`grep -c "^ *PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED\s*:=\s*1" $PLATFORM_MAKEFILE`
+PSA_INITIAL_ATTESTATION_IMPLEMENTED=`grep -c "^ *PSA_INITIAL_ATTESTATION_IMPLEMENTED\s*:=\s*1" $PLATFORM_MAKEFILE`
 
 # Check PSA_IPC_IMPLEMENTED validity
 if [ $SUITE == "ipc" ] && [ $PSA_IPC_IMPLEMENTED == "0" ]
 then
    echo "Error: PSA_IPC_IMPLEMENTED must be set to 1 for ipc suite
-         in $SOURCE/platform/$TARGET/Makefile"
+         in $PLATFORM_MAKEFILE"
    exit 1
 fi
 
@@ -166,7 +192,31 @@ fi
 if [ $SUITE == "crypto" ] && [ $PSA_CRYPTO_IMPLEMENTED == "0" ]
 then
    echo "Error: PSA_CRYPTO_IMPLEMENTED must be set to 1 for crypto suite
-         in $SOURCE/platform/$TARGET/Makefile"
+         in $PLATFORM_MAKEFILE"
+   exit 1
+fi
+
+# Check PSA_PROTECTED_STORAGE_IMPLEMENTED validity
+if [ $SUITE == "protected_storage" ] && [ $PSA_PROTECTED_STORAGE_IMPLEMENTED == "0" ]
+then
+   echo "Error: PSA_PROTECTED_STORAGE_IMPLEMENTED must be set to 1 for protected_storage suite
+         in $PLATFORM_MAKEFILE"
+   exit 1
+fi
+
+# Check PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED validity
+if [ $SUITE == "internal_trusted_storage" ] && [ $PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED == "0" ]
+then
+   echo "Error: PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED must be set to 1 for internal_trusted_storage suite
+         in $PLATFORM_MAKEFILE"
+   exit 1
+fi
+
+# Check PSA_INITIAL_ATTESTATION_IMPLEMENTED validity
+if [ $SUITE == "initial_attestation" ] && [ $PSA_INITIAL_ATTESTATION_IMPLEMENTED == "0" ]
+then
+   echo "Error: PSA_INITIAL_ATTESTATION_IMPLEMENTED must be set to 1 for initial_attestation suite
+         in $PLATFORM_MAKEFILE"
    exit 1
 fi
 
@@ -175,12 +225,7 @@ then
     # Check --include validity for ipc suite
     if [ -z "$INCLUDE" ]
     then
-          echo "Error: --include option is not provided.
-          You must provide PSA defined API element header files "psa/client.h" and "psa/service.h"
-          and test partition manifest output files to compile tests and test framework.
-          Provide --include <path> where path pointing to location of required files.
-          You can specify multiple source locations using --include option.
-          Ex: --include <path1>  --include <path2> "
+          echo "Error: --include option is not provided. $IPC_HEADER_FILE_REQ"
           exit 1
     else
         for path in "${INCLUDE_PATHS[@]}"
@@ -197,15 +242,118 @@ then
         if [ $CLIENT_FILE_FOUND ==  "0" ]
         then
             echo "Couldn't find psa/client.h file in paths: ${INCLUDE_PATHS[@]}"
+            echo "$IPC_HEADER_FILE_REQ"
             exit 1
         fi
         if [ $SERVICE_FILE_FOUND == "0" ]
         then
             echo "Couldn't find psa/service.h file in paths: ${INCLUDE_PATHS[@]}"
+            echo "$IPC_HEADER_FILE_REQ"
             exit 1
         fi
     fi
 fi
+
+if [ $PSA_CRYPTO_IMPLEMENTED == "1" ]
+then
+    # Check --include validity for crypto suite
+    if [ -z "$INCLUDE" ]
+    then
+          echo "Error: --include option is not provided."
+          echo "$CRYPTO_HEADER_FILE_REQ"
+          exit 1
+    else
+        for path in "${INCLUDE_PATHS[@]}"
+        do
+            if [ -f "$path/psa/crypto.h" ]
+            then
+                export CRYPTO_FILE_FOUND=1
+            fi
+        done
+        if [ $CRYPTO_FILE_FOUND ==  "0" ]
+        then
+            echo "Couldn't find psa/crypto.h file in paths: ${INCLUDE_PATHS[@]}"
+            echo "$CRYPTO_HEADER_FILE_REQ"
+            exit 1
+        fi
+    fi
+fi
+
+if [ $PSA_PROTECTED_STORAGE_IMPLEMENTED == "1" ]
+then
+    # Check --include validity for protected storage suite
+    if [ -z "$INCLUDE" ]
+    then
+          echo "Error: --include option is not provided."
+          echo "$PS_HEADER_FILE_REQ"
+          exit 1
+    else
+        for path in "${INCLUDE_PATHS[@]}"
+        do
+            if [ -f "$path/psa/protected_storage.h" ]
+            then
+                export PROTECTED_STORAGE_FILE_FOUND=1
+            fi
+        done
+        if [ $PROTECTED_STORAGE_FILE_FOUND ==  "0" ]
+        then
+            echo "Couldn't find psa/protected_storage.h file in paths: ${INCLUDE_PATHS[@]}"
+            echo "$PS_HEADER_FILE_REQ"
+            exit 1
+        fi
+    fi
+fi
+
+if [ $PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED == "1" ]
+then
+    # Check --include validity for internal trusted storage suite
+    if [ -z "$INCLUDE" ]
+    then
+          echo "Error: --include option is not provided."
+          echo "$ITS_HEADER_FILE_REQ"
+          exit 1
+    else
+        for path in "${INCLUDE_PATHS[@]}"
+        do
+            if [ -f "$path/psa/internal_trusted_storage.h" ]
+            then
+                export INTERNAL_TRUSTED_STORAGE_FILE_FOUND=1
+            fi
+        done
+        if [ $INTERNAL_TRUSTED_STORAGE_FILE_FOUND ==  "0" ]
+        then
+            echo "Couldn't find psa/internal_trusted_storage.h file in paths: ${INCLUDE_PATHS[@]}"
+            echo "$ITS_HEADER_FILE_REQ"
+            exit 1
+        fi
+    fi
+fi
+
+if [ $PSA_INITIAL_ATTESTATION_IMPLEMENTED == "1" ]
+then
+    # Check --include validity for initial_attestation suite
+    if [ -z "$INCLUDE" ]
+    then
+          echo "Error: --include option is not provided."
+          echo "$ATTESTATION_HEADER_FILE_REQ"
+          exit 1
+    else
+        for path in "${INCLUDE_PATHS[@]}"
+        do
+            if [ -f "$path/psa/initial_attestation.h" ]
+            then
+                export INITIAL_ATTESTATION_FILE_FOUND=1
+            fi
+        done
+        if [ $INITIAL_ATTESTATION_FILE_FOUND ==  "0" ]
+        then
+            echo "Couldn't find psa/initial_attestation.h file in paths: ${INCLUDE_PATHS[@]}"
+            echo "$ATTESTATION_HEADER_FILE_REQ"
+            exit 1
+        fi
+    fi
+fi
+
 
 if [ -z "$TOOLCHAIN" ]
 then
@@ -217,7 +365,8 @@ fi
 
 if [ $TOOLCHAIN != "GNUARM" ] && [ $TOOLCHAIN != "ARMCLANG" ]
 then
-   echo "Error: Unsupported value for --toolchain=$TOOLCHAIN. Supported toolchain are GNUARM and ARMCLANG"
+   echo "Error: Unsupported value for --toolchain=$TOOLCHAIN.
+   Supported toolchain are GNUARM and ARMCLANG"
    exit 1
 fi
 
@@ -232,13 +381,16 @@ fi
 
 if [ $CPU_ARCH != "armv8m_ml" ] && [ $CPU_ARCH != "armv8m_bl" ] && [ $CPU_ARCH != "armv7m" ]
 then
-   echo "Error: Unsupported value for --cpu_arch=$CPU_ARCH. Supported CPU arch are armv8m_ml, armv8m_bl, armv7m"
+   echo "Error: Unsupported value for --cpu_arch=$CPU_ARCH.
+   Supported CPU arch are armv8m_ml, armv8m_bl, armv7m"
    exit 1
 fi
 
 if [ ! -z "$VERBOSE" ]
 then
-    if [ $VERBOSE != "1" ] && [ $VERBOSE != "2" ] && [ $VERBOSE != "3" ] && [ $VERBOSE != "4" ] && [ $VERBOSE != "5" ]
+    if [ $VERBOSE != "1" ] && [ $VERBOSE != "2" ] &&
+       [ $VERBOSE != "3" ] && [ $VERBOSE != "4" ] &&
+       [ $VERBOSE != "5" ]
     then
         echo "Error: Unsupported value for --verbose=$VERBOSE."
         echo "Supported print levels are:"
@@ -250,7 +402,7 @@ then
         exit 1
     fi
 else
-    export VERBOSE=3
+    export VERBOSE=4
 fi
 
 MAKE_OPTIONS=" SOURCE=$SOURCE "
@@ -262,13 +414,12 @@ MAKE_OPTIONS+=" CPU_ARCH=$CPU_ARCH "
 MAKE_OPTIONS+=" VERBOSE=$VERBOSE "
 MAKE_OPTIONS+=" TEST_COMBINE_ARCHIVE=$TEST_COMBINE_ARCHIVE "
 MAKE_OPTIONS+=" PSA_IPC_IMPLEMENTED=$PSA_IPC_IMPLEMENTED "
+MAKE_OPTIONS+=" PSA_CRYPTO_IMPLEMENTED=$PSA_CRYPTO_IMPLEMENTED "
+MAKE_OPTIONS+=" PSA_PROTECTED_STORAGE_IMPLEMENTED=$PSA_PROTECTED_STORAGE_IMPLEMENTED "
+MAKE_OPTIONS+=" PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED=$PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED "
+MAKE_OPTIONS+=" PSA_INITIAL_ATTESTATION_IMPLEMENTED=$PSA_INITIAL_ATTESTATION_IMPLEMENTED "
 MAKE_OPTIONS+=" USER_INCLUDE=\"$INCLUDE\" "
 
-if [ -z "$CLEAN" ]
-then
-   #Build VAL/PAL static library and Tests ELFs
-   echo "make -f $SOURCE/tools/makefiles/Makefile $MAKE_OPTIONS USER_INCLUDE=\"$INCLUDE\" all "
-   make -f $SOURCE/tools/makefiles/Makefile $MAKE_OPTIONS USER_INCLUDE="$INCLUDE" all
-else
-   make -f $SOURCE/tools/makefiles/Makefile $MAKE_OPTIONS USER_INCLUDE="$INCLUDE" clean
-fi
+#Build VAL/PAL static library and Tests ELFs
+echo "make -f $SOURCE/tools/makefiles/Makefile $MAKE_OPTIONS USER_INCLUDE=\"$INCLUDE\" all "
+make -f $SOURCE/tools/makefiles/Makefile $MAKE_OPTIONS USER_INCLUDE="$INCLUDE" all

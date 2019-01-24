@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,7 +42,8 @@ void val_entry(void)
     /* Compliance header print */
     if (test_id == VAL_INVALID_TEST_ID)
     {
-        val_print(PRINT_ALWAYS, "\n***** PSA Compliance Suite - Version %d.", PSA_ACS_MAJOR_VER);
+        val_print(PRINT_ALWAYS, "\n***** PSA Architecture Test Suite - Version %d.",
+                                                                         PSA_ACS_MAJOR_VER);
         val_print(PRINT_ALWAYS, "%d *****\n", PSA_ACS_MINOR_VER);
     }
 
@@ -50,9 +51,7 @@ void val_entry(void)
     val_dispatcher(test_id);
 
 exit:
-    val_print(PRINT_ALWAYS, "\n\nEntering standby\n", 0);
-    while(1)
-    {
-        asm volatile("WFI");
-    }
+    val_print(PRINT_ALWAYS, "\nEntering standby.. \n", 0);
+
+    pal_terminate_simulation();
 }

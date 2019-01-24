@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -62,7 +62,10 @@ typedef enum _SOC_PERIPHERAL_CONFIG_ID_ {
 } soc_peripheral_cfg_id_t;
 
 typedef enum _MEMORY_CONFIG_ID_ {
-  MEMORY_NVMEM = 0x2
+  MEMORY_NVMEM                    = 0x2,
+  MEMORY_NSPE_MMIO                = 0x3,
+  MEMORY_CLIENT_PARTITION_MMIO    = 0x4,
+  MEMORY_DRIVER_PARTITION_MMIO    = 0x5,
 } memory_cfg_id_t;
 
 typedef enum _MISCELLANEOUS_CONFIG_ID_ {
@@ -74,12 +77,15 @@ typedef enum _MISCELLANEOUS_CONFIG_ID_ {
   Assign group type to each system component
 **/
 typedef enum _COMPONENT_GROUPING_{
-  UART          = GROUP_SOC_PERIPHERAL,
-  TIMER         = GROUP_SOC_PERIPHERAL,
-  WATCHDOG      = GROUP_SOC_PERIPHERAL,
-  NVMEM         = GROUP_MEMORY,
-  BOOT          = GROUP_MISCELLANEOUS,
-  DUT           = GROUP_MISCELLANEOUS,
+  UART                     = GROUP_SOC_PERIPHERAL,
+  TIMER                    = GROUP_SOC_PERIPHERAL,
+  WATCHDOG                 = GROUP_SOC_PERIPHERAL,
+  NVMEM                    = GROUP_MEMORY,
+  NSPE_MMIO                = GROUP_MEMORY,
+  CLIENT_PARTITION_MMIO    = GROUP_MEMORY,
+  DRIVER_PARTITION_MMIO    = GROUP_MEMORY,
+  BOOT                     = GROUP_MISCELLANEOUS,
+  DUT                      = GROUP_MISCELLANEOUS,
 } comp_group_assign_t;
 
 /**
@@ -169,6 +175,7 @@ typedef struct _SOC_PER_INFO_DESC_ {
   uint32_t    timeout_in_micro_sec_low;
   uint32_t    timeout_in_micro_sec_medium;
   uint32_t    timeout_in_micro_sec_high;
+  uint32_t    timeout_in_micro_sec_crypto;
   uint32_t    num_of_tick_per_micro_sec;
   dev_attr_t  attribute;
 } soc_peripheral_desc_t;

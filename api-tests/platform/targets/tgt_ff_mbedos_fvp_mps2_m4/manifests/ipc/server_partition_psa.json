@@ -1,0 +1,75 @@
+{
+  "psa_framework_version": 1.0,
+  "name": "SERVER_PARTITION",
+  "type": "APPLICATION-ROT",
+  "priority": "NORMAL",
+  "id": "0x00000002",
+  "description": "Server partition executing server test func",
+  "entry_point": "server_main",
+  "stack_size": "0x400",
+  "heap_size": "0x100",
+  "services": [{
+      "name": "SERVER_TEST_DISPATCHER_SID",
+      "sid": "0x0000FB01",
+      "signal": "SERVER_TEST_DISPATCHER_SIG",
+      "non_secure_clients": true,
+      "minor_version": 1,
+      "minor_policy": "RELAXED"
+    },
+    {
+      "name": "SERVER_SECURE_CONNECT_ONLY_SID",
+      "sid": "0x0000FB02",
+      "signal": "SERVER_SECURE_CONNECT_ONLY_SIG",
+      "non_secure_clients": false,
+      "minor_version": 2,
+      "minor_policy": "RELAXED"
+    },
+    {
+      "name": "SERVER_STRICT_MINOR_VERSION_SID",
+      "sid": "0x0000FB03",
+      "signal": "SERVER_STRICT_MINOR_VERSION_SIG",
+      "non_secure_clients": true,
+      "minor_version": 2,
+      "minor_policy": "STRICT"
+    },
+    {
+      "name": "SERVER_UNSPECIFED_MINOR_V_SID",
+      "sid": "0x0000FB04",
+      "signal": "SERVER_UNSPECIFED_MINOR_V_SIG",
+      "non_secure_clients": true
+    },
+    {
+      "name": "SERVER_RELAX_MINOR_VERSION_SID",
+      "sid": "0x0000FB05",
+      "signal": "SERVER_RELAX_MINOR_VERSION_SIG",
+      "non_secure_clients": true,
+      "minor_version": 2,
+      "minor_policy": "RELAXED"
+    },
+    {
+      "name": "SERVER_UNEXTERN_SID",
+      "sid": "0x0000FB06",
+      "signal": "SERVER_UNEXTERN_SIG",
+      "non_secure_clients": true,
+      "minor_version": 2,
+      "minor_policy": "RELAXED"
+    },
+    {
+      "name": "SERVER_CONNECTION_DROP_SID",
+      "sid": "0x0000FB07",
+      "signal": "SERVER_CONNECTION_DROP_SIG",
+      "non_secure_clients": true,
+      "minor_version": 2,
+      "minor_policy": "RELAXED"
+    }
+  ],
+  "dependencies": [
+    "DRIVER_UART_SID",
+    "DRIVER_NVMEM_SID"
+  ],
+  "linker_pattern": {
+    "object_list": [
+    "server_partition.a"
+    ]
+  }
+}

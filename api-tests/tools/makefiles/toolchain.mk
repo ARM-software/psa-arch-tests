@@ -1,4 +1,4 @@
-# * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -72,16 +72,12 @@ OBJDUMP=fromelf
         endif
     endif
 
-COMPILER_OPTIONS= --target=arm-arm-none-eabi $(TARGET_SWITCH) -Wall -Werror -fshort-enums -fshort-wchar -funsigned-char -fdata-sections -ffunction-sections -mno-unaligned-access -mfpu=none -DVAL_NSPE_BUILD
+COMPILER_OPTIONS= --target=arm-arm-none-eabi $(TARGET_SWITCH) -Wall -Werror -fshort-enums -fshort-wchar -funsigned-char -fdata-sections -ffunction-sections -mno-unaligned-access -mfpu=none
 AR_OPTIONS= --create -cr
-LINKER_OPTIONS= --strict --map --symbols --xref --entry=acs_test_info --info=summarysizes,sizes,totals,unused,veneers --diag_warning=L6204
+LINKER_OPTIONS= --strict --map --symbols --xref  --info=summarysizes,sizes,totals,unused,veneers --diag_warning=L6204
 OBJDUMP_OPTIONS= -c -d --datasymbols
 endif
 #### ARMCLANG OPTIONS - END ####
-
-ifeq (${SUITE}, crypto)
-COMPILER_OPTIONS += -DCRYPTO_SUITE
-endif
 
 COMPILER_OPTIONS += -DVERBOSE=$(VERBOSE)
 
@@ -91,6 +87,22 @@ endif
 
 ifeq (${PSA_IPC_IMPLEMENTED}, 1)
 COMPILER_OPTIONS += -DPSA_IPC_IMPLEMENTED
+endif
+
+ifeq (${PSA_CRYPTO_IMPLEMENTED}, 1)
+COMPILER_OPTIONS += -DPSA_CRYPTO_IMPLEMENTED
+endif
+
+ifeq (${PSA_PROTECTED_STORAGE_IMPLEMENTED}, 1)
+COMPILER_OPTIONS += -DPSA_PROTECTED_STORAGE_IMPLEMENTED
+endif
+
+ifeq (${PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED}, 1)
+COMPILER_OPTIONS += -DPSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED
+endif
+
+ifeq (${PSA_INITIAL_ATTESTATION_IMPLEMENTED}, 1)
+COMPILER_OPTIONS += -DPSA_INITIAL_ATTESTATION_IMPLEMENTED
 endif
 
 CC= $(COMPILER) $(COMPILER_OPTIONS) $(CC_OPTIONS) $(USER_INCLUDE) $(INCLUDE)

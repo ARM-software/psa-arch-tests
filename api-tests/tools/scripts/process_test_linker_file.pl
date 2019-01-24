@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #/** @file
-# * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -70,4 +70,10 @@ if(defined($ns_test_start_addr))
 else
 {
     die ("Error: ns_test_addr is not found in target.cfg file\n");
+}
+
+if($toolchain eq "ARMCLANG")
+{
+    system("cpp -x assembler-with-cpp -w -E -o $linker_out.tmp $linker_out ") && die ("Failed to process $linker_out\n");
+    system("cp $linker_out.tmp  $linker_out");
 }

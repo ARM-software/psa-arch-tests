@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,18 +18,7 @@
 #ifndef _VAL_COMMON_H_
 #define _VAL_COMMON_H_
 
-#include <string.h>
-#include <stdint.h>
-#include <stdlib.h>
-
-/* typedef's */
-typedef uint8_t             bool_t;
-typedef uint32_t            addr_t;
-typedef uint32_t            test_id_t;
-typedef uint32_t            block_id_t;
-typedef char                char8_t;
-typedef uint32_t            cfg_id_t;
-
+#include "pal_common.h"
 
 #ifndef VAL_NSPE_BUILD
 #define STATIC_DECLARE  static
@@ -84,17 +73,22 @@ typedef uint32_t            cfg_id_t;
 #define IS_TEST_PENDING(status) (((status >> TEST_STATE_BIT) & TEST_STATE_MASK) == TEST_PENDING)
 #define IS_TEST_START(status)   (((status >> TEST_STATE_BIT) & TEST_STATE_MASK) == TEST_START)
 #define IS_TEST_END(status)     (((status >> TEST_STATE_BIT) & TEST_STATE_MASK) == TEST_END)
-#define VAL_ERROR(status)       (status?1:0)
+#define VAL_ERROR(status)       ((status & TEST_STATUS_MASK) ? 1 : 0)
 
 
 
 /* Test Defines */
 #define TEST_PUBLISH(test_id, entry) \
-   const val_test_info_t __attribute__((section(".acs_test_info"))) CONCAT(acs_test_info, entry) = {test_id, entry}
+   const val_test_info_t __attribute__((section(".acs_test_info"))) \
+                      CONCAT(acs_test_info, entry) = {test_id, entry}
 
-#define VAL_MAX_TEST_PER_COMP           200
-#define VAL_FF_BASE                     0
-#define VAL_CRYPTO_BASE                 1
+#define VAL_MAX_TEST_PER_COMP                200
+#define VAL_FF_BASE                            0
+#define VAL_CRYPTO_BASE                        1
+#define VAL_PROTECTED_STORAGE_BASE             2
+#define VAL_INTERNAL_TRUSTED_STORAGE_BASE      3
+#define VAL_INITIAL_ATTESTATION_BASE           4
+
 #define VAL_GET_COMP_NUM(test_id)      \
    ((test_id - (test_id % VAL_MAX_TEST_PER_COMP)) / VAL_MAX_TEST_PER_COMP)
 #define VAL_GET_TEST_NUM(test_id)      (test_id % VAL_MAX_TEST_PER_COMP)
@@ -102,7 +96,7 @@ typedef uint32_t            cfg_id_t;
 
 #define TEST_FIELD(num1,num2)           (num2 << 8 | num1)
 #define GET_TEST_ISOLATION_LEVEL(num)   (num & 0x3)
-#define GET_WD_TIMOUT_TYPE(num)         ((num >> 8) & 0x3)
+#define GET_WD_TIMOUT_TYPE(num)         ((num >> 8) & 0x7)
 
 #define TEST_CHECKPOINT_NUM(n)          n
 #define TEST(n)                         n
@@ -121,8 +115,55 @@ typedef uint32_t            cfg_id_t;
 #define VAL_NVMEM_BLOCK_SIZE           4
 #define VAL_NVMEM_OFFSET(nvmem_idx)    (nvmem_idx * VAL_NVMEM_BLOCK_SIZE)
 
-#define UART_INIT_SIGN 0xff
+#define UART_INIT_SIGN  0xff
 #define UART_PRINT_SIGN 0xfe
+
+#define TEST_PANIC()                          \
+    do {                                         \
+    } while(1)
+
+#define TEST_ASSERT_EQUAL(arg1, arg2, checkpoint)                                   \
+    do {                                                                            \
+        if ((arg1) != arg2)                                                         \
+        {                                                                           \
+            val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
+            val->print(PRINT_ERROR, "\tActual: %d\n", arg1);                        \
+            val->print(PRINT_ERROR, "\tExpected: %d\n", arg2);                      \
+            return 1;                                                               \
+        }                                                                           \
+    } while (0)
+
+#define TEST_ASSERT_DUAL(arg1, status1, status2, checkpoint)                        \
+    do {                                                                            \
+        if ((arg1) != status1 && (arg1) != status2)                                 \
+        {                                                                           \
+            val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
+            val->print(PRINT_ERROR, "\tActual: %d\n", arg1);                        \
+            val->print(PRINT_ERROR, "\tExpected: %d", status1);                     \
+            val->print(PRINT_ERROR, "or %d\n", status2);                            \
+            return 1;                                                               \
+        }                                                                           \
+    } while (0)
+
+#define TEST_ASSERT_NOT_EQUAL(arg1, arg2, checkpoint)                               \
+    do {                                                                            \
+        if ((arg1) == arg2)                                                         \
+        {                                                                           \
+            val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
+            val->print(PRINT_ERROR, "\tValue: %d\n", arg1);                         \
+            return 1;                                                               \
+        }                                                                           \
+    } while (0)
+
+#define TEST_ASSERT_MEMCMP(buf1, buf2, size, checkpoint)                            \
+    do {                                                                            \
+        if (memcmp(buf1, buf2, size))                                               \
+        {                                                                           \
+            val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d : ", checkpoint);   \
+            val->print(PRINT_ERROR, "Unequal data in compared buffers\n", 0);       \
+            return 1;                                                               \
+        }                                                                           \
+    } while (0)
 
 /* enums */
 typedef enum {
@@ -152,29 +193,6 @@ typedef enum {
     NV_TEST_CNT         = 0x3,
 } nvmem_index_t;
 
-typedef enum {
-    WD_INIT_SEQ         = 0x1,
-    WD_ENABLE_SEQ       = 0x2,
-    WD_DISABLE_SEQ      = 0x3,
-    WD_STATUS_SEQ       = 0x4,
-} wd_fn_type_t;
-
-typedef enum {
-    WD_LOW_TIMEOUT      = 0x1,
-    WD_MEDIUM_TIMEOUT   = 0x2,
-    WD_HIGH_TIMEOUT     = 0x3,
-} wd_timeout_type_t;
-
-typedef enum {
-    NVMEM_READ             = 0x1,
-    NVMEM_WRITE            = 0x2,
-} nvmem_fn_type_t;
-
-typedef enum {
-    UART_INIT             = 0x1,
-    UART_PRINT            = 0x2,
-} uart_fn_type_t;
-
 /* enums to report test sub-state */
 typedef enum {
   VAL_STATUS_SUCCESS                     = 0x0,
@@ -203,6 +221,9 @@ typedef enum {
   VAL_STATUS_INVALID_SIZE                = 0x26,
   VAL_STATUS_DATA_MISMATCH               = 0x27,
   VAL_STATUS_BOOT_EXPECTED_BUT_FAILED    = 0x28,
+  VAL_STATUS_INIT_ALREADY_DONE           = 0x29,
+  VAL_STATUS_HEAP_NOT_AVAILABLE          = 0x2A,
+  VAL_STATUS_ERROR_MAX                   = INT_MAX,
 } val_status_t;
 
 /* verbosity enums */
@@ -215,6 +236,14 @@ typedef enum {
     PRINT_ALWAYS  = 9
 } print_verbosity_t;
 
+/* Interrupt test function id enums */
+typedef enum {
+    TEST_PSA_EOI_WITH_NON_INTR_SIGNAL    = 1,
+    TEST_PSA_EOI_WITH_MULTIPLE_SIGNALS   = 2,
+    TEST_PSA_EOI_WITH_UNASSERTED_SIGNAL  = 3,
+    TEST_INTR_SERVICE                    = 4,
+} test_intr_fn_id_t;
+
 /* typedef's */
 typedef struct {
     boot_state_t state;
@@ -226,20 +255,6 @@ typedef struct {
     uint32_t fail_cnt:8;
     uint32_t sim_error_cnt:8;
 } test_count_t;
-
-typedef struct {
-    wd_fn_type_t wd_fn_type;
-    addr_t       wd_base_addr;
-    uint32_t     wd_time_us;
-    uint32_t     wd_timer_tick_us;
-} wd_param_t;
-
-typedef struct {
-    nvmem_fn_type_t nvmem_fn_type;
-    addr_t          base;
-    uint32_t        offset;
-    int             size;
-} nvmem_param_t;
 
 typedef struct {
     uint16_t test_num;
