@@ -28,31 +28,36 @@ typedef struct {
     psa_ps_status_t        status;
 } test_data;
 
-static psa_ps_create_flags_t flag;
 static test_data s007_data[] = {
 {
  "This is dummy for index0", 0, 0
 },
 {
- "Create a valid storage entity with non-zero flag value", VAL_PS_SET, PSA_PS_SUCCESS
+ "Create a valid storage entity", VAL_PS_SET, PSA_PS_SUCCESS
 },
 {
- "try to change the flag value with another non-zero value", VAL_PS_SET, PSA_PS_ERROR_FLAGS_SET_AFTER_CREATE
+ "Increase the length of storage", VAL_PS_SET, PSA_PS_SUCCESS
 },
 {
- "try to change the flag value with zero value", VAL_PS_SET, PSA_PS_ERROR_FLAGS_SET_AFTER_CREATE
+ "Try to access old length", VAL_PS_GET, PSA_PS_SUCCESS
 },
 {
- "Remove the storage entity ", VAL_PS_REMOVE, PSA_PS_SUCCESS
+ "Try to access valid length less than set length ", VAL_PS_GET, PSA_PS_SUCCESS
 },
 {
- "Create a valid storage entity with zero flag value", VAL_PS_SET, PSA_PS_SUCCESS
+ "This is dummy for index5", 0, 0
 },
 {
- "try to change the flag value with  non-zero value", VAL_PS_SET, PSA_PS_SUCCESS
+ "Decrease the length of storage", VAL_PS_SET, PSA_PS_SUCCESS
 },
 {
- "try to change the flag again to zero value", VAL_PS_SET, PSA_PS_ERROR_FLAGS_SET_AFTER_CREATE
+ "Try to access old length", VAL_PS_GET, PSA_PS_ERROR_INCORRECT_SIZE
+},
+{
+ "Try to access old length", VAL_PS_GET, PSA_PS_ERROR_INCORRECT_SIZE
+},
+{
+ "Try to access data with correct length", VAL_PS_GET, PSA_PS_SUCCESS
 },
 {
  "Remove the storage entity ", VAL_PS_REMOVE, PSA_PS_SUCCESS

@@ -72,7 +72,7 @@ int32_t psa_sst_apis_check_success_case(security_t caller)
 
     /* Calling SET function with BASE  uid_value , data_len zero and valid data pointer */
     val->print(PRINT_TEST, "[Check 1] Set UID with data length zero and call storage apis\n", 0);
-    if (psa_sst_apis_check(UID_BASE_VALUE, data_len, write_buff, flag))
+    if (psa_sst_apis_check(UID_BASE_VALUE + 1, data_len, write_buff, flag))
     {
         val->print(PRINT_ERROR, "Data Len = %d\n", data_len);
         val->print(PRINT_ERROR, "Create Flag value =  %d\n", flag);

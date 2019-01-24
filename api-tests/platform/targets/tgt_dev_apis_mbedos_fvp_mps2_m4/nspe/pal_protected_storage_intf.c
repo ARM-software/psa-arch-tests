@@ -65,6 +65,8 @@ uint32_t pal_ps_function(int type, va_list valist)
          data_length = va_arg(valist, uint32_t);
          p_write_data = va_arg(valist, const void*);
          return psa_ps_set_extended(uid, offset, data_length, p_write_data);
+     case PAL_PS_GET_SUPPORT:
+         return psa_ps_get_support();
     default:
         return PAL_STATUS_UNSUPPORTED_FUNC;
     }

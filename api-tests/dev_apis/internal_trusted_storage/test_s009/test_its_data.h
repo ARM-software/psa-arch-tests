@@ -43,7 +43,7 @@ static test_data s009_data[] = {
  "Create storage of zero size", VAL_ITS_SET, PSA_ITS_SUCCESS
 },
 {
- "try to set 0 buffer for previous created storage", VAL_ITS_SET, PSA_ITS_ERROR_BAD_POINTER
+ "Try to set 0 buffer for previous created storage", VAL_ITS_SET, PSA_ITS_ERROR_BAD_POINTER
 },
 {
  "Call get_info api to check data size", VAL_ITS_GET_INFO, PSA_ITS_SUCCESS

@@ -34,13 +34,13 @@ static test_data s001_data[] = {
  "This is dummy for index0", 0, 0
 },
 {
- "Call the get api when no uid is set", VAL_PS_GET, PSA_PS_ERROR_KEY_NOT_FOUND
+ "Call the get api when no uid is set", VAL_PS_GET, PSA_PS_ERROR_UID_NOT_FOUND
 },
 {
- "Call the get_info api when no uid is set", VAL_PS_GET_INFO, PSA_PS_ERROR_KEY_NOT_FOUND
+ "Call the get_info api when no uid is set", VAL_PS_GET_INFO, PSA_PS_ERROR_UID_NOT_FOUND
 },
 {
- "Call the remove api when no uid is set", VAL_PS_REMOVE, PSA_PS_ERROR_KEY_NOT_FOUND
+ "Call the remove api when no uid is set", VAL_PS_REMOVE, PSA_PS_ERROR_UID_NOT_FOUND
 },
 {
  "Create a valid storage entity with uid1", VAL_PS_SET, PSA_PS_SUCCESS
@@ -52,25 +52,25 @@ static test_data s001_data[] = {
  "Remove uid1", VAL_PS_REMOVE, PSA_PS_SUCCESS
 },
 {
- "Call get api for uid1", VAL_PS_GET, PSA_PS_ERROR_KEY_NOT_FOUND
+ "Call get api for uid1", VAL_PS_GET, PSA_PS_ERROR_UID_NOT_FOUND
 },
 {
- "Call get_info api for uid1", VAL_PS_GET_INFO, PSA_PS_ERROR_KEY_NOT_FOUND
+ "Call get_info api for uid1", VAL_PS_GET_INFO, PSA_PS_ERROR_UID_NOT_FOUND
 },
 {
- "Call remove api for uid1", VAL_PS_REMOVE, PSA_PS_ERROR_KEY_NOT_FOUND
+ "Call remove api for uid1", VAL_PS_REMOVE, PSA_PS_ERROR_UID_NOT_FOUND
 },
 {
  "Create a valid storage entity again with uid1", VAL_PS_SET, PSA_PS_SUCCESS
 },
 {
- "Call get api for uid not same as uid1 or uid2", VAL_PS_GET, PSA_PS_ERROR_KEY_NOT_FOUND
+ "Call get api for uid not same as uid1 or uid2", VAL_PS_GET, PSA_PS_ERROR_UID_NOT_FOUND
 },
 {
- "Call get_info for uid not same as uid1 or uid2", VAL_PS_GET_INFO, PSA_PS_ERROR_KEY_NOT_FOUND
+ "Call get_info for uid not same as uid1 or uid2", VAL_PS_GET_INFO, PSA_PS_ERROR_UID_NOT_FOUND
 },
 {
- "Call remove api for uid not same as uid1 or uid2", VAL_PS_REMOVE, PSA_PS_ERROR_KEY_NOT_FOUND
+ "Call remove api for uid not same as uid1 or uid2", VAL_PS_REMOVE, PSA_PS_ERROR_UID_NOT_FOUND
 },
 {
  "Remove uid1", VAL_PS_REMOVE, PSA_PS_SUCCESS

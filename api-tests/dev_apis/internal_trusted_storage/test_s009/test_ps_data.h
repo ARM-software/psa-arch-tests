@@ -34,16 +34,16 @@ static test_data s009_data[] = {
  "This is dummy for index0", 0, 0
 },
 {
- "Call set api with 0 write buffer", VAL_PS_SET, PSA_PS_ERROR_BAD_POINTER
+ "Call set api with 0 write buffer", VAL_PS_SET, PSA_PS_ERROR_INVALID_ARGUMENT
 },
 {
- "Call to get_info api should fail", VAL_PS_GET_INFO, PSA_PS_ERROR_KEY_NOT_FOUND
+ "Call to get_info api should fail", VAL_PS_GET_INFO, PSA_PS_ERROR_UID_NOT_FOUND
 },
 {
  "Create storage of zero size", VAL_PS_SET, PSA_PS_SUCCESS
 },
 {
- "try to set 0 buffer for previous created storage", VAL_PS_SET, PSA_PS_ERROR_BAD_POINTER
+ "Try to set 0 buffer for previous created storage", VAL_PS_SET, PSA_PS_ERROR_INVALID_ARGUMENT
 },
 {
  "Call get_info api to check data size", VAL_PS_GET_INFO, PSA_PS_SUCCESS
@@ -52,10 +52,10 @@ static test_data s009_data[] = {
  "This is dummy for index6", 0, 0
 },
 {
- "Call get api with 0 read buffer", VAL_PS_GET, PSA_PS_ERROR_BAD_POINTER
+ "Call get api with 0 read buffer", VAL_PS_GET, PSA_PS_ERROR_INVALID_ARGUMENT
 },
 {
- "Call get_info api with 0 info buffer", VAL_PS_GET_INFO, PSA_PS_ERROR_BAD_POINTER
+ "Call get_info api with 0 info buffer", VAL_PS_GET_INFO, PSA_PS_ERROR_INVALID_ARGUMENT
 },
 {
  "Remove the storage entity ", VAL_PS_REMOVE, PSA_PS_SUCCESS

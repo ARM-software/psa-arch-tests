@@ -20,8 +20,7 @@
 
 #include "val.h"
 
-#define UID_BASE_VALUE  0
-#define UID_MAX_VALUE  15
+#define UID_BASE_VALUE 0
 #define BYTES_TO_BITS(byte)             (byte * 8)
 
 enum ps_function_code {
@@ -31,6 +30,7 @@ enum ps_function_code {
     VAL_PS_REMOVE                       = 0x4,
     VAL_PS_CREATE                       = 0x5,
     VAL_PS_SET_EXTENDED                 = 0x6,
+    VAL_PS_GET_SUPPORT                  = 0x7,
 };
 
 uint32_t val_ps_function(int type, ...);

@@ -14,21 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
+#ifndef _TEST_P012_CLIENT_TESTS_H_
+#define _TEST_P012_CLIENT_TESTS_H_
 
-#ifndef _VAL_INTERNAL_TRUSTED_STORAGE_H_
-#define _VAL_INTERNAL_TRUSTED_STORAGE_H_
+#define test_entry CONCAT(test_entry_, p012)
+#define val CONCAT(val,test_entry)
+#define psa CONCAT(psa,test_entry)
 
-#include "val.h"
+extern val_api_t *val;
+extern psa_api_t *psa;
+extern client_test_t test_p012_sst_list[];
 
-#define UID_BASE_VALUE  0
-#define BYTES_TO_BITS(byte)             (byte * 8)
+int32_t psa_sst_optional_api_success_check(security_t caller);
 
-enum its_function_code {
-    VAL_ITS_SET                         = 0x1,
-    VAL_ITS_GET                         = 0x2,
-    VAL_ITS_GET_INFO                    = 0x3,
-    VAL_ITS_REMOVE                      = 0x4,
-};
-
-uint32_t val_its_function(int type, ...);
-#endif /* _VAL_INTERNAL_TRUSTED_STORAGE_H_ */
+#endif /* _TEST_P012_CLIENT_TESTS_H_ */
