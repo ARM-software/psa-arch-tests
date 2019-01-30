@@ -20,6 +20,27 @@
 
 #include "pal_common.h"
 
+#define PSA_ALG_CBC_NO_PADDING                  ((psa_algorithm_t)0x04600100)
+#define PSA_ALG_CBC_PKCS7                       ((psa_algorithm_t)0x04600101)
+#define PSA_ALG_CFB                             ((psa_algorithm_t)0x04c00002)
+
+#define PSA_KEY_TYPE_IS_UNSTRUCTURED(type) \
+    (((type) & PSA_KEY_TYPE_CATEGORY_MASK & ~(psa_key_type_t)0x10000000) == \
+     PSA_KEY_TYPE_CATEGORY_SYMMETRIC)
+
+#define PSA_ALG_AEAD_TAG_LENGTH_MASK            ((psa_algorithm_t)0x00003f00)
+#define PSA_AEAD_TAG_LENGTH_OFFSET 8
+#define PSA_ALG_AEAD_WITH_TAG_LENGTH(alg, tag_length)                   \
+    (((alg) & ~PSA_ALG_AEAD_TAG_LENGTH_MASK) |                          \
+     ((tag_length) << PSA_AEAD_TAG_LENGTH_OFFSET &                      \
+      PSA_ALG_AEAD_TAG_LENGTH_MASK))
+
+#define PSA_ALG_MAC_TRUNCATION_MASK             ((psa_algorithm_t)0x00003f00)
+#define PSA_MAC_TRUNCATION_OFFSET 8
+#define PSA_ALG_TRUNCATED_MAC(alg, mac_length)                          \
+    (((alg) & ~PSA_ALG_MAC_TRUNCATION_MASK) |                           \
+     ((mac_length) << PSA_MAC_TRUNCATION_OFFSET & PSA_ALG_MAC_TRUNCATION_MASK))
+
 enum crypto_function_code {
     PAL_CRYPTO_INIT                     = 0x1,
     PAL_CRYPTO_GENERATE_RANDOM          = 0x2,
@@ -36,6 +57,7 @@ enum crypto_function_code {
     PAL_CRYPTO_GET_KEY_POLICY           = 0xD,
     PAL_CRYPTO_GET_KEY_INFORMATION      = 0xE,
     PAL_CRYPTO_GET_KEY_LIFETIME         = 0xF,
+    PAL_CRYPTO_SET_KEY_LIFETIME         = 0x10,
     PAL_CRYPTO_HASH_SETUP               = 0x11,
     PAL_CRYPTO_HASH_UPDATE              = 0x12,
     PAL_CRYPTO_HASH_VERIFY              = 0x13,
@@ -67,7 +89,6 @@ enum crypto_function_code {
     PAL_CRYPTO_ASYMMTERIC_SIGN          = 0x30,
     PAL_CRYPTO_ASYMMTERIC_VERIFY        = 0x31,
     PAL_CRYPTO_KEY_AGREEMENT            = 0x32,
-    PAL_CRYPTO_ALLOCATE_KEY             = 0x33,
     PAL_CRYPTO_FREE                     = 0xFE,
 };
 

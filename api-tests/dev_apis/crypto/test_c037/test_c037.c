@@ -63,79 +63,72 @@ int32_t psa_cipher_finish_test(security_t caller)
         val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check1[i].usage,
                                                                           check1[i].key_alg);
 
-        /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check1[i].key_type,
-                                              check1[i].key_length, &check1[i].key_handle);
+        /* Set the usage policy on a key slot */
+        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_slot,
+                    &policy);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
-        /* Set the usage policy on a key slot */
-        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_handle,
-                    &policy);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
-
         /* Import the key data into the key slot */
-        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, check1[i].key_handle,
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, check1[i].key_slot,
                     check1[i].key_type, check1[i].key_data, check1[i].key_length);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
         if (check1[i].usage == PSA_KEY_USAGE_ENCRYPT)
         {
             /* Set the key for a multipart symmetric encryption operation */
             status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation,
-                        check1[i].key_handle, check1[i].key_alg);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
+                        check1[i].key_slot, check1[i].key_alg);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
         }
         else if (check1[i].usage == PSA_KEY_USAGE_DECRYPT)
         {
             /* Set the key for a multipart symmetric decryption operation */
             status = val->crypto_function(VAL_CRYPTO_CIPHER_DECRYPT_SETUP, &operation,
-                        check1[i].key_handle, check1[i].key_alg);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+                        check1[i].key_slot, check1[i].key_alg);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
         }
 
         /* Set an IV for a symmetric encryption operation */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_SET_IV, &operation, check1[i].iv,
                     check1[i].iv_size);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
         /* Encrypt or decrypt a message fragment in an active cipher operation */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_UPDATE, &operation, check1[i].input,
                     check1[i].input_length, output, check1[i].output_size[SLOT_1], &update_length);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
         /* Finish encrypting or decrypting a message in a cipher operation */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_FINISH, &operation,
                     output + update_length, check1[i].output_size[SLOT_2], &finish_length);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(9));
 
         if (check1[i].expected_status != PSA_SUCCESS)
         {
             /* Abort a cipher operation */
             status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
             continue;
         }
 
         /* Check if the output length matches the expected length */
-        TEST_ASSERT_EQUAL(finish_length, check1[i].expected_output_length, TEST_CHECKPOINT_NUM(12));
+        TEST_ASSERT_EQUAL(finish_length, check1[i].expected_output_length, TEST_CHECKPOINT_NUM(11));
 
         /* Check if the output data matches the expected data */
-        TEST_ASSERT_MEMCMP(output, check1[i].expected_output,
-                          (update_length + finish_length),
-                           TEST_CHECKPOINT_NUM(13));
+        TEST_ASSERT_MEMCMP(output, check1[i].expected_output, (update_length + finish_length), TEST_CHECKPOINT_NUM(12));
 
         /* Finish encrypting or decrypting a message using an invalid operation should fail */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_FINISH, &invalid_operation, output,
                     check1[i].output_size[SLOT_2], &finish_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(14));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(13));
 
         /* Abort a cipher operation */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(15));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(14));
 
         /* Abort a cipher operation */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &invalid_operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(16));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(15));
     }
 
     return VAL_STATUS_SUCCESS;

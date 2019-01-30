@@ -1,13 +1,3 @@
-/**
- * \file psa/crypto_extra.h
- *
- * \brief PSA cryptography module: vendor extensions
- *
- * \note This file may not be included directly. Applications must
- * include psa/crypto.h.
- *
- * This file is reserved for vendor-specific definitions.
- */
 /*
  *  Copyright (C) 2019, Arm Limited, All rights reserved.
  *  SPDX-License-Identifier: Apache-2.0
@@ -23,8 +13,16 @@
  *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
+ */
+/**
+ * \file psa/crypto_extra.h
  *
- *  This file is part of mbed TLS (https://tls.mbed.org)
+ * \brief PSA cryptography module: vendor extensions
+ *
+ * \note This file may not be included directly. Applications must
+ * include psa/crypto.h.
+ *
+ * This file is reserved for vendor-specific definitions.
  */
 
 #ifndef PSA_CRYPTO_EXTRA_H
@@ -33,8 +31,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* Add vendor extensions here. */
 
 #ifdef __cplusplus
 }

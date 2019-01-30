@@ -60,30 +60,6 @@ static test_data check1[] = {
  PSA_ALG_SHA_512, PSA_SUCCESS,
 },
 
-{"Test psa_hash_setup with SHA512_224 algorithm\n",
- PSA_ALG_SHA_512_224, PSA_ERROR_NOT_SUPPORTED,
-},
-
-{"Test psa_hash_setup with SHA512_256 algorithm\n",
- PSA_ALG_SHA_512_256, PSA_ERROR_NOT_SUPPORTED,
-},
-
-{"Test psa_hash_setup with SHA3_224 algorithm\n",
- PSA_ALG_SHA3_224, PSA_ERROR_NOT_SUPPORTED,
-},
-
-{"Test psa_hash_setup with SHA3_256 algorithm\n",
- PSA_ALG_SHA3_256, PSA_ERROR_NOT_SUPPORTED,
-},
-
-{"Test psa_hash_setup with SHA3_384 algorithm\n",
- PSA_ALG_SHA3_384, PSA_ERROR_NOT_SUPPORTED,
-},
-
-{"Test psa_hash_setup with SHA3_512 algorithm\n",
- PSA_ALG_SHA3_512, PSA_ERROR_NOT_SUPPORTED,
-},
-
 {"Test psa_hash_setup with Invalid algorithm\n",
  PSA_ALG_INVALID, PSA_ERROR_INVALID_ARGUMENT,
 },

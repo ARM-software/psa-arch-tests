@@ -27,5 +27,4 @@ extern psa_api_t *psa;
 extern client_test_t test_c032_crypto_list[];
 
 int32_t psa_cipher_encrypt_setup_test(security_t caller);
-int32_t psa_cipher_encrypt_setup_negative_test(security_t caller);
 #endif /* _TEST_C032_CLIENT_TESTS_H_ */

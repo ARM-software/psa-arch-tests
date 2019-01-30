@@ -19,7 +19,7 @@
 
 typedef struct {
     char                    test_desc[75];
-    psa_key_handle_t        key_handle;
+    psa_key_slot_t          key_slot;
     psa_key_type_t          key_type;
     uint8_t                 key_data[32];
     uint32_t                key_length;
