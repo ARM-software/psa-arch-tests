@@ -21,10 +21,12 @@
 #include "test_c033.h"
 #include "test_data.h"
 
+#define SLOT_1      0
+#define SLOT_2      1
+
 client_test_t test_c033_crypto_list[] = {
     NULL,
     psa_cipher_decrypt_setup_test,
-    psa_cipher_decrypt_setup_negative_test,
     NULL,
 };
 
@@ -91,91 +93,28 @@ int32_t psa_cipher_decrypt_setup_test(security_t caller)
         else
             key_data = check1[i].key_data;
 
-        /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check1[i].key_type,
-                                              check1[i].key_length, &check1[i].key_handle);
+        /* Set the usage policy on a key slot */
+        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_slot[SLOT_1],
+                    &policy);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
-        /* Set the usage policy on a key slot */
-        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_handle,
-                    &policy);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
-
         /* Import the key data into the key slot */
-        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, check1[i].key_handle,
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, check1[i].key_slot[SLOT_1],
                     check1[i].key_type, key_data, check1[i].key_length);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
         /* Set the key for a multipart symmetric decryption operation */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_DECRYPT_SETUP, &operation,
-                    check1[i].key_handle, check1[i].key_alg);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
+                    check1[i].key_slot[SLOT_2], check1[i].key_alg);
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(5));
+
+        if (check1[i].expected_status != PSA_SUCCESS)
+            continue;
 
         /* Abort a cipher operation */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
-    }
-
-    return VAL_STATUS_SUCCESS;
-}
-
-int32_t psa_cipher_decrypt_setup_negative_test(security_t caller)
-{
-    int                     num_checks = sizeof(check2)/sizeof(check2[0]);
-    int32_t                 i, status;
-    psa_key_policy_t        policy;
-
-    /* Initialize the PSA crypto library*/
-    status = val->crypto_function(VAL_CRYPTO_INIT);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
-
-    for (i = 0; i < num_checks; i++)
-    {
-        /* Initialize a key policy structure to a default that forbids all
-         * usage of the key
-         */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
-
-        /* Setting up the watchdog timer for each check */
-        status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
-        TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
-
-        /* Set the standard fields of a policy structure */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check2[i].usage,
-                                                                          check2[i].key_alg);
-
-        val->print(PRINT_TEST, "[Check %d] Test psa_cipher_decrypt_setup - Invalid key handle\n",
-                                                                                   g_test_count++);
-        /* Set the key for a multipart symmetric decryption operation */
-        status = val->crypto_function(VAL_CRYPTO_CIPHER_DECRYPT_SETUP, &operation,
-                    check2[i].key_handle, check2[i].key_alg);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));
-
-        val->print(PRINT_TEST, "[Check %d] Test psa_cipher_decrypt_setup - Zero as key handle\n",
-                                                                                   g_test_count++);
-        /* Set the key for a multipart symmetric decryption operation */
-        status = val->crypto_function(VAL_CRYPTO_CIPHER_DECRYPT_SETUP, &operation,
-                    0, check2[i].key_alg);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
-
-        val->print(PRINT_TEST, "[Check %d] Test psa_cipher_decrypt_setup - Empty key handle\n",
-                                                                                   g_test_count++);
-        /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check2[i].key_type,
-                                              check2[i].key_length, &check2[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
-
-        /* Set the usage policy on a key slot */
-        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check2[i].key_handle,
-                    &policy);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
-
-        /* Set the key for a multipart symmetric decryption operation */
-        status = val->crypto_function(VAL_CRYPTO_CIPHER_DECRYPT_SETUP, &operation,
-                    check2[i].key_handle, check2[i].key_alg);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_EMPTY_SLOT, TEST_CHECKPOINT_NUM(7));
     }
 
     return VAL_STATUS_SUCCESS;
 }
-

@@ -21,7 +21,7 @@
 
 typedef struct {
     char                    test_desc[75];
-    psa_key_handle_t        key_handle;
+    psa_key_slot_t          key_slot;
     psa_key_type_t          key_type;
     uint8_t                 key_data[34];
     uint32_t                key_length;
@@ -192,18 +192,6 @@ static test_data check1[] = {
  BYTES_TO_BITS(AES_32B_KEY_SIZE), AES_32B_KEY_SIZE, PSA_SUCCESS
 },
 
-{"Test psa_get_key_information 2048 RSA public key\n", 4, PSA_KEY_TYPE_RSA_PUBLIC_KEY,
- {0},
- 294, PSA_KEY_USAGE_EXPORT, PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
- 2048, 294, PSA_SUCCESS
-},
-
-{"Test psa_get_key_information with RSA 2048 keypair\n", 5, PSA_KEY_TYPE_RSA_KEYPAIR,
- {0},
- 1193, PSA_KEY_USAGE_EXPORT, PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
- 2048, 1193, PSA_SUCCESS
-},
-
 {"Test psa_get_key_information with DES 64 bit key\n", 6, PSA_KEY_TYPE_DES,
  {0x70, 0x24, 0x55, 0x0C, 0x14, 0x9D, 0xED, 0x29},
  DES_8B_KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
@@ -224,27 +212,25 @@ static test_data check1[] = {
  DES3_3KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
  BYTES_TO_BITS(DES3_3KEY_SIZE), DES3_3KEY_SIZE, PSA_SUCCESS
 },
-
-{"Test psa_get_key_information with EC Public key\n", 9,
- PSA_KEY_TYPE_ECC_PUBLIC_KEY_BASE | PSA_ECC_CURVE_SECP192R1,
- {0},
- 75, PSA_KEY_USAGE_EXPORT, PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
- 192, 75, PSA_SUCCESS
-},
-
-{"Test psa_get_key_information with EC keypair\n", 10,
- PSA_KEY_TYPE_ECC_KEYPAIR_BASE | PSA_ECC_CURVE_SECP192R1,
- {0},
- 97, PSA_KEY_USAGE_EXPORT, PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
- 192, 97, PSA_SUCCESS
-},
 };
 
+
 static test_data check2[] = {
-{"Test psa_get_key_information negative cases\n", 11, PSA_KEY_TYPE_AES,
-{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
- 0x5F, 0xC9},
- AES_16B_KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
- BYTES_TO_BITS(AES_16B_KEY_SIZE), AES_16B_KEY_SIZE, PSA_SUCCESS
+{"Test psa_get_key_information with invalid key slot\n", INVALID_KEY_SLOT, PSA_KEY_TYPE_AES,
+{0},
+AES_16B_KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
+BYTES_TO_BITS(AES_16B_KEY_SIZE), AES_16B_KEY_SIZE, PSA_ERROR_INVALID_ARGUMENT
+},
+
+{"Test psa_get_key_information with zero key slot\n", ZERO_KEY_SLOT, PSA_KEY_TYPE_AES,
+{0},
+AES_16B_KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
+BYTES_TO_BITS(AES_16B_KEY_SIZE), AES_16B_KEY_SIZE, PSA_ERROR_INVALID_ARGUMENT
+},
+
+{"Test psa_get_key_information with empty key slot\n", EMPTY_KEY_SLOT, PSA_KEY_TYPE_AES,
+{0},
+AES_16B_KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
+BYTES_TO_BITS(AES_16B_KEY_SIZE), AES_16B_KEY_SIZE, PSA_ERROR_EMPTY_SLOT
 },
 };

@@ -57,9 +57,9 @@ int32_t psa_hash_abort_test(security_t caller)
         status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &operation);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
-        /* Multiple hash abort should succeed */
+        /* Multiple hash abort */
         status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(5));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(5));
 
     }
 
@@ -102,7 +102,7 @@ int32_t psa_hash_abort_before_operation_finish(security_t caller)
     /* Finish the calculation of the hash of a message */
     status = val->crypto_function(VAL_CRYPTO_HASH_FINISH, &operation, hash, hash_size,
                                   &hash_length);
-    TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_ARGUMENT, TEST_CHECKPOINT_NUM(6));
+    TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(6));
 
     return VAL_STATUS_SUCCESS;
 }

@@ -27,6 +27,5 @@ extern psa_api_t *psa;
 extern client_test_t test_c024_crypto_list[];
 
 int32_t psa_aead_encrypt_test(security_t caller);
-int32_t psa_aead_encrypt_negative_test(security_t caller);
 
 #endif /* _TEST_C024_CLIENT_TESTS_H_ */

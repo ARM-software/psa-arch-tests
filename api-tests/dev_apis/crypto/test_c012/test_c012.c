@@ -87,11 +87,7 @@ int32_t psa_hash_update_invalid_handle(security_t caller)
 
     /* Add a message fragment to a multipart hash operation */
     status = val->crypto_function(VAL_CRYPTO_HASH_UPDATE, &operation, input, input_length);
-    TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_ARGUMENT, TEST_CHECKPOINT_NUM(3));
-
-    /*Abort the hash operation */
-    status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &operation);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
+    TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(3));
 
     return VAL_STATUS_SUCCESS;
 }
@@ -114,7 +110,7 @@ int32_t psa_hash_update_with_completed_handle(security_t caller)
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
 
     val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
-    val->print(PRINT_TEST, "Test psa_hash_update with completed opertaion handle \n", 0);
+    val->print(PRINT_TEST, "Test psa_hash_update with completed operation handle \n", 0);
 
     /* Setting up the watchdog timer for each check */
     status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
@@ -135,11 +131,7 @@ int32_t psa_hash_update_with_completed_handle(security_t caller)
 
     /* Add a message fragment to a multipart hash operation */
     status = val->crypto_function(VAL_CRYPTO_HASH_UPDATE, &operation, input, input_length);
-    TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_ARGUMENT, TEST_CHECKPOINT_NUM(6));
-
-    /*Abort the hash operation */
-    status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &operation);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+    TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(6));
 
     return VAL_STATUS_SUCCESS;
 }

@@ -22,6 +22,27 @@
 
 #define BYTES_TO_BITS(byte)             (byte * 8)
 
+#define PSA_ALG_CBC_NO_PADDING                  ((psa_algorithm_t)0x04000001)
+#define PSA_ALG_CBC_PKCS7                       ((psa_algorithm_t)0x04010001)
+#define PSA_ALG_CFB                             ((psa_algorithm_t)0x04c00002)
+
+#define PSA_KEY_TYPE_IS_UNSTRUCTURED(type) \
+    (((type) & PSA_KEY_TYPE_CATEGORY_MASK & ~(psa_key_type_t)0x10000000) == \
+     PSA_KEY_TYPE_CATEGORY_SYMMETRIC)
+
+#define PSA_ALG_AEAD_TAG_LENGTH_MASK            ((psa_algorithm_t)0x00003f00)
+#define PSA_AEAD_TAG_LENGTH_OFFSET 8
+#define PSA_ALG_AEAD_WITH_TAG_LENGTH(alg, tag_length)                   \
+    (((alg) & ~PSA_ALG_AEAD_TAG_LENGTH_MASK) |                          \
+     ((tag_length) << PSA_AEAD_TAG_LENGTH_OFFSET &                      \
+      PSA_ALG_AEAD_TAG_LENGTH_MASK))
+
+#define PSA_ALG_MAC_TRUNCATION_MASK             ((psa_algorithm_t)0x00003f00)
+#define PSA_MAC_TRUNCATION_OFFSET 8
+#define PSA_ALG_TRUNCATED_MAC(alg, mac_length)                          \
+    (((alg) & ~PSA_ALG_MAC_TRUNCATION_MASK) |                           \
+     ((mac_length) << PSA_MAC_TRUNCATION_OFFSET & PSA_ALG_MAC_TRUNCATION_MASK))
+
 /* Size */
 #define AES_16B_KEY_SIZE                16
 #define AES_24B_KEY_SIZE                24
@@ -66,6 +87,7 @@ enum crypto_function_code {
     VAL_CRYPTO_GET_KEY_POLICY           = 0xD,
     VAL_CRYPTO_GET_KEY_INFORMATION      = 0xE,
     VAL_CRYPTO_GET_KEY_LIFETIME         = 0xF,
+    VAL_CRYPTO_SET_KEY_LIFETIME         = 0x10,
     VAL_CRYPTO_HASH_SETUP               = 0x11,
     VAL_CRYPTO_HASH_UPDATE              = 0x12,
     VAL_CRYPTO_HASH_VERIFY              = 0x13,
