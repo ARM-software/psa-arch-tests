@@ -1,22 +1,21 @@
-/** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
- * SPDX-License-Identifier : Apache-2.0
+#ifndef __PROTECTED_STORAGE_H__
+#define __PROTECTED_STORAGE_H__
+
+/*  Copyright (C) 2019, Arm Limited, All rights reserved.
+ *  SPDX-License-Identifier: Apache-2.0
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  Licensed under the Apache License, Version 2.0 (the "License"); you may
+ *  not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
  *  http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
-**/
-
-#ifndef __PROTECTED_STORAGE_H__
-#define __PROTECTED_STORAGE_H__
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 
 /** @file
 @brief This file describes the PSA Protected Storage API
@@ -25,8 +24,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define PSA_PS_API_VERSION_MAJOR  0  /**< The major version number of the PSA PS API. It will be incremented on significant updates that may include breaking changes */
-#define PSA_PS_API_VERSION_MINOR  7  /**< The minor version number of the PSA PS API. It will be incremented in small updates that are unlikely to include breaking changes */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define PSA_PS_API_VERSION_MAJOR  1  /**< The major version number of the PSA PS API. It will be incremented on significant updates that may include breaking changes */
+#define PSA_PS_API_VERSION_MINOR  0  /**< The minor version number of the PSA PS API. It will be incremented in small updates that are unlikely to include breaking changes */
 
 /** \brief Flags used when creating a data entry
  */
@@ -36,15 +39,15 @@ typedef uint32_t psa_ps_create_flags_t;
  */
 typedef uint64_t psa_ps_uid_t;
 
-#define PSA_PS_FLAG_NONE        0
-#define PSA_PS_FLAG_WRITE_ONCE (1 << 0) /**< The data associated with the uid will not be able to be modified or deleted. Intended to be used to set bits in `psa_ps_create_flags_t`*/
+#define PSA_PS_FLAG_NONE        0         /**< No flags to pass */
+#define PSA_PS_FLAG_WRITE_ONCE ( 1 << 0 ) /**< The data associated with the uid will not be able to be modified or deleted. Intended to be used to set bits in `psa_ps_create_flags_t`*/
 
 /**
  * \brief A container for metadata associated with a specific uid
  */
 struct psa_ps_info_t {
-    uint32_t size; /**< The size of the data associated with a uid **/
-    psa_ps_create_flags_t flags; /**< The flags set when the uid was created **/
+    uint32_t size;                  /**< The size of the data associated with a uid **/
+    psa_ps_create_flags_t flags;    /**< The flags set when the uid was created **/
 };
 /**
  * \brief The return status type for the PSA Trusted Storage functions
@@ -54,18 +57,16 @@ typedef uint32_t psa_ps_status_t;
 #define PSA_PS_SUCCESS                         0   /**<    The operation completed successfully */
 #define PSA_PS_ERROR_WRITE_ONCE                1   /**<    The operation failed because the provided key value was already created with PSA_PS_WRITE_ONCE_FLAG */
 #define PSA_PS_ERROR_FLAGS_NOT_SUPPORTED       2   /**<    The operation failed because one or more of the flags provided in `create_flags` is not supported or is not valid */
-#define PSA_PS_ERROR_INSUFFICIENT_SPACE        4   /**<    The operation failed because there was insufficient space on the storage medium */
-#define PSA_PS_ERROR_STORAGE_FAILURE           6   /**<    The operation failed because the physical storage has failed (Fatal error) */
-#define PSA_PS_ERROR_BAD_POINTER               7   /**<    The operation failed because one of the provided pointers is invalid, for example is `NULL` or references memory the caller cannot access */
-#define PSA_PS_ERROR_UID_NOT_FOUND             8   /**<    The operation failed because the provided uid value was not found in the storage */
-#define PSA_PS_ERROR_INCORRECT_SIZE            9   /**<    The operation failed because the data associated with provided key is not the same size as `data_size`, or `offset+data_size` is too large for the data, but `offset` is less than the size */
-#define PSA_PS_ERROR_OFFSET_INVALID           10   /**<    The operation failed because an offset was supplied that is invalid for the existing data associated with the uid. For example, offset  is greater that the size of the data */
-#define PSA_PS_ERROR_INVALID_ARGUMENT         11   /**<    The operation failed because one or more of the given arguments were invalid (null pointer, wrong flags etc.) */
-#define PSA_PS_ERROR_DATA_CORRUPT             12   /**<    The operation failed because data was corrupt when attempting to get the key */
-#define PSA_PS_ERROR_AUTH_FAILED              13   /**<    The operation failed because of an authentication failure when attempting to get the key */
-#define PSA_PS_ERROR_OPERATION_FAILED         14   /**<    The operation failed because of an unspecified/internal failure */
-#define PSA_PS_ERROR_INVALID_KEY              15   /**<    The associated UID does not exist or the provided properties do no match the existing UID */
-#define PSA_PS_ERROR_NOT_SUPPORTED            16   /**<    The returning function is not supported in this implementation of the API */
+#define PSA_PS_ERROR_INSUFFICIENT_SPACE        3   /**<    The operation failed because there was insufficient space on the storage medium */
+#define PSA_PS_ERROR_STORAGE_FAILURE           4   /**<    The operation failed because the physical storage has failed (Fatal error) */
+#define PSA_PS_ERROR_UID_NOT_FOUND             5   /**<    The operation failed because the provided key value was not found in the storage */
+#define PSA_PS_ERROR_INCORRECT_SIZE            6   /**<    The operation failed because the data associated with provided key is not the same size as `data_size`, or `offset+data_size` is too large for the data, but `offset` is less than the size */
+#define PSA_PS_ERROR_OFFSET_INVALID            7   /**<    The operation failed because an offset was supplied that is invalid for the existing data associated with the uid. For example, offset  is greater that the size of the data */
+#define PSA_PS_ERROR_INVALID_ARGUMENT          8   /**<    The operation failed because one or more of the given arguments were invalid (null pointer, wrong flags etc.) */
+#define PSA_PS_ERROR_DATA_CORRUPT              9   /**<    The operation failed because data was corrupt when attempting to get the key */
+#define PSA_PS_ERROR_AUTH_FAILED              10   /**<    The operation failed because of an authentication failure when attempting to get the key */
+#define PSA_PS_ERROR_OPERATION_FAILED         11   /**<    The operation failed because of an unspecified/internal failure */
+#define PSA_PS_ERROR_NOT_SUPPORTED            12   /**<    The returning function is not supported in this implementation of the API */
 
 /** Flag indicating that \ref psa_ps_create and \ref psa_ps_set_extended are supported */
 #define PSA_PS_SUPPORT_SET_EXTENDED (1 << 0)
@@ -82,14 +83,16 @@ typedef uint32_t psa_ps_status_t;
 
  * \retval      PSA_PS_SUCCESS                     The operation completed successfully
  * \retval      PSA_PS_ERROR_WRITE_ONCE            The operation failed because the provided uid value was already created with PSA_PS_WRITE_ONCE_FLAG
- * \retval      PSA_PS_ERROR_INVALID_ARGUMENT      The operation The operation failed because one or more of the given arguments were invalid.
+ * \retval      PSA_PS_ERROR_INVALID_ARGUMENT      The operation failed because one or more of the given arguments were invalid.
  * \retval      PSA_PS_ERROR_FLAGS_NOT_SUPPORTED   The operation failed because one or more of the flags provided in `create_flags` is not supported or is not valid
  * \retval      PSA_PS_ERROR_INSUFFICIENT_SPACE    The operation failed because there was insufficient space on the storage medium
  * \retval      PSA_PS_ERROR_STORAGE_FAILURE       The operation failed because the physical storage has failed (Fatal error)
  * \retval      PSA_PS_ERROR_OPERATION_FAILED      The operation failed because of an unspecified internal failure
  */
-psa_ps_status_t psa_ps_set(psa_ps_uid_t uid, uint32_t data_length,
-                           const void *p_data, psa_ps_create_flags_t create_flags);
+psa_ps_status_t psa_ps_set( psa_ps_uid_t uid,
+                            uint32_t data_length,
+                            const void *p_data,
+                            psa_ps_create_flags_t create_flags );
 
 /**
  * \brief Retrieve the value for a provided uid
@@ -101,16 +104,19 @@ psa_ps_status_t psa_ps_set(psa_ps_uid_t uid, uint32_t data_length,
  *
  * \return      A status indicating the success/failure of the operation
  *
- * \retval      PSA_PS_ERROR_INVALID_ARGUMENT   The operation The operation failed because one or more of the given arguments were invalid (null pointer, wrong flags etc.)
+ * \retval      PSA_PS_SUCCESS                  The operation completed successfully
+ * \retval      PSA_PS_ERROR_INVALID_ARGUMENT   The operation failed because one or more of the given arguments were invalid (null pointer, wrong flags etc.)
  * \retval      PSA_PS_ERROR_UID_NOT_FOUND      The operation failed because the provided uid value was not found in the storage
  * \retval      PSA_PS_ERROR_INCORRECT_SIZE     The operation failed because the data associated with provided uid is not the same size as `data_size`
  * \retval      PSA_PS_ERROR_STORAGE_FAILURE    The operation failed because the physical storage has failed (Fatal error)
  * \retval      PSA_PS_ERROR_OPERATION_FAILED   The operation failed because of an unspecified internal failure
  * \retval      PSA_PS_ERROR_DATA_CORRUPT       The operation failed because of an authentication failure when attempting to get the key
- * \retval      PSA_PS_ERROR_AUTH_FAILED        The operation failed because of an unspecified internal failure
+ * \retval      PSA_PS_ERROR_AUTH_FAILED        The operation failed because the data associated with the UID failed authentication
  */
-psa_ps_status_t psa_ps_get(psa_ps_uid_t uid, uint32_t data_offset,
-                           uint32_t data_length, void *p_data );
+psa_ps_status_t psa_ps_get( psa_ps_uid_t uid,
+                            uint32_t data_offset,
+                            uint32_t data_length,
+                            void *p_data );
 
 /**
  * \brief Retrieve the metadata about the provided uid
@@ -120,15 +126,15 @@ psa_ps_status_t psa_ps_get(psa_ps_uid_t uid, uint32_t data_offset,
  *
  * \return      A status indicating the success/failure of the operation
  *
- * \retval      PSA_PS_ERROR_SUCCESS            The operation completed successfully
- * \retval      PSA_PS_ERROR_INVALID_ARGUMENT   The operation The operation failed because one or more of the given arguments were invalid (null pointer, wrong flags etc.)
+ * \retval      PSA_PS_SUCCESS                  The operation completed successfully
+ * \retval      PSA_PS_ERROR_INVALID_ARGUMENT   The operation failed because one or more of the given arguments were invalid (null pointer, wrong flags etc.)
  * \retval      PSA_PS_ERROR_UID_NOT_FOUND      The operation failed because the provided uid value was not found in the storage
  * \retval      PSA_PS_ERROR_STORAGE_FAILURE    The operation failed because the physical storage has failed (Fatal error)
  * \retval      PSA_PS_ERROR_OPERATION_FAILED   The operation failed because of an unspecified internal failure
  * \retval      PSA_PS_ERROR_DATA_CORRUPT       The operation failed because of an authentication failure when attempting to get the key
- * \retval      PSA_PS_ERROR_AUTH_FAILED        The operation failed because of an unspecified internal failure
+ * \retval      PSA_PS_ERROR_AUTH_FAILED        The operation failed because the data associated with the UID failed authentication
  */
-psa_ps_status_t psa_ps_get_info( psa_ps_uid_t uid, struct psa_ps_info_t *p_info);
+psa_ps_status_t psa_ps_get_info( psa_ps_uid_t uid, struct psa_ps_info_t *p_info );
 
 /**
  * \brief Remove the provided uid and its associated data from the storage
@@ -138,13 +144,13 @@ psa_ps_status_t psa_ps_get_info( psa_ps_uid_t uid, struct psa_ps_info_t *p_info)
  * \return  A status indicating the success/failure of the operation
  *
  * \retval      PSA_PS_SUCCESS                  The operation completed successfully
- * \retval      PSA_PS_ERROR_INVALID_ARGUMENT   The operation The operation failed because one or more of the given arguments were invalid (null pointer, wrong flags etc.)
+ * \retval      PSA_PS_ERROR_INVALID_ARGUMENT   The operation failed because one or more of the given arguments were invalid (null pointer, wrong flags etc.)
  * \retval      PSA_PS_ERROR_UID_NOT_FOUND      The operation failed because the provided uid value was not found in the storage
  * \retval      PSA_PS_ERROR_WRITE_ONCE         The operation failed because the provided uid value was created with psa_eps_WRITE_ONCE_FLAG
  * \retval      PSA_PS_ERROR_STORAGE_FAILURE    The operation failed because the physical storage has failed (Fatal error)
  * \retval      PSA_PS_ERROR_OPERATION_FAILED   The operation failed because of an unspecified internal failure
  */
-psa_ps_status_t psa_ps_remove( psa_ps_uid_t uid);
+psa_ps_status_t psa_ps_remove( psa_ps_uid_t uid );
 
 /**
  *  Creates an asset based on the given identifier, the maximum size and
@@ -174,11 +180,13 @@ psa_ps_status_t psa_ps_remove( psa_ps_uid_t uid);
  * \retval PSA_PS_ERROR_STORAGE_FAILURE     The create action has a physical storage error
  * \retval PSA_PS_ERROR_INSUFFICIENT_SPACE  The maximum size is bigger of the current available space
  * \retval PSA_PS_ERROR_FLAGS_NOT_SUPPORTED One or more create_flags are not valid or supported
- * \retval PSA_PS_ERROR_INVALID_KEY         The asset exists and the input paramters are not the same as the existing asset
+ * \retval PSA_PS_ERROR_INVALID_ARGUMENT    The asset exists and the input paramters are not the same as the existing asset
  * \retval PSA_PS_ERROR_NOT_SUPPORTED       The implementation of the API does not support this function
+ * \retval PSA_PS_ERROR_OPERATION_FAILED    The operation has failed due to an unspecified error
  */
-psa_ps_status_t psa_ps_create( psa_ps_uid_t uid, uint32_t size,
-                               psa_ps_create_flags_t create_flags);
+psa_ps_status_t psa_ps_create( psa_ps_uid_t uid,
+                               uint32_t size,
+                               psa_ps_create_flags_t create_flags );
 
 /**
  * Sets partial data into an asset based on the given identifier, data_offset,
@@ -198,18 +206,23 @@ psa_ps_status_t psa_ps_create( psa_ps_uid_t uid, uint32_t size,
  *
  * \retval PSA_SUCCESS                      If the asset exists, the input parameters are correct and the data
  *                                          is correctly written in the physical storage
- * \retval PSA_ITS_ERROR_STORAGE_FAILURE    If the data is not written correctly in the physical storage
+ * \retval PSA_PS_ERROR_STORAGE_FAILURE     If the data is not written correctly in the physical storage
  * \retval PSA_PS_ERROR_OFFSET_INVALID      The operation failed because an offset was supplied that is invalid
  *                                          for the allocated size of the space
  *                                          reserved for the `uid` when \ref psa_psa_create
  *                                          was called. For example, offset + size
  *                                          is too large
- * \retval PSA_PS_ERROR_BAD_POINTER         If p_data is NULL or references memory the caller cannot access
- * \retval PSA_PS_ERROR_INVALID_KEY         If the asset does not exist
+ * \retval PSA_PS_ERROR_INVALID_ARGUMENT    The operation failed because one or more of the given arguments were invalid (null pointer, wrong flags, etc)
+ * \retval PSA_PS_ERROR_UID_NOT_FOUND       The specified UID was not found
  * \retval PSA_PS_ERROR_NOT_SUPPORTED       The implementation of the API does not support this function
+ * \retval PSA_PS_ERROR_OPERATION_FAILED    The operation failed due to an unspecified error
+ * \retval PSA_PS_ERROR_DATA_CORRUPT        The operation failed because the existing data has been corrupted 
+ * \retval PSA_PS_ERROR_AUTH_FAILED         The operation failed because the existing data failed authentication (MAC check failed)
  */
-psa_ps_status_t psa_ps_set_extended( psa_ps_uid_t uid, uint32_t data_offset,
-                                     uint32_t data_length, const void *p_data);
+psa_ps_status_t psa_ps_set_extended( psa_ps_uid_t uid,
+                                     uint32_t data_offset,
+                                     uint32_t data_length,
+                                     const void *p_data );
 
 /**
  *  Returns a bitmask with flags set for all of the optional features supported 
@@ -218,6 +231,11 @@ psa_ps_status_t psa_ps_set_extended( psa_ps_uid_t uid, uint32_t data_offset,
  * Currently defined flags are limited to:
  * - \ref PSA_PS_SUPPORT_SET_EXTENDED
  */
-uint32_t psa_ps_get_support();
+uint32_t psa_ps_get_support( void );
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif // __PROTECTED_STORAGE_H__
