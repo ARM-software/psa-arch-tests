@@ -20,7 +20,7 @@
 #include "test_s007.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_STORAGE_BASE, 7)
-#define TEST_DESC "Incorrect Size error check\n"
+#define TEST_DESC "Incorrect Size check\n"
 
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;

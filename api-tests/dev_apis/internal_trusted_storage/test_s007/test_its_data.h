@@ -23,44 +23,43 @@
 #define psa_sst_uid_t psa_its_uid_t
 
 typedef struct {
-    char                    test_desc[100];
     enum its_function_code  api;
     psa_its_status_t        status;
 } test_data;
 
-static test_data s007_data[] = {
+static const test_data s007_data[] = {
 {
- "This is dummy for index0", 0, 0
+ 0, 0 /* This is dummy for index0 */
 },
 {
- "Create a valid storage entity", VAL_ITS_SET, PSA_ITS_SUCCESS
+ VAL_ITS_SET, PSA_ITS_SUCCESS /* Create a valid storage entity */
 },
 {
- "Increase the length of storage", VAL_ITS_SET, PSA_ITS_SUCCESS
+ VAL_ITS_SET, PSA_ITS_SUCCESS /* Increase the length of storage */
 },
 {
- "Try to access old length", VAL_ITS_GET, PSA_ITS_SUCCESS
+ VAL_ITS_GET, PSA_ITS_SUCCESS /* Try to access old length */
 },
 {
- "Try to access valid length less than set length ", VAL_ITS_GET, PSA_ITS_SUCCESS
+ VAL_ITS_GET, PSA_ITS_SUCCESS /* Try to access valid length less than set length */
 },
 {
- "This is dummy for index5", 0, 0
+ 0, 0 /* This is dummy for index5 */
 },
 {
- "Decrease the length of storage", VAL_ITS_SET, PSA_ITS_SUCCESS
+ VAL_ITS_SET, PSA_ITS_SUCCESS /* Decrease the length of storage */
 },
 {
- "Try to access old length", VAL_ITS_GET, PSA_ITS_ERROR_INCORRECT_SIZE
+ VAL_ITS_GET, PSA_ITS_ERROR_INCORRECT_SIZE /* Try to access old length */
 },
 {
- "Try to access old length", VAL_ITS_GET, PSA_ITS_ERROR_INCORRECT_SIZE
+ VAL_ITS_GET, PSA_ITS_ERROR_INCORRECT_SIZE /* Try to access old length */
 },
 {
- "Try to access data with correct length", VAL_ITS_GET, PSA_ITS_SUCCESS
+ VAL_ITS_GET, PSA_ITS_SUCCESS /* Try to access data with correct length */
 },
 {
- "Remove the storage entity ", VAL_ITS_REMOVE, PSA_ITS_SUCCESS
+ VAL_ITS_REMOVE, PSA_ITS_SUCCESS /* Remove the storage entity */
 },
 };
 #endif /* _TEST_S007_ITS_DATA_TESTS_H_ */

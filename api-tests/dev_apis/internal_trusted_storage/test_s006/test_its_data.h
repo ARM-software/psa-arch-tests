@@ -25,27 +25,29 @@
 #define psa_sst_create_flags_t  psa_its_create_flags_t
 
 typedef struct {
-    char                    test_desc[100];
     enum its_function_code  api;
     psa_its_status_t        status;
 } test_data;
 
 static struct psa_its_info_t info;
-static test_data s006_data[] = {
+static const test_data s006_data[] = {
 {
- "This is dummy for index0", 0, 0
+ 0, PSA_ITS_ERROR_FLAGS_NOT_SUPPORTED /* This is dummy for index0 */
 },
 {
- "Create a valid storage entity with different flag values ", VAL_ITS_SET, PSA_ITS_SUCCESS
+ VAL_ITS_SET, PSA_ITS_SUCCESS /* Create a valid storage entity with different flag values */
 },
 {
- "Validate the flag value get_info api", VAL_ITS_GET_INFO, PSA_ITS_SUCCESS
+ VAL_ITS_GET_INFO, PSA_ITS_SUCCESS /* Validate the flag value get_info API */
 },
 {
- "Index not used",0,0
+ 0,0 /* Index not used */
 },
 {
- "Remove the storage entity ", VAL_ITS_REMOVE, PSA_ITS_SUCCESS
+ VAL_ITS_REMOVE, PSA_ITS_SUCCESS /* Remove the storage entity */
+},
+{
+ VAL_ITS_REMOVE, PSA_ITS_ERROR_UID_NOT_FOUND /* Storage entity remove fails */
 },
 };
 #endif /* _TEST_S006_ITS_DATA_TESTS_H_ */

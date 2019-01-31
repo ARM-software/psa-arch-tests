@@ -24,112 +24,111 @@
 #define psa_sst_uid_t psa_ps_uid_t
 
 typedef struct {
-    char                   test_desc[100];
     enum ps_function_code  api;
     psa_ps_status_t        status;
 } test_data;
 
 static struct psa_ps_info_t orig_info;
 static struct psa_ps_info_t new_info;
-static test_data s002_data[] = {
+static const test_data s002_data[] = {
 {
- "This is dummy for index0", 0, 0
+ 0, 0 /* This is dummy for index0 */
 },
 {
- "Create a valid storage with create flag value 0", VAL_PS_SET, PSA_PS_SUCCESS
+ VAL_PS_SET, PSA_PS_SUCCESS /* Create a valid storage with create flag value 0 */
 },
 {
- "Call the get_info api to validate the attributes", VAL_PS_GET_INFO, PSA_PS_SUCCESS
+ VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Call the get_info API to validate the attributes */
 },
 {
- "Index not used as check for get info size",0,0
+ 0,0 /* Index not used as check for get info size */
 },
 {
- "Index not used as check for get info flag",0,0
+ 0,0 /* Index not used as check for get info flag */
 },
 {
- "Validate the data using get api", VAL_PS_GET, PSA_PS_SUCCESS
+ VAL_PS_GET, PSA_PS_SUCCESS /* Validate the data using get API */
 },
 {
- "Index not used",0,0
+ 0,0 /* Index not used */
 },
 {
- "Change the flag to WRITE_ONCE using set api", VAL_PS_SET, PSA_PS_SUCCESS
+ VAL_PS_SET, PSA_PS_SUCCESS /* Change the flag to WRITE_ONCE using set API */
 },
 {
- "Call the get_info api to validate the flag change", VAL_PS_GET_INFO, PSA_PS_SUCCESS
+ VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Call the get_info API to validate the flag change */
 },
 {
- "Index not used as check for get info size",0,0
+ 0,0 /* Index not used as check for get info size */
 },
 {
- "Index not used as check for get info flag",0,0
+ 0,0 /* Index not used as check for get info flag */
 },
 {
- "Validate the data using get api after flag change", VAL_PS_GET, PSA_PS_SUCCESS
+ VAL_PS_GET, PSA_PS_SUCCESS /* Validate the data using get API after flag change */
 },
 {
- "Index not used",0,0
+ 0,0 /* Index not used */
 },
 {
- "Storage should not be removed after WRITE_ONCE flag", VAL_PS_REMOVE, PSA_PS_ERROR_WRITE_ONCE
+ VAL_PS_REMOVE, PSA_PS_ERROR_WRITE_ONCE /* Storage should not be removed after WRITE_ONCE flag */
 },
 {
- "Create a valid storage with different uid and flag value WRITE_ONCE ", VAL_PS_SET, PSA_PS_SUCCESS
+ VAL_PS_SET, PSA_PS_SUCCESS /* Create storage with different UID and flag value WRITE_ONCE */
 },
 {
- "Storage should not be removed", VAL_PS_REMOVE, PSA_PS_ERROR_WRITE_ONCE
+ VAL_PS_REMOVE, PSA_PS_ERROR_WRITE_ONCE /* Storage should not be removed */
 },
 {
- "Validate the data using get api after flag change", VAL_PS_GET, PSA_PS_SUCCESS
+ VAL_PS_GET, PSA_PS_SUCCESS /* Validate the data using get API after flag change */
 },
 {
- "Index not used",0,0
+ 0,0  /* Index not used */
 },
 {
- "Call the get_info api to validate the flag change", VAL_PS_GET_INFO, PSA_PS_SUCCESS
+ VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Call the get_info API to validate the flag change */
 },
 {
- "Index not used as check for get info size",0,0
+ 0,0 /* Index not used as check for get info size */
 },
 {
- "Index not used as check for get info flag",0,0
+ 0,0 /* Index not used as check for get info flag */
 },
 {
- "Try to set different size for same uid and flag value ", VAL_PS_SET, PSA_PS_ERROR_WRITE_ONCE
+ VAL_PS_SET, PSA_PS_ERROR_WRITE_ONCE /* Try to set different size for same UID and flag value */
 },
 {
- "storage should not be removed", VAL_PS_REMOVE, PSA_PS_ERROR_WRITE_ONCE
+ VAL_PS_REMOVE, PSA_PS_ERROR_WRITE_ONCE /* Storage should not be removed */
 },
 {
- "Call the get_info api to validate the flag change", VAL_PS_GET_INFO, PSA_PS_SUCCESS
+ VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Call the get_info API to validate the flag change */
 },
 {
- "Index not used as check for get info size",0,0
+ 0,0 /* Index not used as check for get info size */
 },
 {
- "Index not used as check for get info flag",0,0
+ 0,0 /* Index not used as check for get info flag */
 },
 {
- "Validate the data using get api after flag change", VAL_PS_GET, PSA_PS_SUCCESS
+ VAL_PS_GET, PSA_PS_SUCCESS /* Validate the data using get API after flag change */
 },
 {
- "Index not used",0,0
+ 0,0 /* Index not used */
 },
 {
- "Setting flag to zero for uid should fail ", VAL_PS_SET, PSA_PS_ERROR_WRITE_ONCE
+ VAL_PS_SET, PSA_PS_ERROR_WRITE_ONCE /* Setting flag to zero for UID should fail */
 },
 {
- "Storage should not be removed", VAL_PS_REMOVE, PSA_PS_ERROR_WRITE_ONCE
+ VAL_PS_REMOVE, PSA_PS_ERROR_WRITE_ONCE /* Storage should not be removed */
 },
 {
- "Check that the WRITE_ONCE flag is preserved", VAL_PS_GET_INFO, PSA_PS_SUCCESS
+ VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Check that the WRITE_ONCE flag is preserved */
 },
 {
- "Index not used as check for get info size",0,0
+ 0,0 /* Index not used as check for get info size */
 },
 {
- "Index not used as check for get info flag",0,0
+ 0,0 /* Index not used as check for get info flag */
 },
 };
 #endif /* _TEST_S002_PS_DATA_TESTS_H_ */

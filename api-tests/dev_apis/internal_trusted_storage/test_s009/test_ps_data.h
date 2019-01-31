@@ -23,42 +23,41 @@
 #define psa_sst_uid_t psa_ps_uid_t
 
 typedef struct {
-    char                   test_desc[100];
     enum ps_function_code  api;
     psa_ps_status_t        status;
 } test_data;
 
 static struct psa_ps_info_t info;
-static test_data s009_data[] = {
+static const test_data s009_data[] = {
 {
- "This is dummy for index0", 0, 0
+ 0, 0 /* This is dummy for index0 */
 },
 {
- "Call set api with 0 write buffer", VAL_PS_SET, PSA_PS_ERROR_INVALID_ARGUMENT
+ VAL_PS_SET, PSA_PS_ERROR_INVALID_ARGUMENT /* Call set API with 0 write buffer */
 },
 {
- "Call to get_info api should fail", VAL_PS_GET_INFO, PSA_PS_ERROR_UID_NOT_FOUND
+ VAL_PS_GET_INFO, PSA_PS_ERROR_UID_NOT_FOUND /* Call to get_info API should fail */
 },
 {
- "Create storage of zero size", VAL_PS_SET, PSA_PS_SUCCESS
+ VAL_PS_SET, PSA_PS_SUCCESS /* Create storage of zero size */
 },
 {
- "Try to set 0 buffer for previous created storage", VAL_PS_SET, PSA_PS_ERROR_INVALID_ARGUMENT
+ VAL_PS_SET, PSA_PS_ERROR_INVALID_ARGUMENT /* Try to set 0 buffer for previous created storage */
 },
 {
- "Call get_info api to check data size", VAL_PS_GET_INFO, PSA_PS_SUCCESS
+ VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Call get_info API to check data size */
 },
 {
- "This is dummy for index6", 0, 0
+ 0, 0 /* This is dummy for index6 */
 },
 {
- "Call get api with 0 read buffer", VAL_PS_GET, PSA_PS_ERROR_INVALID_ARGUMENT
+ VAL_PS_GET, PSA_PS_ERROR_INVALID_ARGUMENT /* Call get API with 0 read buffer */
 },
 {
- "Call get_info api with 0 info buffer", VAL_PS_GET_INFO, PSA_PS_ERROR_INVALID_ARGUMENT
+ VAL_PS_GET_INFO, PSA_PS_ERROR_INVALID_ARGUMENT /* Call get_info API with NULL info buffer */
 },
 {
- "Remove the storage entity ", VAL_PS_REMOVE, PSA_PS_SUCCESS
+ VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the storage entity */
 },
 };
 #endif /* _TEST_S009_PS_DATA_TESTS_H_ */

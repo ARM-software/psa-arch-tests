@@ -24,104 +24,92 @@
 
 client_test_t test_p011_sst_list[] = {
     NULL,
-    psa_sst_optional_api_offset_invalid,
+    psa_sst_optional_api_uid_not_found,
     NULL,
 };
 
-static psa_ps_uid_t p_uid = UID_BASE_VALUE + 11;
 static uint8_t write_buff[TEST_BUFF_SIZE] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
                                              0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
 static uint8_t read_buff[TEST_BUFF_SIZE]  = {0};
-static uint8_t write_buff_2[TEST_BUFF_SIZE] = {0xFF, 0xC1, 0xA2, 0xE3, 0x04, 0x05, 0x06, 0x07,
-                                             0x03, 0x09, 0x0A, 0x1B, 0x0C, 0x0D, 0x0E, 0x0F};
 
-int32_t psa_sst_offset_invalid()
+static int32_t psa_sst_uid_not_found()
 {
-    uint32_t status;
+    uint32_t status,j;
+    psa_ps_uid_t p_uid = UID_BASE_VALUE + 5;
+    struct psa_ps_info_t orig_info;
 
-    /* Create valid storage using create api */
-    status = SST_FUNCTION(p011_data[1].api, p_uid, TEST_BUFF_SIZE, 0);
+    /* Call the set_extended API with UID which is not created */
+    val->print(PRINT_TEST, "[Check 1] set_extended API call for UID %d which is not set\n", p_uid);
+    status = SST_FUNCTION(p011_data[1].api, p_uid, 0, TEST_BUFF_SIZE, write_buff);
     TEST_ASSERT_EQUAL(status, p011_data[1].status, TEST_CHECKPOINT_NUM(1));
 
-    /* Set some data in the storage created */
-    status = SST_FUNCTION(p011_data[2].api, p_uid, TEST_BUFF_SIZE/2, 5, write_buff);
+    /* Create a valid storage with set API */
+    status = SST_FUNCTION(p011_data[2].api, p_uid, TEST_BUFF_SIZE, write_buff, 0);
     TEST_ASSERT_EQUAL(status, p011_data[2].status, TEST_CHECKPOINT_NUM(2));
 
-    /* Try to set data at invalid location with incorrect data len + offset  */
-    val->print(PRINT_TEST, "[Check 1] Set_extended api call with invalid offset + length\n", 0);
-    status = SST_FUNCTION(p011_data[3].api, p_uid, TEST_BUFF_SIZE, 2, write_buff);
+    /* Try to change data length for same UID using create API */
+    val->print(PRINT_TEST, "[Check 2] Call create API with different data length than used to"
+                           " create the asset using set API\n", 0);
+    status = SST_FUNCTION(p011_data[3].api, p_uid, TEST_BUFF_SIZE/2, 0);
     TEST_ASSERT_EQUAL(status, p011_data[3].status, TEST_CHECKPOINT_NUM(3));
 
-    /* Try to set data at invalid location with incorrect offset */
-    val->print(PRINT_TEST, "[Check 2] Set_extended api call with invalid offset\n", 0);
-    status = SST_FUNCTION(p011_data[4].api, p_uid, TEST_BUFF_SIZE + 2, 0, write_buff);
+    /* Try to change flag value associated with the UID */
+    val->print(PRINT_TEST, "[Check 3] Call create API with different flag value than used to"
+                           " create the asset using set API\n", 0);
+    status = SST_FUNCTION(p011_data[4].api, p_uid, TEST_BUFF_SIZE, PSA_PS_FLAG_WRITE_ONCE);
     TEST_ASSERT_EQUAL(status, p011_data[4].status, TEST_CHECKPOINT_NUM(4));
 
-    /* Try to set data at correct offset, but zero data len */
-    val->print(PRINT_TEST, "[Check 3] Set_extended api call with offset equals length\n", 0);
-    status = SST_FUNCTION(p011_data[5].api, p_uid, TEST_BUFF_SIZE, 0, write_buff);
+    /* Check the flag value should be same as original*/
+    status = SST_FUNCTION(p011_data[5].api, p_uid, &orig_info);
     TEST_ASSERT_EQUAL(status, p011_data[5].status, TEST_CHECKPOINT_NUM(5));
+    TEST_ASSERT_EQUAL(orig_info.size, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(6));
+    TEST_ASSERT_EQUAL(orig_info.flags, 0, TEST_CHECKPOINT_NUM(7));
 
-    /* Try to set data at invalid location with incorrect data len + offset */
-    val->print(PRINT_TEST, "[Check 4] Set_extended api call with invalid offset + length\n", 0);
-    status = SST_FUNCTION(p011_data[6].api, p_uid, 1, TEST_BUFF_SIZE, write_buff);
-    TEST_ASSERT_EQUAL(status, p011_data[6].status, TEST_CHECKPOINT_NUM(6));
-
-    /* Try to set data at invalid location with incorrect data len */
-    val->print(PRINT_TEST, "[Check 5] Set_extended api call with invalid length\n", 0);
-    status = SST_FUNCTION(p011_data[7].api, p_uid, 0, TEST_BUFF_SIZE + 1, write_buff);
-    TEST_ASSERT_EQUAL(status, p011_data[7].status, TEST_CHECKPOINT_NUM(7));
-
-    /* Set data using set api */
-    val->print(PRINT_TEST, "[Check 6] Overwrite the whole data with set api\n", 0);
-    status = SST_FUNCTION(p011_data[8].api, p_uid, TEST_BUFF_SIZE, write_buff, 0);
+    /* Remove the UID */
+    status = SST_FUNCTION(p011_data[8].api, p_uid);
     TEST_ASSERT_EQUAL(status, p011_data[8].status, TEST_CHECKPOINT_NUM(8));
 
-    /* Call the GET function to check data is correctly overwritten */
-    status = SST_FUNCTION(p011_data[9].api, p_uid, 0, TEST_BUFF_SIZE, read_buff);
+    /* Create a valid storage */
+    status = SST_FUNCTION(p011_data[9].api, p_uid, TEST_BUFF_SIZE/2, 0);
     TEST_ASSERT_EQUAL(status, p011_data[9].status, TEST_CHECKPOINT_NUM(9));
-    TEST_ASSERT_MEMCMP(read_buff, write_buff, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(10));
 
-    return VAL_STATUS_SUCCESS;
-}
+    /* Try to change length using create API */
+    val->print(PRINT_TEST, "[Check 4] Call create API with different parameters than used to"
+                           " create the asset using create API\n", 0);
+    status = SST_FUNCTION(p011_data[10].api, p_uid, TEST_BUFF_SIZE, 0);
+    TEST_ASSERT_EQUAL(status, p011_data[10].status, TEST_CHECKPOINT_NUM(10));
 
-static int32_t psa_sst_bad_pointer()
-{
-    uint32_t status;
-
-    /* Call set extended with NULL write_buff */
-    val->print(PRINT_TEST, "[Check 7] Call set_extended with NULL write buffer\n", 0);
-    status = SST_FUNCTION(p011_data[11].api, p_uid, 0, TEST_BUFF_SIZE, NULL);
+    /* Check the storage should be empty */
+    status = SST_FUNCTION(p011_data[11].api, p_uid, 0, TEST_BUFF_SIZE, read_buff);
     TEST_ASSERT_EQUAL(status, p011_data[11].status, TEST_CHECKPOINT_NUM(11));
+    for (j = 0; j < TEST_BUFF_SIZE; j++)
+    {
+        TEST_ASSERT_EQUAL(read_buff[j], 0, TEST_CHECKPOINT_NUM(12));
+    }
 
-    /* Call set extended to overwrite data with new values */
-    status = SST_FUNCTION(p011_data[12].api, p_uid, 0, TEST_BUFF_SIZE, write_buff_2);
-    TEST_ASSERT_EQUAL(status, p011_data[12].status, TEST_CHECKPOINT_NUM(12));
+    /* Remove the UID */
+    status = SST_FUNCTION(p011_data[13].api, p_uid);
+    TEST_ASSERT_EQUAL(status, p011_data[13].api, TEST_CHECKPOINT_NUM(13));
 
-    /* Call the GET function to get the data buffer and match the buffer */
-    status = SST_FUNCTION(p011_data[13].api, p_uid, 0, TEST_BUFF_SIZE, read_buff);
-    TEST_ASSERT_EQUAL(status, p011_data[13].status, TEST_CHECKPOINT_NUM(13));
-    TEST_ASSERT_MEMCMP(read_buff, write_buff_2, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(14));
-
-    /* Remove the storage */
-    status = SST_FUNCTION(p011_data[15].api, p_uid);
-    TEST_ASSERT_EQUAL(status, p011_data[15].status, TEST_CHECKPOINT_NUM(15));
+    /* Call the set_extended API with UID which is removed */
+    val->print(PRINT_TEST, "[Check 5] set_extended API call for UID %d which is removed\n", p_uid);
+    status = SST_FUNCTION(p011_data[14].api, p_uid, 0, TEST_BUFF_SIZE, write_buff);
+    TEST_ASSERT_EQUAL(status, p011_data[14].status, TEST_CHECKPOINT_NUM(14));
 
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_sst_optional_api_offset_invalid(security_t caller)
+int32_t psa_sst_optional_api_uid_not_found(security_t caller)
 {
     uint32_t status;
 
-    /* Call the get_support api and check if create and set_extended api are supported */
+    /* Call the get_support API and check if create and set_extended API are supported */
     status = SST_FUNCTION(p011_data[0].api);
 
     if (status == p011_data[0].status)
     {
        val->print(PRINT_INFO, "Optional PS APIs are supported.\n", 0);
-       psa_sst_offset_invalid();
-       psa_sst_bad_pointer();
+       psa_sst_uid_not_found();
     }
     else
     {
@@ -131,3 +119,4 @@ int32_t psa_sst_optional_api_offset_invalid(security_t caller)
 
     return VAL_STATUS_SUCCESS;
 }
+
