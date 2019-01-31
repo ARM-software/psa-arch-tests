@@ -20,7 +20,7 @@
 #include "test_p012.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_PROTECTED_STORAGE_BASE, 12)
-#define TEST_DESC "Set_Extended and Create api : Success\n"
+#define TEST_DESC "Optional APIs: Invalid arguments and offset invalid\n"
 
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;

@@ -1,0 +1,44 @@
+{
+  "psa_framework_version": 1.0,
+  "name": "CLIENT_PARTITION",
+  "type": "APPLICATION-ROT",
+  "priority": "NORMAL",
+  "id": "0x00000001",
+  "description": "Client partition executing client test func from SPE",
+  "entry_point": "client_main",
+  "stack_size": "0x400",
+  "heap_size": "0x100",
+  "services": [{
+      "name": "CLIENT_TEST_DISPATCHER_SID",
+      "sid": "0x0000FA01",
+      "signal": "CLIENT_TEST_DISPATCHER_SIG",
+      "non_secure_clients": true,
+      "minor_version": 1,
+      "minor_policy": "RELAXED"
+    }
+  ],
+  "dependencies": [
+    "DRIVER_UART_SID",
+    "DRIVER_NVMEM_SID",
+    "TEST_INTR_SID",
+    "SERVER_TEST_DISPATCHER_SID",
+    "SERVER_UNSPECIFED_MINOR_V_SID",
+    "SERVER_STRICT_MINOR_VERSION_SID",
+    "SERVER_RELAX_MINOR_VERSION_SID",
+    "SERVER_SECURE_CONNECT_ONLY_SID",
+    "SERVER_CONNECTION_DROP_SID"
+  ],
+  "mmio_regions" : [
+    {
+      "name": "CLIENT_PARTITION_MMIO",
+      "base": "0x200AF000",
+      "size": "0x20",
+      "permission": "READ-WRITE"
+    }
+   ],
+  "linker_pattern": {
+    "object_list": [
+    "client_partition.a"
+    ]
+  }
+}

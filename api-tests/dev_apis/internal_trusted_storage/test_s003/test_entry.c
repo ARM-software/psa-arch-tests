@@ -20,7 +20,7 @@
 #include "test_s003.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_STORAGE_BASE, 3)
-#define TEST_DESC "Insufficient space error check\n"
+#define TEST_DESC "Insufficient space check\n"
 
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;

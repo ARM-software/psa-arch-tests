@@ -20,7 +20,7 @@
 #include "test_p011.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_PROTECTED_STORAGE_BASE, 11)
-#define TEST_DESC "Set_Extended api : Bad pointer and offset invalid check\n"
+#define TEST_DESC "Optional APIs: UID not found check\n"
 
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;

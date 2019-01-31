@@ -1,0 +1,81 @@
+{
+  "psa_framework_version": 1.0,
+  "name": "DRIVER_PARTITION",
+  "type": "PSA-ROT",
+  "priority": "NORMAL",
+  "id": "0x00000003",
+  "description": "Implements device services such print, flash read/write,. etc.",
+  "entry_point": "driver_main",
+  "stack_size": "0x400",
+  "heap_size": "0x100",
+  "services": [{
+      "name": "DRIVER_UART_SID",
+      "sid": "0x0000FC01",
+      "signal": "DRIVER_UART_SIG",
+      "non_secure_clients": true,
+      "minor_version": 1,
+      "minor_policy": "RELAXED"
+    },
+    {
+      "name": "DRIVER_WATCHDOG_SID",
+      "sid": "0x0000FC02",
+      "signal": "DRIVER_WATCHDOG_SIG",
+      "non_secure_clients": true,
+      "minor_version": 1,
+      "minor_policy": "RELAXED"
+    },
+    {
+      "name": "DRIVER_NVMEM_SID",
+      "sid": "0x0000FC03",
+      "signal": "DRIVER_NVMEM_SIG",
+      "non_secure_clients": true,
+      "minor_version": 1,
+      "minor_policy": "RELAXED"
+    },
+    {
+      "name": "TEST_INTR_SID",
+      "sid": "0x0000FC04",
+      "signal": "TEST_INTR_SIG",
+      "non_secure_clients": true,
+      "minor_version": 1,
+      "minor_policy": "RELAXED"
+    }
+  ],
+  "mmio_regions" : [
+    {
+      "name": "UART_REGION",
+      "base": "0x40004000",
+      "size": "0x1000",
+      "permission": "READ-WRITE"
+    },
+    {
+      "name": "WATCHDOG_REGION",
+      "base": "0x40008000",
+      "size": "0x1000",
+      "permission": "READ-WRITE"
+    },
+    {
+      "name": "NVMEM_REGION",
+      "base": "0x2002F000",
+      "size": "0x400",
+      "permission": "READ-WRITE"
+    },
+    {
+      "name": "DRIVER_PARTITION_MMIO",
+      "base": "0x200AF040",
+      "size": "0x20",
+      "permission": "READ-WRITE"
+    }
+  ],
+  "irqs": [
+    {
+       "signal": "DRIVER_UART_INTR_SIG",
+       "line_num": 17
+    }
+  ],
+  "linker_pattern": {
+    "object_list": [
+    "driver_partition.a"
+    ]
+  }
+}

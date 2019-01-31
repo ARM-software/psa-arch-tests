@@ -24,20 +24,19 @@
 #define psa_sst_uid_t psa_ps_uid_t
 
 typedef struct {
-    char                   test_desc[100];
     enum ps_function_code  api;
     psa_ps_status_t        status;
 } test_data;
 
-static test_data s003_data[] = {
+static const test_data s003_data[] = {
 {
- "This is dummy for index0", 0, 0
+ 0, 0 /* This is dummy for index0 */
 },
 {
- "Call set api till all the storage space is exhausted", VAL_PS_SET, PSA_PS_ERROR_INSUFFICIENT_SPACE
+ VAL_PS_SET, PSA_PS_ERROR_INSUFFICIENT_SPACE /* Call set API till insufficent space */
 },
 {
- "Remove the uid created", VAL_PS_REMOVE, PSA_PS_SUCCESS
+ VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the UID created */
 },
 };
 #endif /* _TEST_S003_PS_DATA_TESTS_H_ */

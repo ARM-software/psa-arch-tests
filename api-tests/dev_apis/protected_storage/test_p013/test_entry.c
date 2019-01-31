@@ -17,10 +17,10 @@
 
 #include "val_interfaces.h"
 #include "val_target.h"
-#include "test_p010.h"
+#include "test_p013.h"
 
-#define TEST_NUM  VAL_CREATE_TEST_ID(VAL_PROTECTED_STORAGE_BASE, 10)
-#define TEST_DESC "Invalid Key error check\n"
+#define TEST_NUM  VAL_CREATE_TEST_ID(VAL_PROTECTED_STORAGE_BASE, 13)
+#define TEST_DESC "Set_Extended and Create api : Success\n"
 
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;
@@ -41,7 +41,7 @@ void test_entry(val_api_t *val_api, psa_api_t *psa_api)
     }
 
     /* Execute list of tests available in test[num]_protected_storage_list from Non-secure side*/
-    status = val->execute_non_secure_tests(TEST_NUM, test_p010_sst_list, FALSE);
+    status = val->execute_non_secure_tests(TEST_NUM, test_p013_sst_list, FALSE);
 
     if (VAL_ERROR(status))
     {

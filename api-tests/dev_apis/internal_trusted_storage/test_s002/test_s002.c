@@ -24,8 +24,8 @@
 #include "test_ps_data.h"
 #endif
 
-#define UID_WRITE_ONCE_1 UID_BASE_VALUE + 14
-#define UID_WRITE_ONCE_2 UID_BASE_VALUE + 15
+#define UID_WRITE_ONCE_1 UID_BASE_VALUE + 1
+#define UID_WRITE_ONCE_2 UID_BASE_VALUE + 2
 #define TEST_BUFF_SIZE 16
 
 client_test_t test_s002_sst_list[] = {
@@ -76,7 +76,7 @@ int32_t psa_sst_update_write_once_flag_after_create(security_t caller)
     TEST_ASSERT_MEMCMP(write_buff_new, read_buff, TEST_BUFF_SIZE/4, TEST_CHECKPOINT_NUM(12));
 
     /* remove() the UID */
-    val->print(PRINT_TEST, "[Check 2] Try to remove the uid %d having WRITE_ONCE flag\n", uid);
+    val->print(PRINT_TEST, "[Check 2] Try to remove the UID %d having WRITE_ONCE flag\n", uid);
     status = SST_FUNCTION(s002_data[13].api, uid);
     TEST_ASSERT_EQUAL(status, s002_data[13].status, TEST_CHECKPOINT_NUM(13));
 

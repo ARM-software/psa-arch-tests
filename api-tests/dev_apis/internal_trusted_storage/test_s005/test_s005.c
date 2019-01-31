@@ -42,22 +42,22 @@ static int32_t psa_sst_apis_check(psa_sst_uid_t uid, uint32_t data_len,
 {
     uint32_t status;
 
-    /* Set the uid with the data_len and data_buff */
+    /* Set the UID with the data_len and data_buff */
     status = SST_FUNCTION(s005_data[1].api, uid, data_len, data_buff, create_flag);
     TEST_ASSERT_EQUAL(status, s005_data[1].status, TEST_CHECKPOINT_NUM(1));
 
-    /* Call the GET function to get the data buffer and match the buffer */
+    /* Call the get function to get the data buffer and match the buffer */
     status = SST_FUNCTION(s005_data[2].api, uid, 0, data_len, read_buff);
     TEST_ASSERT_EQUAL(status, s005_data[2].status, TEST_CHECKPOINT_NUM(2));
     TEST_ASSERT_MEMCMP(read_buff, data_buff, data_len, TEST_CHECKPOINT_NUM(3));
 
-    /* Call the GET_INFO function and match the attributes */
+    /* Call the get_info function and match the attributes */
     status = SST_FUNCTION(s005_data[4].api, uid, &info);
     TEST_ASSERT_EQUAL(status, s005_data[4].status, TEST_CHECKPOINT_NUM(4));
     TEST_ASSERT_EQUAL(info.size, data_len, TEST_CHECKPOINT_NUM(5));
     TEST_ASSERT_EQUAL(info.flags, create_flag, TEST_CHECKPOINT_NUM(6));
 
-    /* Remove the uid  */
+    /* Remove the UID  */
     status = SST_FUNCTION(s005_data[7].api, uid);
     TEST_ASSERT_EQUAL(status, s005_data[7].status, TEST_CHECKPOINT_NUM(7));
 
@@ -66,20 +66,20 @@ static int32_t psa_sst_apis_check(psa_sst_uid_t uid, uint32_t data_len,
 
 int32_t psa_sst_apis_check_success_case(security_t caller)
 {
-   psa_sst_uid_t uid = UID_BASE_VALUE + 10;
-   uint32_t data_len = 0, status = VAL_STATUS_SUCCESS;
+   psa_sst_uid_t uid = UID_BASE_VALUE + 4;
+   uint32_t data_len = 1, status = VAL_STATUS_SUCCESS;
    psa_sst_create_flags_t flag=0;
 
-    /* Calling SET function with BASE  uid_value , data_len zero and valid data pointer */
-    val->print(PRINT_TEST, "[Check 1] Set UID with data length zero and call storage apis\n", 0);
-    if (psa_sst_apis_check(UID_BASE_VALUE + 1, data_len, write_buff, flag))
+    /* Calling set function with data_len 1 and valid data pointer */
+    val->print(PRINT_TEST, "[Check 1] Set UID with data length zero and call storage APIs\n", 0);
+    if (psa_sst_apis_check(uid, data_len, write_buff, flag))
     {
         val->print(PRINT_ERROR, "Data Len = %d\n", data_len);
         val->print(PRINT_ERROR, "Create Flag value =  %d\n", flag);
         return VAL_STATUS_ERROR;
     }
 
-    val->print(PRINT_TEST, "[Check 2] Change data length to non-zero and make apis call\n", 0);
+    val->print(PRINT_TEST, "[Check 2] Increase data length and make APIs call\n", 0);
     if (psa_sst_apis_check(uid, TEST_BUFF_SIZE/2, write_buff, flag))
     {
        val->print(PRINT_ERROR, "Data Len = %d\n", data_len);

@@ -20,7 +20,7 @@
 #include "test_s004.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_STORAGE_BASE, 4)
-#define TEST_DESC "Invalid offset error check\n"
+#define TEST_DESC "Data Consistency check\n"
 
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;
