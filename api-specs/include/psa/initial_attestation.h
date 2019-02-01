@@ -110,9 +110,13 @@ enum psa_attest_err_t {
  *
  *  - Security lifecycle: It represents the current lifecycle state of the
  *                 instance. Custom claim with a value encoded as unsigned
- *                 integer (enum). Possible values: Assembly (0),
- *                 Provisioning (1), Provisioned (2), Constrained Debug (3),
- *                 Unconstrained Debug (4).
+ *                 integer (enum). Possible values:
+ *                  - Unknown (0x1000u),
+ *                  - PSA_RoT_Provisioning (0x2000u),
+ *                  - Secured (0x3000u),
+ *                  - Non_PSA_RoT_Debug(0x4000u),
+ *                  - Recoverable_PSA_RoT_Debug (0x5000u),
+ *                  - Decommissioned (0x6000u)
  *
  *  - Client ID:   The partition ID of that secure partition or non-secure
  *                 thread who called the initial attestation API. Custom claim
