@@ -78,7 +78,7 @@ int32_t pal_crypto_function(int type, va_list valist)
             return status;
         case PAL_CRYPTO_KEY_POLICY_INIT:
             policy = va_arg(valist, psa_key_policy_t*);
-            psa_key_policy_init(policy);
+            memset(policy, 0, sizeof(psa_key_policy_t));
             return 0;
         case PAL_CRYPTO_KEY_POLICY_SET_USAGE:
             policy = va_arg(valist, psa_key_policy_t*);
@@ -323,10 +323,8 @@ int32_t pal_crypto_function(int type, va_list valist)
             alg = va_arg(valist, psa_algorithm_t);
             return psa_key_agreement(generator, handle, buffer, size, alg);
         case PAL_CRYPTO_ALLOCATE_KEY:
-            key_type = va_arg(valist, psa_key_type_t);
-            size = va_arg(valist, size_t);
             key_handle = (psa_key_handle_t *)va_arg(valist, int*);
-            return psa_allocate_key(key_type, size, key_handle);
+            return psa_allocate_key(key_handle);
         case PAL_CRYPTO_FREE:
             for (i = 0; i < PAL_KEY_SLOT_COUNT; i++)
                 psa_destroy_key(i);

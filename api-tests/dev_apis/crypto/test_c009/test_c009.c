@@ -52,8 +52,7 @@ int32_t psa_allocate_key_test(security_t caller)
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
         /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check1[i].key_type,
-                                                   check1[i].key_length, &check1[i].key_handle);
+        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(3));
 
     }
@@ -65,8 +64,6 @@ int32_t psa_allocate_key_negative_test(security_t caller)
 {
     int32_t             i, status;
     psa_key_handle_t    key_handle[MAX_KEYS];
-    psa_key_type_t      key_type = PSA_KEY_TYPE_AES;
-    size_t              key_length = BUFFER_SIZE;
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -77,8 +74,7 @@ int32_t psa_allocate_key_negative_test(security_t caller)
     for (i = 0; i < MAX_KEYS; i++)
     {
         /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, key_type,
-                                                   key_length, &key_handle[i]);
+        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &key_handle[i]);
         if (status != PSA_SUCCESS)
             break;
     }

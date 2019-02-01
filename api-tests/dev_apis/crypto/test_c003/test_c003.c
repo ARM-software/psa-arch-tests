@@ -95,8 +95,7 @@ int32_t psa_export_key_test(security_t caller)
                                                                           check1[i].key_alg);
 
         /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check1[i].key_type,
-                                                   check1[i].key_length, &check1[i].key_handle);
+        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Set the usage policy on a key slot */
@@ -172,8 +171,7 @@ int32_t psa_export_key_negative_test(security_t caller)
         val->print(PRINT_TEST, "[Check %d] Test psa_export_key with empty key handle\n",
                                                                                  g_test_count++);
         /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check2[i].key_type,
-                                                check2[i].key_length, &check2[i].key_handle);
+        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check2[i].key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
         /* Export a key in binary format */

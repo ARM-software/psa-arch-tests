@@ -60,8 +60,7 @@ int32_t psa_mac_verify_setup_test(security_t caller)
                                                                           check1[i].key_alg);
 
         /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check1[i].key_type,
-                                              check1[i].key_length, &check1[i].key_handle);
+        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Set the usage policy on a key slot */
@@ -127,8 +126,7 @@ int32_t psa_mac_verify_setup_negative_test(security_t caller)
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
 
         /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check2[i].key_type,
-                                              check2[i].key_length, &check2[i].key_handle);
+        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check2[i].key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
         val->print(PRINT_TEST, "[Check %d] Test psa_mac_verify_setup empty key handle\n",

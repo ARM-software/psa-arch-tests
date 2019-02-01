@@ -72,8 +72,7 @@ int32_t psa_generator_import_key_test(security_t caller)
                                                                       check1[i].key_alg[SLOT_1]);
 
         /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check1[i].key_type[SLOT_1],
-                                              check1[i].key_length, &check1[i].key_handle[SLOT_1]);
+        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle[SLOT_1]);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Set the usage policy on a key slot */
@@ -104,8 +103,7 @@ int32_t psa_generator_import_key_test(security_t caller)
                                                                          check1[i].key_alg[SLOT_2]);
 
         /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check1[i].key_type[SLOT_2],
-                                               check1[i].key_length, &check1[i].key_handle[SLOT_2]);
+        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle[SLOT_2]);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Set the usage policy on a key slot */
@@ -157,8 +155,7 @@ int32_t psa_generator_import_key_test(security_t caller)
                                                                         check1[i].key_alg[SLOT_2]);
 
             /* Allocate a key slot for a transient key */
-            status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check1[i].key_type[SLOT_2],
-                                              check1[i].key_length, &check1[i].key_handle[SLOT_3]);
+            status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle[SLOT_3]);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
             /* Set the usage policy on a key slot */
@@ -199,8 +196,7 @@ int32_t psa_generator_import_key_test(security_t caller)
                                                                         check1[i].key_alg[SLOT_2]);
 
             /* Allocate a key slot for a transient key */
-            status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check1[i].key_type[SLOT_2],
-                                              check1[i].key_length, &check1[i].key_handle[SLOT_4]);
+            status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle[SLOT_4]);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
             /* Set the usage policy on a key slot */
@@ -255,8 +251,7 @@ int32_t psa_generator_import_key_negative_test(security_t caller)
                                                                      check2[i].key_alg[SLOT_1]);
 
         /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, check2[i].key_type[SLOT_1],
-                                              check2[i].key_length, &check2[i].key_handle[SLOT_1]);
+        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check2[i].key_handle[SLOT_1]);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Set the usage policy on a key slot */
