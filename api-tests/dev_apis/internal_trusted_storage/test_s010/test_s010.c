@@ -37,11 +37,11 @@ static uint8_t write_buff[TEST_BUFF_SIZE] = {0xFF};
 int32_t psa_sst_uid_value_zero_check(security_t caller)
 {
     int32_t status;
-
+    psa_sst_uid_t uid = 0;
     /* Set with UID value zero should fail */
     val->print(PRINT_TEST, "[Check 1] Creating storage with UID 0 should fail\n", 0 );
-    status = SST_FUNCTION(s010_data[1].api, 0, TEST_BUFF_SIZE, write_buff, 0);
-    TEST_ASSERT_NOT_EQUAL(status, s010_data[1].status, TEST_CHECKPOINT_NUM(1));
+    status = SST_FUNCTION(s010_data[0].api, uid, TEST_BUFF_SIZE, write_buff, 0);
+    TEST_ASSERT_NOT_EQUAL(status, s010_data[0].status, TEST_CHECKPOINT_NUM(1));
 
     return VAL_STATUS_SUCCESS;
 }
