@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019, Arm Limited or ps affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,16 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
-#ifndef _TEST_P012_CLIENT_TESTS_H_
-#define _TEST_P012_CLIENT_TESTS_H_
+#ifndef _TEST_S010_PS_DATA_TESTS_H_
+#define _TEST_S010_PS_DATA_TESTS_H_
 
-#define test_entry CONCAT(test_entry_, p012)
-#define val CONCAT(val,test_entry)
-#define psa CONCAT(psa,test_entry)
+#include "val_protected_storage.h"
 
-extern val_api_t *val;
-extern psa_api_t *psa;
-extern client_test_t test_p012_sst_list[];
+#define SST_FUNCTION val->ps_function
+#define psa_sst_uid_t psa_ps_uid_t
 
-int32_t psa_sst_optional_api_offset_invalid(security_t caller);
-#endif /* _TEST_P012_CLIENT_TESTS_H_ */
+typedef struct {
+    enum ps_function_code  api;
+    psa_ps_status_t        status;
+} test_data;
+
+static const test_data s010_data[] = {
+{
+ VAL_PS_SET, PSA_PS_SUCCESS /* Create with UID value zero should fail */
+},
+};
+#endif /* _TEST_S010_PS_DATA_TESTS_H_ */

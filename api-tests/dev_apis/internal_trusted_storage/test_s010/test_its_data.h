@@ -14,23 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
-#ifndef _TEST_S006_CLIENT_TESTS_H_
-#define _TEST_S006_CLIENT_TESTS_H_
+#ifndef _TEST_S010_ITS_DATA_TESTS_H_
+#define _TEST_S010_ITS_DATA_TESTS_H_
 
-#ifdef ITS_TEST
-#define VAL_STORAGE_BASE VAL_INTERNAL_TRUSTED_STORAGE_BASE
-#define test_entry CONCAT(test_entry_, s006)
-#elif PS_TEST
-#define VAL_STORAGE_BASE VAL_PROTECTED_STORAGE_BASE
-#define test_entry CONCAT(test_entry_, p006)
-#endif
-#define val CONCAT(val,test_entry)
-#define psa CONCAT(psa,test_entry)
+#include "val_internal_trusted_storage.h"
 
-extern val_api_t *val;
-extern psa_api_t *psa;
-extern client_test_t test_s006_sst_list[];
+#define SST_FUNCTION val->its_function
+#define psa_sst_uid_t psa_its_uid_t
 
-int32_t psa_sst_flags_not_supported(security_t caller);
+typedef struct {
+    enum its_function_code  api;
+    psa_its_status_t        status;
+} test_data;
 
-#endif /* _TEST_S006_CLIENT_TESTS_H_ */
+static const test_data s010_data[] = {
+{
+  VAL_ITS_SET, PSA_ITS_SUCCESS /* Create with UID value zero should fail */
+},
+};
+#endif /* _TEST_S010_ITS_DATA_TESTS_H_ */

@@ -23,60 +23,59 @@
 #define psa_sst_uid_t psa_ps_uid_t
 
 typedef struct {
-    char                   test_desc[100];
     enum ps_function_code  api;
     psa_ps_status_t        status;
 } test_data;
 
 static struct psa_ps_info_t info;
-static test_data s001_data[] = {
+static const test_data s001_data[] = {
 {
- "This is dummy for index0", 0, 0
+ 0, 0 /* This is dummy for index0 */
 },
 {
- "Call the get api when no uid is set", VAL_PS_GET, PSA_PS_ERROR_UID_NOT_FOUND
+ VAL_PS_GET, PSA_PS_ERROR_UID_NOT_FOUND /* Call the get API when no UID is set */
 },
 {
- "Call the get_info api when no uid is set", VAL_PS_GET_INFO, PSA_PS_ERROR_UID_NOT_FOUND
+ VAL_PS_GET_INFO, PSA_PS_ERROR_UID_NOT_FOUND /* Call the get_info API when no UID is set */
 },
 {
- "Call the remove api when no uid is set", VAL_PS_REMOVE, PSA_PS_ERROR_UID_NOT_FOUND
+ VAL_PS_REMOVE, PSA_PS_ERROR_UID_NOT_FOUND /* Call the remove API when no UID is set */
 },
 {
- "Create a valid storage entity with uid1", VAL_PS_SET, PSA_PS_SUCCESS
+ VAL_PS_SET, PSA_PS_SUCCESS /* Create a valid storage entity with UID1 */
 },
 {
- "Create a valid storage entity with uid2", VAL_PS_SET, PSA_PS_SUCCESS
+ VAL_PS_SET, PSA_PS_SUCCESS /* Create a valid storage entity with UID2 */
 },
 {
- "Remove uid1", VAL_PS_REMOVE, PSA_PS_SUCCESS
+ VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove UID1 */
 },
 {
- "Call get api for uid1", VAL_PS_GET, PSA_PS_ERROR_UID_NOT_FOUND
+ VAL_PS_GET, PSA_PS_ERROR_UID_NOT_FOUND /* Call get API for UID1 */
 },
 {
- "Call get_info api for uid1", VAL_PS_GET_INFO, PSA_PS_ERROR_UID_NOT_FOUND
+ VAL_PS_GET_INFO, PSA_PS_ERROR_UID_NOT_FOUND /* Call get_info API for UID1 */
 },
 {
- "Call remove api for uid1", VAL_PS_REMOVE, PSA_PS_ERROR_UID_NOT_FOUND
+ VAL_PS_REMOVE, PSA_PS_ERROR_UID_NOT_FOUND /* Call remove API for UID1 */
 },
 {
- "Create a valid storage entity again with uid1", VAL_PS_SET, PSA_PS_SUCCESS
+ VAL_PS_SET, PSA_PS_SUCCESS /* Create a valid storage entity again with UID1 */
 },
 {
- "Call get api for uid not same as uid1 or uid2", VAL_PS_GET, PSA_PS_ERROR_UID_NOT_FOUND
+ VAL_PS_GET, PSA_PS_ERROR_UID_NOT_FOUND /* Call get API for UID not same as UID1 or UID2 */
 },
 {
- "Call get_info for uid not same as uid1 or uid2", VAL_PS_GET_INFO, PSA_PS_ERROR_UID_NOT_FOUND
+ VAL_PS_GET_INFO, PSA_PS_ERROR_UID_NOT_FOUND /* Call get_info for UID not same as UID1 or UID2 */
 },
 {
- "Call remove api for uid not same as uid1 or uid2", VAL_PS_REMOVE, PSA_PS_ERROR_UID_NOT_FOUND
+ VAL_PS_REMOVE, PSA_PS_ERROR_UID_NOT_FOUND /* Call remove API for UID not same as UID1 or UID2 */
 },
 {
- "Remove uid1", VAL_PS_REMOVE, PSA_PS_SUCCESS
+ VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove UID1 */
 },
 {
- "Remove uid2", VAL_PS_REMOVE, PSA_PS_SUCCESS
+ VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove UID2 */
 },
 };
-#endif /* _TEST_S001_PS_DATA_TESTS_H_ */
+#endif /*  _TEST_S001_PS_DATA_TESTS_H_  */

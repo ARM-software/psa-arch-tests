@@ -20,7 +20,7 @@
 #include "test_s001.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_STORAGE_BASE, 1)
-#define TEST_DESC "Key not found error check\n"
+#define TEST_DESC "UID not found check\n"
 
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;

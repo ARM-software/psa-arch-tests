@@ -22,59 +22,55 @@
 #define SST_FUNCTION val->ps_function
 
 typedef struct {
-    char                   test_desc[100];
     enum ps_function_code  api;
     psa_ps_status_t        status;
 } test_data;
 
-static test_data p011_data[] = {
+static const test_data p011_data[] = {
 {
- "Check if optional PS api supported", VAL_PS_GET_SUPPORT, PSA_PS_SUPPORT_SET_EXTENDED
+ VAL_PS_GET_SUPPORT, PSA_PS_SUPPORT_SET_EXTENDED /* Check if optional PS API supported */
 },
 {
- "Create valid storage", VAL_PS_CREATE, PSA_PS_SUCCESS
+ VAL_PS_SET_EXTENDED, PSA_PS_ERROR_UID_NOT_FOUND /* Call set_extended call for non-existing UID */
 },
 {
- "Set data using set_extended api", VAL_PS_SET_EXTENDED, PSA_PS_SUCCESS
+ VAL_PS_SET, PSA_PS_SUCCESS /* Create valid storage using set API */
 },
 {
- "Set_extended call with invalid offset + length", VAL_PS_SET_EXTENDED, PSA_PS_ERROR_OFFSET_INVALID
+ VAL_PS_CREATE, PSA_PS_ERROR_INVALID_ARGUMENT /* Create API for present UID with different length */
 },
 {
- "Set_extended call with invalid offset", VAL_PS_SET_EXTENDED, PSA_PS_ERROR_OFFSET_INVALID
+ VAL_PS_CREATE, PSA_PS_ERROR_INVALID_ARGUMENT /* Call create API for to set WRITE_ONCE flag */
 },
 {
- "Set_extended call with valid offset and zero length", VAL_PS_SET_EXTENDED, PSA_PS_SUCCESS
+ VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Validate existing UID attributes maintained */
 },
 {
- "Set_extended call with invalid offset + length", VAL_PS_SET_EXTENDED, PSA_PS_ERROR_OFFSET_INVALID
+ 0, 0 /* This is dummy for index6 */
 },
 {
- "Set_extended call with invalid length", VAL_PS_SET_EXTENDED, PSA_PS_ERROR_OFFSET_INVALID
+ 0, 0 /* This is dummy for index7 */
 },
 {
- "Write data using set api", VAL_PS_SET, PSA_PS_SUCCESS
+ VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the UID */
 },
 {
- "Check data validity using get api", VAL_PS_GET, PSA_PS_SUCCESS
+ VAL_PS_CREATE, PSA_PS_SUCCESS /* Create valid storage using create API */
 },
 {
- "This is dummy for index10", 0, 0
+ VAL_PS_CREATE, PSA_PS_ERROR_INVALID_ARGUMENT /* Again call create API with different length */
 },
 {
- "Set_extended call with NULL write buffer", VAL_PS_SET_EXTENDED, PSA_PS_ERROR_BAD_POINTER
+ VAL_PS_GET, PSA_PS_SUCCESS /* Validate the storage is empty */
 },
 {
- "Overwrite data using set_extended", VAL_PS_SET_EXTENDED, PSA_PS_SUCCESS
+ 0, 0 /* This is dummy for index12 */
 },
 {
- "Check data validity using get api", VAL_PS_GET, PSA_PS_SUCCESS
+ VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the UID */
 },
 {
- "This is dummy for index14", 0, 0
-},
-{
- "Remove the uid", VAL_PS_REMOVE, PSA_PS_SUCCESS
-},
+ VAL_PS_SET_EXTENDED, PSA_PS_ERROR_UID_NOT_FOUND /* Set_extended call for removed UID */
+}
 };
 #endif /* _TEST_P011_PS_DATA_TESTS_H_ */

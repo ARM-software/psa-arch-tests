@@ -20,7 +20,7 @@
 #include "test_s008.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_STORAGE_BASE, 8)
-#define TEST_DESC "Valid offset success scenarios check\n"
+#define TEST_DESC "Invalid offset check\n"
 
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;
@@ -41,7 +41,7 @@ void test_entry(val_api_t *val_api, psa_api_t *psa_api)
     }
 
     /* Execute list of tests available in test[num]_secure_storage_list from Non-secure side*/
-    status = val->execute_non_secure_tests(TEST_NUM, test_s008_its_list, FALSE);
+    status = val->execute_non_secure_tests(TEST_NUM, test_s008_sst_list, FALSE);
 
     if (VAL_ERROR(status))
     {

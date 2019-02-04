@@ -26,19 +26,19 @@
 
 #define TEST_BUFF_SIZE 20
 
-client_test_t test_s008_its_list[] = {
+client_test_t test_s008_sst_list[] = {
     NULL,
-    psa_its_nonzero_offset_check_success,
-    psa_its_nonzero_offset_check_failure,
+    psa_sst_valid_offset_success,
+    psa_sst_invalid_offset_failure,
     NULL,
 };
 
-static psa_sst_uid_t uid = UID_BASE_VALUE + 10;
+static psa_sst_uid_t uid = UID_BASE_VALUE + 5;
 static uint8_t read_buff[TEST_BUFF_SIZE];
 static uint8_t write_buff[TEST_BUFF_SIZE] = {0x99, 0x01, 0x02, 0x03, 0x04, 0x23, 0xF6, 0x07, 0x08, \
                                   0x0D, 0x70, 0xA1, 0xFF, 0xFF, 0x14, 0x73, 0x46, 0x97, 0xE8, 0xDD};
 
-int32_t psa_its_nonzero_offset_check_failure(security_t caller)
+int32_t psa_sst_invalid_offset_failure(security_t caller)
 {
     uint32_t status, j;
 
@@ -68,18 +68,18 @@ int32_t psa_its_nonzero_offset_check_failure(security_t caller)
         TEST_ASSERT_EQUAL(read_buff[j], 0x00, TEST_CHECKPOINT_NUM(11));
     }
 
-    /* Remove the uid to be used in other test case */
+    /* Remove the UID */
     status = SST_FUNCTION(s008_data[12].api, uid);
     TEST_ASSERT_EQUAL(status, s008_data[12].status, TEST_CHECKPOINT_NUM(12));
 
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_its_nonzero_offset_check_success(security_t caller)
+int32_t psa_sst_valid_offset_success(security_t caller)
 {
     uint32_t status, data_len, offset = TEST_BUFF_SIZE;
 
-    /* Set data for uid */
+    /* Set data for UID */
     status = SST_FUNCTION(s008_data[1].api, uid, TEST_BUFF_SIZE, write_buff, 0);
     TEST_ASSERT_EQUAL(status, s008_data[1].status, TEST_CHECKPOINT_NUM(1));
 
