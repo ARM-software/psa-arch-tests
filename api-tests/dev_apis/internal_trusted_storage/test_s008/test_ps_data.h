@@ -23,50 +23,49 @@
 #define psa_sst_uid_t psa_ps_uid_t
 
 typedef struct {
-    char                   test_desc[100];
     enum ps_function_code  api;
     psa_ps_status_t        status;
 } test_data;
 
-static test_data s008_data[] = {
+static const test_data s008_data[] = {
 {
- "This is dummy for index0", 0, 0
+ 0, 0 /* This is dummy for index0 */
 },
 {
- "Create a valid storage entity with zero flag value", VAL_PS_SET, PSA_PS_SUCCESS
+ VAL_PS_SET, PSA_PS_SUCCESS /* Create a valid storage entity with zero flag value */
 },
 {
- "Call get api with valid offset values, and offset + data_len = total_size", VAL_PS_GET, PSA_PS_SUCCESS
+ VAL_PS_GET, PSA_PS_SUCCESS /* Call get API with offset + data_len = total_size */
 },
 {
- "This is dummy for index3", 0, 0
+ 0, 0 /* This is dummy for index3 */
 },
 {
- "Call get api with valid offset values, and offset + data_len < total_size", VAL_PS_GET, PSA_PS_SUCCESS
+ VAL_PS_GET, PSA_PS_SUCCESS /* Call get API with offset + data_len < total_size */
 },
 {
- "This is dummy for index5", 0, 0
+ 0, 0 /* This is dummy for index5 */
 },
 {
- "Call get api with invalid offset , offset = total data_size + 1", VAL_PS_GET, PSA_PS_ERROR_OFFSET_INVALID
+ VAL_PS_GET, PSA_PS_ERROR_OFFSET_INVALID /* Call get API with offset = total data_size + 1 */
 },
 {
- "This is dummy for index7", 0, 0
+ 0, 0 /* This is dummy for index7 */
 },
 {
- "Call get api with valid offset , but offset + data_len > total data_size", VAL_PS_GET, PSA_PS_ERROR_INCORRECT_SIZE
+ VAL_PS_GET, PSA_PS_ERROR_INCORRECT_SIZE /* Call get API with offset + data_len > total data_size */
 },
 {
- "This is dummy for index9", 0, 0
+ 0, 0 /* This is dummy for index9 */
 },
 {
- "Call get api with invalid data len and offset zero", VAL_PS_GET, PSA_PS_ERROR_INCORRECT_SIZE
+ VAL_PS_GET, PSA_PS_ERROR_INCORRECT_SIZE /* Call get API with invalid data len and offset zero */
 },
 {
- "This is dummy for index11", 0, 0
+ 0, 0 /* This is dummy for index11 */
 },
 {
- "Remove the storage entity ", VAL_PS_REMOVE, PSA_PS_SUCCESS
+ VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the storage entity */
 },
 };
 #endif /* _TEST_S008_PS_DATA_TESTS_H_ */

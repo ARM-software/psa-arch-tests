@@ -24,9 +24,9 @@
 #include "test_ps_data.h"
 #endif
 
-#define TEST_BUFF_SIZE 256
+#define TEST_BUFF_SIZE 1024
 #define NUM_ITERATIONS 5
-#define TEST_BASE_UID_VALUE 20
+#define TEST_BASE_UID_VALUE UID_BASE_VALUE + 5
 
 client_test_t test_s003_sst_list[] = {
     NULL,
@@ -54,25 +54,27 @@ int32_t psa_sst_insufficient_space(security_t caller)
             status = SST_FUNCTION(s003_data[1].api, uid, TEST_BUFF_SIZE, write_buff, 0);
             if (status != PSA_SST_SUCCESS)
             {
-                val->print(PRINT_TEST, "UID %d set failed, Storage Space is exhausted\n", uid);
+                val->print(PRINT_INFO, "UID %d set failed due to insufficient space\n", uid);
                 break;
             }
         }
         TEST_ASSERT_EQUAL(status, s003_data[1].status, TEST_CHECKPOINT_NUM(1));
 
         /* Store number of set()s it took to saturate the storage */
-        count = uid - TEST_BASE_UID_VALUE;
-        results[i] = uid - TEST_BASE_UID_VALUE;
+        count = uid - (TEST_BASE_UID_VALUE);
+        results[i] = uid - (TEST_BASE_UID_VALUE);
 
-        val->print(PRINT_TEST, "Remove all registered UIDs\n", 0);
-        for (uid = TEST_BASE_UID_VALUE; uid < count + TEST_BASE_UID_VALUE; uid++)
+        if (count)
+           val->print(PRINT_TEST, "Remove all registered UIDs\n", 0);
+        for (uid = TEST_BASE_UID_VALUE; uid < (count + TEST_BASE_UID_VALUE); uid++)
         {
             val->print(PRINT_INFO, "Removing UID %d\n", uid);
             status = SST_FUNCTION(s003_data[2].api, uid);
             if (status != PSA_SST_SUCCESS)
-                return VAL_STATUS_ERROR;
+                break;
         }
-        TEST_ASSERT_EQUAL(status, s003_data[2].status, TEST_CHECKPOINT_NUM(2));
+        if (count)
+           TEST_ASSERT_EQUAL(status, s003_data[2].status, TEST_CHECKPOINT_NUM(2));
     }
 
     /* Check that it takes equal number of UIDs to fill up the storage each time */

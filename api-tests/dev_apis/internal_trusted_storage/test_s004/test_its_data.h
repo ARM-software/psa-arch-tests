@@ -23,44 +23,43 @@
 #define psa_sst_uid_t psa_its_uid_t
 
 typedef struct {
-    char                    test_desc[100];
     enum its_function_code  api;
     psa_its_status_t        status;
 } test_data;
 
-static test_data s004_data[] = {
+static const test_data s004_data[] = {
 {
- "This is dummy for index0", 0, 0
+ 0, 0 /* This is dummy for index0 */
 },
 {
- "Create a valid storage entity ", VAL_ITS_SET, PSA_ITS_SUCCESS
+ VAL_ITS_SET, PSA_ITS_SUCCESS /* Create a valid storage entity */
 },
 {
- "Validate the data using get api after set api failure", VAL_ITS_GET, PSA_ITS_SUCCESS
+ VAL_ITS_GET, PSA_ITS_SUCCESS /* Validate the data using get API after set API failure */
 },
 {
- "Index not used",0,0
+ 0, 0 /* Index not used */
 },
 {
- "For same uid set the length as half of previous", VAL_ITS_SET, PSA_ITS_SUCCESS
+ VAL_ITS_SET, PSA_ITS_SUCCESS /* For same UID set the length as half of previous */
 },
 {
- "Call get with incorrect length", VAL_ITS_GET, PSA_ITS_ERROR_INCORRECT_SIZE
+ VAL_ITS_GET, PSA_ITS_ERROR_INCORRECT_SIZE /* Call get with incorrect length */
 },
 {
- "No data should be returned",0,0
+ 0, 0 /* No data should be returned */
 },
 {
- "Call get api with correct length", VAL_ITS_GET, PSA_ITS_SUCCESS
+ VAL_ITS_GET, PSA_ITS_SUCCESS /* Call get API with correct length */
 },
 {
- "No data should be returned",0,0
+ 0, 0 /* No data should be returned */
 },
 {
- "Check that we should not be able to access the old data",0,0
+ 0, 0 /* Check that we should not be able to access the old data */
 },
 {
- "Remove the valid storage entity ", VAL_ITS_REMOVE, PSA_ITS_SUCCESS
+ VAL_ITS_REMOVE, PSA_ITS_SUCCESS /* Remove the valid storage entity */
 },
 };
 #endif /* _TEST_S004_ITS_DATA_TESTS_H_ */

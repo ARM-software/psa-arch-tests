@@ -15,6 +15,6 @@
 #**/
 
 CC_SOURCE  = test_entry.c test_p011.c
-CC_OPTIONS =
+CC_OPTIONS = -DPS_TEST
 AS_SOURCE  =
 AS_OPTIONS =

@@ -28,7 +28,7 @@
 
 client_test_t test_s001_sst_list[] = {
     NULL,
-    psa_sst_key_not_found,
+    psa_sst_uid_not_found,
     NULL,
 };
 
@@ -41,17 +41,17 @@ static int32_t sst_calls_without_set_call(psa_sst_uid_t p_uid)
     uint32_t status;
 
     /* get() without using set() before */
-    val->print(PRINT_TEST, "[Check 1] GET api call for UID %d which is not set\n", p_uid);
+    val->print(PRINT_TEST, "[Check 1] Call get API for UID %d which is not set\n", p_uid);
     status = SST_FUNCTION(s001_data[1].api, p_uid, 0, TEST_BUFF_SIZE, read_buff);
     TEST_ASSERT_EQUAL(status,s001_data[1].status,TEST_CHECKPOINT_NUM(1));
 
     /*  get_info() without using set() before */
-    val->print(PRINT_TEST, "[Check 2] GET_INFO api call for UID %d which is not set\n", p_uid);
+    val->print(PRINT_TEST, "[Check 2] Call get_info API for UID %d which is not set\n", p_uid);
     status = SST_FUNCTION(s001_data[2].api, p_uid, &info);
     TEST_ASSERT_EQUAL(status, s001_data[2].status, TEST_CHECKPOINT_NUM(2));
 
     /* remove() without using set() before */
-    val->print(PRINT_TEST, "[Check 3] REMOVE api call for UID %d which is not set\n", p_uid);
+    val->print(PRINT_TEST, "[Check 3] Call remove API for UID %d which is not set\n", p_uid);
     status = SST_FUNCTION(s001_data[3].api, p_uid);
     TEST_ASSERT_EQUAL(status, s001_data[3].status, TEST_CHECKPOINT_NUM(3));
 
@@ -82,17 +82,17 @@ static int32_t sst_calls_after_uid_remove(psa_sst_uid_t p_uid)
     uint32_t status;
 
     /* get() for UID which is removed */
-    val->print(PRINT_TEST, "[Check 4] GET api call for UID %d which is removed\n", p_uid);
+    val->print(PRINT_TEST, "[Check 4] Call get API for UID %d which is removed\n", p_uid);
     status = SST_FUNCTION(s001_data[7].api, p_uid, 0, TEST_BUFF_SIZE, read_buff);
     TEST_ASSERT_EQUAL(status, s001_data[7].status, TEST_CHECKPOINT_NUM(7));
 
     /* get_info() for UID which is removed */
-    val->print(PRINT_TEST, "[Check 5] GET_INFO api call for UID %d which is removed\n", p_uid);
+    val->print(PRINT_TEST, "[Check 5] Call get_info API for UID %d which is removed\n", p_uid);
     status = SST_FUNCTION(s001_data[8].api, p_uid, &info);
     TEST_ASSERT_EQUAL(status, s001_data[8].status, TEST_CHECKPOINT_NUM(8));
 
     /* remove() for UID which is removed */
-    val->print(PRINT_TEST, "[Check 6] REMOVE api call for UID %d which is removed\n", p_uid);
+    val->print(PRINT_TEST, "[Check 6] Call remove API for UID %d which is removed\n", p_uid);
     status = SST_FUNCTION(s001_data[9].api, p_uid);
     TEST_ASSERT_EQUAL(status, s001_data[9].status, TEST_CHECKPOINT_NUM(9));
 
@@ -104,26 +104,26 @@ static int32_t sst_calls_with_different_uid(psa_sst_uid_t p_uid)
     uint32_t status;
 
     /* set() a UID */
-    val->print(PRINT_TEST, "SET storage for UID %d\n", p_uid);
+    val->print(PRINT_TEST, "Set storage for UID %d\n", p_uid);
     status = SST_FUNCTION(s001_data[10].api, p_uid, TEST_BUFF_SIZE, write_buff, 0);
     TEST_ASSERT_EQUAL(status, s001_data[10].status, TEST_CHECKPOINT_NUM(10));
 
-    /* get() for different uid then set uid */
-    val->print(PRINT_TEST, "[Check 7] GET api call for different UID %d\n", p_uid);
+    /* get() for different UID then set UID */
+    val->print(PRINT_TEST, "[Check 7] Call get API for different UID %d\n", p_uid);
     status = SST_FUNCTION(s001_data[11].api, p_uid-1, 0, TEST_BUFF_SIZE - 1, read_buff);
     TEST_ASSERT_EQUAL(status, s001_data[11].status, TEST_CHECKPOINT_NUM(11));
 
-    /* get_info() for different uid then set uid */
-    val->print(PRINT_TEST, "[Check 8] GET_INFO api call for different UID %d\n", p_uid);
+    /* get_info() for different UID then set UID */
+    val->print(PRINT_TEST, "[Check 8] Call get_info API for different UID %d\n", p_uid);
     status = SST_FUNCTION(s001_data[12].api, p_uid-1, &info);
     TEST_ASSERT_EQUAL(status, s001_data[12].status, TEST_CHECKPOINT_NUM(12));
 
-    /* remove() for different uid then set uid */
-    val->print(PRINT_TEST, "[Check 9] REMOVE api call for different UID %d\n", p_uid);
+    /* remove() for different UID then set UID */
+    val->print(PRINT_TEST, "[Check 9] Call remove API for different UID %d\n", p_uid);
     status = SST_FUNCTION(s001_data[13].api, p_uid-1);
     TEST_ASSERT_EQUAL(status, s001_data[13].status, TEST_CHECKPOINT_NUM(13));
 
-    /* remove() the set uid */
+    /* remove() the set UID */
     status = SST_FUNCTION(s001_data[14].api, p_uid);
     TEST_ASSERT_EQUAL(status, s001_data[14].status, TEST_CHECKPOINT_NUM(14));
 
@@ -141,10 +141,10 @@ static int32_t sst_remove_stray_uid(psa_sst_uid_t p_uid)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_sst_key_not_found(security_t caller)
+int32_t psa_sst_uid_not_found(security_t caller)
 {
     int32_t test_status;
-    psa_sst_uid_t uid = UID_BASE_VALUE + 10;
+    psa_sst_uid_t uid = UID_BASE_VALUE + 6;
 
     test_status = sst_calls_without_set_call(uid);
     if (test_status != VAL_STATUS_SUCCESS)

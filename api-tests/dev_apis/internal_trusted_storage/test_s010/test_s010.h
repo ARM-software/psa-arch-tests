@@ -14,23 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
-#ifndef _TEST_S006_CLIENT_TESTS_H_
-#define _TEST_S006_CLIENT_TESTS_H_
+#ifndef _TEST_S010_CLIENT_TESTS_H_
+#define _TEST_S010_CLIENT_TESTS_H_
 
 #ifdef ITS_TEST
 #define VAL_STORAGE_BASE VAL_INTERNAL_TRUSTED_STORAGE_BASE
-#define test_entry CONCAT(test_entry_, s006)
+#define test_entry CONCAT(test_entry_, s010)
 #elif PS_TEST
 #define VAL_STORAGE_BASE VAL_PROTECTED_STORAGE_BASE
-#define test_entry CONCAT(test_entry_, p006)
+#define test_entry CONCAT(test_entry_, p010)
 #endif
 #define val CONCAT(val,test_entry)
 #define psa CONCAT(psa,test_entry)
 
 extern val_api_t *val;
 extern psa_api_t *psa;
-extern client_test_t test_s006_sst_list[];
+extern client_test_t test_s010_sst_list[];
 
-int32_t psa_sst_flags_not_supported(security_t caller);
-
-#endif /* _TEST_S006_CLIENT_TESTS_H_ */
+int32_t psa_sst_uid_value_zero_check(security_t caller);
+#endif /* _TEST_S010_CLIENT_TESTS_H_ */
