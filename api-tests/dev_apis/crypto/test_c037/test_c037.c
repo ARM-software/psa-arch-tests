@@ -106,29 +106,24 @@ int32_t psa_cipher_finish_test(security_t caller)
         if (check1[i].expected_status != PSA_SUCCESS)
         {
             /* Abort a cipher operation */
-            status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
             continue;
         }
 
         /* Check if the output length matches the expected length */
-        TEST_ASSERT_EQUAL(finish_length, check1[i].expected_output_length, TEST_CHECKPOINT_NUM(11));
+        TEST_ASSERT_EQUAL(finish_length, check1[i].expected_output_length, TEST_CHECKPOINT_NUM(10));
 
         /* Check if the output data matches the expected data */
-        TEST_ASSERT_MEMCMP(output, check1[i].expected_output, (update_length + finish_length), TEST_CHECKPOINT_NUM(12));
+        TEST_ASSERT_MEMCMP(output, check1[i].expected_output, (update_length + finish_length),
+                           TEST_CHECKPOINT_NUM(11));
 
         /* Finish encrypting or decrypting a message using an invalid operation should fail */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_FINISH, &invalid_operation, output,
                     check1[i].output_size[SLOT_2], &finish_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(13));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(12));
 
         /* Abort a cipher operation */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(14));
-
-        /* Abort a cipher operation */
-        status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &invalid_operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(15));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(13));
     }
 
     return VAL_STATUS_SUCCESS;
