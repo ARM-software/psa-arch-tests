@@ -40,16 +40,16 @@ static const test_data s005_data[] = {
  VAL_ITS_GET, PSA_ITS_SUCCESS  /* Validate the data using get API */
 },
 {
- 0,0 /* Index not used */
+ 0, 0 /* Index not used */
 },
 {
  VAL_ITS_GET_INFO, PSA_ITS_SUCCESS  /* Validate the data attributes get_info API */
 },
 {
- 0,0 /* Index not used */
+ 0, 0 /* Index not used */
 },
 {
- 0,0 /* Index not used */
+ 0, 0 /* Index not used */
 },
 {
  VAL_ITS_REMOVE, PSA_ITS_SUCCESS /* Remove the valid storage entity */

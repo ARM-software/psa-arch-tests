@@ -38,7 +38,7 @@ static const test_data s004_data[] = {
  VAL_PS_GET, PSA_PS_SUCCESS /* Validate the data using get API after set API failure */
 },
 {
- 0,0 /* Index not used */
+ 0, 0 /* Index not used */
 },
 {
  VAL_PS_SET, PSA_PS_SUCCESS /* For same UID set the length as half of previous */
@@ -47,16 +47,16 @@ static const test_data s004_data[] = {
  VAL_PS_GET, PSA_PS_ERROR_INCORRECT_SIZE /* Call get with incorrect length */
 },
 {
- 0,0 /* No data should be returned */
+ 0, 0 /* No data should be returned */
 },
 {
  VAL_PS_GET, PSA_PS_SUCCESS /* Call get API with correct length */
 },
 {
- 0,0 /* No data should be returned */
+ 0, 0 /* No data should be returned */
 },
 {
- 0,0 /* Check that we should not be able to access the old data */
+ 0, 0 /* Check that we should not be able to access the old data */
 },
 {
  VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the valid storage entity */

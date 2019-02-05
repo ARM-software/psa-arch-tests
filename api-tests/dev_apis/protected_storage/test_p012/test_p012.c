@@ -48,27 +48,27 @@ int32_t psa_sst_offset_invalid()
     TEST_ASSERT_EQUAL(status, p012_data[2].status, TEST_CHECKPOINT_NUM(2));
 
     /* Try to set data at invalid location with incorrect data len + offset  */
-    val->print(PRINT_TEST, "[Check 1] set_extended API call with invalid offset + length\n", 0);
+    val->print(PRINT_TEST, "[Check 1] Call set_extended API with invalid offset + length\n", 0);
     status = SST_FUNCTION(p012_data[3].api, p_uid, TEST_BUFF_SIZE, 2, write_buff);
     TEST_ASSERT_EQUAL(status, p012_data[3].status, TEST_CHECKPOINT_NUM(3));
 
     /* Try to set data at invalid location with incorrect offset */
-    val->print(PRINT_TEST, "[Check 2] set_extended API call with invalid offset\n", 0);
+    val->print(PRINT_TEST, "[Check 2] Call set_extended API with invalid offset\n", 0);
     status = SST_FUNCTION(p012_data[4].api, p_uid, TEST_BUFF_SIZE + 2, 0, write_buff);
     TEST_ASSERT_EQUAL(status, p012_data[4].status, TEST_CHECKPOINT_NUM(4));
 
     /* Try to set data at correct offset, but zero data len */
-    val->print(PRINT_TEST, "[Check 3] set_extended API call with offset equals length\n", 0);
+    val->print(PRINT_TEST, "[Check 3] Call set_extended API with offset equals length\n", 0);
     status = SST_FUNCTION(p012_data[5].api, p_uid, TEST_BUFF_SIZE, 0, write_buff);
     TEST_ASSERT_EQUAL(status, p012_data[5].status, TEST_CHECKPOINT_NUM(5));
 
     /* Try to set data at invalid location with incorrect data len + offset */
-    val->print(PRINT_TEST, "[Check 4] set_extended API call with invalid offset + length\n", 0);
+    val->print(PRINT_TEST, "[Check 4] Call set_extended API with invalid offset + length\n", 0);
     status = SST_FUNCTION(p012_data[6].api, p_uid, 1, TEST_BUFF_SIZE, write_buff);
     TEST_ASSERT_EQUAL(status, p012_data[6].status, TEST_CHECKPOINT_NUM(6));
 
     /* Try to set data at invalid location with incorrect data len */
-    val->print(PRINT_TEST, "[Check 5] set_extended API call with invalid length\n", 0);
+    val->print(PRINT_TEST, "[Check 5] Call set_extended API with invalid length\n", 0);
     status = SST_FUNCTION(p012_data[7].api, p_uid, 0, TEST_BUFF_SIZE + 1, write_buff);
     TEST_ASSERT_EQUAL(status, p012_data[7].status, TEST_CHECKPOINT_NUM(7));
 
@@ -113,6 +113,7 @@ static int32_t psa_sst_bad_pointer()
 int32_t psa_sst_optional_api_offset_invalid(security_t caller)
 {
     uint32_t status;
+    int32_t test_status;
 
     /* Call the get_support API and check if create and set_extended API are supported */
     status = SST_FUNCTION(p012_data[0].api);
@@ -120,8 +121,13 @@ int32_t psa_sst_optional_api_offset_invalid(security_t caller)
     if (status == p012_data[0].status)
     {
        val->print(PRINT_INFO, "Optional PS APIs are supported.\n", 0);
-       psa_sst_offset_invalid();
-       psa_sst_bad_pointer();
+       test_status = psa_sst_offset_invalid();
+       if (test_status != VAL_STATUS_SUCCESS)
+          return test_status;
+
+       test_status = psa_sst_bad_pointer();
+       if (test_status != VAL_STATUS_SUCCESS)
+          return test_status;
     }
     else
     {

@@ -41,16 +41,16 @@ static const test_data s002_data[] = {
  VAL_ITS_GET_INFO, PSA_ITS_SUCCESS /* Call the get_info API to validate the attributes */
 },
 {
- 0,0 /* Index not used as check for get info size */
+ 0, 0 /* Index not used as check for get info size */
 },
 {
- 0,0 /* Index not used as check for get info flag */
+ 0, 0 /* Index not used as check for get info flag */
 },
 {
  VAL_ITS_GET, PSA_ITS_SUCCESS /* Validate the data using get API */
 },
 {
- 0,0 /* Index not used */
+ 0, 0 /* Index not used */
 },
 {
  VAL_ITS_SET, PSA_ITS_SUCCESS /* Change the flag to WRITE_ONCE using set API */
@@ -59,16 +59,16 @@ static const test_data s002_data[] = {
  VAL_ITS_GET_INFO, PSA_ITS_SUCCESS /* Call the get_info API to validate the flag change */
 },
 {
- 0,0 /* Index not used as check for get info size */
+ 0, 0 /* Index not used as check for get info size */
 },
 {
- 0,0 /* Index not used as check for get info flag */
+ 0, 0 /* Index not used as check for get info flag */
 },
 {
  VAL_ITS_GET, PSA_ITS_SUCCESS /* Validate the data using get API after flag change */
 },
 {
- 0,0 /* Index not used */
+ 0, 0 /* Index not used */
 },
 {
  VAL_ITS_REMOVE, PSA_ITS_ERROR_WRITE_ONCE /* Storage should not be removed after WRITE_ONCE flag */
@@ -83,16 +83,16 @@ static const test_data s002_data[] = {
  VAL_ITS_GET, PSA_ITS_SUCCESS /* Validate the data using get API after flag change */
 },
 {
- 0,0 /* Index not used */
+ 0, 0 /* Index not used */
 },
 {
  VAL_ITS_GET_INFO, PSA_ITS_SUCCESS /* Call the get_info API to validate the flag change */
 },
 {
- 0,0 /* Index not used as check for get info size */
+ 0, 0 /* Index not used as check for get info size */
 },
 {
- 0,0 /* Index not used as check for get info flag */
+ 0, 0 /* Index not used as check for get info flag */
 },
 {
  VAL_ITS_SET, PSA_ITS_ERROR_WRITE_ONCE /* Try to set different size for same UID and flag value */
@@ -104,16 +104,16 @@ static const test_data s002_data[] = {
  VAL_ITS_GET_INFO, PSA_ITS_SUCCESS /* Call the get_info API to validate the flag change */
 },
 {
- 0,0 /* Index not used as check for get info size */
+ 0, 0 /* Index not used as check for get info size */
 },
 {
- 0,0 /* Index not used as check for get info flag */
+ 0, 0 /* Index not used as check for get info flag */
 },
 {
  VAL_ITS_GET, PSA_ITS_SUCCESS  /* Validate the data using get API after flag change */
 },
 {
- 0,0 /* Index not used */
+ 0, 0 /* Index not used */
 },
 {
  VAL_ITS_SET, PSA_ITS_ERROR_WRITE_ONCE  /* Setting flag to zero for UID should fail */
@@ -122,10 +122,10 @@ static const test_data s002_data[] = {
  VAL_ITS_GET_INFO, PSA_ITS_SUCCESS  /* Check that the WRITE_ONCE flag is preserved */
 },
 {
- 0,0 /* Index not used as check for get info size */
+ 0, 0 /* Index not used as check for get info size */
 },
 {
- 0,0 /* Index not used as check for get info flag */
+ 0, 0 /* Index not used as check for get info flag */
 },
 };
 #endif /* _TEST_S002_ITS_DATA_TESTS_H_ */

@@ -79,7 +79,7 @@ int32_t psa_sst_apis_check_success_case(security_t caller)
         return VAL_STATUS_ERROR;
     }
 
-    val->print(PRINT_TEST, "[Check 2] Increase data length and make APIs call\n", 0);
+    val->print(PRINT_TEST, "[Check 2] Resetting the length check\n", 0);
     if (psa_sst_apis_check(uid, TEST_BUFF_SIZE/2, write_buff, flag))
     {
        val->print(PRINT_ERROR, "Data Len = %d\n", data_len);

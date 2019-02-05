@@ -55,8 +55,7 @@ int32_t psa_sst_get_data_check(security_t caller)
     TEST_ASSERT_EQUAL(status, s004_data[4].status, TEST_CHECKPOINT_NUM(4));
 
     /* Call get function with incorrect buffer length  */
-    val->print(PRINT_TEST, "[Check 1] Buffer returned by get API with incorrect length"
-                            " should be empty\n", 0);
+    val->print(PRINT_TEST, "[Check 1] Call get API with incorrect length\n", 0);
     memset(read_buff, 0, TEST_BUFF_SIZE);
     status = SST_FUNCTION(s004_data[5].api, uid, 0, TEST_BUFF_SIZE, read_buff);
     TEST_ASSERT_EQUAL(status, s004_data[5].status, TEST_CHECKPOINT_NUM(5));
@@ -71,14 +70,13 @@ int32_t psa_sst_get_data_check(security_t caller)
     TEST_ASSERT_MEMCMP(read_buff, write_buff, TEST_BUFF_SIZE/2, TEST_CHECKPOINT_NUM(8));
 
     /* Check we should not be able to access old set data */
-    val->print(PRINT_TEST, "[Check 2] When get API is called for UID whose length in reduced,\n"
-                           "          check old data is inaccessible\n", 0);
+    val->print(PRINT_TEST, "[Check 2] Old buffer invalid after length change\n", 0);
     for (j = TEST_BUFF_SIZE/2; j < TEST_BUFF_SIZE; j++)
     {
         TEST_ASSERT_EQUAL(read_buff[j], 0, TEST_CHECKPOINT_NUM(9));
     }
 
-    /* Remove the UID to be used in other test case */
+    /* Remove the UID */
     status = SST_FUNCTION(s004_data[10].api, uid);
     TEST_ASSERT_EQUAL(status, s004_data[10].status, TEST_CHECKPOINT_NUM(10));
 

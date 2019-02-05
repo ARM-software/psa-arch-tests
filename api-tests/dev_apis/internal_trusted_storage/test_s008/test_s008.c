@@ -68,7 +68,7 @@ int32_t psa_sst_invalid_offset_failure(security_t caller)
         TEST_ASSERT_EQUAL(read_buff[j], 0x00, TEST_CHECKPOINT_NUM(11));
     }
 
-    /* Remove the UID to be used in other test case */
+    /* Remove the UID */
     status = SST_FUNCTION(s008_data[12].api, uid);
     TEST_ASSERT_EQUAL(status, s008_data[12].status, TEST_CHECKPOINT_NUM(12));
 
