@@ -41,16 +41,16 @@ static const test_data s002_data[] = {
  VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Call the get_info API to validate the attributes */
 },
 {
- 0,0 /* Index not used as check for get info size */
+ 0, 0 /* Index not used as check for get info size */
 },
 {
- 0,0 /* Index not used as check for get info flag */
+ 0, 0 /* Index not used as check for get info flag */
 },
 {
  VAL_PS_GET, PSA_PS_SUCCESS /* Validate the data using get API */
 },
 {
- 0,0 /* Index not used */
+ 0, 0 /* Index not used */
 },
 {
  VAL_PS_SET, PSA_PS_SUCCESS /* Change the flag to WRITE_ONCE using set API */
@@ -59,16 +59,16 @@ static const test_data s002_data[] = {
  VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Call the get_info API to validate the flag change */
 },
 {
- 0,0 /* Index not used as check for get info size */
+ 0, 0 /* Index not used as check for get info size */
 },
 {
- 0,0 /* Index not used as check for get info flag */
+ 0, 0 /* Index not used as check for get info flag */
 },
 {
  VAL_PS_GET, PSA_PS_SUCCESS /* Validate the data using get API after flag change */
 },
 {
- 0,0 /* Index not used */
+ 0, 0 /* Index not used */
 },
 {
  VAL_PS_REMOVE, PSA_PS_ERROR_WRITE_ONCE /* Storage should not be removed after WRITE_ONCE flag */
@@ -83,16 +83,16 @@ static const test_data s002_data[] = {
  VAL_PS_GET, PSA_PS_SUCCESS /* Validate the data using get API after flag change */
 },
 {
- 0,0  /* Index not used */
+ 0, 0  /* Index not used */
 },
 {
  VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Call the get_info API to validate the flag change */
 },
 {
- 0,0 /* Index not used as check for get info size */
+ 0, 0 /* Index not used as check for get info size */
 },
 {
- 0,0 /* Index not used as check for get info flag */
+ 0, 0 /* Index not used as check for get info flag */
 },
 {
  VAL_PS_SET, PSA_PS_ERROR_WRITE_ONCE /* Try to set different size for same UID and flag value */
@@ -104,16 +104,16 @@ static const test_data s002_data[] = {
  VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Call the get_info API to validate the flag change */
 },
 {
- 0,0 /* Index not used as check for get info size */
+ 0, 0 /* Index not used as check for get info size */
 },
 {
- 0,0 /* Index not used as check for get info flag */
+ 0, 0 /* Index not used as check for get info flag */
 },
 {
  VAL_PS_GET, PSA_PS_SUCCESS /* Validate the data using get API after flag change */
 },
 {
- 0,0 /* Index not used */
+ 0, 0 /* Index not used */
 },
 {
  VAL_PS_SET, PSA_PS_ERROR_WRITE_ONCE /* Setting flag to zero for UID should fail */
@@ -125,10 +125,10 @@ static const test_data s002_data[] = {
  VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Check that the WRITE_ONCE flag is preserved */
 },
 {
- 0,0 /* Index not used as check for get info size */
+ 0, 0 /* Index not used as check for get info size */
 },
 {
- 0,0 /* Index not used as check for get info flag */
+ 0, 0 /* Index not used as check for get info flag */
 },
 };
 #endif /* _TEST_S002_PS_DATA_TESTS_H_ */

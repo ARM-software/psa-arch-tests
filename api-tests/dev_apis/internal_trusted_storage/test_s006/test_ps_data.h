@@ -41,7 +41,7 @@ static const test_data s006_data[] = {
  VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Validate the flag value get_info API */
 },
 {
- 0,0 /* Index not used */
+ 0, 0 /* Index not used */
 },
 {
  VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the storage entity */

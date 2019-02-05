@@ -58,10 +58,11 @@ int32_t psa_sst_flags_not_supported(security_t caller)
    psa_sst_create_flags_t flag = 0x80000000;
    uint32_t status = VAL_STATUS_SUCCESS;
    psa_sst_uid_t uid = UID_BASE_VALUE + 5;
+   int32_t test_status;
 
    /* Calling set function with different create flag value */
 
-   val->print(PRINT_TEST, "[Check 1] set API call with valid flag values\n", 0);
+   val->print(PRINT_TEST, "[Check 1] Call set API with valid flag values\n", 0);
    while (flag)
    {
        /* Create storage with flag value */
@@ -70,8 +71,10 @@ int32_t psa_sst_flags_not_supported(security_t caller)
 
        if (status == s006_data[1].status)
        {
-          psa_sst_remove_api(uid, TEST_BUFF_SIZE, write_buff,
+          test_status = psa_sst_remove_api(uid, TEST_BUFF_SIZE, write_buff,
                                           (flag & (~PSA_SST_FLAG_WRITE_ONCE)));
+	      if (test_status != VAL_STATUS_SUCCESS)
+             return test_status;
        }
        else if (status == s006_data[0].status)
        {

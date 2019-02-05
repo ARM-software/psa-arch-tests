@@ -99,7 +99,7 @@ static int32_t psa_sst_set_extended_create_success()
     TEST_ASSERT_EQUAL(status, p013_data[16].status, TEST_CHECKPOINT_NUM(16));
 
     /* Call the get function to match the data */
-    val->print(PRINT_TEST, "[Check 8] validity of data after create API call\n", 0);
+    val->print(PRINT_TEST, "[Check 8] Validity of data after create API call\n", 0);
     status = SST_FUNCTION(p013_data[17].api, p_uid, 0, TEST_BUFF_SIZE, read_buff);
     TEST_ASSERT_EQUAL(status, p013_data[17].status, TEST_CHECKPOINT_NUM(17));
     TEST_ASSERT_MEMCMP(read_buff, write_buff_3, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(18));
@@ -120,6 +120,7 @@ static int32_t psa_sst_set_extended_create_success()
 int32_t psa_sst_optional_api_success_check(security_t caller)
 {
     uint32_t status;
+    int32_t test_status;
 
     /* Call the get_support API and check if create and set_extended API are supported */
     status = SST_FUNCTION(p013_data[0].api);
@@ -127,7 +128,9 @@ int32_t psa_sst_optional_api_success_check(security_t caller)
     if (status == p013_data[0].status)
     {
        val->print(PRINT_INFO, "Optional PS APIs are supported.\n", 0);
-       psa_sst_set_extended_create_success();
+       test_status = psa_sst_set_extended_create_success();
+       if (test_status != VAL_STATUS_SUCCESS)
+          return test_status;
     }
     else
     {

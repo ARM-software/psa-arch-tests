@@ -65,7 +65,7 @@ int32_t psa_sst_invalid_arguments_check(security_t caller)
     TEST_ASSERT_EQUAL(info.size, 0, TEST_CHECKPOINT_NUM(6));
 
     /* Call get API with NULL read buffer and valid UID */
-    val->print(PRINT_TEST, "[Check 4] Call GET API with NULL read buffer\n", 0);
+    val->print(PRINT_TEST, "[Check 4] Call get API with NULL read buffer\n", 0);
     status = SST_FUNCTION(s009_data[7].api, uid, 0, 0, NULL);
     TEST_ASSERT_EQUAL(status, s009_data[7].status, TEST_CHECKPOINT_NUM(7));
 

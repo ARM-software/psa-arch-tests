@@ -39,7 +39,7 @@ static int32_t psa_sst_uid_not_found()
     struct psa_ps_info_t orig_info;
 
     /* Call the set_extended API with UID which is not created */
-    val->print(PRINT_TEST, "[Check 1] set_extended API call for UID %d which is not set\n", p_uid);
+    val->print(PRINT_TEST, "[Check 1] Call set_extended API for UID %d which is not set\n", p_uid);
     status = SST_FUNCTION(p011_data[1].api, p_uid, 0, TEST_BUFF_SIZE, write_buff);
     TEST_ASSERT_EQUAL(status, p011_data[1].status, TEST_CHECKPOINT_NUM(1));
 
@@ -48,14 +48,12 @@ static int32_t psa_sst_uid_not_found()
     TEST_ASSERT_EQUAL(status, p011_data[2].status, TEST_CHECKPOINT_NUM(2));
 
     /* Try to change data length for same UID using create API */
-    val->print(PRINT_TEST, "[Check 2] Call create API with different data length than used to"
-                           " create the asset using set API\n", 0);
+    val->print(PRINT_TEST, "[Check 2] Call create API with length different than original\n", 0);
     status = SST_FUNCTION(p011_data[3].api, p_uid, TEST_BUFF_SIZE/2, 0);
     TEST_ASSERT_EQUAL(status, p011_data[3].status, TEST_CHECKPOINT_NUM(3));
 
     /* Try to change flag value associated with the UID */
-    val->print(PRINT_TEST, "[Check 3] Call create API with different flag value than used to"
-                           " create the asset using set API\n", 0);
+    val->print(PRINT_TEST, "[Check 3] Call create API with flag value different than original\n", 0);
     status = SST_FUNCTION(p011_data[4].api, p_uid, TEST_BUFF_SIZE, PSA_PS_FLAG_WRITE_ONCE);
     TEST_ASSERT_EQUAL(status, p011_data[4].status, TEST_CHECKPOINT_NUM(4));
 
@@ -74,8 +72,7 @@ static int32_t psa_sst_uid_not_found()
     TEST_ASSERT_EQUAL(status, p011_data[9].status, TEST_CHECKPOINT_NUM(9));
 
     /* Try to change length using create API */
-    val->print(PRINT_TEST, "[Check 4] Call create API with different parameters than used to"
-                           " create the asset using create API\n", 0);
+    val->print(PRINT_TEST, "[Check 4] Call create API with parameters different than original\n", 0);
     status = SST_FUNCTION(p011_data[10].api, p_uid, TEST_BUFF_SIZE, 0);
     TEST_ASSERT_EQUAL(status, p011_data[10].status, TEST_CHECKPOINT_NUM(10));
 
@@ -92,7 +89,7 @@ static int32_t psa_sst_uid_not_found()
     TEST_ASSERT_EQUAL(status, p011_data[13].api, TEST_CHECKPOINT_NUM(13));
 
     /* Call the set_extended API with UID which is removed */
-    val->print(PRINT_TEST, "[Check 5] set_extended API call for UID %d which is removed\n", p_uid);
+    val->print(PRINT_TEST, "[Check 5] Call set_extended API for UID %d which is removed\n", p_uid);
     status = SST_FUNCTION(p011_data[14].api, p_uid, 0, TEST_BUFF_SIZE, write_buff);
     TEST_ASSERT_EQUAL(status, p011_data[14].status, TEST_CHECKPOINT_NUM(14));
 
@@ -102,6 +99,7 @@ static int32_t psa_sst_uid_not_found()
 int32_t psa_sst_optional_api_uid_not_found(security_t caller)
 {
     uint32_t status;
+    int32_t test_status;
 
     /* Call the get_support API and check if create and set_extended API are supported */
     status = SST_FUNCTION(p011_data[0].api);
@@ -109,7 +107,9 @@ int32_t psa_sst_optional_api_uid_not_found(security_t caller)
     if (status == p011_data[0].status)
     {
        val->print(PRINT_INFO, "Optional PS APIs are supported.\n", 0);
-       psa_sst_uid_not_found();
+       test_status = psa_sst_uid_not_found();
+       if (test_status != VAL_STATUS_SUCCESS)
+          return test_status;
     }
     else
     {
