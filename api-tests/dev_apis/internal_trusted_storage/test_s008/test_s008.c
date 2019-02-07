@@ -25,6 +25,7 @@
 #endif
 
 #define TEST_BUFF_SIZE 20
+#define TEST_MAX_UINT32 0xFFFFFFFF
 
 client_test_t test_s008_sst_list[] = {
     NULL,
@@ -46,7 +47,7 @@ int32_t psa_sst_invalid_offset_failure(security_t caller)
     val->print(PRINT_TEST, "[Check 2] Try to access data with varying invalid offset\n", 0);
     memset(read_buff, 0, TEST_BUFF_SIZE);
     status = SST_FUNCTION(s008_data[6].api, uid, TEST_BUFF_SIZE+1, 0, read_buff);
-    TEST_ASSERT_EQUAL(status, s008_data[6].status, TEST_CHECKPOINT_NUM(6));
+    TEST_ASSERT_NOT_EQUAL(status, s008_data[6].status, TEST_CHECKPOINT_NUM(6));
     for (j = 0; j < TEST_BUFF_SIZE; j++)
     {
         TEST_ASSERT_EQUAL(read_buff[j], 0x00, TEST_CHECKPOINT_NUM(7));
@@ -68,9 +69,17 @@ int32_t psa_sst_invalid_offset_failure(security_t caller)
         TEST_ASSERT_EQUAL(read_buff[j], 0x00, TEST_CHECKPOINT_NUM(11));
     }
 
+    /* Try to access data with offset as MAX_UINT32 and length less than buffer size */
+    status = SST_FUNCTION(s008_data[12].api, uid, TEST_MAX_UINT32, TEST_BUFF_SIZE/2, read_buff);
+    TEST_ASSERT_NOT_EQUAL(status, s008_data[12].status, TEST_CHECKPOINT_NUM(12));
+
+    /* Try to access data with valid non-zero offset and length equal to MAX_UINT21 */
+    status = SST_FUNCTION(s008_data[13].api, uid, 4, TEST_MAX_UINT32, read_buff);
+    TEST_ASSERT_NOT_EQUAL(status, s008_data[13].status, TEST_CHECKPOINT_NUM(13));
+
     /* Remove the UID */
-    status = SST_FUNCTION(s008_data[12].api, uid);
-    TEST_ASSERT_EQUAL(status, s008_data[12].status, TEST_CHECKPOINT_NUM(12));
+    status = SST_FUNCTION(s008_data[14].api, uid);
+    TEST_ASSERT_EQUAL(status, s008_data[14].status, TEST_CHECKPOINT_NUM(14));
 
     return VAL_STATUS_SUCCESS;
 }

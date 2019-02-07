@@ -47,7 +47,7 @@ static const test_data s008_data[] = {
  0, 0 /* This is dummy for index5 */
 },
 {
- VAL_ITS_GET, PSA_ITS_ERROR_OFFSET_INVALID /* Call get API with offset = total data_size + 1 */
+ VAL_ITS_GET, PSA_ITS_SUCCESS /* Call get API with offset = total data_size + 1 */
 },
 {
  0, 0 /* This is dummy for index7 */
@@ -63,6 +63,12 @@ static const test_data s008_data[] = {
 },
 {
  0, 0 /* This is dummy for index11 */
+},
+{
+ VAL_ITS_GET, PSA_ITS_SUCCESS /* Call get API with offset = MAX_UINT32 */
+},
+{
+ VAL_ITS_GET, PSA_ITS_SUCCESS /* Call get API with length = MAX_UINT32 */
 },
 {
  VAL_ITS_REMOVE, PSA_ITS_SUCCESS /* Remove the storage entity */

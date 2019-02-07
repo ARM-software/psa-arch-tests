@@ -35,6 +35,7 @@ client_test_t test_s009_sst_list[] = {
 static psa_sst_uid_t uid = UID_BASE_VALUE + 5;
 static uint8_t write_buff[TEST_BUFF_SIZE] = {0x99, 0x01, 0x02, 0x03, 0x04, 0x23, 0xF6, 0x07, 0x08, \
                                   0x0D, 0x70, 0xA1, 0xFF, 0xFF, 0x14, 0x73, 0x46, 0x97, 0xE8, 0xDD};
+static const uint8_t read_buff[TEST_BUFF_SIZE];
 
 int32_t psa_sst_invalid_arguments_check(security_t caller)
 {
@@ -69,14 +70,19 @@ int32_t psa_sst_invalid_arguments_check(security_t caller)
     status = SST_FUNCTION(s009_data[7].api, uid, 0, 0, NULL);
     TEST_ASSERT_EQUAL(status, s009_data[7].status, TEST_CHECKPOINT_NUM(7));
 
-    /* Call the get_info function with NULL info pointer */
-    val->print(PRINT_TEST, "[Check 5] Call get_info API with NULL info pointer\n", 0);
-    status = SST_FUNCTION(s009_data[8].api, uid, NULL);
+    /* Change the length to test_buff_size */
+    val->print(PRINT_TEST, "[Check 5] Increase the length\n", 0);
+    status = SST_FUNCTION(s009_data[8].api, uid, TEST_BUFF_SIZE, write_buff, 0);
     TEST_ASSERT_EQUAL(status, s009_data[8].status, TEST_CHECKPOINT_NUM(8));
 
-    /* Remove the UID */
-    status = SST_FUNCTION(s009_data[9].api, uid);
+    /* Call the get function with const read bufferr */
+    val->print(PRINT_TEST, "[Check 6] Call get API with const read buffer\n", 0);
+    status = SST_FUNCTION(s009_data[9].api, uid, 0, TEST_BUFF_SIZE, read_buff);
     TEST_ASSERT_EQUAL(status, s009_data[9].status, TEST_CHECKPOINT_NUM(9));
+
+    /* Remove the UID */
+    status = SST_FUNCTION(s009_data[10].api, uid);
+    TEST_ASSERT_EQUAL(status, s009_data[10].status, TEST_CHECKPOINT_NUM(10));
 
     return VAL_STATUS_SUCCESS;
 }
