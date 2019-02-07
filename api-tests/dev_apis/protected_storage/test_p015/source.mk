@@ -1,4 +1,3 @@
-#/** @file
 # * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
@@ -15,25 +14,7 @@
 # * limitations under the License.
 #**/
 
-
-#List of tests to be compiled and run as part of protected storage suite
-
-(START)
-
-test_s001
-test_s002
-test_s003
-test_s004
-test_s005
-test_s006
-test_s007
-test_s008
-test_s009
-test_s010
-test_p011
-test_p012
-test_p013
-test_p014
-test_p015
-
-(END)
+CC_SOURCE  = test_entry.c test_p015.c
+CC_OPTIONS =
+AS_SOURCE  =
+AS_OPTIONS =
