@@ -14,19 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
+#ifndef _TEST_A001_CLIENT_TESTS_H_
+#define _TEST_A001_CLIENT_TESTS_H_
 
-#ifndef _VAL_INITIAL_ATTESTATION_H_
-#define _VAL_INITIAL_ATTESTATION_H_
+#include "val_attestation.h"
+#define test_entry CONCAT(test_entry_, a001)
+#define val CONCAT(val,test_entry)
+#define psa CONCAT(psa,test_entry)
 
-#include "val.h"
+#define TOKEN_SIZE          512
 
-#define MAX_CHALLENGE_SIZE      PSA_INITIAL_ATTEST_CHALLENGE_SIZE_64
+extern val_api_t *val;
+extern psa_api_t *psa;
+extern client_test_t test_a001_attestation_list[];
 
-enum attestation_function_code {
-    VAL_INITIAL_ATTEST_GET_TOKEN        = 0x1,
-    VAL_INITIAL_ATTEST_GET_TOKEN_SIZE   = 0x2,
-    VAL_INITIAL_ATTEST_VERIFY_TOKEN     = 0x3,
-};
-
-int32_t val_attestation_function(int type, ...);
-#endif /* _VAL_INITIAL_ATTESTATION_H_ */
+int32_t psa_initial_attestation_get_token_test(security_t caller);
+int32_t psa_initial_attestation_get_token_size_test(security_t caller);
+#endif /* _TEST_A001_CLIENT_TESTS_H_ */

@@ -24,7 +24,7 @@
 **/
 void pal_uart_init(uint32_t uart_base_addr)
 {
-    pal_uart_cmsdk_init(uart_base_addr);
+    pal_uart_pl011_init(uart_base_addr);
 }
 
 /**
@@ -35,8 +35,7 @@ void pal_uart_init(uint32_t uart_base_addr)
 
 void pal_print(char *str, uint32_t data)
 {
-  pal_cmsdk_print(str,data);
-
+  pal_uart_pl011_print(str,data);
 }
 
 

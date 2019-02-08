@@ -59,7 +59,7 @@ Arguments Info:
                               target.cfg file corresponding to input string must be avaiable at
                               platform/targets/<TARGET>/
     --suite <SUITE>         : Compile tests for given suite. Support values are:
-                              ipc, crypto, internal_trusted_storage and protected_storage.
+                              ipc, crypto, internal_trusted_storage, protected_storage and initial_attestation.
     --toolchain <TOOLCHAIN> : Build using the given TOOLCHAIN.
                               Supported values are GNUARM (GNU Arm Embedded) and ARMCLANG (ARM Compiler 6.x).
     --cpu_arch <CPU_ARCH>   : Provide cpu arch string as argument.
@@ -350,6 +350,15 @@ then
             echo "Couldn't find psa/initial_attestation.h file in paths: ${INCLUDE_PATHS[@]}"
             echo "$ATTESTATION_HEADER_FILE_REQ"
             exit 1
+        elif [ $INITIAL_ATTESTATION_FILE_FOUND ==  "1" ]
+        then
+            if [ ! -d "$SOURCE/platform/targets/$TARGET/nspe/initial_attestation/ext" ]
+            then
+                git clone https://github.com/laurencelundblade/QCBOR.git $SOURCE/platform/targets/$TARGET/nspe/initial_attestation/ext
+                cd $SOURCE/platform/targets/$TARGET/nspe/initial_attestation/ext; git checkout 01168ef3f20e81d5db1ebd0cfa9a70055ee5b155 ; cd -
+            else
+                echo "QCBOR library already cloned"
+            fi
         fi
     fi
 fi

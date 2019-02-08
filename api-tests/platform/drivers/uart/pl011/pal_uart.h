@@ -47,7 +47,7 @@ typedef struct
 #define UART_PL011_UARTFR_TX_FIFO_FULL     (0x1u << UART_PL011_UARTFR_TX_FIFO_FULL_OFF)
 
 /* function prototypes */
-void pal_uart_init(uint32_t uart_base_addr);
-void pal_uart_print(char *str, uint32_t data);
+void pal_uart_pl011_init(uint32_t uart_base_addr);
+void pal_uart_pl011_print(char *str, uint32_t data);
 
 #endif /* _PAL_UART_CMSDK_H_ */
