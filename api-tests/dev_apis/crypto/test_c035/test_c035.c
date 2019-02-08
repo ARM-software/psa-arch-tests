@@ -88,10 +88,6 @@ int32_t psa_cipher_set_iv_test(security_t caller)
         status = val->crypto_function(VAL_CRYPTO_CIPHER_SET_IV, &operation, check1[i].iv,
                     check1[i].iv_size);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(7));
-
-        /* Abort a cipher operation */
-        status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
     }
 
     return VAL_STATUS_SUCCESS;
