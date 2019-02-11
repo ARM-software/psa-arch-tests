@@ -36,7 +36,8 @@ int32_t psa_hash_finish_test(security_t caller)
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
     psa_hash_operation_t    operation;
-    char                    *expected_hash, hash[HASH_64B];
+    const char              *expected_hash;
+    char                    hash[HASH_64B];
     size_t                  hash_length, hash_size = sizeof(hash)/sizeof(hash[0]);
 
     /* Initialize the PSA crypto library*/

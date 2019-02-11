@@ -33,7 +33,7 @@ int32_t test_psa_export_public_key(security_t caller)
 {
     uint32_t         length, i;
     uint8_t          data[BUFFER_SIZE];
-    uint8_t          *key_data;
+    const uint8_t    *key_data;
     psa_key_policy_t policy;
     psa_key_type_t   key_type;
     size_t           bits;
