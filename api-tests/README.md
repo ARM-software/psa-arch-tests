@@ -20,12 +20,13 @@ The test suite for this specification is located in the ff directory of this rep
 The test suite for this specification is located in the dev_apis directory of this repository. See [PSA Developer APIs Readme](dev_apis/README.md) file for more details.
 
 ## Release Update
- - Release Version - 0.7
- - Code Quality: Pre-Beta. Please use this opportunity to suggest enhancements and point out errors.
+ - Release Version - 0.8
+ - Code Quality: Beta. Please use this opportunity to suggest enhancements and point out errors.
  - Current release contains following Developer APIs tests:
  1. **Crypto tests** that are written for the crypto service APIs defined in the [crypto.h](../api-specs/include/psa/crypto.h)
  2. **Protected Storage tests** that are written for the protected storage service APIs defined in the [protected_storage.h](../api-specs/include/psa/protected_storage.h)
  3. **Internal Trusted Storage tests** that are written for the internal trusted storage service APIs defined in the [internal_trusted_storage.h](../api-specs/include/psa/internal_trusted_storage.h)
+ 4. **Initial Attestation tests** that are written for the initial attestation service APIs defined in the [initial_attestation.h](../api-specs/include/psa/initial_attestation.h)
  - Current release contains following PSA-FF tests:
  1. **IPC tests** that are written for version 1.0-Beta-0 of the PSA FF specification.
 

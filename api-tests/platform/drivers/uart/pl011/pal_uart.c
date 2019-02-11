@@ -23,7 +23,7 @@ volatile uint32_t uart;
     @brief    - This function initializes the UART
     @param    - uart_base_addr: Base address of UART
 **/
-void pal_uart_init(uint32_t uart_base_addr)
+void pal_uart_pl011_init(uint32_t uart_base_addr)
 {
     uart = uart_base_addr;
 }
@@ -41,7 +41,8 @@ static int pal_uart_is_tx_empty(void)
     {
         return 1;
     }
-    else {
+    else
+    {
         return 0;
     }
 }
@@ -65,7 +66,7 @@ static void pal_uart_putc(uint8_t c)
     @param    - str      : Input String
               - data     : Value for format specifier
 **/
-void pal_uart_print(char *str, uint32_t data)
+void pal_uart_pl011_print(char *str, uint32_t data)
 {
     uint8_t j, buffer[16];
     int8_t  i = 0;

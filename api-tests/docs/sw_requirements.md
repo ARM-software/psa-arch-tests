@@ -30,6 +30,17 @@ To download the master branch of the repository, type the following command: <br
 git clone https://github.com/ARM-software/psa-arch-tests.git
 ~~~
 
+## Cloning external repo
+
+To build initial attestation tests, PSA APIs test suite clones following
+git repo. The cloning is automated as part of the test suite
+build script ./setup.sh:
+
+~~~
+git clone https://github.com/laurencelundblade/QCBOR.git ./platform/targets/<platform_name>/nspe/initial_attestation/ext
+cd ./platform/targets/<platform_name>/nspe/initial_attestation/ext; git checkout 01168ef3f20e81d5db1ebd0cfa9a70055ee5b155
+~~~
+
 ## License
 Arm PSA test suite is distributed under Apache v2.0 License.
 

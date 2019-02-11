@@ -232,7 +232,7 @@ print OUT "fprintf\(fp\, \"#endif \\n\"\)\;\n";
 print OUT "\nreturn 0;\}\/\/int main";
 
 #generate target_database.h file
-print "gcc -DTARGET_CFG_BUILD $output_c -o $build/platform/$target/targetConfigGen -I$source/val/nspe -I$source/val/common -I$source/platform/targets/$target/nspe/\n";
-system("gcc -DTARGET_CFG_BUILD $output_c -o $build/platform/$target/targetConfigGen -I$source/val/nspe -I$source/val/common -I$source/platform/targets/$target/nspe/") && die ("Failed to compile targetConfigGen.c \n");
+print "gcc -DTARGET_CFG_BUILD $output_c -o $build/platform/$target/targetConfigGen -I$source/val/nspe -I$source/val/common -I$source/platform/targets/$target/nspe/common\n";
+system("gcc -DTARGET_CFG_BUILD $output_c -o $build/platform/$target/targetConfigGen -I$source/val/nspe -I$source/val/common -I$source/platform/targets/$target/nspe/common") && die ("Failed to compile targetConfigGen.c \n");
 print "./$build/platform/$target/targetConfigGen\n";
 system("./$build/platform/$target/targetConfigGen ") && die ("Failed to generate targetConfig data base \n");
