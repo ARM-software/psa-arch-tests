@@ -32,7 +32,7 @@ static int g_test_count = 1;
 
 int32_t psa_get_key_policy_test(security_t caller)
 {
-    uint8_t          *key_data;
+    const uint8_t    *key_data;
     psa_key_policy_t policy, expected_policy;
     psa_key_usage_t  expected_usage;
     psa_algorithm_t  expected_alg;

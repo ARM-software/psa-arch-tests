@@ -69,6 +69,18 @@ static test_data check1[] = {
 };
 
 static test_data check2[] = {
+{"Test psa_initial_attestation_get_token_size with Challenge 32\n",
+ PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32, PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32, TOKEN_SIZE, PSA_SUCCESS
+},
+
+{"Test psa_initial_attestation_get_token_size with Challenge 48\n",
+ PSA_INITIAL_ATTEST_CHALLENGE_SIZE_48, PSA_INITIAL_ATTEST_CHALLENGE_SIZE_48, TOKEN_SIZE, PSA_SUCCESS
+},
+
+{"Test psa_initial_attestation_get_token_size with Challenge 64\n",
+ PSA_INITIAL_ATTEST_CHALLENGE_SIZE_64, PSA_INITIAL_ATTEST_CHALLENGE_SIZE_64, TOKEN_SIZE, PSA_SUCCESS
+},
+
 {"Test psa_initial_attestation_get_token_size with zero challenge size\n",
  0, 0,
  TOKEN_SIZE, PSA_ATTEST_ERR_INVALID_INPUT

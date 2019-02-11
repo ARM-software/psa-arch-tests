@@ -32,7 +32,7 @@ static int g_test_count = 1;
 
 int32_t psa_get_key_lifetime_test(security_t caller)
 {
-    uint8_t             *key_data;
+    const uint8_t       *key_data;
     psa_key_policy_t    policy;
     int                 num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t             i, status;
