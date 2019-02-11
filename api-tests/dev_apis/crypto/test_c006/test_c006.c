@@ -32,7 +32,7 @@ static int g_test_count = 1;
 int32_t psa_get_key_information_test(security_t caller)
 {
     int32_t          i, status;
-    uint8_t          *key_data;
+    const uint8_t    *key_data;
     psa_key_policy_t policy;
     psa_key_type_t   key_type;
     size_t           bits;

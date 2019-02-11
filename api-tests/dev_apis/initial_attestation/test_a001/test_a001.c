@@ -89,6 +89,15 @@ int32_t psa_initial_attestation_get_token_size_test(security_t caller)
                      check2[i].challenge_size, &token_size);
 
         TEST_ASSERT_EQUAL(status, check2[i].expected_status, TEST_CHECKPOINT_NUM(1));
+
+        if (check2[i].expected_status != PSA_SUCCESS)
+            continue;
+
+        if (token_size < check2[i].challenge_size)
+        {
+            val->print(PRINT_ERROR, "Token size less than challenge size\n", 0);
+            return VAL_STATUS_INSUFFICIENT_SIZE;
+        }
     }
 
     return VAL_STATUS_SUCCESS;

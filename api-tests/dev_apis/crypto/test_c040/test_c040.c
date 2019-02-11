@@ -48,7 +48,8 @@ int32_t psa_asymmetric_decrypt_test(security_t caller)
 {
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
-    uint8_t                 *key_data, *salt;
+    const uint8_t           *key_data;
+    uint8_t                 *salt;
     size_t                  length;
     psa_key_policy_t        policy;
 

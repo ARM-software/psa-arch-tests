@@ -287,7 +287,6 @@ int32_t pal_initial_attest_verify_token(uint8_t *challenge, uint32_t challenge_s
     struct useful_buf_c completed_token;
     struct useful_buf_c payload;
     struct useful_buf_c protected_headers;
-    struct useful_buf_c signature;
     struct useful_buf_c kid;
 
     /* Construct the token buffer for validation */
@@ -354,32 +353,6 @@ int32_t pal_initial_attest_verify_token(uint8_t *challenge, uint32_t challenge_s
     QCBORDecode_GetNext(&decode_context, &item);
     if (item.uDataType != QCBOR_TYPE_BYTE_STRING)
         return PAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
-
-    signature = item.val.string;
-
-/* ToDo: Compute hash and validate the signature
-    //Compute the hash from the token
-    status = pal_compute_hash(cose_algorithm_id,
-                              buffer,
-                              final_hash,
-                              protected_headers,
-                              payload);
-    if (status != PAL_ATTEST_SUCCESS)
-        return status;
-
-    //Verify the signature
-    status = psa_asymmetric_verify(kid,
-                                   0,
-                                   final_hash.ptr,
-                                   final_hash.len,
-                                   0,
-                                   NULL,
-                                   signature.ptr,
-                                   signature.len,
-                                   &len);
-    if (status != PAL_ATTEST_SUCCESS)
-        return status;
-*/
 
     /* Initialize the Decoder and validate the payload format */
     QCBORDecode_Init(&decode_context, payload, QCBOR_DECODE_MODE_NORMAL);
