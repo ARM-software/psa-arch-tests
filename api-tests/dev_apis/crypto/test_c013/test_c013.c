@@ -35,7 +35,7 @@ int32_t psa_hash_verify_test(security_t caller)
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
     psa_hash_operation_t    operation;
-    char                    *hash;
+    const char              *hash;
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
