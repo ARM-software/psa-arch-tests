@@ -131,7 +131,7 @@ int32_t psa_sst_optional_api_offset_invalid(security_t caller)
     }
     else
     {
-       val->print(PRINT_TEST, "Test Case not needed as Optional PS APIs are not supported.\n", 0);
+       val->print(PRINT_TEST, "Test Case skipped as Optional PS APIs are not supported.\n", 0);
        return RESULT_SKIP(VAL_STATUS_UNSUPPORTED);
     }
 

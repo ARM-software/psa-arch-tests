@@ -54,7 +54,10 @@ static const test_data s009_data[] = {
  VAL_PS_GET, PSA_PS_ERROR_INVALID_ARGUMENT /* Call get API with 0 read buffer */
 },
 {
- VAL_PS_GET_INFO, PSA_PS_ERROR_INVALID_ARGUMENT /* Call get_info API with NULL info buffer */
+ VAL_PS_SET, PSA_PS_SUCCESS /* Increase the asset size */
+},
+{
+ VAL_PS_GET, PSA_PS_ERROR_INVALID_ARGUMENT /* Call get API with constant read buffer */
 },
 {
  VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the storage entity */
