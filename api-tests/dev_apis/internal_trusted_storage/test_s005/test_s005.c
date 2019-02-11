@@ -67,23 +67,21 @@ static int32_t psa_sst_apis_check(psa_sst_uid_t uid, uint32_t data_len,
 int32_t psa_sst_apis_check_success_case(security_t caller)
 {
    psa_sst_uid_t uid = UID_BASE_VALUE + 4;
-   uint32_t data_len = 1, status = VAL_STATUS_SUCCESS;
-   psa_sst_create_flags_t flag=0;
+   uint32_t data_len = 0, status = VAL_STATUS_SUCCESS;
 
     /* Calling set function with data_len 1 and valid data pointer */
     val->print(PRINT_TEST, "[Check 1] Set UID with data length zero and call storage APIs\n", 0);
-    if (psa_sst_apis_check(uid, data_len, write_buff, flag))
+    if (psa_sst_apis_check(uid, data_len, write_buff, 0))
     {
         val->print(PRINT_ERROR, "Data Len = %d\n", data_len);
-        val->print(PRINT_ERROR, "Create Flag value =  %d\n", flag);
         return VAL_STATUS_ERROR;
     }
 
+    data_len = TEST_BUFF_SIZE/2;
     val->print(PRINT_TEST, "[Check 2] Resetting the length check\n", 0);
-    if (psa_sst_apis_check(uid, TEST_BUFF_SIZE/2, write_buff, flag))
+    if (psa_sst_apis_check(uid, data_len, write_buff, 0))
     {
        val->print(PRINT_ERROR, "Data Len = %d\n", data_len);
-       val->print(PRINT_ERROR, "Create Flag value =  %d\n", flag);
        return VAL_STATUS_ERROR;
     }
 
