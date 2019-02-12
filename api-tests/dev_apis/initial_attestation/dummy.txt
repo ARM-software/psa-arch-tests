@@ -1,1 +1,0 @@
-Using dummy file to add empty directory to repo. In future, this file will be deleted and directory will contain tests for attestation service API.

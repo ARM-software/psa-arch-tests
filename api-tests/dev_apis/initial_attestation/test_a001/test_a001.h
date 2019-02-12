@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,19 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
+#ifndef _TEST_A001_CLIENT_TESTS_H_
+#define _TEST_A001_CLIENT_TESTS_H_
 
-#ifndef _VAL_ENTRY_H_
-#define _VAL_ENTRY_H_
+#include "val_attestation.h"
+#define test_entry CONCAT(test_entry_, a001)
+#define val CONCAT(val,test_entry)
+#define psa CONCAT(psa,test_entry)
 
-#include "val_framework.h"
+#define TOKEN_SIZE          512
 
-#define PSA_ACS_MAJOR_VER    0
-#define PSA_ACS_MINOR_VER    8
+extern val_api_t *val;
+extern psa_api_t *psa;
+extern client_test_t test_a001_attestation_list[];
 
-/**
-    @brief    - PSA Test Suite C main function, does VAL init and calls test dispatcher
-    @param    - None
-    @return   - void
-**/
-extern void val_entry(void);
-#endif
+int32_t psa_initial_attestation_get_token_test(security_t caller);
+int32_t psa_initial_attestation_get_token_size_test(security_t caller);
+#endif /* _TEST_A001_CLIENT_TESTS_H_ */

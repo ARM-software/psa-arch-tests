@@ -38,8 +38,8 @@ An example of the input configuration file is as shown.
   - Create a new directory in platform/targets/<platform_name>. For reference, see the existing platform tgt_dev_apis_mbedos_fvp_mps2_m4 directory.
   - cp -rf platform/targets/tgt_dev_apis_mbedos_fvp_mps2_m4/ platform/targets/<platform_name>/
   - Update platform/targets/<platform_name>/target.cfg with your platform detail. Refer val/common/val_target.h for structure details.
-  - Update platform/targets/<platform_name>/Makefile appropriately to select correct instances of PAL files for compilation. To compile dev_apis suites, you must set PSA_IPC_IMPLEMENTED to 0. This selects the non-secure PAL instances for the driver services and eliminates IPC dependancy for dev_apis tests.
-  - Refer "PAL API list" section to view list of PAL APIs that must be ported for your target platform. These APIs definitions are available in nspe/pal_\*\_intf.c. These APIs are written for tgt_dev_apis_mbedos_fvp_mps2_m4 platform. You can reuse the code if it works for your platform. Otherwise you must port them for your platform specific peripherals.
+  - Update platform/targets/<platform_name>/Makefile appropriately to select correct instances of PAL files for compilation. To compile dev_apis suites, you must set PSA_IPC_IMPLEMENTED to 0. This selects the non-secure PAL instances for the driver services and eliminates IPC dependency for dev_apis tests.
+  - Refer "PAL API list" section to view list of PAL APIs that must be ported for your target platform. These APIs definitions are available in nspe/<suite_name>/pal_\*\_intf.c. These APIs are written for tgt_dev_apis_mbedos_fvp_mps2_m4 platform. You can reuse the code if it works for your platform. Otherwise you must port them for your platform specific peripherals.
   -  The platform make file is invoked as part of test suite build tool(./setup.sh) step and it creates <build_dir>/BUILD/platform/pal_nspe.a archive.
 
 **Note**:
@@ -65,6 +65,7 @@ Since test suite is agnostic to various system targets, before building the test
 | 09 | int32_t pal_crypto_function(int type, va_list valist);                                                                     | This API will call the requested crypto function                       | type    : function code<br/>valist  : variable argument list<br/>                             |
 | 10 | uint32_t pal_its_function(int type, va_list valist);                                                                     | This API will call the requested internal trusted storage  function                       | type    : function code<br/>valist  : variable argument list<br/>                             |
 | 11 | uint32_t pal_ps_function(int type, va_list valist);                                                                     | This API will call the requested protected storage  function                       | type    : function code<br/>valist  : variable argument list<br/>                             |
+| 12 | int32_t pal_attestation_function(int type, va_list valist);                                                                | This API will call the requested initial attestation  function                       | type    : function code<br/>valist  : variable argument list<br/>                             |
 
 ## License
 Arm PSA test suite is distributed under Apache v2.0 License.

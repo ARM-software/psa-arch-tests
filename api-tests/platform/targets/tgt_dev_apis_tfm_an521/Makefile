@@ -82,6 +82,7 @@ endif
 
 ifeq (${PSA_INITIAL_ATTESTATION_IMPLEMENTED},1)
 SRC_C_NSPE += pal_attestation_intf.c
+SRC_C_NSPE += pal_attestation_eat.c
 else
 SRC_C_NSPE += pal_attestation_empty_intf.c
 endif
@@ -91,7 +92,13 @@ INCLUDE= -I$(SOURCE)/platform/targets/$(TARGET)/nspe \
          -I$(BUILD)/platform/$(TARGET)/ \
          -I$(SOURCE)/platform/drivers/uart/cmsdk \
          -I$(SOURCE)/platform/drivers/nvmem/ \
-         -I$(SOURCE)/platform/drivers/watchdog/cmsdk
+         -I$(SOURCE)/platform/drivers/watchdog/cmsdk \
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/common \
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/crypto \
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/initial_attestation \
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/initial_attestation/ext/inc \
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/internal_trusted_storage \
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/protected_storage
 
 VPATH=$(SOURCE)/platform/targets/$(TARGET)/: \
       $(SOURCE)/platform/targets/$(TARGET)/spe: \
@@ -99,6 +106,12 @@ VPATH=$(SOURCE)/platform/targets/$(TARGET)/: \
       $(SOURCE)/platform/drivers/uart/cmsdk: \
       $(SOURCE)/platform/drivers/nvmem: \
       $(SOURCE)/platform/drivers/watchdog/cmsdk: \
+      $(SOURCE)/platform/targets/$(TARGET)/nspe/common: \
+      $(SOURCE)/platform/targets/$(TARGET)/nspe/crypto: \
+      $(SOURCE)/platform/targets/$(TARGET)/nspe/initial_attestation: \
+      $(SOURCE)/platform/targets/$(TARGET)/nspe/initial_attestation/ext/src: \
+      $(SOURCE)/platform/targets/$(TARGET)/nspe/internal_trusted_storage: \
+      $(SOURCE)/platform/targets/$(TARGET)/nspe/protected_storage: \
 
 all: build
 

@@ -25,10 +25,10 @@ PSA_IPC_IMPLEMENTED:=0
 PSA_CRYPTO_IMPLEMENTED:=1
 
 ## PSA_PROTECTED_STORAGE_IMPLEMENTED must be true for PROTECTED_STORAGE SUITE
-PSA_PROTECTED_STORAGE_IMPLEMENTED:=1
+PSA_PROTECTED_STORAGE_IMPLEMENTED:=0
 
 ## PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED must be true for INTERNAL_TRUSTED_STORAGE SUITE
-PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED:=1
+PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED:=0
 
 ## PSA_INITIAL_ATTESTATION_IMPLEMENTED must be true for INITIAL_ATTESTATION SUITE
 PSA_INITIAL_ATTESTATION_IMPLEMENTED:=0
@@ -82,6 +82,7 @@ endif
 
 ifeq (${PSA_INITIAL_ATTESTATION_IMPLEMENTED},1)
 SRC_C_NSPE += pal_attestation_intf.c
+SRC_C_NSPE += pal_attestation_eat.c
 else
 SRC_C_NSPE += pal_attestation_empty_intf.c
 endif
@@ -89,16 +90,28 @@ endif
 INCLUDE= -I$(SOURCE)/platform/targets/$(TARGET)/nspe \
          -I$(SOURCE)/platform/targets/$(TARGET)/spe \
          -I$(BUILD)/platform/$(TARGET)/ \
-         -I$(SOURCE)/platform/drivers/uart/musca_a \
+         -I$(SOURCE)/platform/drivers/uart/pl011 \
          -I$(SOURCE)/platform/drivers/nvmem/ \
-         -I$(SOURCE)/platform/drivers/watchdog/cmsdk
+         -I$(SOURCE)/platform/drivers/watchdog/cmsdk \
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/common \
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/crypto \
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/initial_attestation \
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/initial_attestation/ext/inc \
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/internal_trusted_storage \
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/protected_storage
 
 VPATH=$(SOURCE)/platform/targets/$(TARGET)/: \
       $(SOURCE)/platform/targets/$(TARGET)/spe: \
       $(SOURCE)/platform/targets/$(TARGET)/nspe: \
-      $(SOURCE)/platform/drivers/uart/musca_a: \
+      $(SOURCE)/platform/drivers/uart/pl011: \
       $(SOURCE)/platform/drivers/nvmem: \
       $(SOURCE)/platform/drivers/watchdog/cmsdk: \
+      $(SOURCE)/platform/targets/$(TARGET)/nspe/common: \
+      $(SOURCE)/platform/targets/$(TARGET)/nspe/crypto: \
+      $(SOURCE)/platform/targets/$(TARGET)/nspe/initial_attestation: \
+      $(SOURCE)/platform/targets/$(TARGET)/nspe/initial_attestation/ext/src: \
+      $(SOURCE)/platform/targets/$(TARGET)/nspe/internal_trusted_storage: \
+      $(SOURCE)/platform/targets/$(TARGET)/nspe/protected_storage: \
 
 all: build
 

@@ -15,29 +15,16 @@
  * limitations under the License.
 **/
 
-
-#include "pal_attestation_intf.h"
+#include <stdarg.h>
+#include "pal_common.h"
 
 /**
-    @brief    - This API will call the requested attestation function
+    @brief    - This API will call the requested crypto function
     @param    - type    : function code
                 valist  : variable argument list
     @return   - error status
 **/
-int32_t pal_attestation_function(int type, va_list valist)
+int32_t pal_crypto_function(int type, va_list valist)
 {
-    uint8_t     *challenge, *token;
-    size_t      challenge_size, *token_size;
-
-    switch (type)
-    {
-        case PAL_INITIAL_ATTEST_GET_TOKEN:
-            challenge = va_arg(valist, uint8_t*);
-            challenge_size = va_arg(valist, size_t);
-            token = va_arg(valist, uint8_t*);
-            token_size = va_arg(valist, size_t*);
-            return psa_initial_attest_get_token(challenge, challenge_size, token, token_size);
-        default:
-            return PAL_STATUS_UNSUPPORTED_FUNC;
-    }
+    return PAL_STATUS_ERROR;
 }

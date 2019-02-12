@@ -20,12 +20,12 @@
 
 #include "val.h"
 
-#define TOO_SMALL_TOKEN_BUFFER          16
-#define CHALLENGE_SIZE                  16
-#define MAX_CHALLENGE_SIZE              64
+#define MAX_CHALLENGE_SIZE      PSA_INITIAL_ATTEST_CHALLENGE_SIZE_64
 
 enum attestation_function_code {
     VAL_INITIAL_ATTEST_GET_TOKEN        = 0x1,
+    VAL_INITIAL_ATTEST_GET_TOKEN_SIZE   = 0x2,
+    VAL_INITIAL_ATTEST_VERIFY_TOKEN     = 0x3,
 };
 
 int32_t val_attestation_function(int type, ...);

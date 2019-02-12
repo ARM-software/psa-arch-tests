@@ -18,10 +18,12 @@
 #ifndef _PAL_INITIAL_ATTESTATION_H_
 #define _PAL_INITIAL_ATTESTATION_H_
 
-#include "pal_common.h"
+#include "pal_attestation_eat.h"
 
 enum attestation_function_code {
     PAL_INITIAL_ATTEST_GET_TOKEN        = 0x1,
+    PAL_INITIAL_ATTEST_GET_TOKEN_SIZE   = 0x2,
+    PAL_INITIAL_ATTEST_VERIFY_TOKEN     = 0x3,
 };
 
 int32_t pal_attestation_function(int type, va_list valist);
