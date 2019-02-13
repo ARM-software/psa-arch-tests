@@ -135,6 +135,7 @@ int32_t test_psa_export_public_key(security_t caller)
         {
             if (check1[i].key_type == PSA_KEY_TYPE_RSA_KEYPAIR)
                 key_data = expected_rsa_256_pubprv;
+
             else if (PSA_KEY_TYPE_IS_ECC_KEYPAIR(check1[i].key_type))
                 key_data = expected_ec_pubprv;
 

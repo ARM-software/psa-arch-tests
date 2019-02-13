@@ -174,7 +174,7 @@ int32_t psa_get_key_policy_negative_test(security_t caller)
 
         /* Get the usage policy on a key slot */
         status = val->crypto_function(VAL_CRYPTO_GET_KEY_POLICY, check2[i].key_handle, &policy);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_EMPTY_SLOT,  TEST_CHECKPOINT_NUM(5));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS,  TEST_CHECKPOINT_NUM(6));
      }
 
      return VAL_STATUS_SUCCESS;
