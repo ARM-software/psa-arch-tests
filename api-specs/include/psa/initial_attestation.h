@@ -47,13 +47,17 @@ extern "C" {
 enum psa_attest_err_t {
     /* Action was performed successfully */
     PSA_ATTEST_ERR_SUCCESS = 0,
-    /* Boot status data could not be obtained */
+    /* Boot status data is unavailable or malformed */
     PSA_ATTEST_ERR_INIT_FAILED,
-    /* Token buffer was too small to store the created token there */
+    /* Token buffer is too small to store the created token there */
     PSA_ATTEST_ERR_TOKEN_BUFFER_OVERFLOW,
-    /* Some of the mandatory claims could not obtained */
+    /* Some of the mandatory claims are unavailable*/
     PSA_ATTEST_ERR_CLAIM_UNAVAILABLE,
-    /* Some parameter or combination of parameters are recognised as invalid */
+    /* Some parameter or combination of parameters are recognised as invalid:
+     * - challenge size is not allowed
+     * - challenge object is unavailable
+     * - token buffer is unavailable
+     */
     PSA_ATTEST_ERR_INVALID_INPUT,
     /* Unexpected error happened during operation */
     PSA_ATTEST_ERR_GENERAL,
@@ -74,27 +78,36 @@ enum psa_attest_err_t {
  * The list of fixed claims in the initial attestation token is still evolving,
  * you can expect slight changes in the future.
  *
- * The initial attestation token is planned to be aligned with later version of
+ * The initial attestation token is planned to be aligned with future version of
  * Entity Attestation Token format:
  * https://tools.ietf.org/html/draft-mandyam-eat-01
  *
  * Current list of claims:
- *  - Challenge:   Input object from caller. Can be nonce from server or hash of
- *                 attested data. Allowed length: 32, 48, 64 bytes. The claim
- *                 is represented by the EAT standard claim nonce. Value is
- *                 encoded as byte string.
+ *  - Challenge:   Input object from caller. Can be a single nonce from server
+ *                 or hash of nonce and attested data. It is intended to provide
+ *                 freshness to reports and the caller has responsibility to
+ *                 arrange this. Allowed length: 32, 48, 64 bytes. The claim is
+ *                 modeled to be eventually represented by the EAT standard
+ *                 claim nonce. Until such a time as that standard exists,
+ *                 the claim will be represented by a custom claim. Value
+ *                 is encoded as byte string.
  *
  *  - Instance ID: It represents the unique identifier of the instance. In the
  *                 PSA definition it is a hash of the public attestation key
- *                 of the instance. The claim is represented by the EAT standard
- *                 claim UEID of type GUID. Value is encoded as byte string.
+ *                 of the instance. The claim is modeled to be eventually
+ *                 represented by the EAT standard claim UEID of type GUID.
+ *                 Until such a time as that standard exists, the claim will be
+ *                 represented by a custom claim  Value is encoded as byte
+ *                 string.
  *
  *  - Verification service indicator: Optional, recommended claim. It is used by
  *                 a Relying Party to locate a validation service for the token.
  *                 The value is a text string that can be used to locate the
  *                 service or a URL specifying the address of the service. The
- *                 claim is represented by the EAT standard claim origination.
- *                 Value is encoded as byte string.
+ *                 claim is modeled to be eventually represented by the EAT
+ *                 standard claim origination. Until such a time as that
+ *                 standard exists, the claim will be represented by a custom
+ *                 claim. Value is encoded as text string.
  *
  *  - Profile definition: Optional, recommended claim. It contains the name of
  *                 a document that describes the 'profile' of the token, being
@@ -148,8 +161,8 @@ enum psa_attest_err_t {
  *                    in memory at start-up time. Value is encoded as byte
  *                    string.
  *
- *     - Security epoch: It represents the security control point of the software
- *                    component. Value is encoded as unsigned integer.
+ *     - Security epoch: It represents the security control point of the
+ *                    software component. Value is encoded as unsigned integer.
  *
  *     - Signer ID:   Optional claim. It represents the hash of a signing
  *                    authority public key. Value is encoded as byte string.
