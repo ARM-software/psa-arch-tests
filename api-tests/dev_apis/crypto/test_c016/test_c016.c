@@ -53,25 +53,22 @@ int32_t psa_generate_key_test(security_t caller)
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-        if (check1[i].expected_status == PSA_SUCCESS)
-        {
-            /* Initialize a key policy structure to a default that forbids all
-            * usage of the key
-            */
-            val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
+        /* Initialize a key policy structure to a default that forbids all
+        * usage of the key
+        */
+        val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
 
-            /* Set the standard fields of a policy structure */
-            val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check1[i].usage,
-                                                                              check1[i].key_alg);
+        /* Set the standard fields of a policy structure */
+        val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check1[i].usage,
+                                                                          check1[i].key_alg);
 
-            /* Allocate a key slot for a transient key */
-            status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+        /* Allocate a key slot for a transient key */
+        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
-            /* Set the usage policy on a key slot */
-            status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_handle, &policy);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
-        }
+        /* Set the usage policy on a key slot */
+        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_handle, &policy);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
         /* Generate a key or key pair */
         status = val->crypto_function(VAL_CRYPTO_GENERATE_KEY, check1[i].key_handle,
