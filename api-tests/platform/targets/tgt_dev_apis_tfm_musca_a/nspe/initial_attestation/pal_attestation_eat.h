@@ -23,8 +23,9 @@
 #define COSE_HEADER_PARAM_ALG             1
 #define COSE_HEADER_PARAM_KID             4
 
-#define CLAIM_VALUE                       1823
-#define SW_CLAIM_VALUE                    12
+#define MANDATORY_CLAIM_WITH_SW_COMP      862
+#define MANDATORY_CLAIM_NO_SW_COMP        926
+#define MANDATORY_SW_COMP                 36
 #define CBOR_ARM_TOTAL_CLAIM_INSTANCE     10
 
 /*
