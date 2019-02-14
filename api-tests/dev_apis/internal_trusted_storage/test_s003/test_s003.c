@@ -25,7 +25,7 @@
 #endif
 
 #define TEST_BUFF_SIZE 1024
-#define NUM_ITERATIONS 5
+#define NUM_ITERATIONS 2
 #define TEST_BASE_UID_VALUE UID_BASE_VALUE + 5
 
 client_test_t test_s003_sst_list[] = {
@@ -35,6 +35,9 @@ client_test_t test_s003_sst_list[] = {
 };
 
 static uint8_t write_buff[TEST_BUFF_SIZE];
+static char test_desc[2][80] = {
+                                "Overload storage space\n",
+                                "Overload storage again to verify all previous UID removed\n"};
 
 int32_t psa_sst_insufficient_space(security_t caller)
 {
@@ -46,7 +49,8 @@ int32_t psa_sst_insufficient_space(security_t caller)
     /* Saturate the storage for NUM_ITERATION times, and remove them after */
     for (i = 0 ; i < NUM_ITERATIONS; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] Overload storage space\n", i + 1 );
+        val->print(PRINT_TEST, "[Check %d] ", i + 1);
+        val->print(PRINT_TEST, &test_desc[i][0], 0);
         for (uid = TEST_BASE_UID_VALUE; status == PSA_SST_SUCCESS; uid++)
         {
             val->print(PRINT_INFO, "Setting 0x%x bytes for ", TEST_BUFF_SIZE);

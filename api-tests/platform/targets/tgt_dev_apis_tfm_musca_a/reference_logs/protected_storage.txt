@@ -3,7 +3,6 @@
 Running.. Protected Storage Suite
 ******************************************
 
-
 TEST: 401 | DESCRIPTION: UID not found check
 [Info] Executing tests from non-secure
 [Check 1] Call get API for UID 6 which is not set
@@ -38,13 +37,7 @@ TEST: 403 | DESCRIPTION: Insufficient space check
 [Info] Executing tests from non-secure
 [Check 1] Overload storage space
 Remove all registered UIDs
-[Check 2] Overload storage space
-Remove all registered UIDs
-[Check 3] Overload storage space
-Remove all registered UIDs
-[Check 4] Overload storage space
-Remove all registered UIDs
-[Check 5] Overload storage space
+[Check 2] Overload storage again to verify all previous UID removed
 Remove all registered UIDs
 TEST RESULT: PASSED
 
@@ -95,12 +88,11 @@ TEST RESULT: PASSED
 
 TEST: 409 | DESCRIPTION: Invalid Arguments check
 [Info] Executing tests from non-secure
-[Check 1] Call set API with NULL write buffer
+[Check 1] Call set API with NULL pointer and data length 0
 [Check 2] Create UID with zero data length
-[Check 3] Try to set NULL buffer for UID with data length
-[Check 4] Call get API with NULL read buffer
+[Check 3] Try to set NULL buffer for existing UID
+[Check 4] Call get API with NULL read buffer and data length 0
 [Check 5] Increase the length
-[Check 6] Call get API with const read buffer
 TEST RESULT: PASSED
 
 ******************************************

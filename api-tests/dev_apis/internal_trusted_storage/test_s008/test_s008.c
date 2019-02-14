@@ -73,13 +73,9 @@ int32_t psa_sst_invalid_offset_failure(security_t caller)
     status = SST_FUNCTION(s008_data[12].api, uid, TEST_MAX_UINT32, TEST_BUFF_SIZE/2, read_buff);
     TEST_ASSERT_NOT_EQUAL(status, s008_data[12].status, TEST_CHECKPOINT_NUM(12));
 
-    /* Try to access data with valid non-zero offset and length equal to MAX_UINT21 */
-    status = SST_FUNCTION(s008_data[13].api, uid, 4, TEST_MAX_UINT32, read_buff);
-    TEST_ASSERT_NOT_EQUAL(status, s008_data[13].status, TEST_CHECKPOINT_NUM(13));
-
     /* Remove the UID */
-    status = SST_FUNCTION(s008_data[14].api, uid);
-    TEST_ASSERT_EQUAL(status, s008_data[14].status, TEST_CHECKPOINT_NUM(14));
+    status = SST_FUNCTION(s008_data[13].api, uid);
+    TEST_ASSERT_EQUAL(status, s008_data[13].status, TEST_CHECKPOINT_NUM(13));
 
     return VAL_STATUS_SUCCESS;
 }
