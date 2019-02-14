@@ -68,9 +68,6 @@ static const test_data s008_data[] = {
  VAL_PS_GET, PSA_PS_SUCCESS /* Call get API with offset = MAX_UINT32 */
 },
 {
- VAL_PS_GET, PSA_PS_SUCCESS /* Call get API with length = MAX_UINT32 */
-},
-{
  VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the storage entity */
 },
 };
