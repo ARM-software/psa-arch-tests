@@ -57,9 +57,6 @@ static const test_data s009_data[] = {
  VAL_ITS_SET, PSA_ITS_SUCCESS /* Increase the asset size */
 },
 {
- VAL_ITS_GET, PSA_ITS_ERROR_INVALID_ARGUMENTS /* Call get API with constant read buffer */
-},
-{
  VAL_ITS_REMOVE, PSA_ITS_SUCCESS /* Remove the storage entity */
 },
 };
