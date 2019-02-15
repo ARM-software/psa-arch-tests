@@ -31,6 +31,10 @@ typedef struct {
 } test_data;
 
 static test_data check1[] = {
+#ifdef ARCH_TEST_HKDF
+#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_AES_128
+#ifdef ARCH_TEST_SHA256
 {"Test psa_generator_import_key for 16 Byte AES Key\n", {1, 2, 3, 4},
 {PSA_KEY_TYPE_DERIVE, PSA_KEY_TYPE_AES},
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
@@ -39,7 +43,11 @@ static test_data check1[] = {
  {PSA_ALG_HKDF(PSA_ALG_SHA_256), PSA_ALG_CTR},
  32, 16, PSA_SUCCESS
 },
+#endif
+#endif
 
+#ifdef ARCH_TEST_SHA512
+#ifdef ARCH_TEST_DES_3KEY
 {"Test psa_generator_import_key for Triple DES 3-Key\n", {5, 6, 7, 8},
 {PSA_KEY_TYPE_DERIVE, PSA_KEY_TYPE_DES},
 {0xEA, 0xD5, 0xE6, 0xC8, 0x51, 0xF9, 0xEC, 0xBB, 0x9B, 0x57, 0x7C, 0xED, 0xD2,
@@ -49,7 +57,11 @@ static test_data check1[] = {
 {PSA_ALG_HKDF(PSA_ALG_SHA_512), PSA_ALG_CTR},
  DES3_3KEY_SIZE, DES3_3KEY_SIZE, PSA_SUCCESS
 },
+#endif
+#endif
 
+#ifdef ARCH_TEST_SHA1
+#ifdef ARCH_TEST_AES
 {"Test psa_generator_import_key output greater than capacity\n", {9, 10, 11, 12},
 {PSA_KEY_TYPE_DERIVE, PSA_KEY_TYPE_AES},
 {0x70, 0x24, 0x55, 0x0C, 0x14, 0x9D, 0xED, 0x29},
@@ -57,7 +69,11 @@ static test_data check1[] = {
 {PSA_ALG_HKDF(PSA_ALG_SHA_1), PSA_ALG_CTR},
  64, 80, PSA_ERROR_INSUFFICIENT_CAPACITY
 },
+#endif
+#endif
 
+#ifdef ARCH_TEST_SHA256
+#ifdef ARCH_TEST_RSA
 {"Test psa_generator_import_key for RSA Public Key - Invalid type\n", {13, 14, 15, 16},
 {PSA_KEY_TYPE_DERIVE, PSA_KEY_TYPE_RSA_PUBLIC_KEY},
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
@@ -66,7 +82,11 @@ static test_data check1[] = {
 {PSA_ALG_HKDF(PSA_ALG_SHA_256), PSA_ALG_CTR},
  32, 16, PSA_ERROR_INVALID_ARGUMENT
 },
+#endif
+#endif
 
+#ifdef ARCH_TEST_SHA256
+#ifdef ARCH_TEST_AES_128
 {"Test psa_generator_import_key for invalid byte for generation\n", {20, 21, 22, 23},
 {PSA_KEY_TYPE_DERIVE, PSA_KEY_TYPE_AES},
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
@@ -75,9 +95,17 @@ static test_data check1[] = {
 {PSA_ALG_HKDF(PSA_ALG_SHA_256), PSA_ALG_CTR},
  32, 10, PSA_ERROR_INVALID_ARGUMENT
 },
+#endif
+#endif
+#endif
+#endif
 };
 
 static test_data check2[] = {
+#ifdef ARCH_TEST_HKDF
+#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_AES_128
+#ifdef ARCH_TEST_SHA256
 {"Test psa_generator_import_key negative cases\n",
 {17, 18, 18, 18},
 {PSA_KEY_TYPE_DERIVE, PSA_KEY_TYPE_AES},
@@ -87,4 +115,8 @@ static test_data check2[] = {
 {PSA_ALG_HKDF(PSA_ALG_SHA_256), PSA_ALG_CTR},
  32, BYTES_TO_BITS(8), PSA_ERROR_INVALID_HANDLE
 },
+#endif
+#endif
+#endif
+#endif
 };

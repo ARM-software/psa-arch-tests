@@ -162,12 +162,16 @@ static const uint8_t ec_keypair[] = {
  0x99, 0x46, 0x4c, 0xee, 0x3e, 0xc7, 0xac, 0x97, 0x06, 0x53, 0xa0, 0xbe, 0x07, 0x42};
 
 static test_data check1[] = {
+#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_AES_128
 {"Test psa_get_key_lifetime 16 Byte AES\n", 1, PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
  PSA_KEY_LIFETIME_VOLATILE, BYTES_TO_BITS(AES_16B_KEY_SIZE), AES_16B_KEY_SIZE, PSA_SUCCESS
 },
+#endif
+#endif
 
 #ifdef NO_SUPPORT
 /* PSA crypto doesn't support these test scenarios */
@@ -187,11 +191,15 @@ static test_data check1[] = {
 },
 #endif
 
+#ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
+#ifdef ARCH_TEST_RSA_2048
 {"Test psa_get_key_lifetime 2048 RSA public key\n", 4, PSA_KEY_TYPE_RSA_PUBLIC_KEY,
  {0},
  270, PSA_KEY_USAGE_SIGN, PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
  PSA_KEY_LIFETIME_VOLATILE, 2048, 270, PSA_SUCCESS
 },
+#endif
+#endif
 
 #ifdef NO_SUPPORT
 /* PSA crypto doesn't support these test scenarios */
@@ -208,12 +216,16 @@ static test_data check1[] = {
 },
 #endif
 
+#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_DES_2KEY
 {"Test psa_get_key_lifetime with Triple DES 2-Key\n", 7, PSA_KEY_TYPE_DES,
 {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
  DES3_2KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
  PSA_KEY_LIFETIME_VOLATILE, BYTES_TO_BITS(DES3_2KEY_SIZE), DES3_2KEY_SIZE, PSA_SUCCESS
 },
+#endif
+#endif
 
 #ifdef NO_SUPPORT
 /* PSA crypto doesn't support these test scenarios */
@@ -226,28 +238,38 @@ static test_data check1[] = {
 },
 #endif
 
+#ifdef ARCH_TEST_ASYMMETRIC_ENCRYPTION
+#ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {"Test psa_get_key_lifetime with EC Public key\n", 9,
  PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
  {0},
  65, PSA_KEY_USAGE_EXPORT, PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
  PSA_KEY_LIFETIME_VOLATILE, 256, 65, PSA_SUCCESS
 },
+#endif
 
+#ifdef ARCH_TEST_ECC_CURVE_SECP224R1
 {"Test psa_get_key_lifetime with EC keypair\n", 10,
  PSA_KEY_TYPE_ECC_KEYPAIR(PSA_ECC_CURVE_SECP224R1),
  {0},
  28, PSA_KEY_USAGE_EXPORT, PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
  PSA_KEY_LIFETIME_VOLATILE, 224, 28, PSA_SUCCESS
 },
+#endif
+#endif
 
 };
 
 
 static test_data check2[] = {
+#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_AES_128
 {"Test psa_get_key_lifetime with negative cases\n", 11, PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR, PSA_KEY_LIFETIME_VOLATILE,
  BYTES_TO_BITS(AES_16B_KEY_SIZE), AES_16B_KEY_SIZE, PSA_ERROR_INVALID_ARGUMENT
 },
+#endif
+#endif
 };

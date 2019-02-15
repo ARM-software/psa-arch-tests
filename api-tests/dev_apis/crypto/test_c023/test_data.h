@@ -24,6 +24,8 @@ typedef struct {
 } test_data;
 
 static test_data check1[] = {
+#ifdef ARCH_TEST_HKDF
+#ifdef ARCH_TEST_SHA256
 {"Test psa_key_policy_get_usage with usage as encrypt\n",
  PSA_KEY_USAGE_ENCRYPT, PSA_ALG_HKDF(PSA_ALG_SHA_256),
 },
@@ -47,5 +49,7 @@ static test_data check1[] = {
 {"Test psa_key_policy_get_usage with usage as verify\n",
  PSA_KEY_USAGE_VERIFY, PSA_ALG_HKDF(PSA_ALG_SHA_256),
 },
+#endif
+#endif
 
 };

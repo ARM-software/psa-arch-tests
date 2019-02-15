@@ -21,6 +21,7 @@ INCLUDE= -I$(SOURCE)/val/common/ \
          -I$(SOURCE)/val/spe/ \
          -I$(SOURCE)/platform/targets/$(TARGET)/nspe/ \
          -I$(SOURCE)/platform/targets/$(TARGET)/nspe/common \
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/crypto \
          -I$(BUILD)/platform/$(TARGET)/ \
          -I$(BUILD)/val/
 
