@@ -26,18 +26,25 @@ typedef struct {
 } test_data;
 
 static test_data check1[] = {
+#ifdef ARCH_TEST_AES_128
 {"Test psa_allocate_key 16 Byte AES\n", 1, PSA_KEY_TYPE_AES,
  AES_16B_KEY_SIZE, PSA_SUCCESS
 },
+#endif
 
+#ifdef ARCH_TEST_AES_192
 {"Test psa_allocate_key 24 Byte AES\n", 2, PSA_KEY_TYPE_AES,
  AES_24B_KEY_SIZE, PSA_SUCCESS
 },
+#endif
 
+#ifdef ARCH_TEST_AES_256
 {"Test psa_allocate_key 32 Byte AES\n", 3, PSA_KEY_TYPE_AES,
  AES_32B_KEY_SIZE, PSA_SUCCESS
 },
+#endif
 
+#ifdef ARCH_TEST_RSA_2048
 {"Test psa_allocate_key 2048 RSA public key\n", 4, PSA_KEY_TYPE_RSA_PUBLIC_KEY,
  294, PSA_SUCCESS
 },
@@ -45,24 +52,35 @@ static test_data check1[] = {
 {"Test psa_allocate_key with RSA 2048 keypair\n", 5, PSA_KEY_TYPE_RSA_KEYPAIR,
  1193, PSA_SUCCESS
 },
+#endif
 
+#ifdef ARCH_TEST_DES_1KEY
 {"Test psa_allocate_key with DES 64 bit key\n", 6, PSA_KEY_TYPE_DES,
  DES_8B_KEY_SIZE, PSA_SUCCESS
 },
+#endif
 
+#ifdef ARCH_TEST_DES_2KEY
 {"Test psa_allocate_key with Triple DES 2-Key\n", 7, PSA_KEY_TYPE_DES,
  DES3_2KEY_SIZE, PSA_SUCCESS
 },
+#endif
 
+#ifdef ARCH_TEST_DES_3KEY
 {"Test psa_allocate_key with Triple DES 3-Key\n", 8, PSA_KEY_TYPE_DES,
  DES3_3KEY_SIZE, PSA_SUCCESS
 },
+#endif
 
+#ifdef ARCH_TEST_ECC_CURVE_SECP192R1
 {"Test psa_allocate_key with EC Public key\n", 9,
+ PSA_KEY_TYPE_ECC_PUBLIC_KEY_BASE | PSA_ECC_CURVE_SECP192R1,
  75, PSA_SUCCESS
 },
 
 {"Test psa_allocate_key with EC keypair\n", 10,
+ PSA_KEY_TYPE_ECC_KEYPAIR_BASE | PSA_ECC_CURVE_SECP192R1,
  97, PSA_SUCCESS
 },
+#endif
 };

@@ -115,6 +115,8 @@ static const uint8_t rsa_128_keypair[] = {
 0xae, 0x59, 0xbb, 0xfe, 0x1c, 0x99, 0x77, 0x81, 0x44, 0x7a, 0x2b, 0x24};
 
 static test_data check1[] = {
+#ifdef ARCH_TEST_RSA_1024
+#ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 {"Test psa_asymmetric_verify - RSA KEYPAIR PKCS1V15 RAW\n", 1, PSA_KEY_TYPE_RSA_KEYPAIR,
 {0}, 610, PSA_KEY_USAGE_VERIFY, PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
 {0x61, 0x62, 0x63}, 3,
@@ -130,7 +132,10 @@ static test_data check1[] = {
  0x4a, 0xa5, 0xcb, 0xb4, 0xd6, 0xc0, 0xef, 0xba, 0xfb, 0x04, 0x3a},
  128, 1024, PSA_SUCCESS
 },
+#endif
 
+#ifdef ARCH_TEST_RSA_PKCS1V15_SIGN
+#ifdef ARCH_TEST_SHA256
 {"Test psa_asymmetric_verify - RSA KEYPAIR PKCS1V15 SHA-256\n", 2, PSA_KEY_TYPE_RSA_KEYPAIR,
 {0}, 610, PSA_KEY_USAGE_VERIFY, PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
 {0xba, 0x78, 0x16, 0xbf, 0x8f, 0x01, 0xcf, 0xea, 0x41, 0x41, 0x40, 0xde, 0x5d,
@@ -148,7 +153,13 @@ static test_data check1[] = {
  0xe5, 0x64, 0x86, 0x40, 0x85, 0x6a, 0xac, 0xc6, 0xfc, 0x73, 0x11},
  128, 1024, PSA_SUCCESS
 },
+#endif
+#endif
+#endif
 
+#ifdef ARCH_TEST_SHA256
+#ifdef ARCH_TEST_DETERMINISTIC_ECDSA
+#ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {"Test psa_asymmetric_verify - ECDSA KEYPAIR SECP256R1 SHA-256\n", 3,
  PSA_KEY_TYPE_ECC_KEYPAIR(PSA_ECC_CURVE_SECP256R1), {0}, 32,
  PSA_KEY_USAGE_VERIFY, PSA_ALG_DETERMINISTIC_ECDSA(PSA_ALG_SHA_256),
@@ -162,7 +173,11 @@ static test_data check1[] = {
  0x4b, 0xb4, 0xa1, 0x9b, 0x3a, 0x78, 0x11, 0x74, 0x2f, 0x49, 0xf5, 0x0f},
  64, 512, PSA_SUCCESS
 },
+#endif
+#endif
 
+#ifdef ARCH_TEST_RSA_1024
+#ifdef ARCH_TEST_RSA_PKCS1V15_SIGN
 {"Test psa_asymmetric_verify - RSA public key\n", 4,
 PSA_KEY_TYPE_RSA_PUBLIC_KEY,
 {0}, 162, PSA_KEY_USAGE_VERIFY, PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
@@ -199,6 +214,7 @@ PSA_KEY_TYPE_RSA_PUBLIC_KEY,
  0xe5, 0x64, 0x86, 0x40, 0x85, 0x6a, 0xac, 0xc6, 0xfc, 0x73, 0x11},
  120, 1024, PSA_ERROR_BUFFER_TOO_SMALL
 },
+#endif
 
 {"Test psa_asymmetric_verify - Invalid algorithm\n", 6, PSA_KEY_TYPE_RSA_KEYPAIR,
 {0}, 610, PSA_KEY_USAGE_VERIFY, PSA_ALG_SHA_256,
@@ -215,7 +231,10 @@ PSA_KEY_TYPE_RSA_PUBLIC_KEY,
  0x4a, 0xa5, 0xcb, 0xb4, 0xd6, 0xc0, 0xef, 0xba, 0xfb, 0x04, 0x3a},
  128, 1024, PSA_ERROR_INVALID_ARGUMENT
 },
+#endif
 
+#ifdef ARCH_TEST_RSA_PKCS1V15_SIGN
+#ifdef ARCH_TEST_AES_128
 {"Test psa_asymmetric_verify - Invalid key type (AES Key)\n", 7, PSA_KEY_TYPE_AES,
 {0x30, 0x82, 0x02, 0x5e, 0x02, 0x01, 0x00, 0x02, 0x81, 0x81, 0x00, 0xaf, 0x05,
  0x7d, 0x39, 0x6e}, AES_16B_KEY_SIZE, PSA_KEY_USAGE_VERIFY,
@@ -233,7 +252,12 @@ PSA_KEY_TYPE_RSA_PUBLIC_KEY,
  0x4a, 0xa5, 0xcb, 0xb4, 0xd6, 0xc0, 0xef, 0xba, 0xfb, 0x04, 0x3a},
  128, BYTES_TO_BITS(AES_16B_KEY_SIZE), PSA_ERROR_NOT_SUPPORTED
 },
+#endif
+#endif
+#endif
 
+#ifdef ARCH_TEST_RSA_1024
+#ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 {"Test psa_asymmetric_verify - Invalid usage\n", 8, PSA_KEY_TYPE_RSA_KEYPAIR,
 {0}, 610, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
 {0x61, 0x62, 0x63}, 3,
@@ -249,7 +273,10 @@ PSA_KEY_TYPE_RSA_PUBLIC_KEY,
  0x4a, 0xa5, 0xcb, 0xb4, 0xd6, 0xc0, 0xef, 0xba, 0xfb, 0x04, 0x3a},
  128, 1024, PSA_ERROR_NOT_PERMITTED
 },
+#endif
 
+#ifdef ARCH_TEST_RSA_PKCS1V15_SIGN
+#ifdef ARCH_TEST_SHA256
 {"Test psa_asymmetric_verify - Wrong hash size\n", 9, PSA_KEY_TYPE_RSA_KEYPAIR,
 {0}, 610, PSA_KEY_USAGE_VERIFY, PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
 {0xba, 0x78, 0x16, 0xbf, 0x8f, 0x01, 0xcf, 0xea, 0x41, 0x41, 0x40, 0xde, 0x5d,
@@ -286,7 +313,12 @@ PSA_KEY_TYPE_RSA_PUBLIC_KEY,
  0xe5, 0x64, 0x86, 0x40, 0x85, 0x6a, 0xac, 0xc6, 0xfc, 0x73, 0x11},
  128, 1024, PSA_ERROR_INVALID_SIGNATURE
 },
+#endif
+#endif
+#endif
 
+#ifdef ARCH_TEST_ECC_CURVE_SECP256R1
+#ifdef ARCH_TEST_ECDSA
 {"Test psa_asymmetric_verify - EC public key\n", 11,
  PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
 {0}, 65, PSA_KEY_USAGE_VERIFY, PSA_ALG_ECDSA_ANY,
@@ -314,9 +346,13 @@ PSA_KEY_TYPE_RSA_PUBLIC_KEY,
  0x4b, 0xb4, 0xa1, 0x9b, 0x3a, 0x78, 0x11, 0x74, 0x2f, 0x49, 0xf5, 0x0f, 0x00},
  65, 512, PSA_ERROR_INVALID_SIGNATURE
 },
+#endif
+#endif
 };
 
 static test_data check2[] = {
+#ifdef ARCH_TEST_RSA_1024
+#ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 {"Test psa_asymmetric_verify - Negative case\n", 13, PSA_KEY_TYPE_RSA_KEYPAIR,
 {0}, 610, PSA_KEY_USAGE_VERIFY, PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
 {0x61, 0x62, 0x63}, 3,
@@ -332,4 +368,6 @@ static test_data check2[] = {
  0x4a, 0xa5, 0xcb, 0xb4, 0xd6, 0xc0, 0xef, 0xba, 0xfb, 0x04, 0x3a},
  128, 1024, PSA_SUCCESS
 },
+#endif
+#endif
 };

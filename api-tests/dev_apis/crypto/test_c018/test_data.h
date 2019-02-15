@@ -40,6 +40,8 @@ static test_data check1[] = {
  * - SHA 256
  * - Output size less than generator capacity
  */
+#ifdef ARCH_TEST_HKDF
+#ifdef ARCH_TEST_SHA256
 {"Test psa_generator_read to get 16 Byte data with SHA-256\n", 1, PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9},
@@ -47,12 +49,13 @@ static test_data check1[] = {
  {0}, 0, {0}, 0, 32,
  16, PSA_SUCCESS
 },
-
+#endif
 /* Covers the following cases
  * - 32 Byte key
  * - SHA 512
  * - Output size equal to generator capacity
  */
+#ifdef ARCH_TEST_SHA512
 {"Test psa_generator_read to get 32 Byte data with SHA-512\n", 2, PSA_KEY_TYPE_DERIVE,
 {0xEA, 0xD5, 0xE6, 0xC8, 0x51, 0xF9, 0xEC, 0xBB, 0x9B, 0x57, 0x7C, 0xED, 0xD2,
  0x4B, 0x82, 0x84, 0x9F, 0x9F, 0xE6, 0x73, 0x21, 0x3D, 0x1A, 0x05, 0xC9, 0xED,
@@ -61,12 +64,14 @@ static test_data check1[] = {
  {0}, 0, {0}, 0, 64,
  64, PSA_SUCCESS
 },
+#endif
 
 /* Covers the following cases
  * - 8 Byte Key
  * - SHA 1
  * - Output size greater than the generator capacity
  */
+#ifdef ARCH_TEST_SHA1
 {"Test psa_generator_read to get 8 Byte data with SHA-1\n", 3, PSA_KEY_TYPE_DERIVE,
 {0x70, 0x24, 0x55, 0x0C, 0x14, 0x9D, 0xED, 0x29},
  DES_8B_KEY_SIZE, PSA_KEY_USAGE_DERIVE, PSA_ALG_HKDF(PSA_ALG_SHA_1),
@@ -87,4 +92,6 @@ static test_data check1[] = {
  {0}, 0, {0}, 0, (255 * 20),
  ((255 * 20) + 1), PSA_ERROR_INSUFFICIENT_CAPACITY
 },
+#endif
+#endif
 };

@@ -24,39 +24,57 @@ typedef struct {
 } test_data;
 
 static test_data check1[] = {
+#ifdef ARCH_TEST_MD2
 {"Test psa_hash_abort with MD2 algorithm\n",
  PSA_ALG_MD2, PSA_SUCCESS,
 },
+#endif
 
+#ifdef ARCH_TEST_MD4
 {"Test psa_hash_abort with MD4 algorithm\n",
  PSA_ALG_MD4, PSA_SUCCESS,
 },
+#endif
 
+#ifdef ARCH_TEST_MD5
 {"Test psa_hash_abort with MD5 algorithm\n",
  PSA_ALG_MD5, PSA_SUCCESS,
 },
+#endif
 
+#ifdef ARCH_TEST_RIPEMD160
 {"Test psa_hash_abort with RIPEMD160 algorithm\n",
  PSA_ALG_RIPEMD160, PSA_SUCCESS,
 },
+#endif
 
+#ifdef ARCH_TEST_SHA1
 {"Test psa_hash_abort with SHA1 algorithm\n",
  PSA_ALG_SHA_1, PSA_SUCCESS,
 },
+#endif
 
+#ifdef ARCH_TEST_SHA224
 {"Test psa_hash_abort with SHA224 algorithm\n",
  PSA_ALG_SHA_224, PSA_SUCCESS,
 },
+#endif
 
+#ifdef ARCH_TEST_SHA256
 {"Test psa_hash_abort with SHA256 algorithm\n",
  PSA_ALG_SHA_256, PSA_SUCCESS,
 },
+#endif
 
+#ifdef ARCH_TEST_SHA384
 {"Test psa_hash_abort with SHA384 algorithm\n",
  PSA_ALG_SHA_384, PSA_SUCCESS,
 },
+#endif
 
+#ifdef ARCH_TEST_SHA512
 {"Test psa_hash_abort with SHA512 algorithm\n",
  PSA_ALG_SHA_512, PSA_SUCCESS,
 },
+#endif
 };

@@ -35,6 +35,9 @@ typedef struct {
 } test_data;
 
 static test_data check1[] = {
+#ifdef ARCH_TEST_HKDF
+#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_SHA256
 {"Test psa_generator_abort\n", 1, PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9},
@@ -42,4 +45,7 @@ static test_data check1[] = {
  {0}, 0, {0}, 0, 32,
  16, PSA_SUCCESS
 },
+#endif
+#endif
+#endif
 };

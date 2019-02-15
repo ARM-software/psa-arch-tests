@@ -26,6 +26,7 @@ INCLUDE= -I$(SOURCE)/val/common/ \
          -I$(BUILD)/platform/$(TARGET)/ \
          -I$(SOURCE)/platform/targets/$(TARGET)/nspe \
          -I$(SOURCE)/platform/targets/$(TARGET)/nspe/common \
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/crypto \
          -I$(SOURCE)/platform/targets/$(TARGET)/spe
 
 VPATH=$(SOURCE)/val/common/:\

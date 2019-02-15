@@ -26,6 +26,7 @@
 
 #ifndef TARGET_CFG_BUILD
 #include "pal_config.h"
+#include "pal_crypto_config.h"
 #endif
 
 /* typedef's */
