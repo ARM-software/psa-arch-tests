@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #/** @file
-# * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -72,7 +72,7 @@ while(<IN0>) {
 	while($nextline !~ /\}/) {
 	    $nextline = <IN0>;
 	    #print "$nextline";
-	    if($nextline =~ /(\S+)(\s*)\=(\s*)GROUP_([0-9a-zA-Z_]+)(,*)\n/) {
+	    if($nextline =~ /(\S+)(\s*)\=(\s*)GROUP_([0-9a-zA-Z_]+)(,*)/) {
 		$comp_groups{$1} = $4;
 	    }
 	}
@@ -232,7 +232,7 @@ print OUT "fprintf\(fp\, \"#endif \\n\"\)\;\n";
 print OUT "\nreturn 0;\}\/\/int main";
 
 #generate target_database.h file
-print "gcc -DTARGET_CFG_BUILD $output_c -o $build/platform/$target/targetConfigGen -I$source/val/nspe -I$source/val/common -I$source/platform/targets/$target/nspe/common\n";
-system("gcc -DTARGET_CFG_BUILD $output_c -o $build/platform/$target/targetConfigGen -I$source/val/nspe -I$source/val/common -I$source/platform/targets/$target/nspe/common") && die ("Failed to compile targetConfigGen.c \n");
+print "gcc -D__addr_t_defined -DTARGET_CFG_BUILD $output_c -o $build/platform/$target/targetConfigGen -I$source/val/nspe -I$source/val/common -I$source/platform/targets/$target/nspe/common\n";
+system("gcc -D__addr_t_defined -DTARGET_CFG_BUILD $output_c -o $build/platform/$target/targetConfigGen -I$source/val/nspe -I$source/val/common -I$source/platform/targets/$target/nspe/common") && die ("Failed to compile targetConfigGen.c \n");
 print "./$build/platform/$target/targetConfigGen\n";
 system("./$build/platform/$target/targetConfigGen ") && die ("Failed to generate targetConfig data base \n");
