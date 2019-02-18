@@ -38,7 +38,8 @@ int32_t psa_cipher_update_test(security_t caller)
     int32_t                 i, status;
     size_t                  length;
     psa_key_policy_t        policy;
-    psa_cipher_operation_t  invalid_operation = {0};
+    psa_cipher_operation_t  invalid_operation;
+
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
@@ -52,6 +53,7 @@ int32_t psa_cipher_update_test(security_t caller)
          * usage of the key
          */
         val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
+        memset(&invalid_operation, 0xDEADDEAD, sizeof(invalid_operation));
 
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);

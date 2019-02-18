@@ -119,6 +119,8 @@ int32_t psa_mac_update_invalid_operator_test(security_t caller)
     int32_t             status;
 
     memset(data, 0xC0DECAFE, sizeof(data));
+    memset(&operation, 0xDEADDEAD, sizeof(operation));
+
     val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
     val->print(PRINT_TEST, "Test psa_mac_update without mac setup\n", 0);
 

@@ -169,7 +169,7 @@ int32_t psa_cipher_abort_before_update_test(security_t caller)
     /* Encrypt or decrypt a message fragment in an active cipher operation */
     status = val->crypto_function(VAL_CRYPTO_CIPHER_UPDATE, &operation, input,
                 input_length, output, SIZE_32B, &length);
-    TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_ARGUMENT, TEST_CHECKPOINT_NUM(9));
+    TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(9));
 
     return VAL_STATUS_SUCCESS;
 }
