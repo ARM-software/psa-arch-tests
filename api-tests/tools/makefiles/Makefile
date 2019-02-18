@@ -40,7 +40,7 @@ gen_linker:
 	perl $(SOURCE)/tools/scripts/process_test_linker_file.pl $(SOURCE) $(SUITE_OUT) ${TARGET} $(TOOLCHAIN)
 
 process_testsuite.db:
-	$(eval TEST_LIST := $(shell grep "^test" $(SUITE_IN)/testsuite.db > $(SUITE_OUT)/.testlist.txt ; cat $(SUITE_OUT)/.testlist.txt))
+	$(eval TEST_LIST := $(shell grep "^test" $(SUITE_IN)/testsuite.db > $(SUITE_OUT)/.testlist.txt ; dos2unix $(SUITE_OUT)/.testlist.txt ; cat $(SUITE_OUT)/.testlist.txt))
 	perl $(SOURCE)/tools/scripts/gen_tests_list.pl $(BUILD) $(SUITE_OUT)/.testlist.txt $(SUITE)
 
 
