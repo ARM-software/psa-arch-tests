@@ -53,7 +53,7 @@ STATIC_DECLARE val_status_t val_target_cfg_get_next(void **blob)
        if ((hdr->version != 1) || (hdr->size == 0))
        {
             val_print(PRINT_ERROR, "Target config database Error. \n", 0);
-            return status;
+            return VAL_STATUS_ERROR;
         }
         hdr++;
         *blob = hdr;  // skip the header. start with the first record.
