@@ -54,6 +54,7 @@ int32_t psa_cipher_finish_test(security_t caller)
          * usage of the key
          */
         val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
+        memset(&invalid_operation, 0xC0DECAFE, sizeof(invalid_operation));
 
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);

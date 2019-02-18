@@ -149,7 +149,7 @@ int32_t psa_import_key_negative_test(security_t caller)
     int              num_checks = sizeof(check2)/sizeof(check2[0]);
     int32_t          i, status;
     psa_key_policy_t policy;
-    psa_key_handle_t invalid_key_handle = 0xdead;
+    psa_key_handle_t invalid_key_handle;
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -172,7 +172,7 @@ int32_t psa_import_key_negative_test(security_t caller)
         * usage of the key
         */
         val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
-
+        memset(&invalid_key_handle, 0xDEADDEAD, sizeof(invalid_key_handle));
         /* Set the usage policy on a key slot */
         val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check2[i].usage,
                                                                                 check2[i].key_alg);

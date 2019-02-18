@@ -132,7 +132,7 @@ int32_t psa_hash_finish_inactive_operation_handle(security_t caller)
     /* Retry the operation with completed operation handle */
     status = val->crypto_function(VAL_CRYPTO_HASH_FINISH, &operation, hash, hash_size,
                                   &hash_length);
-    TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_ARGUMENT, TEST_CHECKPOINT_NUM(6));
+    TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(6));
 
     /*Abort the hash operation */
     status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &operation);
