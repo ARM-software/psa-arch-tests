@@ -430,7 +430,7 @@ void val_test_init(uint32_t test_num, char8_t *desc, uint32_t test_bitfield)
    miscellaneous_desc_t *misc_desc;
 
    /*global init*/
-   g_status_buffer.state   = 0;
+   g_status_buffer.state   = TEST_FAIL;
    g_status_buffer.status  = VAL_STATUS_INVALID;
 
    val_print(PRINT_ALWAYS, "\nTEST: %d | DESCRIPTION: ", test_num);
