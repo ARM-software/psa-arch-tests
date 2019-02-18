@@ -40,7 +40,8 @@ An example of the input configuration file is as shown.
   - Update platform/targets/<platform_name>/target.cfg with your platform detail. Refer val/common/val_target.h for structure details.
   - Update platform/targets/<platform_name>/Makefile appropriately to select correct instances of PAL files for compilation. To compile dev_apis suites, you must set PSA_IPC_IMPLEMENTED to 0. This selects the non-secure PAL instances for the driver services and eliminates IPC dependency for dev_apis tests.
   - Refer "PAL API list" section to view list of PAL APIs that must be ported for your target platform. These APIs definitions are available in nspe/<suite_name>/pal_\*\_intf.c. These APIs are written for tgt_dev_apis_mbedos_fvp_mps2_m4 platform. You can reuse the code if it works for your platform. Otherwise you must port them for your platform specific peripherals.
-  -  The platform make file is invoked as part of test suite build tool(./setup.sh) step and it creates <build_dir>/BUILD/platform/pal_nspe.a archive.
+  - Update Crypto configuration file - nspe/crypto/pal_crypto_config.h to enable/disable crypto features selectively for crypto test suite
+  - The platform make file is invoked as part of test suite build tool(./setup.sh) step and it creates <build_dir>/BUILD/platform/pal_nspe.a archive.
 
 **Note**:
 Test suite needs access to the following peripherals:<br \>

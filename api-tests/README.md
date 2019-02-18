@@ -21,19 +21,22 @@ The test suite for this specification is located in the dev_apis directory of th
 
 ## Release Update
  - Release Version - 0.8
- - Code Quality: Beta. Please use this opportunity to suggest enhancements and point out errors.
- - Current release contains following Developer APIs tests:
- 1. **Crypto tests** that are written for the crypto service APIs defined in the [crypto.h](../api-specs/include/psa/crypto.h)
- 2. **Protected Storage tests** that are written for the protected storage service APIs defined in the [protected_storage.h](../api-specs/include/psa/protected_storage.h)
- 3. **Internal Trusted Storage tests** that are written for the internal trusted storage service APIs defined in the [internal_trusted_storage.h](../api-specs/include/psa/internal_trusted_storage.h)
- 4. **Initial Attestation tests** that are written for the initial attestation service APIs defined in the [initial_attestation.h](../api-specs/include/psa/initial_attestation.h)
- - Current release contains following PSA-FF tests:
- 1. **IPC tests** that are written for version 1.0-Beta-0 of the PSA FF specification.
+ - Code Quality: Please use this opportunity to suggest enhancements and point out errors.
+ - Current release contains following tests:
+ 1. Developer APIs test list:
+
+| Test Category            | Specification Version                | Header File                                                                       |
+|--------------------------|--------------------------------------|-----------------------------------------------------------------------------------|
+| Crypto                   | PSA Crypto API 1.0 Beta-1                  | [crypto.h](../api-specs/include/psa/crypto.h)                                     |
+| Protected Storage        | PSA Protected Storage API 1.0       | [protected_storage.h](../api-specs/include/psa/protected_storage.h)               |
+| Internal Trusted Storage | PSA Internal Trusted Storage API 1.0 | [internal_trusted_storage.h](../api-specs/include/psa/internal_trusted_storage.h) |
+| Initial Attestation      | PSA Initial Attestation API 1.0 Beta-0     | [initial_attestation.h](../api-specs/include/psa/initial_attestation.h)           |
+
+2. PSA-FF **IPC tests** that are written for version 1.0-Beta-0 of the PSA FF specification.
 
 ## License
 
 Arm PSA test suite is distributed under Apache v2.0 License.
-
 
 ## Feedback, contributions, and support
 
