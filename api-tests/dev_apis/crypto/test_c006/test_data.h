@@ -254,9 +254,10 @@ static test_data check1[] = {
  28, PSA_KEY_USAGE_EXPORT, PSA_ALG_ECDSA_ANY,
  224, 28, PSA_SUCCESS
 },
+#endif
+#endif    
 };
-#endif
-#endif
+
 
 static test_data check2[] = {
 #ifdef ARCH_TEST_CIPER_MODE_CTR
