@@ -34,9 +34,11 @@ extern "C" {
 
 /**
  * \brief PSA INITIAL ATTESTATION API version
+ *
+ * Initial attestation API version is: 1.0-beta-0
  */
-#define PSA_INITIAL_ATTEST_API_VERSION_MAJOR (0)
-#define PSA_INITIAL_ATTEST_API_VERSION_MINOR (9)
+#define PSA_INITIAL_ATTEST_API_VERSION_MAJOR (1)
+#define PSA_INITIAL_ATTEST_API_VERSION_MINOR (0)
 
 /**
  * \enum psa_attest_err_t
@@ -45,19 +47,23 @@ extern "C" {
  *
  */
 enum psa_attest_err_t {
-    /* Action was performed successfully */
+    /** Action was performed successfully */
     PSA_ATTEST_ERR_SUCCESS = 0,
-    /* Boot status data could not be obtained */
+    /** Boot status data is unavailable or malformed */
     PSA_ATTEST_ERR_INIT_FAILED,
-    /* Token buffer was too small to store the created token there */
+    /** Token buffer is too small to store the created token there */
     PSA_ATTEST_ERR_TOKEN_BUFFER_OVERFLOW,
-    /* Some of the mandatory claims could not obtained */
+    /** Some of the mandatory claims are unavailable*/
     PSA_ATTEST_ERR_CLAIM_UNAVAILABLE,
-    /* Some parameter or combination of parameters are recognised as invalid */
+    /** Some parameter or combination of parameters are recognised as invalid:
+     * - challenge size is not allowed
+     * - challenge object is unavailable
+     * - token buffer is unavailable
+     */
     PSA_ATTEST_ERR_INVALID_INPUT,
-    /* Unexpected error happened during operation */
+    /** Unexpected error happened during operation */
     PSA_ATTEST_ERR_GENERAL,
-    /* Following entry is only to ensure the error code of integer size */
+    /** Following entry is only to ensure the error code of integer size */
     PSA_ATTEST_ERR_FORCE_INT_SIZE = INT_MAX
 };
 
@@ -74,27 +80,36 @@ enum psa_attest_err_t {
  * The list of fixed claims in the initial attestation token is still evolving,
  * you can expect slight changes in the future.
  *
- * The initial attestation token is planned to be aligned with later version of
+ * The initial attestation token is planned to be aligned with future version of
  * Entity Attestation Token format:
  * https://tools.ietf.org/html/draft-mandyam-eat-01
  *
  * Current list of claims:
- *  - Challenge:   Input object from caller. Can be nonce from server or hash of
- *                 attested data. Allowed length: 32, 48, 64 bytes. The claim
- *                 is represented by the EAT standard claim nonce. Value is
- *                 encoded as byte string.
+ *  - Challenge:   Input object from caller. Can be a single nonce from server
+ *                 or hash of nonce and attested data. It is intended to provide
+ *                 freshness to reports and the caller has responsibility to
+ *                 arrange this. Allowed length: 32, 48, 64 bytes. The claim is
+ *                 modeled to be eventually represented by the EAT standard
+ *                 claim nonce. Until such a time as that standard exists,
+ *                 the claim will be represented by a custom claim. Value
+ *                 is encoded as byte string.
  *
  *  - Instance ID: It represents the unique identifier of the instance. In the
  *                 PSA definition it is a hash of the public attestation key
- *                 of the instance. The claim is represented by the EAT standard
- *                 claim UEID of type GUID. Value is encoded as byte string.
+ *                 of the instance. The claim is modeled to be eventually
+ *                 represented by the EAT standard claim UEID of type GUID.
+ *                 Until such a time as that standard exists, the claim will be
+ *                 represented by a custom claim  Value is encoded as byte
+ *                 string.
  *
  *  - Verification service indicator: Optional, recommended claim. It is used by
  *                 a Relying Party to locate a validation service for the token.
  *                 The value is a text string that can be used to locate the
  *                 service or a URL specifying the address of the service. The
- *                 claim is represented by the EAT standard claim origination.
- *                 Value is encoded as byte string.
+ *                 claim is modeled to be eventually represented by the EAT
+ *                 standard claim origination. Until such a time as that
+ *                 standard exists, the claim will be represented by a custom
+ *                 claim. Value is encoded as text string.
  *
  *  - Profile definition: Optional, recommended claim. It contains the name of
  *                 a document that describes the 'profile' of the token, being
@@ -109,10 +124,18 @@ enum psa_attest_err_t {
  *                 Custom claim with a value encoded as byte string.
  *
  *  - Security lifecycle: It represents the current lifecycle state of the
- *                 instance. Custom claim with a value encoded as unsigned
- *                 integer (enum). Possible values: Assembly (0),
- *                 Provisioning (1), Provisioned (2), Constrained Debug (3),
- *                 Unconstrained Debug (4).
+ *                 instance. Custom claim with a value encoded as integer that
+ *                 is divided to convey a major state and a minor state. The
+ *                 PSA state and implementation state are encoded as follows:
+ *                   - version[15:8] - PSA lifecycle state - major
+ *                   - version[7:0]  - IMPLEMENTATION DEFINED state - minor
+ *                 Possible PSA lifecycle states:
+ *                  - Unknown (0x1000u),
+ *                  - PSA_RoT_Provisioning (0x2000u),
+ *                  - Secured (0x3000u),
+ *                  - Non_PSA_RoT_Debug(0x4000u),
+ *                  - Recoverable_PSA_RoT_Debug (0x5000u),
+ *                  - Decommissioned (0x6000u)
  *
  *  - Client ID:   The partition ID of that secure partition or non-secure
  *                 thread who called the initial attestation API. Custom claim
@@ -137,21 +160,24 @@ enum psa_attest_err_t {
  *                 device. Each map contains multiple claims that describe
  *                 evidence about the details of the software component.
  *
- *     - Type:        It represents the role of the software component. Value is
- *                    encoded as short(!) text string.
- *
- *     - Measurement: It represents a hash of the invariant software component
- *                    in memory at start-up time. Value is encoded as byte
+ *     - Measurement type: Optional claim. It represents the role of the
+ *                    software component. Value is encoded as short(!) text
  *                    string.
  *
- *     - Security epoch: It represents the security control point of the software
- *                    component. Value is encoded as unsigned integer.
+ *     - Measurement value: It represents a hash of the invariant software
+ *                    component in memory at start-up time. The value must be a
+ *                    cryptographic hash of 256 bits or stronger.Value is
+ *                    encoded as byte string.
  *
- *     - Signer ID:   Optional claim. It represents the hash of a signing
- *                    authority public key. Value is encoded as byte string.
+ *     - Security epoch: Optional claim. It represents the security control
+ *                    point of the software component. Value is encoded as
+ *                    unsigned integer.
  *
  *     - Version:     Optional claim. It represents the issued software version.
  *                    Value is encoded as text string.
+ *
+ *     - Signer ID:   It represents the hash of a signing authority public key.
+ *                    Value is encoded as byte string.
  *
  *     - Measurement description: Optional claim. It represents the way in which
  *                    the measurement value of the software component is

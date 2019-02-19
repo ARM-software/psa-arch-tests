@@ -213,7 +213,7 @@ static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
                     continue;
 
                 count = item.val.uCount;
-                for (i = 0; i < count; i++)
+                for (i = 0; i <= count; i++)
                 {
                     mandaroty_sw_components |= 1 << item.label.int64;
 
@@ -248,9 +248,12 @@ static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
                             return PAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
                     }
 
-                    status = QCBORDecode_GetNext(decode_context, &item);
-                    if (status != PAL_ATTEST_SUCCESS)
-                        return PAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
+                    if (i < count)
+                    {
+                        status = QCBORDecode_GetNext(decode_context, &item);
+                        if (status != PAL_ATTEST_SUCCESS)
+                            return PAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
+                    }
                 }
 
             }
@@ -368,12 +371,15 @@ int32_t pal_initial_attest_verify_token(uint8_t *challenge, uint32_t challenge_s
     if (status != PAL_ATTEST_SUCCESS)
         return status;
 
-    if (((mandatory_claims & CLAIM_VALUE) != CLAIM_VALUE) &&
-       (mandatory_claims != (1 << (EAT_CBOR_ARM_RANGE_BASE - EAT_CBOR_ARM_LABEL_NO_SW_COMPONENTS))))
+    if ((mandatory_claims & MANDATORY_CLAIM_WITH_SW_COMP) == MANDATORY_CLAIM_WITH_SW_COMP)
+    {
+        if ((mandaroty_sw_components & MANDATORY_SW_COMP) != MANDATORY_SW_COMP)
+            return PAL_ATTEST_TOKEN_NOT_ALL_MANDATORY_CLAIMS;
+    }
+    else if ((mandatory_claims & MANDATORY_CLAIM_NO_SW_COMP) != MANDATORY_CLAIM_NO_SW_COMP)
+    {
         return PAL_ATTEST_TOKEN_NOT_ALL_MANDATORY_CLAIMS;
-
-    if (sw_component_present && ((mandaroty_sw_components & SW_CLAIM_VALUE) != SW_CLAIM_VALUE))
-        return PAL_ATTEST_TOKEN_NOT_ALL_MANDATORY_CLAIMS;
+    }
 
     return PAL_ATTEST_SUCCESS;
 }
