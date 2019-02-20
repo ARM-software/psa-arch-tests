@@ -36,7 +36,7 @@ int32_t psa_cipher_abort_test(security_t caller)
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
     psa_key_policy_t        policy;
-    psa_cipher_operation_t  operation;
+    psa_cipher_operation_t  operation = {0};
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -109,7 +109,7 @@ int32_t psa_cipher_abort_before_update_test(security_t caller)
     psa_key_usage_t         usage = PSA_KEY_USAGE_ENCRYPT;
     psa_key_handle_t        key_handle = 13;
     psa_key_type_t          key_type = PSA_KEY_TYPE_AES;
-    psa_cipher_operation_t  operation;
+    psa_cipher_operation_t  operation = {0};
     uint8_t                 key_data[] = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab,
                                           0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c};
     uint8_t                 input[] = {0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9,

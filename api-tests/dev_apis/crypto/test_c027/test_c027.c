@@ -37,7 +37,7 @@ int32_t psa_mac_update_test(security_t caller)
     int32_t             i, status;
     size_t              length;
     psa_key_policy_t    policy;
-    psa_mac_operation_t operation;
+    psa_mac_operation_t operation = {0};
 
     memset(data, 0, sizeof(data));
 

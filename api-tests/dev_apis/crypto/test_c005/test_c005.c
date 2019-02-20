@@ -121,6 +121,8 @@ int32_t psa_destroy_key_test(security_t caller)
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(9));
 
         /* Get basic metadata about a key */
+        key_type = 0;
+        bits = 0;
         status = val->crypto_function(VAL_CRYPTO_GET_KEY_INFORMATION, check1[i].key_handle,
                                       &key_type, &bits);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(10));

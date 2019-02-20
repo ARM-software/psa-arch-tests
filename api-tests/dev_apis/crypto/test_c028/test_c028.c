@@ -35,8 +35,8 @@ int32_t psa_mac_sign_finish_test(security_t caller)
     int                 num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t             i, status;
     size_t              length;
-    psa_key_policy_t    policy;
-    psa_mac_operation_t operation;
+    psa_key_policy_t    policy = {0};
+    psa_mac_operation_t operation = {0};
 
     memset(data, 0, sizeof(data));
 

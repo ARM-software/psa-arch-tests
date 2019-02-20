@@ -34,7 +34,7 @@ int32_t psa_hash_verify_test(security_t caller)
 {
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
-    psa_hash_operation_t    operation;
+    psa_hash_operation_t    operation = {0};
     const char              *hash;
 
     /* Initialize the PSA crypto library*/
@@ -81,7 +81,7 @@ int32_t psa_hash_verify_test(security_t caller)
 
 int32_t psa_hash_verify_inactive_operation_handle(security_t caller)
 {
-    psa_hash_operation_t    operation, invalid_operation;
+    psa_hash_operation_t    operation = {0} , invalid_operation = {0};
     char                    input = 0xbd;
     size_t                  input_length = 1;
     psa_algorithm_t         alg = PSA_ALG_SHA_256;

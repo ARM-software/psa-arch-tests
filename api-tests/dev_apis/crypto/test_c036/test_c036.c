@@ -30,7 +30,7 @@ client_test_t test_c036_crypto_list[] = {
 
 static int                     g_test_count = 1;
 static uint8_t                 output[SIZE_32B];
-static psa_cipher_operation_t  operation;
+static psa_cipher_operation_t  operation = {0};
 
 int32_t psa_cipher_update_test(security_t caller)
 {
@@ -46,6 +46,7 @@ int32_t psa_cipher_update_test(security_t caller)
 
     for (i = 0; i < num_checks; i++)
     {
+        memset(&operation, 0, sizeof( operation));
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
 
@@ -80,12 +81,14 @@ int32_t psa_cipher_update_test(security_t caller)
         if (check1[i].usage == PSA_KEY_USAGE_ENCRYPT)
         {
             /* Set the key for a multipart symmetric encryption operation */
+            memset(&operation, 0, sizeof( operation));
             status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation,
                         check1[i].key_handle, check1[i].key_alg);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
         }
         else if (check1[i].usage == PSA_KEY_USAGE_DECRYPT)
         {
+            memset(&operation, 0, sizeof( operation));
             status = val->crypto_function(VAL_CRYPTO_CIPHER_DECRYPT_SETUP, &operation,
                         check1[i].key_handle, check1[i].key_alg);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));

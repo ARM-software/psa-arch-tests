@@ -33,8 +33,8 @@ int32_t psa_mac_verify_finish_test(security_t caller)
 {
     int                 num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t             i, status;
-    psa_key_policy_t    policy;
-    psa_mac_operation_t operation;
+    psa_key_policy_t    policy = {0};
+    psa_mac_operation_t operation = {0};
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);

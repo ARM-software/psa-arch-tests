@@ -39,7 +39,7 @@ int32_t psa_cipher_finish_test(security_t caller)
     int32_t                 i, status;
     size_t                  update_length, finish_length;
     psa_key_policy_t        policy;
-    psa_cipher_operation_t  operation, invalid_operation;
+    psa_cipher_operation_t  operation = {0}, invalid_operation = {0};
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);

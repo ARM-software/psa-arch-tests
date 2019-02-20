@@ -29,7 +29,7 @@ client_test_t test_c033_crypto_list[] = {
 };
 
 static int                     g_test_count = 1;
-static psa_cipher_operation_t  operation;
+static psa_cipher_operation_t  operation = {0};
 
 int32_t psa_cipher_decrypt_setup_test(security_t caller)
 {
@@ -46,6 +46,7 @@ int32_t psa_cipher_decrypt_setup_test(security_t caller)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
+        memset(&operation, 0, sizeof( operation));
 
         /* Initialize a key policy structure to a default that forbids all
          * usage of the key
@@ -106,6 +107,7 @@ int32_t psa_cipher_decrypt_setup_test(security_t caller)
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
         /* Set the key for a multipart symmetric decryption operation */
+        memset(&operation, 0, sizeof( operation));
         status = val->crypto_function(VAL_CRYPTO_CIPHER_DECRYPT_SETUP, &operation,
                     check1[i].key_handle, check1[i].key_alg);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
@@ -130,6 +132,7 @@ int32_t psa_cipher_decrypt_setup_negative_test(security_t caller)
 
     for (i = 0; i < num_checks; i++)
     {
+        memset(&operation, 0, sizeof( operation));
         /* Initialize a key policy structure to a default that forbids all
          * usage of the key
          */
@@ -146,6 +149,7 @@ int32_t psa_cipher_decrypt_setup_negative_test(security_t caller)
         val->print(PRINT_TEST, "[Check %d] Test psa_cipher_decrypt_setup - Invalid key handle\n",
                                                                                    g_test_count++);
         /* Set the key for a multipart symmetric decryption operation */
+        memset(&operation, 0, sizeof( operation));
         status = val->crypto_function(VAL_CRYPTO_CIPHER_DECRYPT_SETUP, &operation,
                     check2[i].key_handle, check2[i].key_alg);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));
@@ -153,6 +157,7 @@ int32_t psa_cipher_decrypt_setup_negative_test(security_t caller)
         val->print(PRINT_TEST, "[Check %d] Test psa_cipher_decrypt_setup - Zero as key handle\n",
                                                                                    g_test_count++);
         /* Set the key for a multipart symmetric decryption operation */
+        memset(&operation, 0, sizeof( operation));
         status = val->crypto_function(VAL_CRYPTO_CIPHER_DECRYPT_SETUP, &operation,
                     0, check2[i].key_alg);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
@@ -169,6 +174,7 @@ int32_t psa_cipher_decrypt_setup_negative_test(security_t caller)
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
         /* Set the key for a multipart symmetric decryption operation */
+        memset(&operation, 0, sizeof( operation));
         status = val->crypto_function(VAL_CRYPTO_CIPHER_DECRYPT_SETUP, &operation,
                     check2[i].key_handle, check2[i].key_alg);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_EMPTY_SLOT, TEST_CHECKPOINT_NUM(7));

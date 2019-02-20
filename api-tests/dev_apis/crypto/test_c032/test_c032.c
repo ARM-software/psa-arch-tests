@@ -29,14 +29,15 @@ client_test_t test_c032_crypto_list[] = {
 };
 
 static int                     g_test_count = 1;
-static psa_cipher_operation_t  operation;
+static psa_cipher_operation_t  operation = {0};
 
 int32_t psa_cipher_encrypt_setup_test(security_t caller)
 {
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
     const uint8_t           *key_data;
-    psa_key_policy_t        policy;
+    psa_key_policy_t        policy = {0};
+    memset(&operation, 0, sizeof( operation));
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -122,7 +123,7 @@ int32_t psa_cipher_encrypt_setup_negative_test(security_t caller)
 {
     int                     num_checks = sizeof(check2)/sizeof(check2[0]);
     int32_t                 i, status;
-    psa_key_policy_t        policy;
+    psa_key_policy_t        policy = {0};
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -152,6 +153,7 @@ int32_t psa_cipher_encrypt_setup_negative_test(security_t caller)
 
         val->print(PRINT_TEST, "[Check %d] Test psa_cipher_encrypt_setup - Zero as key handle\n",
                                                                                    g_test_count++);
+        memset(&operation, 0, sizeof( operation));
         /* Set the key for a multipart symmetric encryption operation */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation,
                     0, check2[i].key_alg);
@@ -169,6 +171,7 @@ int32_t psa_cipher_encrypt_setup_negative_test(security_t caller)
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
         /* Set the key for a multipart symmetric encryption operation */
+        memset(&operation, 0, sizeof( operation));
         status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation,
                     check2[i].key_handle, check2[i].key_alg);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_EMPTY_SLOT, TEST_CHECKPOINT_NUM(7));

@@ -35,8 +35,8 @@ int32_t psa_mac_abort_test(security_t caller)
 {
     int                 num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t             i, status;
-    psa_key_policy_t    policy;
-    psa_mac_operation_t operation;
+    psa_key_policy_t    policy = {0};
+    psa_mac_operation_t operation = {0};
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -93,12 +93,12 @@ int32_t psa_mac_abort_test(security_t caller)
 int32_t psa_mac_abort_before_finish_test(security_t caller)
 {
     size_t              length;
-    psa_key_policy_t    policy;
+    psa_key_policy_t    policy = {0};
     psa_algorithm_t     key_alg = PSA_ALG_CMAC;
     psa_key_usage_t     usage = PSA_KEY_USAGE_SIGN;
     psa_key_handle_t    key_handle = 10;
     psa_key_type_t      key_type = PSA_KEY_TYPE_AES;
-    psa_mac_operation_t operation;
+    psa_mac_operation_t operation = {0};
     uint8_t             key_data[] = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7,
                                       0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c};
     uint8_t             input_data[] = {0x48, 0x69, 0x20, 0x54, 0x68, 0x65, 0x72, 0x65};
