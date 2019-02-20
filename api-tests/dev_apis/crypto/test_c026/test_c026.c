@@ -139,7 +139,7 @@ int32_t psa_mac_sign_setup_negative_test(security_t caller)
         /* Start a multipart MAC calculation operation */
         status = val->crypto_function(VAL_CRYPTO_MAC_SIGN_SETUP, &operation,
                     check2[i].key_handle, check2[i].key_alg);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_EMPTY_SLOT, TEST_CHECKPOINT_NUM(7));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_DOES_NOT_EXIST, TEST_CHECKPOINT_NUM(7));
     }
 
     return VAL_STATUS_SUCCESS;

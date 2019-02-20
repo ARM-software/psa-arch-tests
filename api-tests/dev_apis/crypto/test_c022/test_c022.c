@@ -181,7 +181,7 @@ int32_t psa_key_derivation_negative_test(security_t caller)
                     empty_key_handle, check2[i].key_alg, check2[i].salt,
                     check2[i].salt_length, check2[i].label, check2[i].label_length,
                     check2[i].capacity);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_EMPTY_SLOT, TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_DOES_NOT_EXIST, TEST_CHECKPOINT_NUM(10));
     }
 
     return VAL_STATUS_SUCCESS;

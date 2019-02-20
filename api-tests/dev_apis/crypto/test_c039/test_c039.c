@@ -231,7 +231,7 @@ int32_t psa_asymmetric_encrypt_negative_test(security_t caller)
         status = val->crypto_function(VAL_CRYPTO_ASYMMTERIC_ENCRYPT, check2[i].key_handle,
                     check2[i].key_alg, check2[i].input, check2[i].input_length, salt,
                     check2[i].salt_length, output, check2[i].output_size, &length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_EMPTY_SLOT, TEST_CHECKPOINT_NUM(7));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_DOES_NOT_EXIST, TEST_CHECKPOINT_NUM(7));
     }
 
     return VAL_STATUS_SUCCESS;

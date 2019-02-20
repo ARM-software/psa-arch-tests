@@ -208,7 +208,7 @@ int32_t psa_generator_import_key_test(security_t caller)
             status = val->crypto_function(VAL_CRYPTO_GENERATOR_IMPORT_KEY,
                         check1[i].key_handle[SLOT_4], check1[i].key_type[SLOT_2],
                         BYTES_TO_BITS(check1[i].size), &generator);
-            TEST_ASSERT_EQUAL(status, PSA_ERROR_INSUFFICIENT_CAPACITY, TEST_CHECKPOINT_NUM(18));
+            TEST_ASSERT_EQUAL(status, PSA_ERROR_INSUFFICIENT_DATA, TEST_CHECKPOINT_NUM(18));
         }
 
         /* Abort a generator */
@@ -291,7 +291,7 @@ int32_t psa_generator_import_key_negative_test(security_t caller)
         /* Create a symmetric key from data read from a generator */
         status = val->crypto_function(VAL_CRYPTO_GENERATOR_IMPORT_KEY, check2[i].key_handle[SLOT_1],
                     check2[i].key_type[SLOT_2], check2[i].size, &generator);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_OCCUPIED_SLOT, TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_ALREADY_EXISTS, TEST_CHECKPOINT_NUM(9));
 
         /* Abort a generator */
         status = val->crypto_function(VAL_CRYPTO_GENERATOR_ABORT, &generator);

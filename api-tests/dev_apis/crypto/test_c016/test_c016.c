@@ -156,7 +156,7 @@ int32_t psa_generate_key_negative_test(security_t caller)
         /* Generate a key or key pair */
         status = val->crypto_function(VAL_CRYPTO_GENERATE_KEY, check2[i].key_handle,
                     check2[i].key_type, check2[i].bits, check2[i].extra, check2[i].extra_size);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_OCCUPIED_SLOT, TEST_CHECKPOINT_NUM(8));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_ALREADY_EXISTS, TEST_CHECKPOINT_NUM(8));
 
         val->print(PRINT_TEST, "[Check %d] Test psa_generate_key with destroyed key handle\n",
                                                                                  g_test_count++);

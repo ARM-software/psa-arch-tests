@@ -177,7 +177,7 @@ int32_t psa_export_key_negative_test(security_t caller)
         /* Export a key in binary format */
         status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, check2[i].key_handle, data,
                                        check2[i].key_length, &length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_EMPTY_SLOT, TEST_CHECKPOINT_NUM(5));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_DOES_NOT_EXIST, TEST_CHECKPOINT_NUM(5));
 
         val->print(PRINT_TEST, "[Check %d] Test psa_export_key with zero as key handle\n",
                                                                                  g_test_count++);

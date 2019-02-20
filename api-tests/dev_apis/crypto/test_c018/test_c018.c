@@ -129,7 +129,7 @@ int32_t psa_generator_read_test(security_t caller)
             /* Read some data from a generator */
             status = val->crypto_function(VAL_CRYPTO_GENERATOR_READ, &generator,
                                           data, check1[i].size);
-            TEST_ASSERT_EQUAL(status, PSA_ERROR_INSUFFICIENT_CAPACITY, TEST_CHECKPOINT_NUM(12));
+            TEST_ASSERT_EQUAL(status, PSA_ERROR_INSUFFICIENT_DATA, TEST_CHECKPOINT_NUM(12));
         }
 
         /* Read data using invalid generator handle */

@@ -192,7 +192,7 @@ int32_t psa_aead_decrypt_negative_test(security_t caller)
                   check2[i].key_alg, nonce, check2[i].nonce_length, additional_data,
                   check2[i].additional_data_length, check2[i].ciphertext, check2[i].ciphertext_size,
                   plaintext, check2[i].plaintext_size, &plaintext_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_EMPTY_SLOT, TEST_CHECKPOINT_NUM(7));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_DOES_NOT_EXIST, TEST_CHECKPOINT_NUM(7));
      }
 
      return VAL_STATUS_SUCCESS;

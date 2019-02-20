@@ -159,7 +159,7 @@ int32_t psa_get_key_information_invalid_test(security_t caller)
         /* Get basic metadata about a key */
         status = val->crypto_function(VAL_CRYPTO_GET_KEY_INFORMATION, check2[i].key_handle,
                                       &check2[i].key_type, &check2[i].key_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_EMPTY_SLOT, TEST_CHECKPOINT_NUM(6));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_DOES_NOT_EXIST, TEST_CHECKPOINT_NUM(6));
 
         val->print(PRINT_TEST, "[Check %d] Test psa_get_key_information with destroyed"
                                                         " key handle\n", g_test_count++);

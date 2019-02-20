@@ -172,7 +172,7 @@ int32_t psa_key_agreement_negative_test(security_t caller)
         status = val->crypto_function(VAL_CRYPTO_KEY_AGREEMENT, &generator,
                     check2[i].key_handle, check2[i].peer_key, check2[i].peer_key_length,
                     check2[i].key_alg);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_EMPTY_SLOT, TEST_CHECKPOINT_NUM(7));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_DOES_NOT_EXIST, TEST_CHECKPOINT_NUM(7));
     }
 
     return VAL_STATUS_SUCCESS;
