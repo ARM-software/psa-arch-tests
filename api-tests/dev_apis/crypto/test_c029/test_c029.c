@@ -45,6 +45,7 @@ int32_t psa_mac_verify_setup_test(security_t caller)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
+        memset(&operation, 0, sizeof(operation));
 
         /* Initialize a key policy structure to a default that forbids all
          * usage of the key
@@ -102,6 +103,7 @@ int32_t psa_mac_verify_setup_negative_test(security_t caller)
          * usage of the key
          */
         val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
+        memset(&operation, 0, sizeof(operation));
 
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);

@@ -46,6 +46,7 @@ int32_t psa_mac_abort_test(security_t caller)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
+        memset(&operation, 0, sizeof(operation));
 
         /* Initialize a key policy structure to a default that forbids all
          * usage of the key
@@ -107,6 +108,7 @@ int32_t psa_mac_abort_before_finish_test(security_t caller)
     int32_t             status;
 
     memset(data, 0, sizeof(data));
+    memset(&operation, 0, sizeof(operation));
 
     val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
     val->print(PRINT_TEST, "Test psa_mac_sign_finish after calling psa_mac_abort\n", 0);
