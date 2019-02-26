@@ -33,16 +33,16 @@ static const test_data s009_data[] = {
  0, 0 /* This is dummy for index0 */
 },
 {
- VAL_PS_SET, PSA_PS_ERROR_INVALID_ARGUMENT /* Call set API with 0 write buffer */
+ VAL_PS_SET, PSA_PS_SUCCESS /* Call set API with 0 write buffer */
 },
 {
- VAL_PS_GET_INFO, PSA_PS_ERROR_UID_NOT_FOUND /* Call to get_info API should fail */
+ VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Call to get_info API should fail */
 },
 {
  VAL_PS_SET, PSA_PS_SUCCESS /* Create storage of zero size */
 },
 {
- VAL_PS_SET, PSA_PS_ERROR_INVALID_ARGUMENT /* Try to set 0 buffer for previous created storage */
+ VAL_PS_SET, PSA_PS_SUCCESS /* Try to set 0 buffer for previous created storage */
 },
 {
  VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Call get_info API to check data size */
@@ -51,7 +51,7 @@ static const test_data s009_data[] = {
  0, 0 /* This is dummy for index6 */
 },
 {
- VAL_PS_GET, PSA_PS_ERROR_INVALID_ARGUMENT /* Call get API with 0 read buffer */
+ VAL_PS_GET, PSA_PS_SUCCESS /* Call get API with 0 read buffer */
 },
 {
  VAL_PS_SET, PSA_PS_SUCCESS /* Increase the asset size */
