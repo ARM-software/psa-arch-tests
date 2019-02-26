@@ -45,6 +45,7 @@ int32_t psa_hash_verify_test(security_t caller)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
+        memset(&operation, 0, sizeof(operation));
 
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
@@ -98,12 +99,12 @@ int32_t psa_hash_verify_inactive_operation_handle(security_t caller)
 
     val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
     val->print(PRINT_TEST, "test psa_hash_verify with inactive & invalid operation handle\n", 0);
+    memset(&operation, 0, sizeof(operation));
+    memset(&invalid_operation, 0, sizeof(invalid_operation));
 
     /* Setting up the watchdog timer for each check */
     status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
     TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
-
-    memset(&invalid_operation, 0xDEADDEAD, sizeof(invalid_operation));
 
     /* Start a multipart hash operation */
     status = val->crypto_function(VAL_CRYPTO_HASH_SETUP, &operation, alg);

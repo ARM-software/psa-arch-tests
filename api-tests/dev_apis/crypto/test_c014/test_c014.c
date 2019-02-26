@@ -48,6 +48,7 @@ int32_t psa_hash_finish_test(security_t caller)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
+        memset(&operation, 0, sizeof(operation));
 
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
@@ -110,6 +111,7 @@ int32_t psa_hash_finish_inactive_operation_handle(security_t caller)
 
     val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
     val->print(PRINT_TEST, "test psa_hash_finish with inactive operation handle\n", 0);
+    memset(&operation, 0, sizeof(operation));
 
     /* Setting up the watchdog timer for each check */
     status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
@@ -157,6 +159,7 @@ int32_t psa_hash_finish_invalid_hash_buffer_size(security_t caller)
 
     val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
     val->print(PRINT_TEST, "test psa_hash_finish with invalid hash buffer size\n", 0);
+    memset(&operation, 0, sizeof(operation));
 
     /* Setting up the watchdog timer for each check */
     status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);

@@ -49,6 +49,9 @@ int32_t psa_destroy_key_test(security_t caller)
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
 
+        key_type = 0;
+        bits = 0;
+
         /* Initialize a key policy structure to a default that forbids all
          * usage of the key
          */

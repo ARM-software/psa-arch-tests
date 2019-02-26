@@ -38,7 +38,6 @@ int32_t psa_mac_sign_finish_test(security_t caller)
     psa_key_policy_t    policy;
     psa_mac_operation_t operation;
 
-    memset(data, 0, sizeof(data));
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -48,6 +47,8 @@ int32_t psa_mac_sign_finish_test(security_t caller)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
+        memset(&operation, 0, sizeof(operation));
+        memset(data, 0, sizeof(data));
 
         /* Initialize a key policy structure to a default that forbids all
          * usage of the key

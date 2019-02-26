@@ -44,6 +44,7 @@ int32_t psa_mac_verify_finish_test(security_t caller)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
+        memset(&operation, 0, sizeof(operation));
 
         /* Initialize a key policy structure to a default that forbids all
          * usage of the key
