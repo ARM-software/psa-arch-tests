@@ -33,25 +33,31 @@ static const test_data s009_data[] = {
  0, 0 /* This is dummy for index0 */
 },
 {
- VAL_PS_SET, PSA_PS_SUCCESS /* Call set API with 0 write buffer */
+ VAL_PS_SET, PSA_PS_SUCCESS /* Call set API with NULL write buffer and 0 length */
 },
 {
- VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Call to get_info API should fail */
+ VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Verify UID is created */
 },
 {
- VAL_PS_SET, PSA_PS_SUCCESS /* Create storage of zero size */
+ VAL_PS_GET, PSA_PS_SUCCESS /* Call get API with NULL write buffer and 0 length */
 },
 {
- VAL_PS_SET, PSA_PS_SUCCESS /* Try to set 0 buffer for previous created storage */
+ VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the storage entity */
+},
+{
+ VAL_PS_GET_INFO, PSA_PS_ERROR_UID_NOT_FOUND /* Verify UID is removed */
+},
+{
+ VAL_PS_SET, PSA_PS_SUCCESS /* Create storage of zero size and valid write buffer */
 },
 {
  VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Call get_info API to check data size */
 },
 {
- 0, 0 /* This is dummy for index6 */
+ 0, 0 /* This is dummy for index8 */
 },
 {
- VAL_PS_GET, PSA_PS_SUCCESS /* Call get API with 0 read buffer */
+ VAL_PS_GET, PSA_PS_SUCCESS /* Call get API with 0 length and NULL read buffer */
 },
 {
  VAL_PS_SET, PSA_PS_SUCCESS /* Increase the asset size */
