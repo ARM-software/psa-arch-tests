@@ -101,6 +101,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_CBC_NO_PADDING
+#ifdef ARCH_TEST_DES_1KEY
 {"Test psa_cipher_update - Encrypt - DES CBC (nopad)\n", 6, PSA_KEY_TYPE_DES,
 {0x01, 0x02, 0x04, 0x07, 0x08, 0x0b, 0x0d, 0x0e}, DES_8B_KEY_SIZE,
  PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING,
@@ -108,6 +109,7 @@ static test_data check1[] = {
 {0xed, 0xa4, 0x01, 0x12, 0x39, 0xbc, 0x3a, 0xc9}, 8, 8,
 {0x64, 0xf9, 0x17, 0xb0, 0x15, 0x2f, 0x8f, 0x05}, 8, PSA_SUCCESS
 },
+#endif
 #endif
 #endif
 
