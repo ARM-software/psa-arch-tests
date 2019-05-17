@@ -355,7 +355,7 @@ then
             if [ ! -d "$SOURCE/platform/targets/$TARGET/nspe/initial_attestation/ext" ]
             then
                 git clone https://github.com/laurencelundblade/QCBOR.git $SOURCE/platform/targets/$TARGET/nspe/initial_attestation/ext
-                cd $SOURCE/platform/targets/$TARGET/nspe/initial_attestation/ext; git checkout 01168ef3f20e81d5db1ebd0cfa9a70055ee5b155 ; cd -
+                cd $SOURCE/platform/targets/$TARGET/nspe/initial_attestation/ext; git checkout da53227db1488dde0952bdff66c3d904dce270b3 ; cd -
             else
                 echo "QCBOR library already cloned"
             fi

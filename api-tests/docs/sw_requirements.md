@@ -38,7 +38,7 @@ build script ./setup.sh:
 
 ~~~
 git clone https://github.com/laurencelundblade/QCBOR.git ./platform/targets/<platform_name>/nspe/initial_attestation/ext
-cd ./platform/targets/<platform_name>/nspe/initial_attestation/ext; git checkout 01168ef3f20e81d5db1ebd0cfa9a70055ee5b155
+cd ./platform/targets/<platform_name>/nspe/initial_attestation/ext; git checkout da53227db1488dde0952bdff66c3d904dce270b3
 ~~~
 
 ## License

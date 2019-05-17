@@ -90,7 +90,7 @@ static int get_item_in_map(QCBORDecodeContext *decode_context,
 }
 
 static int parse_unprotected_headers(QCBORDecodeContext *decode_context,
-                                     struct useful_buf_c *child,
+                                     struct q_useful_buf_c *child,
                                      bool *loop_back)
 {
     struct items_to_get_t   item_list[3];
@@ -120,7 +120,7 @@ static int parse_unprotected_headers(QCBORDecodeContext *decode_context,
     return PAL_ATTEST_SUCCESS;
 }
 
-static int parse_protected_headers(struct useful_buf_c protected_headers,
+static int parse_protected_headers(struct q_useful_buf_c protected_headers,
                                    int32_t *alg_id)
 {
     QCBORDecodeContext  decode_context;
@@ -156,7 +156,7 @@ static int parse_protected_headers(struct useful_buf_c protected_headers,
     @return   - error status
 **/
 static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
-                                   struct useful_buf_c completed_challenge)
+                                   struct q_useful_buf_c completed_challenge)
 {
     int i, count = 0;
     int status = PAL_ATTEST_SUCCESS;
@@ -286,11 +286,11 @@ int32_t pal_initial_attest_verify_token(uint8_t *challenge, uint32_t challenge_s
     int32_t             cose_algorithm_id;
     QCBORItem           item;
     QCBORDecodeContext  decode_context;
-    struct useful_buf_c completed_challenge;
-    struct useful_buf_c completed_token;
-    struct useful_buf_c payload;
-    struct useful_buf_c protected_headers;
-    struct useful_buf_c kid;
+    struct q_useful_buf_c completed_challenge;
+    struct q_useful_buf_c completed_token;
+    struct q_useful_buf_c payload;
+    struct q_useful_buf_c protected_headers;
+    struct q_useful_buf_c kid;
 
     /* Construct the token buffer for validation */
     completed_token.ptr = token;
