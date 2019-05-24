@@ -42,11 +42,11 @@ int32_t psa_sst_get_data_check(security_t caller)
     uint32_t status,j;
 
     /* Set data for UID */
-    status = SST_FUNCTION(s004_data[1].api, uid + 1, TEST_BUFF_SIZE, write_buff,0);
+    status = SST_FUNCTION(s004_data[1].api, uid, TEST_BUFF_SIZE, write_buff,0);
     TEST_ASSERT_EQUAL(status, s004_data[1].status, TEST_CHECKPOINT_NUM(1));
 
     /* Call get function and check the data consistency */
-    status = SST_FUNCTION(s004_data[2].api, uid + 1, 0, TEST_BUFF_SIZE, read_buff);
+    status = SST_FUNCTION(s004_data[2].api, uid, 0, TEST_BUFF_SIZE, read_buff);
     TEST_ASSERT_EQUAL(status, s004_data[2].status, TEST_CHECKPOINT_NUM(2));
     TEST_ASSERT_MEMCMP(read_buff, write_buff, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(3));
 
