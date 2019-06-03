@@ -50,7 +50,7 @@
 #endif
 
 #if !defined(VERBOSE)
-#define VERBOSE 4 /* Print verbosity = ERROR */
+#define VERBOSE 3 /* Print verbosity = TEST */
 #endif
 
 #if (!defined(VAL_NSPE_BUILD) && !defined(SPE_BUILD))
@@ -62,7 +62,15 @@
 #endif
 
 #if !defined(TEST_COMBINE_ARCHIVE)
-//#define TEST_COMBINE_ARCHIVE /* Test dispatcher code selection */
+#define TEST_COMBINE_ARCHIVE 0 /* Combine test archive or binary? */
+#endif
+
+#if !defined(WATCHDOG_AVAILABLE)
+#define WATCHDOG_AVAILABLE 0 /* If zero, skip watchdog programming */
+#endif
+
+#if !defined(SP_HEAP_MEM_SUPP)
+#define SP_HEAP_MEM_SUPP 0 /* Are Dynamic funcs available to secure partition? */
 #endif
 
 /*
@@ -79,6 +87,13 @@
  * of this file.
 */
 #include "psa_manifest/sid.h"
+
+/*
+ * psa_manifest/pid.h: Secure Partition IDs
+ * Macro definitions that map from Secure Partition names to Secure Partition IDs.
+ * Partition manifest parse build tool must provide the implementation of this file.
+*/
+#include "psa_manifest/pid.h"
 #endif
 
 #if PSA_CRYPTO_IMPLEMENTED

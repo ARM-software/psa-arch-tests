@@ -111,11 +111,31 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
        return status;
     }
 
-    if (boot.state == BOOT_NOT_EXPECTED || boot.state == BOOT_EXPECTED_CRYPTO)
+    if (boot.state == BOOT_NOT_EXPECTED || boot.state == BOOT_EXPECTED_REENTER_TEST)
     {
-        val_print(PRINT_TEST,"[Info] Executing tests from non-secure\n", 0);
         while (tests_list[i] != NULL)
         {
+            /*
+             * Reboot have been expected by test in previous ns run,
+             * consider previous run pass and jump to second test function
+             * of the same test if available.
+             */
+            if ((boot.state ==  BOOT_EXPECTED_REENTER_TEST) && (i == 1))
+            {
+                val_print(PRINT_DEBUG, "[Check1] PASSED\n", 0);
+                i++;
+                continue;
+            }
+
+            status = val_set_boot_flag(BOOT_NOT_EXPECTED);
+            if (VAL_ERROR(status))
+            {
+                return status;
+            }
+
+            if (i == 1)
+                val_print(PRINT_TEST,"[Info] Executing tests from non-secure\n", 0);
+
             if (server_hs == TRUE)
             {
                 /* Handshake with server tests */
@@ -204,6 +224,17 @@ val_status_t val_switch_to_secure_client(uint32_t test_num)
 
     if (boot.state != BOOT_EXPECTED_S)
     {
+       /*
+        * Reboot have been expected by test in previous s run,
+        * consider previous run pass and jump to second test function
+        * of the same test if available.
+        */
+       if (boot.state ==  BOOT_EXPECTED_REENTER_TEST)
+       {
+            test_info.block_num++;
+            val_print(PRINT_DEBUG, "[Check1] PASSED\n", 0);
+       }
+
        status = val_set_boot_flag(BOOT_NOT_EXPECTED);
        if (VAL_ERROR(status))
        {
@@ -399,7 +430,7 @@ val_status_t val_err_check_set(uint32_t checkpoint, val_status_t status)
     }
     else
     {
-        status = val_get_status();
+        status = (val_get_status() & TEST_STATUS_MASK);
         if (VAL_ERROR(status))
         {
             val_print(PRINT_ERROR, "\tCheckpoint %d : ", checkpoint);
@@ -451,15 +482,16 @@ void val_test_init(uint32_t test_num, char8_t *desc, uint32_t test_bitfield)
        GET_TEST_ISOLATION_LEVEL(test_bitfield))
    {
        val_set_status(RESULT_SKIP(VAL_STATUS_ISOLATION_LEVEL_NOT_SUPP));
-       val_print(PRINT_ALWAYS, "Skipping test. Required isolation level is not supported\n", 0);
+       val_print(PRINT_ALWAYS, "\tSkipping test. Required isolation level is not supported\n", 0);
        return;
    }
 
+#if (WATCHDOG_AVAILABLE == 1)
    /* Initialise watchdog */
    status = val_wd_timer_init(GET_WD_TIMOUT_TYPE(test_bitfield));
    if (VAL_ERROR(status))
    {
-       val_print(PRINT_ERROR, "val_wd_timer_init failed Error=0x%x\n", status);
+       val_print(PRINT_ERROR, "\tval_wd_timer_init failed Error=0x%x\n", status);
        return;
    }
 
@@ -467,9 +499,10 @@ void val_test_init(uint32_t test_num, char8_t *desc, uint32_t test_bitfield)
    status = val_wd_timer_enable();
    if (VAL_ERROR(status))
    {
-       val_print(PRINT_ERROR, "val_wd_timer_enable failed Error=0x%x\n", status);
+       val_print(PRINT_ERROR, "\tval_wd_timer_enable failed Error=0x%x\n", status);
        return;
    }
+#endif
 
    val_set_status(RESULT_START(VAL_STATUS_SUCCESS));
    return;
@@ -483,10 +516,20 @@ void val_test_init(uint32_t test_num, char8_t *desc, uint32_t test_bitfield)
 
 void val_test_exit(void)
 {
-    val_status_t    status;
+    val_status_t         status = VAL_STATUS_SUCCESS;
 
-    val_wd_timer_disable();
+#if (WATCHDOG_AVAILABLE == 1)
+    status = val_wd_timer_disable();
+    if (VAL_ERROR(status))
+    {
+       val_print(PRINT_ERROR, "\tval_wd_timer_disable failed Error=0x%x\n", status);
+       val_set_status(RESULT_FAIL(status));
+       return;
+    }
+#endif
+
     status = val_get_status();
+
     /* return if test skipped or failed */
     if (IS_TEST_FAIL(status) || IS_TEST_SKIP(status))
     {
@@ -509,15 +552,20 @@ val_status_t val_get_last_run_test_id(test_id_t *test_id)
     test_count_t    test_count;
     boot_t          boot;
     int             i = 0, intermediate_boot = 0;
-    boot_state_t    boot_state[] = {BOOT_NOT_EXPECTED, BOOT_EXPECTED_NS,
-                                     BOOT_EXPECTED_S, BOOT_EXPECTED_BUT_FAILED,
-                                     BOOT_EXPECTED_CRYPTO};
+    boot_state_t    boot_state[] = {BOOT_NOT_EXPECTED,
+                                    BOOT_EXPECTED_NS,
+                                    BOOT_EXPECTED_S,
+                                    BOOT_EXPECTED_BUT_FAILED,
+                                    BOOT_EXPECTED_REENTER_TEST
+                                    };
 
     status = val_get_boot_flag(&boot.state);
     if (VAL_ERROR(status))
     {
         return status;
     }
+
+    val_print(PRINT_INFO, "\n\tboot.state=0x%x", boot.state);
 
     for (i = 0; i < (sizeof(boot_state)/sizeof(boot_state[0])); i++)
     {
@@ -585,7 +633,7 @@ val_status_t val_set_boot_flag(boot_state_t state)
    status = val_nvmem_write(VAL_NVMEM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
    if (VAL_ERROR(status))
    {
-       val_print(PRINT_ERROR, "val_nvmem_write failed. Error=0x%x\n", status);
+       val_print(PRINT_ERROR, "\tval_nvmem_write failed. Error=0x%x\n", status);
        return status;
    }
    return status;
@@ -604,7 +652,7 @@ val_status_t val_get_boot_flag(boot_state_t *state)
    status = val_nvmem_read(VAL_NVMEM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
    if (VAL_ERROR(status))
    {
-       val_print(PRINT_ERROR, "val_nvmem_read failed. Error=0x%x\n", status);
+       val_print(PRINT_ERROR, "\tval_nvmem_read failed. Error=0x%x\n", status);
        return status;
    }
    *state = boot.state;

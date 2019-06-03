@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 #include "val_target.h"
 #else
 #include "val_client_defs.h"
-#include "val_partition_common.h"
+#include "val_service_defs.h"
 #endif
 
 #include "test_i011.h"
@@ -37,18 +37,28 @@ int32_t client_test_unspecified_policy_with_lower_minor_ver(security_t caller)
    boot_state_t       boot_state;
 
    val->print(PRINT_TEST,
-        "[Check1] Test un-specified minor_policy with higher minor version\n", 0);
+        "[Check 1] Test un-specified minor_policy with higher minor version\n", 0);
 
-   /* Test is targeting fatal error condition and it will expect an error recovery(reboot)
-    * to happen. To decide, a reboot happened was intended as per test scenario or it happended
+   /*
+    * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
+    * PROGRAMMER ERROR could be either to return appropriate status code or panic the caller.
+    * When a Secure Partition panics, the SPE cannot continue normal execution, as defined
+    * in this specification. The behavior of the SPM following a Secure Partition panic is
+    * IMPLEMENTATION DEFINED- Arm recommends that the SPM causes the system to restart in
+    * this situation. Refer PSA-FF for more information on panic.
+    * For the cases where, SPM cannot capable to reboot the system (just hangs or power down),
+    * a watchdog timer set by val_test_init can reboot the system on timeout event. This will
+    * tests continuity and able to jump to next tests. Therefore, each test who checks for
+    * PROGRAMMER ERROR condition, expects system to get reset either by SPM or watchdog set by
+    * the test harness function.
+    *
+    * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
+    * timeout entries available in target.cfg.
+    *
+    * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
     * after targeted test check. After a reboot, these boot signatures are being read by the
     * VAL APIs to decide test status.
-    *
-    * Note: If SPM is not capable of rebooting (just hangs or power down) in fatal error condition,
-    * a watchdog timer enabled by val_test_init can reboot the system on timeout event.
-    * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
     */
 
    /* Setting boot.state before test check */
@@ -59,9 +69,24 @@ int32_t client_test_unspecified_policy_with_lower_minor_ver(security_t caller)
        return VAL_STATUS_ERROR;
    }
 
+   /*
+    * The minor_version and minor_policy attributes do not need to be specified.
+    * If they are not specified in the manifest, the RoT Service will have
+    * default attributes of minor_version=1 and minor_policy="STRICT".
+    */
    handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 0);
 
-   /* Shouldn't have reached here */
+   /*
+    * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether
+    * a PROGRAMMER ERROR will panic or return PSA_ERROR_CONNECTION_REFUSED.
+    * For SPE caller, it must panic.
+    */
+   if (caller == NONSECURE && handle == PSA_ERROR_CONNECTION_REFUSED)
+   {
+       return VAL_STATUS_SUCCESS;
+   }
+
+   /* If PROGRAMMER ERROR results into panic then control shouldn't have reached here */
    val->print(PRINT_ERROR,
         "\tun-specified policy with lower minor version should have failed but succeeded\n", 0);
 
@@ -72,6 +97,5 @@ int32_t client_test_unspecified_policy_with_lower_minor_ver(security_t caller)
        return VAL_STATUS_ERROR;
    }
 
-   (void)(handle);
    return VAL_STATUS_SPM_FAILED;
 }

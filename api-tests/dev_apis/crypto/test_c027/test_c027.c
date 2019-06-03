@@ -90,22 +90,31 @@ int32_t psa_mac_update_test(security_t caller)
             /* Abort a MAC operation */
             status = val->crypto_function(VAL_CRYPTO_MAC_ABORT, &operation);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+
+            /* Destroy the key */
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+
             continue;
         }
 
         /* Finish the calculation of the MAC of a message */
         status = val->crypto_function(VAL_CRYPTO_MAC_SIGN_FINISH, &operation, data,
-                    sizeof(data)/sizeof(data[0]), &length);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+                    sizeof(data), &length);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
 
         /* Add a message fragment to the same multipart MAC operation*/
         status = val->crypto_function(VAL_CRYPTO_MAC_UPDATE, &operation, check1[i].data,
                     check1[i].data_size);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(11));
 
         /* Abort a MAC operation */
         status = val->crypto_function(VAL_CRYPTO_MAC_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
+
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(13));
     }
 
     return VAL_STATUS_SUCCESS;
@@ -113,11 +122,11 @@ int32_t psa_mac_update_test(security_t caller)
 
 int32_t psa_mac_update_invalid_operator_test(security_t caller)
 {
-    psa_mac_operation_t operation;
-    int32_t             status;
+    int32_t             i, status;
+    psa_mac_operation_t operation[] = {psa_mac_operation_init(), PSA_MAC_OPERATION_INIT, {0} };
+    uint32_t            operation_count = sizeof(operation)/sizeof(operation[0]);
 
     memset(data, 0, sizeof(data));
-    memset(&operation, 0, sizeof(operation));
     val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
     val->print(PRINT_TEST, "Test psa_mac_update without mac setup\n", 0);
 
@@ -125,14 +134,18 @@ int32_t psa_mac_update_invalid_operator_test(security_t caller)
     status = val->crypto_function(VAL_CRYPTO_INIT);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
 
-    /* Start a multipart MAC calculation operation */
-    status = val->crypto_function(VAL_CRYPTO_MAC_UPDATE, &operation, data,
-                 sizeof(data)/sizeof(data[0]));
-    TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(2));
+    for (i = 0; i < operation_count; i++)
+    {
 
-    /* Abort a MAC operation */
-    status = val->crypto_function(VAL_CRYPTO_MAC_ABORT, &operation);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+        /* Start a multipart MAC calculation for each operation */
+        status = val->crypto_function(VAL_CRYPTO_MAC_UPDATE, &operation[i], data,
+                     sizeof(data)/sizeof(data[0]));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(2));
+
+        /* Abort the MAC operations */
+        status = val->crypto_function(VAL_CRYPTO_MAC_ABORT, &operation[i]);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+    }
 
     return VAL_STATUS_SUCCESS;
 }

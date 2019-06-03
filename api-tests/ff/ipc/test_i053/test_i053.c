@@ -20,7 +20,7 @@
 #include "val_target.h"
 #else
 #include "val_client_defs.h"
-#include "val_partition_common.h"
+#include "val_service_defs.h"
 #endif
 
 #include "test_i053.h"
@@ -43,18 +43,28 @@ int32_t client_test_psa_call_with_invalid_outvec_end_addr(security_t caller)
    addr_t                  *valid_base = NULL;
 
    val->print(PRINT_TEST,
-            "[Check1] Test psa_call with invalid end_addr for psa_outvec\n", 0);
+            "[Check 1] Test psa_call with invalid end_addr for psa_outvec\n", 0);
 
-   /* Test is targeting fatal error condition and it will expect an error recovery(reboot)
-    * to happen. To decide, a reboot happened was intended as per test scenario or it happended
+   /*
+    * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
+    * PROGRAMMER ERROR could be either to return appropriate status code or panic the caller.
+    * When a Secure Partition panics, the SPE cannot continue normal execution, as defined
+    * in this specification. The behavior of the SPM following a Secure Partition panic is
+    * IMPLEMENTATION DEFINED- Arm recommends that the SPM causes the system to restart in
+    * this situation. Refer PSA-FF for more information on panic.
+    * For the cases where, SPM cannot capable to reboot the system (just hangs or power down),
+    * a watchdog timer set by val_test_init can reboot the system on timeout event. This will
+    * tests continuity and able to jump to next tests. Therefore, each test who checks for
+    * PROGRAMMER ERROR condition, expects system to get reset either by SPM or watchdog set by
+    * the test harness function.
+    *
+    * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
+    * timeout entries available in target.cfg.
+    *
+    * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
     * after targeted test check. After a reboot, these boot signatures are being read by the
     * VAL APIs to decide test status.
-    *
-    * Note: If SPM is not capable of rebooting (just hangs or power down) in fatal error condition,
-    * a watchdog timer enabled by val_test_init can reboot the system on timeout event.
-    * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
     */
 
    handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
@@ -65,14 +75,16 @@ int32_t client_test_psa_call_with_invalid_outvec_end_addr(security_t caller)
        return VAL_STATUS_INVALID_HANDLE;
    }
 
-   /* Selection of invalid size for psa_outvec:
+   /*
+    * Selection of invalid size for psa_outvec:
+    *
     * if caller == NONSECURE
     *    valid_base = nspe_mmio_region_base;
     *    invalid_size = (driver_mmio_region_base - nspe_mmio_region_base + 1);
     * else
     *    if (ISOLATION_LEVEL > 1)
-    *       valid_base = client_mmio_region_base;
-    *       invalid_size = (driver_mmio_region_base - client_mmio_region_base + 1);
+    *       valid_base = server_mmio_region_base;
+    *       invalid_size = (driver_mmio_region_base - server_mmio_region_base + 1);
     */
 
    status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
@@ -88,7 +100,7 @@ int32_t client_test_psa_call_with_invalid_outvec_end_addr(security_t caller)
    if (caller == NONSECURE)
        memory_cfg_id = MEMORY_NSPE_MMIO;
    else
-       memory_cfg_id = MEMORY_CLIENT_PARTITION_MMIO;
+       memory_cfg_id = MEMORY_SERVER_PARTITION_MMIO;
 
    status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
                                   memory_cfg_id, 0),
@@ -116,8 +128,19 @@ int32_t client_test_psa_call_with_invalid_outvec_end_addr(security_t caller)
    /* Test check- psa_call with invalid end_addr for psa_outvec */
    status_of_call =  psa->call(handle, NULL, 0, outvec, 1);
 
-   /* Expectation is psa_call should hang and control shouldn't have come here */
-   val->print(PRINT_ERROR, "\tpsa_call should failed but successed\n", 0);
+   /*
+    * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether
+    * a PROGRAMMER ERROR will panic or return PSA_ERROR_PROGRAMMER_ERROR.
+    * For SPE caller, it must panic.
+    */
+   if (caller == NONSECURE && status_of_call == PSA_ERROR_PROGRAMMER_ERROR)
+   {
+       psa->close(handle);
+       return VAL_STATUS_SUCCESS;
+   }
+
+   /* If PROGRAMMER ERROR results into panic then control shouldn't have reached here */
+   val->print(PRINT_ERROR, "\tpsa_call should failed but succeed\n", 0);
 
    /* Resetting boot.state to catch unwanted reboot */
    if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))

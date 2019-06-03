@@ -3,11 +3,9 @@
   "name": "DRIVER_PARTITION",
   "type": "PSA-ROT",
   "priority": "NORMAL",
-  "id": "0x00000003",
   "description": "Implements device services such print, flash read/write,. etc.",
   "entry_point": "driver_main",
   "stack_size": "0x400",
-  "heap_size": "0x100",
   "services": [{
       "name": "DRIVER_UART_SID",
       "sid": "0x0000FC01",
@@ -33,9 +31,9 @@
       "minor_policy": "RELAXED"
     },
     {
-      "name": "TEST_INTR_SID",
+      "name": "DRIVER_TEST_SID",
       "sid": "0x0000FC04",
-      "signal": "TEST_INTR_SIG",
+      "signal": "DRIVER_TEST_SIG",
       "non_secure_clients": true,
       "minor_version": 1,
       "minor_policy": "RELAXED"
@@ -69,13 +67,9 @@
   ],
   "irqs": [
     {
+       "description": "Using UART TX interrupt to test psa_wait and psa_eoi for irq_signal",
        "signal": "DRIVER_UART_INTR_SIG",
-       "line_num": 17
+       "line_num": 37
     }
-  ],
-  "linker_pattern": {
-    "object_list": [
-    "driver_partition.a"
-    ]
-  }
+  ]
 }

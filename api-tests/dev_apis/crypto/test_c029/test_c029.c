@@ -79,9 +79,25 @@ int32_t psa_mac_verify_setup_test(security_t caller)
                     check1[i].key_handle, check1[i].key_alg);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
 
-        /* Abort a MAC operation */
+        /* Whether setup succeeded or failed, abort must succeed.
+         * Abort a MAC operation
+         */
         status = val->crypto_function(VAL_CRYPTO_MAC_ABORT, &operation);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+
+        /* If setup failed, reproduce the failure, so that the caller can
+         * test the resulting state of the operation object.
+         */
+        if (check1[i].expected_status != PSA_SUCCESS)
+        {
+            status = val->crypto_function(VAL_CRYPTO_MAC_VERIFY_SETUP, &operation,
+                        check1[i].key_handle, check1[i].key_alg);
+            TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(8));
+        }
+
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
     }
 
     return VAL_STATUS_SUCCESS;
@@ -136,7 +152,7 @@ int32_t psa_mac_verify_setup_negative_test(security_t caller)
         /* Start a multipart MAC verification operation */
         status = val->crypto_function(VAL_CRYPTO_MAC_VERIFY_SETUP, &operation,
                     check2[i].key_handle, check2[i].key_alg);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_EMPTY_SLOT, TEST_CHECKPOINT_NUM(6));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_DOES_NOT_EXIST, TEST_CHECKPOINT_NUM(6));
     }
 
     return VAL_STATUS_SUCCESS;

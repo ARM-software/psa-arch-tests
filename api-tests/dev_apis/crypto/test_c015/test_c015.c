@@ -74,7 +74,7 @@ int32_t psa_hash_abort_before_operation_finish(security_t caller)
     size_t                  input_length = 1;
     psa_algorithm_t         alg = PSA_ALG_SHA_256;
     char                    hash[HASH_64B];
-    size_t                  hash_length, hash_size = sizeof(hash)/sizeof(hash[0]);
+    size_t                  hash_length, hash_size = sizeof(hash);
     int32_t                 status;
 
     /* Initialize the PSA crypto library*/

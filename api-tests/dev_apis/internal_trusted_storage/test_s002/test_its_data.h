@@ -119,6 +119,9 @@ static const test_data s002_data[] = {
  VAL_ITS_SET, PSA_ITS_ERROR_WRITE_ONCE  /* Setting flag to zero for UID should fail */
 },
 {
+ VAL_ITS_REMOVE, PSA_ITS_ERROR_WRITE_ONCE /* Storage should not be removed */
+},
+{
  VAL_ITS_GET_INFO, PSA_ITS_SUCCESS  /* Check that the WRITE_ONCE flag is preserved */
 },
 {

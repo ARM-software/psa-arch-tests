@@ -16,8 +16,6 @@
 # * limitations under the License.
 #**/
 
-print "\n>>>> Updating linker file... \n";
-
 #inputs
 $source=$ARGV[0];
 $suite_out=$ARGV[1];

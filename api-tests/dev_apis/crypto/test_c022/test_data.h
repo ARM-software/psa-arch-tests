@@ -104,6 +104,14 @@ static test_data check1[] = {
  PSA_ERROR_NOT_PERMITTED
 },
 #endif
+
+{"Test psa_key_derivation with unsupported key derivation algorithm\n", 14, PSA_KEY_TYPE_DERIVE,
+{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
+ 0x5F, 0xC9},
+ AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE, PSA_ALG_HKDF(PSA_ALG_CATEGORY_HASH),
+ {0}, 0, {0}, 0, 32,
+ PSA_ERROR_NOT_SUPPORTED
+},
 #endif
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_CRYPT
@@ -116,7 +124,6 @@ static test_data check1[] = {
  PSA_ERROR_INVALID_ARGUMENT
 },
 #endif
-
 };
 
 static test_data check2[] = {
@@ -132,5 +139,4 @@ static test_data check2[] = {
 },
 #endif
 #endif
-
 };

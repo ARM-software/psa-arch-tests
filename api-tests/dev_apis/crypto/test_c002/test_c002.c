@@ -139,6 +139,10 @@ int32_t psa_import_key_test(security_t caller)
         {
             return VAL_STATUS_INVALID;
         }
+
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(13));
     }
 
     return VAL_STATUS_SUCCESS;
@@ -185,7 +189,7 @@ int32_t psa_import_key_negative_test(security_t caller)
         /* Import the key data into the occupied key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, check2[i].key_handle,
                                      check2[i].key_type, check2[i].key_data, check2[i].key_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_OCCUPIED_SLOT, TEST_CHECKPOINT_NUM(5));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_ALREADY_EXISTS, TEST_CHECKPOINT_NUM(5));
 
         val->print(PRINT_TEST, "[Check %d] Test psa_import_key with zero as key handle\n",
                                                                                    g_test_count++);

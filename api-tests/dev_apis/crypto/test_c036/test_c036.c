@@ -25,10 +25,12 @@
 client_test_t test_c036_crypto_list[] = {
     NULL,
     psa_cipher_update_test,
+    psa_cipher_update_negative_test,
     NULL,
 };
 
 static int                     g_test_count = 1;
+static uint8_t                 input[SIZE_32B];
 static uint8_t                 output[SIZE_32B];
 static psa_cipher_operation_t  operation;
 
@@ -107,25 +109,64 @@ int32_t psa_cipher_update_test(security_t caller)
             /* Abort a cipher operation */
             status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
+
+            /* Destroy the key */
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
             continue;
         }
 
         /* Check if the output length matches the expected length */
-        TEST_ASSERT_EQUAL(length, check1[i].expected_output_length, TEST_CHECKPOINT_NUM(11));
+        TEST_ASSERT_EQUAL(length, check1[i].expected_output_length, TEST_CHECKPOINT_NUM(12));
 
         /* Check if the output data matches the expected data */
-        TEST_ASSERT_MEMCMP(output, check1[i].expected_output, length, TEST_CHECKPOINT_NUM(12));
+        TEST_ASSERT_MEMCMP(output, check1[i].expected_output, length, TEST_CHECKPOINT_NUM(13));
 
         /* Encrypt or decrypt a message fragment in an invalid cipher operation should fail */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_UPDATE, &invalid_operation,
                     check1[i].input, check1[i].input_length, output, check1[i].output_size,
                     &length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(13));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(14));
 
         /* Abort a cipher operation */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(14));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(15));
+
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(16));
     }
 
     return VAL_STATUS_SUCCESS;
 }
+
+int32_t psa_cipher_update_negative_test(security_t caller)
+{
+    int32_t                 i, status;
+    psa_cipher_operation_t  operations[] = {psa_cipher_operation_init(),
+                                            PSA_CIPHER_OPERATION_INIT, {0} };
+    uint32_t                operation_count = sizeof(operations)/sizeof(operations[0]);
+    size_t                  length;
+
+    memset(output, 0, sizeof(output));
+    val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
+    val->print(PRINT_TEST, "Test psa_cipher_update without cipher setup\n", 0);
+
+    /* Initialize the PSA crypto library*/
+    status = val->crypto_function(VAL_CRYPTO_INIT);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
+
+    for (i = 0; i < operation_count; i++)
+    {
+        status = val->crypto_function(VAL_CRYPTO_CIPHER_UPDATE, &operations[i], input,
+                 sizeof(input), output, sizeof(output), &length);
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(2));
+
+        /* Abort a cipher operation */
+        status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operations[i]);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+    }
+
+    return VAL_STATUS_SUCCESS;
+}
+

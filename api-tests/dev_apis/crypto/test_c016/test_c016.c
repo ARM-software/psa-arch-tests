@@ -76,23 +76,33 @@ int32_t psa_generate_key_test(security_t caller)
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(5));
 
         if (check1[i].expected_status != PSA_SUCCESS)
+        {
+            /* Destroy the key */
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
+
             continue;
+        }
 
         /* Get basic metadata about a key */
         status = val->crypto_function(VAL_CRYPTO_GET_KEY_INFORMATION, check1[i].key_handle,
                     &key_type, &bits);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
-        TEST_ASSERT_EQUAL(key_type, check1[i].key_type, TEST_CHECKPOINT_NUM(7));
+        TEST_ASSERT_EQUAL(key_type, check1[i].key_type, TEST_CHECKPOINT_NUM(8));
 
-        TEST_ASSERT_EQUAL(bits, check1[i].expected_bit_length, TEST_CHECKPOINT_NUM(8));
+        TEST_ASSERT_EQUAL(bits, check1[i].expected_bit_length, TEST_CHECKPOINT_NUM(9));
 
         /* Export a key in binary format */
         status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, check1[i].key_handle, data,
                                       BUFFER_SIZE, &length);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(10));
 
-        TEST_ASSERT_EQUAL(length, check1[i].expected_key_length, TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_EQUAL(length, check1[i].expected_key_length, TEST_CHECKPOINT_NUM(11));
+
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
     }
 
     return VAL_STATUS_SUCCESS;
@@ -156,7 +166,7 @@ int32_t psa_generate_key_negative_test(security_t caller)
         /* Generate a key or key pair */
         status = val->crypto_function(VAL_CRYPTO_GENERATE_KEY, check2[i].key_handle,
                     check2[i].key_type, check2[i].bits, check2[i].extra, check2[i].extra_size);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_OCCUPIED_SLOT, TEST_CHECKPOINT_NUM(8));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_ALREADY_EXISTS, TEST_CHECKPOINT_NUM(8));
 
         val->print(PRINT_TEST, "[Check %d] Test psa_generate_key with destroyed key handle\n",
                                                                                  g_test_count++);

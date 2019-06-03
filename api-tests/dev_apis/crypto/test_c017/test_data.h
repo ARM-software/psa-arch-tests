@@ -50,7 +50,4 @@ static test_data check1[] = {
 
 {"Test psa_generate_random to get 1000 Byte data\n", 100, PSA_SUCCESS
 },
-
-{"Test psa_generate_random to get 1024 Byte data\n", 1024, PSA_SUCCESS
-},
 };

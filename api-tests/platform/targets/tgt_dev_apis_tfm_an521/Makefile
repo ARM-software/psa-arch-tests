@@ -83,6 +83,7 @@ endif
 ifeq (${PSA_INITIAL_ATTESTATION_IMPLEMENTED},1)
 SRC_C_NSPE += pal_attestation_intf.c
 SRC_C_NSPE += pal_attestation_eat.c
+SRC_C_NSPE += pal_attestation_crypto.c
 else
 SRC_C_NSPE += pal_attestation_empty_intf.c
 endif
@@ -98,7 +99,7 @@ INCLUDE= -I$(SOURCE)/platform/targets/$(TARGET)/nspe \
          -I$(SOURCE)/platform/targets/$(TARGET)/nspe/initial_attestation \
          -I$(SOURCE)/platform/targets/$(TARGET)/nspe/initial_attestation/ext/inc \
          -I$(SOURCE)/platform/targets/$(TARGET)/nspe/internal_trusted_storage \
-         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/protected_storage
+         -I$(SOURCE)/platform/targets/$(TARGET)/nspe/protected_storage \
 
 VPATH=$(SOURCE)/platform/targets/$(TARGET)/: \
       $(SOURCE)/platform/targets/$(TARGET)/spe: \

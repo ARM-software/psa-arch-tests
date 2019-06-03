@@ -76,7 +76,7 @@ static test_data check1[] = {
 {0x70, 0x24, 0x55, 0x0C, 0x14, 0x9D, 0xED, 0x29},
  DES_8B_KEY_SIZE, PSA_KEY_USAGE_DERIVE, PSA_ALG_HKDF(PSA_ALG_SHA_1),
  {0}, 0, {0}, 0, 64,
- 70, PSA_ERROR_INSUFFICIENT_CAPACITY
+ 70, PSA_ERROR_INSUFFICIENT_DATA
 },
 
 {"Test psa_generator_read to request maximum capacity\n", 4, PSA_KEY_TYPE_DERIVE,
@@ -90,7 +90,7 @@ static test_data check1[] = {
 {0x70, 0x24, 0x55, 0x0C, 0x14, 0x9D, 0xED, 0x29},
  DES_8B_KEY_SIZE, PSA_KEY_USAGE_DERIVE, PSA_ALG_HKDF(PSA_ALG_SHA_1),
  {0}, 0, {0}, 0, (255 * 20),
- ((255 * 20) + 1), PSA_ERROR_INSUFFICIENT_CAPACITY
+ ((255 * 20) + 1), PSA_ERROR_INSUFFICIENT_DATA
 },
 #endif
 #endif

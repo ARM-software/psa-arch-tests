@@ -78,12 +78,12 @@ int32_t psa_generator_import_key_test(security_t caller)
         /* Set the usage policy on a key slot */
         status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_handle[SLOT_1],
                                       &policy);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
         /* Import the key data into the key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, check1[i].key_handle[SLOT_1],
                     check1[i].key_type[SLOT_1], check1[i].key_data, check1[i].key_length);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
         /* Set up a key derivation operation. Using this function to initialize the generate as
          * XOR or PRNG generator initialization is not implemented.
@@ -91,7 +91,7 @@ int32_t psa_generator_import_key_test(security_t caller)
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION, &generator,
                     check1[i].key_handle[SLOT_1],  check1[i].key_alg[SLOT_1], &salt, salt_length,
                     &label, label_length, check1[i].capacity);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
         /* Initialize a key policy structure to a default that forbids all
          * usage of the key
@@ -104,32 +104,40 @@ int32_t psa_generator_import_key_test(security_t caller)
 
         /* Allocate a key slot for a transient key */
         status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle[SLOT_2]);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
         /* Set the usage policy on a key slot */
         status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_handle[SLOT_2],
                                       &policy);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
         /* Create a symmetric key from data read from a generator */
         status = val->crypto_function(VAL_CRYPTO_GENERATOR_IMPORT_KEY, check1[i].key_handle[SLOT_2],
                     check1[i].key_type[SLOT_2], BYTES_TO_BITS(check1[i].size), &generator);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(7));
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(9));
 
         if (check1[i].expected_status != PSA_SUCCESS)
         {
             /* Abort a generator */
             status = val->crypto_function(VAL_CRYPTO_GENERATOR_ABORT, &generator);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
+
+            /* Destroy the key */
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle[SLOT_1]);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
+
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle[SLOT_2]);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
+
             continue;
         }
 
         /* Export a key in binary format */
         status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, check1[i].key_handle[SLOT_2], data,
                                       BUFFER_SIZE, &length);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(13));
 
-        TEST_ASSERT_EQUAL(length, check1[i].size, TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_EQUAL(length, check1[i].size, TEST_CHECKPOINT_NUM(14));
 
         data_sum = 0;
         /* Check that if generated data are zero */
@@ -139,7 +147,7 @@ int32_t psa_generator_import_key_test(security_t caller)
         }
 
         memset(data, 0, sizeof(data));
-        TEST_ASSERT_NOT_EQUAL(data_sum, 0, TEST_CHECKPOINT_NUM(12));
+        TEST_ASSERT_NOT_EQUAL(data_sum, 0, TEST_CHECKPOINT_NUM(15));
 
         remaining_size = check1[i].capacity - check1[i].size;
         if (remaining_size > 0)
@@ -156,25 +164,25 @@ int32_t psa_generator_import_key_test(security_t caller)
 
             /* Allocate a key slot for a transient key */
             status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle[SLOT_3]);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(16));
 
             /* Set the usage policy on a key slot */
             status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_handle[SLOT_3],
                                           &policy);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(17));
 
             /* Create a symmetric key from data read from a generator */
             status = val->crypto_function(VAL_CRYPTO_GENERATOR_IMPORT_KEY,
                         check1[i].key_handle[SLOT_3], check1[i].key_type[SLOT_2],
                         BYTES_TO_BITS(check1[i].size), &generator);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(13));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(18));
 
             /* Export a key in binary format */
             status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, check1[i].key_handle[SLOT_3], data,
                         BUFFER_SIZE, &length);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(14));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(19));
 
-            TEST_ASSERT_EQUAL(length, remaining_size, TEST_CHECKPOINT_NUM(15));
+            TEST_ASSERT_EQUAL(length, remaining_size, TEST_CHECKPOINT_NUM(20));
 
             data_sum = 0;
             /* Check that if generated data are zero */
@@ -184,7 +192,7 @@ int32_t psa_generator_import_key_test(security_t caller)
             }
 
             memset(data, 0, sizeof(data));
-            TEST_ASSERT_NOT_EQUAL(data_sum, 0, TEST_CHECKPOINT_NUM(16));
+            TEST_ASSERT_NOT_EQUAL(data_sum, 0, TEST_CHECKPOINT_NUM(21));
 
             /* Initialize a key policy structure to a default that forbids all
              * usage of the key
@@ -197,23 +205,37 @@ int32_t psa_generator_import_key_test(security_t caller)
 
             /* Allocate a key slot for a transient key */
             status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle[SLOT_4]);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(22));
 
             /* Set the usage policy on a key slot */
             status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_handle[SLOT_4],
                                           &policy);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(17));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(23));
 
             /* Create a symmetric key from data read from a generator */
             status = val->crypto_function(VAL_CRYPTO_GENERATOR_IMPORT_KEY,
                         check1[i].key_handle[SLOT_4], check1[i].key_type[SLOT_2],
                         BYTES_TO_BITS(check1[i].size), &generator);
-            TEST_ASSERT_EQUAL(status, PSA_ERROR_INSUFFICIENT_CAPACITY, TEST_CHECKPOINT_NUM(18));
+            TEST_ASSERT_EQUAL(status, PSA_ERROR_INSUFFICIENT_DATA, TEST_CHECKPOINT_NUM(24));
+
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle[SLOT_3]);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(25));
+
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle[SLOT_4]);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(26));
+
         }
 
         /* Abort a generator */
         status = val->crypto_function(VAL_CRYPTO_GENERATOR_ABORT, &generator);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(19));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(27));
+
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle[SLOT_1]);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(28));
+
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle[SLOT_2]);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(29));
     }
 
     return VAL_STATUS_SUCCESS;
@@ -291,11 +313,16 @@ int32_t psa_generator_import_key_negative_test(security_t caller)
         /* Create a symmetric key from data read from a generator */
         status = val->crypto_function(VAL_CRYPTO_GENERATOR_IMPORT_KEY, check2[i].key_handle[SLOT_1],
                     check2[i].key_type[SLOT_2], check2[i].size, &generator);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_OCCUPIED_SLOT, TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_ALREADY_EXISTS, TEST_CHECKPOINT_NUM(9));
 
         /* Abort a generator */
         status = val->crypto_function(VAL_CRYPTO_GENERATOR_ABORT, &generator);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check2[i].key_handle[SLOT_1]);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+
     }
 
     return VAL_STATUS_SUCCESS;

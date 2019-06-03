@@ -28,13 +28,14 @@ client_test_t test_c017_crypto_list[] = {
 };
 
 static int g_test_count = 1;
+static uint8_t data[BUFFER_SIZE], changed[BUFFER_SIZE];
 
 int32_t psa_generate_random_test(security_t caller)
 {
-    int                     num_checks = sizeof(check1)/sizeof(check1[0]);
-    uint32_t                i, j, data_sum;
-    uint8_t                 data[BUFFER_SIZE] = {0};
-    int32_t                 status;
+    int         num_checks = sizeof(check1)/sizeof(check1[0]);
+    uint32_t    i, j, run;
+    uint8_t     trail[] = "don't overwrite me";
+    int32_t     status;
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -45,29 +46,44 @@ int32_t psa_generate_random_test(security_t caller)
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
 
+        memset(data, 0, sizeof(data));
+        memcpy(data + check1[i].size, trail, sizeof(trail));
+
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-        /* Generate random bytes */
-        status = val->crypto_function(VAL_CRYPTO_GENERATE_RANDOM, data, check1[i].size);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(3));
-
-        if (check1[i].expected_status != PSA_SUCCESS)
-            continue;
-
-        data_sum = 0;
-        /* Check that if generated data are zero */
-        for (j = 0; j < check1[i].size; j++)
+        /* Run several times, to ensure that every output byte will be
+         * nonzero at least once with overwhelming probability
+         * (2^(-8*number_of_runs)).
+         */
+        for (run = 0; run < 10; run++)
         {
-            data_sum += data[j];
-            data[j] = 0;
+            memset(data, 0, check1[i].size);
+
+            /* Generate random bytes */
+            status = val->crypto_function(VAL_CRYPTO_GENERATE_RANDOM, data, check1[i].size);
+            TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(3));
+
+            /* Check that no more than bytes have been overwritten */
+            status = memcmp(data + check1[i].size, trail, sizeof(trail));
+            TEST_ASSERT_EQUAL(status, 0, TEST_CHECKPOINT_NUM(4));
+
+            for (j = 0; j < check1[i].size; j++)
+            {
+                if (data[j] != 0)
+                    ++changed[j];
+            }
         }
 
-        if (check1[i].size != 0)
-            TEST_ASSERT_NOT_EQUAL(data_sum, 0, TEST_CHECKPOINT_NUM(4));
-        else
-            TEST_ASSERT_EQUAL(data_sum, 0, TEST_CHECKPOINT_NUM(5));
+        /* Check that every byte was changed to nonzero at least once. This
+         * validates that psa_generate_random is overwriting every byte of
+         * the output buffer.
+         */
+        for (j = 0; j < check1[i].size; j++)
+        {
+            TEST_ASSERT_NOT_EQUAL(changed[j], 0, TEST_CHECKPOINT_NUM(5));
+        }
     }
 
     return VAL_STATUS_SUCCESS;

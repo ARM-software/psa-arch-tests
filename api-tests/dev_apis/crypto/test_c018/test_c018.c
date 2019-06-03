@@ -24,6 +24,7 @@
 client_test_t test_c018_crypto_list[] = {
     NULL,
     psa_generator_read_test,
+    psa_generator_read_negative_test,
     NULL,
 };
 
@@ -95,6 +96,11 @@ int32_t psa_generator_read_test(security_t caller)
             /* Abort a generator */
             status = val->crypto_function(VAL_CRYPTO_GENERATOR_ABORT, &generator);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+
+            /* Destroy the key */
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+
             continue;
         }
 
@@ -106,7 +112,7 @@ int32_t psa_generator_read_test(security_t caller)
         }
 
         memset(data, 0, sizeof(data));
-        TEST_ASSERT_NOT_EQUAL(data_sum, 0, TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_NOT_EQUAL(data_sum, 0, TEST_CHECKPOINT_NUM(10));
 
         remaining_size = check1[i].capacity - check1[i].size;
         if (remaining_size > 0)
@@ -114,7 +120,7 @@ int32_t psa_generator_read_test(security_t caller)
             /* Read some data from a generator */
             status = val->crypto_function(VAL_CRYPTO_GENERATOR_READ, &generator,
                                           data, remaining_size);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
 
             data_sum = 0;
             /* Check that if generated data are zero */
@@ -124,23 +130,52 @@ int32_t psa_generator_read_test(security_t caller)
             }
 
             memset(data, 0, sizeof(data));
-            TEST_ASSERT_NOT_EQUAL(data_sum, 0, TEST_CHECKPOINT_NUM(11));
+            TEST_ASSERT_NOT_EQUAL(data_sum, 0, TEST_CHECKPOINT_NUM(12));
 
             /* Read some data from a generator */
             status = val->crypto_function(VAL_CRYPTO_GENERATOR_READ, &generator,
                                           data, check1[i].size);
-            TEST_ASSERT_EQUAL(status, PSA_ERROR_INSUFFICIENT_CAPACITY, TEST_CHECKPOINT_NUM(12));
+            TEST_ASSERT_EQUAL(status, PSA_ERROR_INSUFFICIENT_DATA, TEST_CHECKPOINT_NUM(13));
         }
-
-        /* Read data using invalid generator handle */
-        status = val->crypto_function(VAL_CRYPTO_GENERATOR_READ, &invalid_generator,
-                    data, 1);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(13));
 
         /* Abort a generator */
         status = val->crypto_function(VAL_CRYPTO_GENERATOR_ABORT, &generator);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(14));
+
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(15));
     }
 
     return VAL_STATUS_SUCCESS;
 }
+
+int32_t psa_generator_read_negative_test(security_t caller)
+{
+    uint32_t                i;
+    psa_crypto_generator_t  generator[] = {psa_crypto_generator_init(),
+                                           PSA_CRYPTO_GENERATOR_INIT, {0} };
+    uint32_t                generator_count = sizeof(generator)/sizeof(generator[0]);
+    int32_t                 status;
+
+    val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
+    val->print(PRINT_TEST, "Test psa_generator_read without setup\n", 0);
+
+    /* Initialize the PSA crypto library*/
+    status = val->crypto_function(VAL_CRYPTO_INIT);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
+
+    memset(data, 0, sizeof(data));
+
+    for (i = 0; i < generator_count; i++)
+    {
+        status = val->crypto_function(VAL_CRYPTO_GENERATOR_READ, &generator[i], data, 1);
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(2));
+
+        status = val->crypto_function(VAL_CRYPTO_GENERATOR_ABORT, &generator[i]);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+    }
+
+    return VAL_STATUS_SUCCESS;
+}
+

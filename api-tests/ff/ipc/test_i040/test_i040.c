@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 #include "val_target.h"
 #else
 #include "val_client_defs.h"
-#include "val_partition_common.h"
+#include "val_service_defs.h"
 #endif
 
 #include "test_i040.h"
@@ -35,7 +35,7 @@ int32_t client_test_psa_write_at_ipc_connect(security_t caller)
 {
    psa_handle_t       handle = 0;
 
-   val->print(PRINT_TEST, "[Check1] Test psa_write at PSA_IPC_CONNECT\n", 0);
+   val->print(PRINT_TEST, "[Check 1] Test psa_write at PSA_IPC_CONNECT\n", 0);
 
    handle = psa->connect(SERVER_RELAX_MINOR_VERSION_SID, 1);
 

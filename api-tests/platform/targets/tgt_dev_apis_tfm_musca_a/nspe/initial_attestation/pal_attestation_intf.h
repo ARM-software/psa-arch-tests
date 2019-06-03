@@ -18,7 +18,7 @@
 #ifndef _PAL_INITIAL_ATTESTATION_H_
 #define _PAL_INITIAL_ATTESTATION_H_
 
-#include "pal_attestation_eat.h"
+#include "pal_attestation_crypto.h"
 
 enum attestation_function_code {
     PAL_INITIAL_ATTEST_GET_TOKEN        = 0x1,

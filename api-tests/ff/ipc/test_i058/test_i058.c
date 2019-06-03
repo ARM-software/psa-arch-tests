@@ -20,7 +20,7 @@
 #include "val_target.h"
 #else
 #include "val_client_defs.h"
-#include "val_partition_common.h"
+#include "val_service_defs.h"
 #endif
 
 #include "test_i058.h"
@@ -40,7 +40,7 @@ int32_t client_test_psa_doorbell_signal(security_t caller)
 #endif
 
    val->print(PRINT_TEST,
-            "[Check1] Test PSA_DOORBELL signal\n", 0);
+            "[Check 1] Test PSA_DOORBELL signal\n", 0);
 
    handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
    if (handle < 0)
@@ -60,7 +60,8 @@ int32_t client_test_psa_doorbell_signal(security_t caller)
        val->print(PRINT_ERROR, "\tpsa_wait didn't receive doorbell signal\n", 0);
    }
 
-   /* Wait for doorball notification again to check -
+   /*
+    * Wait for doorball notification again to check -
     * Doorbell should remain asserted until psa_clear is called.
     */
    signals = psa_wait(PSA_DOORBELL, PSA_BLOCK);

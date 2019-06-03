@@ -48,6 +48,7 @@
 
 #define PSA_KEY_LIFETIME_INVALID        0xFFFFFFFF
 #define PSA_KEY_USAGE_INVALID           0xFFFFFFFF
+#define PSA_HASH_ALG_INVALID            0x01FFFFFF
 #define PSA_ALG_INVALID                 0xFFFFFFFF
 
 enum crypto_function_code {
@@ -98,6 +99,7 @@ enum crypto_function_code {
     VAL_CRYPTO_ASYMMTERIC_VERIFY        = 0x31,
     VAL_CRYPTO_KEY_AGREEMENT            = 0x32,
     VAL_CRYPTO_ALLOCATE_KEY             = 0x33,
+    VAL_CRYPTO_COPY_KEY                 = 0x34,
     VAL_CRYPTO_FREE                     = 0xFE,
 };
 

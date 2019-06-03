@@ -55,6 +55,9 @@ int32_t psa_allocate_key_test(security_t caller)
         status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(3));
 
+        /* Destroy a key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
     }
 
     return VAL_STATUS_SUCCESS;
@@ -62,7 +65,7 @@ int32_t psa_allocate_key_test(security_t caller)
 
 int32_t psa_allocate_key_negative_test(security_t caller)
 {
-    int32_t             i, status;
+    int32_t             i, j, status;
     psa_key_handle_t    key_handle[MAX_KEYS];
 
     /* Initialize the PSA crypto library*/
@@ -76,10 +79,18 @@ int32_t psa_allocate_key_negative_test(security_t caller)
         /* Allocate a key slot for a transient key */
         status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &key_handle[i]);
         if (status != PSA_SUCCESS)
+        {
+            TEST_ASSERT_EQUAL(status, PSA_ERROR_INSUFFICIENT_MEMORY, TEST_CHECKPOINT_NUM(2));
             break;
+        }
     }
 
-    TEST_ASSERT_EQUAL(status, PSA_ERROR_INSUFFICIENT_MEMORY, TEST_CHECKPOINT_NUM(2));
+    for (j = 0; j < i; j++)
+    {
+        /* Destroy a key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle[j]);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+    }
 
     return VAL_STATUS_SUCCESS;
 }

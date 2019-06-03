@@ -128,7 +128,10 @@ int32_t psa_asymmetric_encrypt_test(security_t caller)
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
         if (is_buffer_empty(check1[i].salt, check1[i].salt_length) == TRUE)
+        {
             salt = NULL;
+            check1[i].salt_length = 0;
+        }
         else
             salt = check1[i].salt;
 
@@ -139,10 +142,16 @@ int32_t psa_asymmetric_encrypt_test(security_t caller)
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
 
         if (check1[i].expected_status != PSA_SUCCESS)
+        {
+            /* Destroy the key */
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+
             continue;
+        }
 
         /* Check if the output length matches with the expected output length */
-        TEST_ASSERT_EQUAL(length, check1[i].expected_output_length, TEST_CHECKPOINT_NUM(7));
+        TEST_ASSERT_EQUAL(length, check1[i].expected_output_length, TEST_CHECKPOINT_NUM(8));
 
         /* We test encryption by checking that encrypt-then-decrypt gives back
          * the original plaintext because of the non-optional random
@@ -152,14 +161,18 @@ int32_t psa_asymmetric_encrypt_test(security_t caller)
             status = val->crypto_function(VAL_CRYPTO_ASYMMTERIC_DECRYPT,
                         check1[i].key_handle, check1[i].key_alg, output, length, salt,
                         check1[i].salt_length, output, check1[i].output_size, &length);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
             /* Check if the output length matches with the input length */
-            TEST_ASSERT_EQUAL(length, check1[i].input_length, TEST_CHECKPOINT_NUM(9));
+            TEST_ASSERT_EQUAL(length, check1[i].input_length, TEST_CHECKPOINT_NUM(10));
 
             /* Check if the output matches with the given input data */
-            TEST_ASSERT_MEMCMP(output, check1[i].input, length, TEST_CHECKPOINT_NUM(10));
+            TEST_ASSERT_MEMCMP(output, check1[i].input, length, TEST_CHECKPOINT_NUM(11));
         }
+
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
     }
 
     return VAL_STATUS_SUCCESS;
@@ -179,9 +192,6 @@ int32_t psa_asymmetric_encrypt_negative_test(security_t caller)
 
     for (i = 0; i < num_checks; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] Test psa_asymmetric_encrypt - Invalid key handle\n",
-                                                                                 g_test_count++);
-
         /* Initialize a key policy structure to a default that forbids all
          * usage of the key
          */
@@ -223,7 +233,10 @@ int32_t psa_asymmetric_encrypt_negative_test(security_t caller)
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
         if (is_buffer_empty(check1[i].salt, check1[i].salt_length) == TRUE)
+        {
             salt = NULL;
+            check1[i].salt_length = 0;
+        }
         else
             salt = check1[i].salt;
 
@@ -231,7 +244,7 @@ int32_t psa_asymmetric_encrypt_negative_test(security_t caller)
         status = val->crypto_function(VAL_CRYPTO_ASYMMTERIC_ENCRYPT, check2[i].key_handle,
                     check2[i].key_alg, check2[i].input, check2[i].input_length, salt,
                     check2[i].salt_length, output, check2[i].output_size, &length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_EMPTY_SLOT, TEST_CHECKPOINT_NUM(7));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_DOES_NOT_EXIST, TEST_CHECKPOINT_NUM(7));
     }
 
     return VAL_STATUS_SUCCESS;

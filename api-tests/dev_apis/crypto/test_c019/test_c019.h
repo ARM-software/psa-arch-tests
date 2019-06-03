@@ -27,4 +27,5 @@ extern psa_api_t *psa;
 extern client_test_t test_c019_crypto_list[];
 
 int32_t psa_get_generator_capacity_test(security_t caller);
+int32_t psa_get_generator_capacity_negative_test(security_t caller);
 #endif /* _TEST_C019_CLIENT_TESTS_H_ */

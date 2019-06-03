@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #/** @file
-# * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,6 @@
 
 use File::Find;
 use File::Basename;
-
-print "\n>>>> Combining test ELFs... \n";
 
 #Inputs
 $test_list_file = $ARGV[0];

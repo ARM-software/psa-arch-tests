@@ -1,34 +1,26 @@
 
-# PSA Developer APIs : Architecture Test Suite
+# PSA Developer APIs Architecture Test Suite
 
-## Introduction
+## PSA Developer APIs
 
-### PSA Developer APIs
+PSA defines security service APIs for application developers. Some of these services are Crypto, Attestation, and Secure storage. For more information on API specifications, refer to the [PSA Developer APIs Specifications](../../api-specs/).
 
-PSA defines security service APIs for application developers. Some of these services are Crypto Services, Attestation Services, and Secure Storage Services. For more information on API specification, refer the [PSA Developer facing APIs specifications](../../api-specs/)
+## Architecture test suite
 
-### Architecture Test Suite
+The architecture test suite is a set of examples of the invariant behaviors that are specified in the PSA Developer APIs specifications. Use this suite to verify whether these behaviors are implemented correctly in your system. This  suite contains self-checking and portable C-based tests with directed stimulus. These tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license, allowing external contribution.
 
-The Architecture Test Suite is a set of examples of the invariant behaviours that are specified by the PSA Developer APIs Specifications. Use this suite to verify that these behaviours are implemented correctly in your system.
+This test suite is not a substitute for design verification. To review the test logs, Arm licensees can contact Arm directly through their partner managers.
 
-The Architecture Test Suite contains the tests that are self-checking, portable C-based tests with directed stimulus.
+For more information on the architecture test suite framework and methodology to run the tests, refer to the [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf) document.
 
-The tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license allowing for external contribution. This test suite is not a substitute for design verification. To review the test logs, Arm licensees can contact Arm directly through their partner managers.
+## Test scenarios
 
-For more information on Architecture Test Suite specification, refer the [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf) document.
-
-## Tests Scenarios
-
-The mapping of the rules in the specification to the test cases and the steps followed in the tests are mentioned in the [Scenario document](../docs/) present in the docs/ folder.
+The mapping of the rules in the specification to the test cases and the steps followed in the tests are mentioned in the [Scenario Document](../docs/) that is present in the **docs/** folder.
 
 
-## Getting Started
+## Getting started
 
-Follow the instructions in the subsequent sections to get a copy of the source code on your local machine and build the tests. <br />
-
-### Prerequisite
-
-Please make sure you have all required software installed as explained in the [software requirements](../docs/sw_requirements.md).
+Follow the instructions in the subsequent sections to get a copy of the source code on your local machine and build the tests. Make sure you have all required software installed as explained in the [Software Requirements Document](../docs/sw_requirements.md).
 
 ### Porting steps
 
@@ -36,48 +28,50 @@ Refer to the [PSA Developer APIs Test Suite Porting Guide](../docs/porting_guide
 
 ### Build steps
 
-To build test suite for a given platform, execute the following commands:
+To build the test suite for your target platform, execute the following commands:
 
 ```
 cd api-tests
-./tools/scripts/setup.sh --target <platform_name> --cpu_arch <cpu_architecture_version> --suite <suite_name>  --build <build_dir> --include <include_path>
+./tools/scripts/setup.sh --target <platform_name> --cpu_arch <cpu_architecture_version> --suite <suite_name>  --build <build_dir> --include <include_path> --archive_tests
 ```
 <br />  where:
 
--   <platform_name> is the same as the name of the target specific directory created in the platform/targets/ directory.  <br />
--   <cpu_architecture_version> is the Arm Architecture version name for which test binaries should be compiled. For example, Armv7M, Armv8M-Baseline and Armv8M-Mainline Architecture.  <br />
--   <suite_name> is the suite name and it is same as the suite name available in test_suites/ directory. <br />
--   <include_path> is an additional directory to be included into compiler search path. Note- You must provide Developer APIs header file implementation to Test Suite build system using this option. For example - To compiler Crypto tests, include path must point to path where "psa/crypto.h" is located in your build system.<br />
--   <build_dir> is an output directory to keep build files.
+-   <platform_name> is the same as the name of the target-specific directory created in the **platform/targets/** directory.  <br />
+-   <cpu_architecture_version> is the Arm Architecture version name for which the tests should be compiled. For example, Armv7M, Armv8M-Baseline and Armv8M-Mainline Architecture.  <br />
+-   <suite_name> is the suite name that is the same as the suite name available in **dev_apis/** directory. <br />
+-   <build_dir> is a directory to store build output files. <br />
+-   <include_path> is an additional directory to be included into the compiler search path. <br />
+Note: You must provide Developer APIs header file implementation to the test suite build system using this option. For example, to compile Crypto tests, the include path must point to the path where **psa/crypto.h** is located in your build system.<br />
+-  Use **--archive_tests** option to create a combined test archive (**test_combine.a**) file by combining available test object files. Absence of this option creates a combined test binary (**test_elf_combine.bin**) by combining the available test ELF files.
 
-Refer ./tools/scripts/setup.sh --help to know more about options.
+For details about options, refer to **./tools/scripts/setup.sh --help**.
 
-*To compile crypto tests for tgt_dev_apis_mbedos_fvp_mps2_m4 platform*
+To compile Crypto tests for **tgt_dev_apis_mbedos_fvp_mps2_m4** platform, execute the following commands:
 ```
 cd api-tests
-./tools/scripts/setup.sh --target tgt_dev_apis_mbedos_fvp_mps2_m4 --cpu_arch armv7m --suite crypto --build BUILD_CRYPTO --include <include_path>
+./tools/scripts/setup.sh --target tgt_dev_apis_mbedos_fvp_mps2_m4 --cpu_arch armv7m --suite crypto --build BUILD_CRYPTO --include <include_path>  --archive_tests
 ```
 
 ### Build output
-Test suite build generates following binaries:<br />
+Building the test suite generates the following NSPE binaries:<br />
+- **<build_dir>/BUILD/val/val_nspe.a**
+- **<build_dir>/BUILD/platform/pal_nspe.a**
+- **<build_dir>/BUILD/dev_apis/<suite_name>/test_combine.a**
 
-NSPE libraries:<br />
-1. <build_dir>/BUILD/val/val_nspe.a
-2. <build_dir>/BUILD/platform/pal_nspe.a
-3. <build_dir>/BUILD/dev_apis/<suite_name>/test_elf_combine.bin
+### Integrating the libraries into your target platform
 
-### Binaries integration into your platform
+1. Integrate **val_nspe.a**, **pal_nspe.a**, and **test_combine.a** libraries with your Non-secure OS so that these libraries get access to the PSA Developer APIs. For example, Crypto tests require access to PSA Crypto APIs. This forms an NSPE binary.
+2. Load the NSPE binary to the Non-secure memory.
+3. Build your SPE binary and load into the Secure memory.
 
-1. Integrate val_nspe.a and pal_nspe.a libraries with your non-secure OS so that these libraries get access to PSA Developer APIs. For example,  Crypto tests would require to get access to PSA Crypto APIs. This will form a NSPE binary.
-2. Load NSPE binary and test_elf_combine.bin to NS memory
-3. Build your SPE binary and load into S memory
+## Test suite execution
+The following steps describe the execution flow before the test execution: <br />
 
-## Test Suite Execution
-The following steps describe the execution flow prior to the start of test execution: <br />
-
-1. The target platform must load above binaries into appropriate memory. <br />
-3. Upon booting firmware and non-secure OS, the SUT - boot software would give control to the test suite entry point- *void val_entry(void);* as an non-secure application entry point. <br />
+1. The target platform must load the above binaries into appropriate memory. <br />
+3. Upon booting firmware and Non-secure OS, the SUT boot software gives control to the test suite entry point void **val_entry(void);** as an Non-secure application entry point. <br />
 4. The tests are executed sequentially in a loop in the test_dispatcher function. <br />
+
+For details on test suite integration, refer to the **Integrating the test suite with the SUT** section of [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf).
 
 ## License
 
@@ -94,4 +88,3 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 --------------
 
 *Copyright (c) 2018-2019, Arm Limited and Contributors. All rights reserved.*
-

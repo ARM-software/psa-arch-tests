@@ -56,7 +56,7 @@ val_status_t val_uart_init(void)
               - data     : Value for format specifier
     @return   - val_status_t
 **/
-val_status_t val_print(print_verbosity_t verbosity, char *string, uint32_t data)
+val_status_t val_print(print_verbosity_t verbosity, char *string, int32_t data)
 {
     if ((is_uart_init_done == 0) || (verbosity < VERBOSE))
     {

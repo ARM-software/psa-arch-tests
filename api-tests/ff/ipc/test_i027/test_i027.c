@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 #include "val_target.h"
 #else
 #include "val_client_defs.h"
-#include "val_partition_common.h"
+#include "val_service_defs.h"
 #endif
 
 #include "test_i027.h"
@@ -39,31 +39,29 @@ int32_t client_test_psa_drop_connection(security_t caller)
    boot_state_t       boot_state;
 
    val->print(PRINT_TEST,
-            "[Check1] Test PSA_DROP_CONNECTION\n", 0);
+            "[Check 1] Test connection termination at PSA_IPC_CALL\n", 0);
 
-   /* Test algorithm:
+   /*
+    * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
+    * PROGRAMMER ERROR could be either to return appropriate status code or panic the caller.
+    * When a Secure Partition panics, the SPE cannot continue normal execution, as defined
+    * in this specification. The behavior of the SPM following a Secure Partition panic is
+    * IMPLEMENTATION DEFINED- Arm recommends that the SPM causes the system to restart in
+    * this situation. Refer PSA-FF for more information on panic.
+    * For the cases where, SPM cannot capable to reboot the system (just hangs or power down),
+    * a watchdog timer set by val_test_init can reboot the system on timeout event. This will
+    * tests continuity and able to jump to next tests. Therefore, each test who checks for
+    * PROGRAMMER ERROR condition, expects system to get reset either by SPM or watchdog set by
+    * the test harness function.
     *
-    * RoT service will terminate the connection by completing the message with a call
-    * to psa_reply() using the status code PSA_DROP_CONNECTION.
+    * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
+    * timeout entries available in target.cfg.
     *
-    * The SPM can implement the required PSA_DROP_CONNECTION behavior in different ways:
-    *
-    * 1. Return PSA_DROP_CONNECTION to the client from the faulty psa_call() and mark the
-    *    SPM connection object so that all future calls to psa_call() on this connection are
-    *    immediately failed with PSA_DROP_CONNECTION. And SPM must deliver a PSA_IPC_DISCONNECT
-    *    message for the connection to the RoT Service directly after receipt of the
-    *    PSA_DROP_CONNECTION completion to allow connection resources within the RoT Service
-    *    to be released.
-    *
-    * 2. Terminate the client task and restart if appropriate for the system
-    *
-    *
-    * If SPM implementation happens to be to first case, the test will expect psa_call to return
-    * PSA_DROP_CONNECTION for every future call to psa_call on the connection
-    *
-    * If SPM implementation happens to be second case, test will expect does not return behaviour
-    * for executed psa_call API
-   */
+    * To decide, a reboot happened as intended by test scenario or it happended
+    * due to other reasons, test is setting a boot signature into non-volatile memory before and
+    * after targeted test check. After a reboot, these boot signatures are being read by the
+    * VAL APIs to decide test status.
+    */
 
    handle = psa->connect(SERVER_CONNECTION_DROP_SID, 1);
    if (handle < 0)
@@ -72,9 +70,7 @@ int32_t client_test_psa_drop_connection(security_t caller)
        return VAL_STATUS_INVALID_HANDLE;
    }
 
-   /* Setting boot flag to BOOT_EXPECTED_* to help error recovery if SPM behaviour
-    * matches with 2nd case
-    */
+   /* Setting boot.state before test check */
    boot_state = (caller == NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
    if (val->set_boot_flag(boot_state))
    {
@@ -84,36 +80,49 @@ int32_t client_test_psa_drop_connection(security_t caller)
 
    status_of_call =  psa->call(handle, NULL, 0, NULL, 0);
 
+   /*
+    * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether
+    * a PROGRAMMER ERROR will panic or return PSA_ERROR_PROGRAMMER_ERROR.
+    * For SPE caller, it must panic.
+    */
+   if (caller == NONSECURE && status_of_call == PSA_ERROR_PROGRAMMER_ERROR)
+   {
+       /* Resetting boot.state to catch unwanted reboot */
+       if (val->set_boot_flag(BOOT_NOT_EXPECTED))
+       {
+           val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+           return VAL_STATUS_ERROR;
+       }
+
+       val->print(PRINT_DEBUG, "\tRecieved PSA_ERROR_PROGRAMMER_ERROR\n", 0);
+
+       /* If this call returns PSA_ERROR_PROGRAMMER_ERROR,
+        * when a valid connection handle was provided, then
+        * all subsequent calls to psa_call() with the same connection
+        * handle will immediately return PSA_ERROR_PROGRAMMER_ERROR.
+        */
+       status_of_call =  psa->call(handle, NULL, 0, NULL, 0);
+       if (status_of_call != PSA_ERROR_PROGRAMMER_ERROR)
+       {
+           status = VAL_STATUS_SPM_FAILED;
+           val->print(PRINT_ERROR,
+           "\tCall should have returned PSA_ERROR_PROGRAMMER_ERROR. Status = 0x%x\n",
+           status_of_call);
+       }
+       psa->close(handle);
+       return status;
+   }
+
+   /* If PROGRAMMER ERROR results into panic then control shouldn't have reached here */
+   val->print(PRINT_ERROR, "\tCall should failed but succeed\n", 0);
+
    /* Resetting boot.state to catch unwanted reboot */
-   status = val->set_boot_flag(BOOT_NOT_EXPECTED);
-   if (VAL_ERROR(status))
+   if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
    {
        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
-       goto exit;
+       return VAL_STATUS_ERROR;
    }
 
-   /* Case 1 implementation */
-   if (status_of_call == PSA_DROP_CONNECTION)
-   {
-        val->print(PRINT_DEBUG, "\tRecieved PSA_DROP_CONNECTION\n", 0);
-
-        status_of_call =  psa->call(handle, NULL, 0, NULL, 0);
-        if (status_of_call != PSA_DROP_CONNECTION)
-        {
-            status = VAL_STATUS_SPM_FAILED;
-            val->print(PRINT_ERROR,
-                "\tCall should have returned PSA_DROP_CONNECTION. Status = 0x%x\n", status_of_call);
-        }
-   }
-   /* If implementation is case 2, control shouldn't have come here*/
-   else
-   {
-        /* psa_call should hang and control shouldn't have come here */
-        status = VAL_STATUS_SPM_FAILED;
-        val->print(PRINT_ERROR, "\tCall should failed but successed\n", 0);
-   }
-
-exit:
    psa->close(handle);
-   return status;
+   return VAL_STATUS_SPM_FAILED;
 }

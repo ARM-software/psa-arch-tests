@@ -65,10 +65,10 @@ static void pal_uart_cmsdk_putc(uint8_t c)
     @param    - str      : Input String
               - data     : Value for format specifier
 **/
-void pal_cmsdk_print(char *str, uint32_t data)
+void pal_cmsdk_print(char *str, int32_t data)
 {
-    uint8_t j, buffer[16];
-    int8_t  i = 0;
+    int8_t  j, buffer[16];
+    int8_t  i = 0, is_neg = 0;
 
     for (; *str != '\0'; ++str)
     {
@@ -77,6 +77,12 @@ void pal_cmsdk_print(char *str, uint32_t data)
             ++str;
             if (*str == 'd')
             {
+                if (data < 0)
+                {
+                    data = -(data);
+                    is_neg = 1;
+                }
+
                 while (data != 0)
                 {
                     j         = data % 10;
@@ -84,6 +90,9 @@ void pal_cmsdk_print(char *str, uint32_t data)
                     buffer[i] = j + 48;
                     i        += 1;
                 }
+
+                if (is_neg)
+                    buffer[i++] = '-';
             }
             else if (*str == 'x' || *str == 'X')
             {
@@ -111,4 +120,40 @@ void pal_cmsdk_print(char *str, uint32_t data)
             pal_uart_cmsdk_putc(*str);
         }
     }
+}
+
+/**
+    @brief    - This function checks for TX interrupt triggered or not
+**/
+static int pal_uart_cmsdk_is_tx_irq_triggerd(void)
+{
+    return (((uart_t *) g_uart)->INTSTATUS & CMSDK_UART_INTSTATUS_TXIRQ_Msk);
+}
+
+/**
+    @brief    - This function triggers the UART TX interrupt
+**/
+void pal_uart_cmsdk_generate_irq(void)
+{
+    /* Enable TX interrupt */
+    ((uart_t *) g_uart)->CTRL |= CMSDK_UART_CTRL_TXIRQEN_Msk;
+
+    /* Fill the TX buffer to generate TX IRQ */
+    pal_uart_cmsdk_putc(' ');
+    pal_uart_cmsdk_putc(' ');
+
+    /* Loop until TX interrupt trigger */
+    while (!pal_uart_cmsdk_is_tx_irq_triggerd());
+}
+
+/**
+    @brief    - This function disable the UART TX interrupt
+**/
+void pal_uart_cmsdk_disable_irq(void)
+{
+    /* Clear TX interrupt */
+    ((uart_t *) g_uart)->INTCLEAR |= CMSDK_UART_INTCLEAR_TXIRQ_Msk;
+
+    /* Disable TX interrupt */
+    ((uart_t *) g_uart)->CTRL &= ~CMSDK_UART_CTRL_TXIRQEN_Msk;
 }

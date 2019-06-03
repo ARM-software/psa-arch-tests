@@ -64,7 +64,7 @@ typedef enum _SOC_PERIPHERAL_CONFIG_ID_ {
 typedef enum _MEMORY_CONFIG_ID_ {
   MEMORY_NVMEM                    = 0x2,
   MEMORY_NSPE_MMIO                = 0x3,
-  MEMORY_CLIENT_PARTITION_MMIO    = 0x4,
+  MEMORY_SERVER_PARTITION_MMIO    = 0x4,
   MEMORY_DRIVER_PARTITION_MMIO    = 0x5,
 } memory_cfg_id_t;
 
@@ -82,7 +82,7 @@ typedef enum _COMPONENT_GROUPING_{
   WATCHDOG                 = GROUP_SOC_PERIPHERAL,
   NVMEM                    = GROUP_MEMORY,
   NSPE_MMIO                = GROUP_MEMORY,
-  CLIENT_PARTITION_MMIO    = GROUP_MEMORY,
+  SERVER_PARTITION_MMIO    = GROUP_MEMORY,
   DRIVER_PARTITION_MMIO    = GROUP_MEMORY,
   BOOT                     = GROUP_MISCELLANEOUS,
   DUT                      = GROUP_MISCELLANEOUS,
@@ -195,11 +195,15 @@ typedef struct _MISCELLANEOUS_INFO_DESC_ {
     addr_t                  ns_start_addr_of_combine_test_binary;
     is_available_t          combine_test_binary_in_ram;
     addr_t                  ns_test_addr;
+    is_available_t          sp_heap_mem_supp;
 } miscellaneous_desc_t;
 
 /*val target config read apis */
+#ifdef VAL_NSPE_BUILD
 STATIC_DECLARE val_status_t val_target_get_config(cfg_id_t cfg_id, uint8_t **data, uint32_t *size);
 STATIC_DECLARE val_status_t val_target_cfg_get_next(void **blob);
-STATIC_DECLARE val_status_t val_target_get_cfg_blob(cfg_id_t cfg_id, uint8_t **data, uint32_t *size);
+STATIC_DECLARE val_status_t val_target_get_cfg_blob(cfg_id_t cfg_id, uint8_t **data,
+                                                    uint32_t *size);
 STATIC_DECLARE val_status_t val_target_get_config(cfg_id_t cfg_id, uint8_t **data, uint32_t *size);
+#endif
 #endif

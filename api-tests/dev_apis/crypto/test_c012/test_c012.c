@@ -45,6 +45,8 @@ int32_t psa_hash_update_test(security_t caller)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
+
+        /* Initialize the hash structure */
         memset(&operation, 0, sizeof(operation));
 
         /* Setting up the watchdog timer for each check */
@@ -72,7 +74,7 @@ int32_t psa_hash_update_invalid_handle(security_t caller)
 {
     psa_hash_operation_t    operation;
     uint8_t                 input[] = "Hello World";
-    size_t                  input_length = sizeof(input)/sizeof(input[0]);
+    size_t                  input_length = sizeof(input);
     int32_t                 status;
 
     /* Initialize the PSA crypto library*/
@@ -81,6 +83,8 @@ int32_t psa_hash_update_invalid_handle(security_t caller)
 
     val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
     val->print(PRINT_TEST, "Test psa_hash_update without hash setup\n", 0);
+
+    /* Initialize the hash structure */
     memset(&operation, 0, sizeof(operation));
 
     /* Setting up the watchdog timer for each check */
@@ -102,13 +106,13 @@ int32_t psa_hash_update_with_completed_handle(security_t caller)
 {
     psa_hash_operation_t    operation;
     uint8_t                 input[] = {0xbd};
-    size_t                  input_length = sizeof(input)/sizeof(input[0]);
+    size_t                  input_length = sizeof(input);
     psa_algorithm_t         alg = PSA_ALG_SHA_256;
     uint8_t                 hash[] = {0x68, 0x32, 0x57, 0x20, 0xAA, 0xBD, 0x7C, 0x82, 0xF3, 0x0F,
                                       0x55, 0x4B, 0x31, 0x3D, 0x05, 0x70, 0xC9, 0x5A, 0xCC, 0xBB,
                                       0x7D, 0xC4, 0xB5, 0xAA, 0xE1, 0x12, 0x04, 0xC0, 0x8F, 0xFE,
                                       0x73, 0x2B};
-    size_t                  hash_length = sizeof(hash)/sizeof(hash[0]);
+    size_t                  hash_length = sizeof(hash);
     int32_t                 status;
 
     /* Initialize the PSA crypto library*/

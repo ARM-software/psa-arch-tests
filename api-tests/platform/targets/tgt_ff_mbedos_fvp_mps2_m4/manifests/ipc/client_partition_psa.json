@@ -3,11 +3,9 @@
   "name": "CLIENT_PARTITION",
   "type": "APPLICATION-ROT",
   "priority": "NORMAL",
-  "id": "0x00000001",
   "description": "Client partition executing client test func from SPE",
   "entry_point": "client_main",
   "stack_size": "0x400",
-  "heap_size": "0x100",
   "services": [{
       "name": "CLIENT_TEST_DISPATCHER_SID",
       "sid": "0x0000FA01",
@@ -20,7 +18,7 @@
   "dependencies": [
     "DRIVER_UART_SID",
     "DRIVER_NVMEM_SID",
-    "TEST_INTR_SID",
+    "DRIVER_TEST_SID",
     "SERVER_TEST_DISPATCHER_SID",
     "SERVER_UNSPECIFED_MINOR_V_SID",
     "SERVER_STRICT_MINOR_VERSION_SID",
@@ -35,10 +33,5 @@
       "size": "0x20",
       "permission": "READ-WRITE"
     }
-   ],
-  "linker_pattern": {
-    "object_list": [
-    "client_partition.a"
-    ]
-  }
+   ]
 }

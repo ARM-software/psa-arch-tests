@@ -25,6 +25,7 @@ void client_main(void)
     psa_signal_t    signals = 0;
     val_status_t    status, test_status;
     psa_msg_t       msg = {0};
+    test_info_t     test_info;
 
     while (1)
     {
@@ -40,7 +41,7 @@ void client_main(void)
                     if (test_data != 0)
                     {
                         val_print(PRINT_ERROR, "must clear previous dispatcher connection\n", 0);
-                        psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
+                        psa_reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
                     }
                     else
                     {
@@ -56,7 +57,7 @@ void client_main(void)
                     }
                     if (VAL_ERROR(status))
                     {
-                        psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
+                        psa_reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
                         break;
                     }
 
@@ -66,8 +67,10 @@ void client_main(void)
 
                         val_print(PRINT_INFO, "In client part, test-id %d\n",
                                                     GET_TEST_NUM(test_data));
+                        test_info.test_num = GET_TEST_NUM(test_data);
+                        test_info.block_num = GET_BLOCK_NUM(test_data);
                         /* Execute client test func from secure*/
-                        test_status = val_execute_secure_tests(GET_TEST_NUM(test_data),
+                        test_status = val_execute_secure_tests(test_info,
                                             client_ipc_test_list[GET_TEST_NUM(test_data)]);
                     }
                     else if (GET_ACTION_NUM(test_data) == TEST_RETURN_RESULT)
@@ -77,7 +80,7 @@ void client_main(void)
                     }
                     else
                     {
-                        psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
+                        psa_reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
                     }
                     break;
                 case PSA_IPC_DISCONNECT:
@@ -94,7 +97,7 @@ void client_main(void)
         /* Server_partition requests client to connect to SERVER_SECURE_CONNECT_ONLY_SID */
         else if (signals & PSA_DOORBELL)
         {
-            if (psa_connect(SERVER_SECURE_CONNECT_ONLY_SID, 2) != PSA_CONNECTION_REFUSED)
+            if (psa_connect(SERVER_SECURE_CONNECT_ONLY_SID, 2) != PSA_ERROR_CONNECTION_REFUSED)
             {
                val_print(PRINT_ERROR, "psa_connect failed \n", 0);
             }

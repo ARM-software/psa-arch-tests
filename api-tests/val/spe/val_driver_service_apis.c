@@ -17,7 +17,7 @@
 
 
 #include "val_driver_service_apis.h"
-#include "val/common/val_target.c"
+#include "val_target.c"
 
 print_verbosity_t  g_print_level = PRINT_INFO;
 static int is_uart_init_done = 0;
@@ -39,10 +39,10 @@ val_status_t val_uart_init_sf(addr_t uart_base_addr)
     @brief     - This function parses the input string and writes byte by byte to
                  print the input string
     @param     - pointer         : Input String
-               - data           : Value for Format specifier
+               - data            : Value for Format specifier
     @return    - error status
  */
-val_status_t val_print_sf(char *string, uint32_t data)
+val_status_t val_print_sf(char *string, int32_t data)
 {
     if (is_uart_init_done == 1)
     {
@@ -198,4 +198,48 @@ val_status_t val_init_driver_memory(void)
    memset((uint32_t *)memory_desc->start, 0, (memory_desc->end - memory_desc->start + 1));
 
    return VAL_STATUS_SUCCESS;
+}
+
+/**
+    @brief    - This function returns the driver reserved mmio region base
+    @param    - base pointer
+    @return   - val_status_t
+**/
+val_status_t val_get_driver_mmio_addr(addr_t *base_addr)
+{
+   val_status_t     status;
+   memory_desc_t   *memory_desc;
+
+   status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
+                                  MEMORY_DRIVER_PARTITION_MMIO, 0),
+                                  (uint8_t **)&memory_desc,
+                                  (uint32_t *)sizeof(memory_desc_t));
+   if (VAL_ERROR(status))
+   {
+        return status;
+   }
+
+   *base_addr = memory_desc->start;
+   return VAL_STATUS_SUCCESS;
+}
+
+/**
+    @brief   - Trigger interrupt for irq signal assigned to driver partition
+               before return to caller.
+    @param   - void
+    @return  - void
+**/
+void val_generate_interrupt(void)
+{
+    pal_generate_interrupt();
+}
+
+/**
+    @brief   - Disable interrupt that was generated using val_generate_interrupt API.
+    @param   - void
+    @return  - void
+**/
+void val_disable_interrupt(void)
+{
+    pal_disable_interrupt();
 }

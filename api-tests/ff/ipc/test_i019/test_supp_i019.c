@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,13 @@
  * limitations under the License.
 **/
 
-#include "val/common/val_client_defs.h"
-#include "val/spe/val_partition_common.h"
+#include "val_client_defs.h"
+#include "val_service_defs.h"
+
+#define val CONCAT(val,_server_sp)
+#define psa CONCAT(psa,_server_sp)
+extern val_api_t *val;
+extern psa_api_t *psa;
 
 int32_t server_test_psa_set_rhandle_with_null_handle(void);
 
@@ -30,43 +35,64 @@ int32_t server_test_psa_set_rhandle_with_null_handle(void)
 {
     psa_msg_t   msg = {0};
     int32_t     status = VAL_STATUS_SUCCESS;
-    int         *num = NULL;
+    int         num;
 
-    status = val_process_connect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
-    if (val_err_check_set(TEST_CHECKPOINT_NUM(201), status))
+   /*
+    * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
+    * PROGRAMMER ERROR could be either to return appropriate status code or panic the caller.
+    * When a Secure Partition panics, the SPE cannot continue normal execution, as defined
+    * in this specification. The behavior of the SPM following a Secure Partition panic is
+    * IMPLEMENTATION DEFINED- Arm recommends that the SPM causes the system to restart in
+    * this situation. Refer PSA-FF for more information on panic.
+    * For the cases where, SPM cannot capable to reboot the system (just hangs or power down),
+    * a watchdog timer set by val_test_init can reboot the system on timeout event. This will
+    * tests continuity and able to jump to next tests. Therefore, each test who checks for
+    * PROGRAMMER ERROR condition, expects system to get reset either by SPM or watchdog set by
+    * the test harness function.
+    *
+    * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
+    * timeout entries available in target.cfg.
+    *
+    * To decide, a reboot happened as intended by test scenario or it happended
+    * due to other reasons, test is setting a boot signature into non-volatile memory before and
+    * after targeted test check. After a reboot, these boot signatures are being read by the
+    * VAL APIs to decide test status.
+    */
+
+    status = val->process_connect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
     {
-        psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
+        psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
         return status;
     }
 
-    /* Set boot flag to BOOT_EXPECTED_* to indicate- test is targeting
-    fatal error condition and test will expect error recovery to happen */
-    status = val_set_boot_flag(BOOT_EXPECTED_NS);
-    if (val_err_check_set(TEST_CHECKPOINT_NUM(202), status))
+    /* Setting boot.state before test check */
+    status = val->set_boot_flag(BOOT_EXPECTED_NS);
+    if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
-        val_print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
-        psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
+        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+        psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
         return status;
     }
 
-    /*Call psa_set_rhandle with PSA_NULL_HANDLE. Call shouldn't return*/
-    *num = 5;
-    psa_set_rhandle(PSA_NULL_HANDLE, num);
+    /* Call psa_set_rhandle with PSA_NULL_HANDLE. Call should panic */
+    num = 5;
+    psa->set_rhandle(PSA_NULL_HANDLE, &num);
 
     /* shouldn't have reached here */
-    val_print(PRINT_ERROR,
-                "\tpsa_set_rhandle with NULL handle should failed but successed\n", 0);
+    val->print(PRINT_ERROR,
+                "\tpsa_set_rhandle with NULL handle should failed but succeed\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
-    status = val_set_boot_flag(BOOT_EXPECTED_BUT_FAILED);
-    if (val_err_check_set(TEST_CHECKPOINT_NUM(203), status))
+    status = val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED);
+    if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
     {
-        val_print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
         return status;
     }
 
     status = VAL_STATUS_SPM_FAILED;
-    val_err_check_set(TEST_CHECKPOINT_NUM(204), status);
-    psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
+    val->err_check_set(TEST_CHECKPOINT_NUM(204), status);
+    psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
     return status;
 }

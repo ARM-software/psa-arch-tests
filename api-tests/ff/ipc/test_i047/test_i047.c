@@ -20,7 +20,7 @@
 #include "val_target.h"
 #else
 #include "val_client_defs.h"
-#include "val_partition_common.h"
+#include "val_service_defs.h"
 #endif
 
 #include "test_i047.h"
@@ -36,7 +36,7 @@ int32_t client_test_psa_get_with_invalid_msg_pointer(security_t caller)
    psa_handle_t       handle = 0;
 
    val->print(PRINT_TEST,
-            "[Check1] Test psa_get with invalid msg pointer\n", 0);
+            "[Check 1] Test psa_get with invalid msg pointer\n", 0);
 
    handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
    if (handle > 0)
@@ -45,7 +45,7 @@ int32_t client_test_psa_get_with_invalid_msg_pointer(security_t caller)
    }
 
    /* Expectation is server test should hang and control shouldn't have come here */
-   val->print(PRINT_ERROR, "\tpsa_connect should failed but successed\n", 0);
+   val->print(PRINT_ERROR, "\tpsa_connect should failed but succeed\n", 0);
 
    (void)(handle);
    return VAL_STATUS_SPM_FAILED;

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,13 @@
  * limitations under the License.
 **/
 
-#include "val/common/val_client_defs.h"
-#include "val/spe/val_partition_common.h"
+#include "val_client_defs.h"
+#include "val_service_defs.h"
+
+#define val CONCAT(val,_server_sp)
+#define psa CONCAT(psa,_server_sp)
+extern val_api_t *val;
+extern psa_api_t *psa;
 
 int32_t server_test_psa_framework_version(void);
 int32_t server_test_psa_version(void);
@@ -30,12 +35,12 @@ server_test_t test_i001_server_tests_list[] = {
 
 int32_t server_test_psa_framework_version(void)
 {
-    val_err_check_set(TEST_CHECKPOINT_NUM(201), VAL_STATUS_SUCCESS);
+    val->err_check_set(TEST_CHECKPOINT_NUM(201), VAL_STATUS_SUCCESS);
     return VAL_STATUS_SUCCESS;
 }
 
 int32_t server_test_psa_version(void)
 {
-    val_err_check_set(TEST_CHECKPOINT_NUM(202), VAL_STATUS_SUCCESS);
+    val->err_check_set(TEST_CHECKPOINT_NUM(202), VAL_STATUS_SUCCESS);
     return VAL_STATUS_SUCCESS;
 }

@@ -78,10 +78,10 @@
  *
  * Comment macros to disable the types
  */
-#define ARCH_TEST_DES
-#define ARCH_TEST_DES_1KEY
-#define ARCH_TEST_DES_2KEY
-#define ARCH_TEST_DES_3KEY
+//#define ARCH_TEST_DES
+//#define ARCH_TEST_DES_1KEY
+//#define ARCH_TEST_DES_2KEY
+//#define ARCH_TEST_DES_3KEY
 
 /**
  * \def  ARCH_TEST_RAW
@@ -104,7 +104,7 @@
  *
  * Enable the ARC4 key type.
  */
-#define ARCH_TEST_ARC4
+//#define ARCH_TEST_ARC4
 
 /**
  * \def ARCH_TEST_CIPER_MODE_CTR
@@ -227,21 +227,21 @@
  *
  * Comment macros to disable the types
  */
-#define ARCH_TEST_MD2
-#define ARCH_TEST_MD4
-#define ARCH_TEST_MD5
-#define ARCH_TEST_RIPEMD160
+//#define ARCH_TEST_MD2
+//#define ARCH_TEST_MD4
+//#define ARCH_TEST_MD5
+//#define ARCH_TEST_RIPEMD160
 #define ARCH_TEST_SHA1
 #define ARCH_TEST_SHA224
 #define ARCH_TEST_SHA256
 #define ARCH_TEST_SHA384
 #define ARCH_TEST_SHA512
-#define ARCH_TEST_SHA512_224
-#define ARCH_TEST_SHA512_256
-#define ARCH_TEST_SHA3_224
-#define ARCH_TEST_SHA3_256
-#define ARCH_TEST_SHA3_384
-#define ARCH_TEST_SHA3_512
+//#define ARCH_TEST_SHA512_224
+//#define ARCH_TEST_SHA512_256
+//#define ARCH_TEST_SHA3_224
+//#define ARCH_TEST_SHA3_256
+//#define ARCH_TEST_SHA3_384
+//#define ARCH_TEST_SHA3_512
 
 /**
  * \def ARCH_TEST_HKDF

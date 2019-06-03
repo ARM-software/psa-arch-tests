@@ -39,13 +39,6 @@ void test_entry(val_api_t *val_api, psa_api_t *psa_api)
         goto test_exit;
     }
 
-    /* Execute list of tests available in test[num]_client_tests_list from Non-secure side*/
-    status = val->execute_non_secure_tests(TEST_NUM, test_i054_client_tests_list, TRUE);
-    if (VAL_ERROR(status))
-    {
-        goto test_exit;
-    }
-
     /* Switch to secure side (client_partition.c) and execute list of tests available in
     test[num]_client_tests_list from Secure side */
     status = val->switch_to_secure_client(TEST_NUM);

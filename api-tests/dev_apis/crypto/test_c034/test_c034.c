@@ -92,11 +92,16 @@ int32_t psa_cipher_generate_iv_test(security_t caller)
             /* Abort a cipher operation */
             status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+
+            /* Destroy the key */
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+
             continue;
         }
 
         /* Check that if generated iv length match the expected length */
-        TEST_ASSERT_EQUAL(iv_length, check1[i].expected_iv_length, TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_EQUAL(iv_length, check1[i].expected_iv_length, TEST_CHECKPOINT_NUM(10));
 
         iv_sum = 0;
         for (j = 0; j < iv_length; j++)
@@ -105,18 +110,22 @@ int32_t psa_cipher_generate_iv_test(security_t caller)
         }
 
         /* Check that if generated iv are zero */
-        TEST_ASSERT_NOT_EQUAL(iv_sum, 0, TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_NOT_EQUAL(iv_sum, 0, TEST_CHECKPOINT_NUM(11));
 
         /* Generating an IV for a symmetric encryption operation using the same operator
          * should fail
          */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_GENERATE_IV, &operation, iv,
                     check1[i].iv_size, &iv_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(11));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(12));
 
         /* Abort a cipher operation */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(13));
+
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(14));
     }
 
     return VAL_STATUS_SUCCESS;

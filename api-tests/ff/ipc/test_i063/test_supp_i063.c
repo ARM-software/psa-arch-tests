@@ -15,8 +15,13 @@
  * limitations under the License.
 **/
 
-#include "val/common/val_client_defs.h"
-#include "val/spe/val_partition_common.h"
+#include "val_client_defs.h"
+#include "val_service_defs.h"
+
+#define val CONCAT(val,_server_sp)
+#define psa CONCAT(psa,_server_sp)
+extern val_api_t *val;
+extern psa_api_t *psa;
 
 int32_t server_test_psa_wait_signal_mask(void);
 
@@ -34,68 +39,70 @@ int32_t server_test_psa_wait_signal_mask(void)
     psa_signal_t    signal_mask = (SERVER_UNSPECIFED_MINOR_V_SIG | SERVER_RELAX_MINOR_VERSION_SIG);
 
     /* Debug print */
-    val_err_check_set(TEST_CHECKPOINT_NUM(211), VAL_STATUS_SUCCESS);
+    val->err_check_set(TEST_CHECKPOINT_NUM(211), VAL_STATUS_SUCCESS);
 
-    /* Notify client partition to make SERVER_SECURE_CONNECT_ONLY_SID connection request.
-     * This connection request act as irritator to psa_wait(signal_mask) call and it is used
+    /*
+     * Notify client partition to make SERVER_SECURE_CONNECT_ONLY_SID connection request.
+     * This connection request act as irritator to psa->wait(signal_mask) call and it is used
      * to cover the rule - Signals that are not in signal_mask should be ignored by psa_wait.
      * This means, during the following while loop, returned signal vaule should not be
      * SERVER_SECURE_CONNECT_ONLY_SIG as this signal is not part of signal_mask.
      */
-    psa_notify(CLIENT_PARTITION);
+    psa->notify(CLIENT_PARTITION);
 
     while (loop_cnt != 0)
     {
-         signals = psa_wait(signal_mask, PSA_BLOCK);
+         signals = psa->wait(signal_mask, PSA_BLOCK);
 
-         /* Rule - Returned signals value must be subset signals indicated in the signal_mask.
-          *
+         /*
+          * Rule - Returned signals value must be subset signals indicated in the signal_mask.
           * This mean signal value should be either SERVER_UNSPECIFED_MINOR_V_SIG
           * or SERVER_RELAX_MINOR_VERSION_SIG.
           */
          if (((signals & signal_mask) == 0) &&
              ((signals | signal_mask) != signal_mask))
          {
-             val_print(PRINT_ERROR,
+             val->print(PRINT_ERROR,
                      "psa_wait-1 returned with invalid signal value = 0x%x\n", signals);
              return VAL_STATUS_ERROR;
          }
          else if (signals & SERVER_UNSPECIFED_MINOR_V_SIG)
          {
-             if (psa_get(SERVER_UNSPECIFED_MINOR_V_SIG, &msg) != PSA_SUCCESS)
+             if (psa->get(SERVER_UNSPECIFED_MINOR_V_SIG, &msg) != PSA_SUCCESS)
                  continue;
 
              loop_cnt--;
-             psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
+             psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
          }
          else if (signals & SERVER_RELAX_MINOR_VERSION_SIG)
          {
-             if (psa_get(SERVER_RELAX_MINOR_VERSION_SIG, &msg) != PSA_SUCCESS)
+             if (psa->get(SERVER_RELAX_MINOR_VERSION_SIG, &msg) != PSA_SUCCESS)
                  continue;
 
              loop_cnt--;
-             psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
+             psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
          }
     }
 
     /* Debug print */
-    val_err_check_set(TEST_CHECKPOINT_NUM(212), VAL_STATUS_SUCCESS);
+    val->err_check_set(TEST_CHECKPOINT_NUM(212), VAL_STATUS_SUCCESS);
 
 wait:
-    /* At the end, completes the starved connection
+    /*
+     * At the end, completes the starved connection
      * request of SERVER_SECURE_CONNECT_ONLY_SID.
      */
-    signals = psa_wait(SERVER_SECURE_CONNECT_ONLY_SIG, PSA_BLOCK);
+    signals = psa->wait(SERVER_SECURE_CONNECT_ONLY_SIG, PSA_BLOCK);
     if ((signals & SERVER_SECURE_CONNECT_ONLY_SIG) == 0)
     {
-       val_print(PRINT_ERROR,
+       val->print(PRINT_ERROR,
                 "psa_wait-2 returned with invalid signal value = 0x%x\n", signals);
        return VAL_STATUS_ERROR;
     }
 
-    if (psa_get(SERVER_SECURE_CONNECT_ONLY_SIG, &msg) != PSA_SUCCESS)
+    if (psa->get(SERVER_SECURE_CONNECT_ONLY_SIG, &msg) != PSA_SUCCESS)
         goto wait;
 
-    psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
+    psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
     return VAL_STATUS_SUCCESS;
 }

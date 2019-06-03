@@ -94,18 +94,27 @@ int32_t psa_key_derivation_test(security_t caller)
             /* Abort the generator */
             status = val->crypto_function(VAL_CRYPTO_GENERATOR_ABORT, &generator);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
+
+            /* Destroy the key */
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+
             continue;
         }
 
         /* Retrieve the current capacity of a generator */
         status = val->crypto_function(VAL_CRYPTO_GET_GENERATOR_CAPACITY, &generator, &capacity);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
-        TEST_ASSERT_EQUAL(capacity, check1[i].capacity, TEST_CHECKPOINT_NUM(8));
+        TEST_ASSERT_EQUAL(capacity, check1[i].capacity, TEST_CHECKPOINT_NUM(9));
 
         /* Abort the generator */
         status = val->crypto_function(VAL_CRYPTO_GENERATOR_ABORT, &generator);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
+
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
     }
 
     return VAL_STATUS_SUCCESS;
@@ -141,7 +150,7 @@ int32_t psa_key_derivation_negative_test(security_t caller)
         val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check2[i].usage,
                                                                           check2[i].key_alg);
 
-        val->print(PRINT_TEST, "[Check %d] Test psa_key_derivation with invalid key handle\n",
+        val->print(PRINT_TEST, "[Check %d] Test psa_key_derivation with Invalid key handle\n",
                                                                                  g_test_count++);
         /* Set up a key derivation operation. Using this function to initialize the generate as
          * XOR or PRNG generator initialization is not implemented.
@@ -152,7 +161,7 @@ int32_t psa_key_derivation_negative_test(security_t caller)
                     check2[i].capacity);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(6));
 
-        val->print(PRINT_TEST, "[Check %d] Test psa_key_derivation with zero as key handle\n",
+        val->print(PRINT_TEST, "[Check %d] Test psa_key_derivation with Zero as key handle\n",
                                                                                  g_test_count++);
         /* Set up a key derivation operation. Using this function to initialize the generate as
          * XOR or PRNG generator initialization is not implemented.
@@ -163,7 +172,7 @@ int32_t psa_key_derivation_negative_test(security_t caller)
                     check2[i].capacity);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(7));
 
-        val->print(PRINT_TEST, "[Check %d] Test psa_key_derivation with empty key handle\n",
+        val->print(PRINT_TEST, "[Check %d] Test psa_key_derivation with Empty key handle\n",
                                                                                  g_test_count++);
          /* Allocate a key slot for a transient key */
         status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &empty_key_handle);
@@ -181,7 +190,7 @@ int32_t psa_key_derivation_negative_test(security_t caller)
                     empty_key_handle, check2[i].key_alg, check2[i].salt,
                     check2[i].salt_length, check2[i].label, check2[i].label_length,
                     check2[i].capacity);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_EMPTY_SLOT, TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_DOES_NOT_EXIST, TEST_CHECKPOINT_NUM(10));
     }
 
     return VAL_STATUS_SUCCESS;

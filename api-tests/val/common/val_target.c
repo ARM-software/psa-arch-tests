@@ -18,7 +18,8 @@
 #include "val_target.h"
 #include "target_database.h"
 
-#ifdef USE_RAW_PRINT_FOR_DRIVER_PARTITION
+/* Use raw print for driver partition */
+#ifdef DRIVER_PARTITION_INCLUDE
 #define val_print(x, y, z)                        \
        do {                                       \
            if (x >= VERBOSE)                      \
@@ -26,7 +27,7 @@
        } while(0)
 #else
 __UNUSED STATIC_DECLARE val_status_t val_print
-                        (print_verbosity_t verbosity, char *string, uint32_t data);
+                        (print_verbosity_t verbosity, char *string, int32_t data);
 #endif
 
 /**
@@ -52,7 +53,7 @@ STATIC_DECLARE val_status_t val_target_cfg_get_next(void **blob)
         /* Sanity check signature and version here */
        if ((hdr->version != 1) || (hdr->size == 0))
        {
-            val_print(PRINT_ERROR, "Target config database Error. \n", 0);
+            val_print(PRINT_ERROR, "\tTarget config database Error. \n", 0);
             return VAL_STATUS_ERROR;
         }
         hdr++;
@@ -82,7 +83,7 @@ STATIC_DECLARE val_status_t val_target_get_cfg_blob(cfg_id_t cfg_id, uint8_t **d
     val_status_t    status;
     void            *config_blob = NULL;
 
-    val_print(PRINT_INFO, "Input id is %x \n", cfg_id);
+    val_print(PRINT_INFO, "\tInput id is %x \n", cfg_id);
     do
     {
 
@@ -138,7 +139,7 @@ STATIC_DECLARE val_status_t val_target_get_config(cfg_id_t cfg_id, uint8_t **dat
 
     if ((cfg_id < TARGET_MIN_CFG_ID) || (cfg_id > TARGET_MAX_CFG_ID))
     {
-        val_print(PRINT_ERROR, "Invalid Target data config ID = %x \n", cfg_id);
+        val_print(PRINT_ERROR, "\tInvalid Target data config ID = %x \n", cfg_id);
         return VAL_STATUS_INSUFFICIENT_SIZE;
     }
 
@@ -146,8 +147,8 @@ STATIC_DECLARE val_status_t val_target_get_config(cfg_id_t cfg_id, uint8_t **dat
 
     if (VAL_ERROR(status))
     {
-        val_print(PRINT_ERROR, "\n        Get Config failed with status = %x", status);
-        val_print(PRINT_ERROR, " for cfg_id = %x", cfg_id);
+        val_print(PRINT_ERROR, "\tGet Config failed with status = %x", status);
+        val_print(PRINT_ERROR, " for cfg_id = %x\n", cfg_id);
         return status;
     }
     return VAL_STATUS_SUCCESS;

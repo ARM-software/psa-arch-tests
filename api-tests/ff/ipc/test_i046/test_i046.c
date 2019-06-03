@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 #include "val_target.h"
 #else
 #include "val_client_defs.h"
-#include "val_partition_common.h"
+#include "val_service_defs.h"
 #endif
 
 #include "test_i046.h"
@@ -39,7 +39,7 @@ int32_t client_test_psa_write_with_size_overflow(security_t caller)
    uint8_t            data = 0;
 
    val->print(PRINT_TEST,
-            "[Check1] Test psa_write with size overflow\n", 0);
+            "[Check 1] Test psa_write with size overflow\n", 0);
 
    handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
    if (handle < 0)
@@ -53,7 +53,7 @@ int32_t client_test_psa_write_with_size_overflow(security_t caller)
    status_of_call =  psa->call(handle, NULL, 0, &resp, 1);
 
    /* Expectation is server test should hang and control shouldn't have come here */
-   val->print(PRINT_ERROR, "\tCall should failed but successed\n", 0);
+   val->print(PRINT_ERROR, "\tCall should failed but succeed\n", 0);
 
    status = VAL_STATUS_SPM_FAILED;
 

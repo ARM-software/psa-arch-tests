@@ -255,9 +255,8 @@ static test_data check1[] = {
  224, 28, PSA_SUCCESS
 },
 #endif
-#endif    
+#endif
 };
-
 
 static test_data check2[] = {
 #ifdef ARCH_TEST_CIPER_MODE_CTR

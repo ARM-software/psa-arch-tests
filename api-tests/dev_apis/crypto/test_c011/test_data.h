@@ -114,7 +114,16 @@ static test_data check1[] = {
 },
 #endif
 
+{"Test psa_hash_setup with Invalid hash algorithm\n",
+ PSA_HASH_ALG_INVALID, PSA_ERROR_NOT_SUPPORTED,
+},
+
 {"Test psa_hash_setup with Invalid algorithm\n",
  PSA_ALG_INVALID, PSA_ERROR_INVALID_ARGUMENT,
 },
+
+{"Test psa_hash_setup with CTR algorithm\n",
+ PSA_ALG_CTR, PSA_ERROR_INVALID_ARGUMENT,
+},
+
 };

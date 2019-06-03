@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@
 #include "val_target.h"
 #else
 #include "val_client_defs.h"
-#include "val_partition_common.h"
+#include "val_service_defs.h"
 #endif
 
 #include "test_i003.h"
@@ -43,7 +43,7 @@ int32_t client_test_zero_length_invec(security_t caller)
    psa_handle_t         handle = 0;
    int                  data[4] = {0x11, 0x22};
 
-   val->print(PRINT_TEST, "[Check1] Test zero length invec\n", 0);
+   val->print(PRINT_TEST, "[Check 1] Test zero length invec\n", 0);
 
    if (val->ipc_connect(SERVER_UNSPECIFED_MINOR_V_SID, 1, &handle))
    {
@@ -97,7 +97,7 @@ int32_t client_test_zero_length_outvec(security_t caller)
    psa_handle_t         handle = 0;
    int                  data[4] = {0x11};
 
-   val->print(PRINT_TEST, "[Check2] Test zero length outvec\n", 0);
+   val->print(PRINT_TEST, "[Check 2] Test zero length outvec\n", 0);
 
    if (val->ipc_connect(SERVER_UNSPECIFED_MINOR_V_SID, 1, &handle))
    {
@@ -155,7 +155,7 @@ int32_t client_test_call_read_and_skip(security_t caller)
    uint64_t             data3 = 0x1020304050607080;
    psa_handle_t         handle = 0;
 
-   val->print(PRINT_TEST, "[Check3] Test psa_write, psa_read and psa_skip\n", 0);
+   val->print(PRINT_TEST, "[Check 3] Test psa_write, psa_read and psa_skip\n", 0);
 
    if (val->ipc_connect(SERVER_UNSPECIFED_MINOR_V_SID, 1, &handle))
    {
@@ -192,7 +192,7 @@ int32_t client_test_call_and_write(security_t caller)
                                            2};
    psa_handle_t         handle = 0;
 
-   val->print(PRINT_TEST, "[Check4] Test psa_call and psa_write\n", 0);
+   val->print(PRINT_TEST, "[Check 4] Test psa_call and psa_write\n", 0);
 
    if (val->ipc_connect(SERVER_UNSPECIFED_MINOR_V_SID, 1, &handle))
    {
@@ -248,7 +248,7 @@ int32_t client_test_psa_set_rhandle(security_t caller)
    psa_handle_t       handle = 0;
    int                i = 0;
 
-   val->print(PRINT_TEST, "[Check5] Test psa_set_rhandle API\n", 0);
+   val->print(PRINT_TEST, "[Check 5] Test psa_set_rhandle API\n", 0);
 
     /*rhandle value check when PSA_IPC_CONNECT */
    if (val->ipc_connect(SERVER_UNSPECIFED_MINOR_V_SID, 1, &handle))
@@ -281,7 +281,7 @@ int32_t client_test_overlapping_vectors(security_t caller)
    psa_handle_t       handle = 0;
    uint8_t            data = 0x11, expected_data[] = {0x22, 0x33};
 
-   val->print(PRINT_TEST, "[Check6] Test overlapping vectors\n", 0);
+   val->print(PRINT_TEST, "[Check 6] Test overlapping vectors\n", 0);
 
    if (val->ipc_connect(SERVER_UNSPECIFED_MINOR_V_SID, 1, &handle))
    {

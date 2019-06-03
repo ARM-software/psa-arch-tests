@@ -59,7 +59,13 @@ $(BUILD)/partition/%.o : %.s
 	$(AS) -o $@ $<
 
 client_partition.a:
+ifeq ($(wildcard $(SUITE_OUT)/test_i*/.*),)
+	$(AR) $(AR_OPTIONS) $(BUILD)/partition/client_partition.a $(BUILD)/partition/client_partition.o $(SUITE_OUT)/test*/test_l*_spe.o
+else ifeq ($(wildcard $(SUITE_OUT)/test_l*/.*),)
 	$(AR) $(AR_OPTIONS) $(BUILD)/partition/client_partition.a $(BUILD)/partition/client_partition.o $(SUITE_OUT)/test*/test_i*_spe.o
+else
+	$(AR) $(AR_OPTIONS) $(BUILD)/partition/client_partition.a $(BUILD)/partition/client_partition.o $(SUITE_OUT)/test*/test_i*_spe.o $(SUITE_OUT)/test*/test_l*_spe.o
+endif
 
 server_partition.a:
 	$(AR) $(AR_OPTIONS) $(BUILD)/partition/server_partition.a $(BUILD)/partition/server_partition.o $(SUITE_OUT)/test*/test_supp_*_spe.o
