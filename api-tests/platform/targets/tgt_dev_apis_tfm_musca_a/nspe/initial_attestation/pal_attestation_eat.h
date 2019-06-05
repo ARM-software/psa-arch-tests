@@ -17,16 +17,70 @@
 
 #include "qcbor.h"
 #include "pal_common.h"
+#include "psa/crypto.h"
 
 #define PAL_ATTEST_MIN_ERROR              30
+
+/* NIST P-256 also known as secp256r1 */
+#define P_256                             1
 
 #define COSE_HEADER_PARAM_ALG             1
 #define COSE_HEADER_PARAM_KID             4
 
-#define MANDATORY_CLAIM_WITH_SW_COMP      862
-#define MANDATORY_CLAIM_NO_SW_COMP        926
-#define MANDATORY_SW_COMP                 36
-#define CBOR_ARM_TOTAL_CLAIM_INSTANCE     10
+#define COSE_KEY_COMMON_KTY               1
+#define COSE_KEY_TYPE_EC2                 2
+#define COSE_KEY_PARAM_CRV               -1
+#define COSE_KEY_PARAM_X_COORDINATE      -2
+#define COSE_KEY_PARAM_Y_COORDINATE      -3
+#define COSE_ALGORITHM_ES256             -7
+#define COSE_ALG_SHA256_PROPRIETARY      -72000
+
+/**
+ * The size of X and Y coordinate in 2 parameter style EC public
+ * key. Format is as defined in [COSE (RFC 8152)]
+ * (https://tools.ietf.org/html/rfc8152) and [SEC 1: Elliptic Curve
+ * Cryptography](http://www.secg.org/sec1-v2.pdf).
+ *
+ * This size is well-known and documented in public standards.
+ */
+#define T_COSE_CRYPTO_EC_P256_COORD_SIZE  32
+#define T_COSE_CRYPTO_SHA256_SIZE         32
+
+#define MAX_ENCODED_COSE_KEY_SIZE \
+    1 + /* 1 byte to encode map */ \
+    2 + /* 2 bytes to encode key type */ \
+    2 + /* 2 bytes to encode curve */ \
+    2 * /* the X and Y coordinates at 32 bytes each */ \
+        (T_COSE_CRYPTO_EC_P256_COORD_SIZE + 1 + 2)
+#define USEFUL_BUF_MAKE_STACK_UB UsefulBuf_MAKE_STACK_UB
+
+#define COSE_SIG_CONTEXT_STRING_SIGNATURE1 "Signature1"
+
+/* Private value. Intentionally not documented for Doxygen.
+ * This is the size allocated for the encoded protected headers.  It
+ * needs to be big enough for make_protected_header() to succeed. It
+ * currently sized for one header with an algorithm ID up to 32 bits
+ * long -- one byte for the wrapping map, one byte for the label, 5
+ * bytes for the ID. If this is made accidentially too small, QCBOR will
+ * only return an error, and not overrun any buffers.
+ *
+ * 9 extra bytes are added, rounding it up to 16 total, in case some
+ * other protected header is to be added.
+ */
+#define T_COSE_SIGN1_MAX_PROT_HEADER (1+1+5+9)
+
+/**
+ * This is the size of the first part of the CBOR encoded TBS
+ * bytes. It is around 20 bytes. See create_tbs_hash().
+ */
+#define T_COSE_SIZE_OF_TBS \
+    1 + /* For opening the array */ \
+    sizeof(COSE_SIG_CONTEXT_STRING_SIGNATURE1) + /* "Signature1" */ \
+    2 + /* Overhead for encoding string */ \
+    T_COSE_SIGN1_MAX_PROT_HEADER + /* entire protected headers */ \
+    3 * ( /* 3 NULL bstrs for fields not used */ \
+        1 /* size of a NULL bstr */  \
+    )
 
 /*
  CBOR Label for proprietary header indicating short-circuit
@@ -47,6 +101,8 @@
 #define EAT_CBOR_ARM_LABEL_UEID                 (EAT_CBOR_ARM_RANGE_BASE - 9)
 #define EAT_CBOR_ARM_LABEL_ORIGINATION          (EAT_CBOR_ARM_RANGE_BASE - 10)
 
+#define CBOR_ARM_TOTAL_CLAIM_INSTANCE           10
+
 #define EAT_CBOR_SW_COMPONENT_TYPE              (1u)
 #define EAT_CBOR_SW_COMPONENT_MEASUREMENT       (2u)
 #define EAT_CBOR_SW_COMPONENT_EPOCH             (3u)
@@ -54,6 +110,40 @@
 #define EAT_CBOR_SW_COMPONENT_SIGNER_ID         (5u)
 #define EAT_CBOR_SW_COMPONENT_MEASUREMENT_DESC  (6u)
 
+#define MANDATORY_CLAIM_WITH_SW_COMP           (1 << (EAT_CBOR_ARM_RANGE_BASE                      \
+                                                    - EAT_CBOR_ARM_LABEL_NONCE)              |     \
+                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
+                                                    - EAT_CBOR_ARM_LABEL_UEID)               |     \
+                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
+                                                    - EAT_CBOR_ARM_LABEL_IMPLEMENTATION_ID)  |     \
+                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
+                                                    - EAT_CBOR_ARM_LABEL_CLIENT_ID)          |     \
+                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
+                                                    - EAT_CBOR_ARM_LABEL_SECURITY_LIFECYCLE) |     \
+                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
+                                                    - EAT_CBOR_ARM_LABEL_BOOT_SEED)          |     \
+                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
+                                                    - EAT_CBOR_ARM_LABEL_SW_COMPONENTS))
+
+#define MANDATORY_CLAIM_NO_SW_COMP             (1 << (EAT_CBOR_ARM_RANGE_BASE                      \
+                                                    - EAT_CBOR_ARM_LABEL_NONCE)              |     \
+                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
+                                                    - EAT_CBOR_ARM_LABEL_UEID)               |     \
+                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
+                                                    - EAT_CBOR_ARM_LABEL_IMPLEMENTATION_ID)  |     \
+                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
+                                                    - EAT_CBOR_ARM_LABEL_CLIENT_ID)          |     \
+                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
+                                                    - EAT_CBOR_ARM_LABEL_SECURITY_LIFECYCLE) |     \
+                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
+                                                    - EAT_CBOR_ARM_LABEL_BOOT_SEED)          |     \
+                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
+                                                    - EAT_CBOR_ARM_LABEL_NO_SW_COMPONENTS))
+
+#define MANDATORY_SW_COMP                      (1 << EAT_CBOR_SW_COMPONENT_MEASUREMENT      |     \
+                                                1 << EAT_CBOR_SW_COMPONENT_SIGNER_ID)
+
+#define NULL_USEFUL_BUF_C  NULLUsefulBufC
 
 enum attestation_error_code {
     PAL_ATTEST_SUCCESS = 0,
@@ -61,6 +151,13 @@ enum attestation_error_code {
     PAL_ATTEST_TOKEN_CHALLENGE_MISMATCH,
     PAL_ATTEST_TOKEN_NOT_SUPPORTED,
     PAL_ATTEST_TOKEN_NOT_ALL_MANDATORY_CLAIMS,
+    PAL_ATTEST_HASH_LENGTH_MISMATCH,
+    PAL_ATTEST_HASH_MISMATCH,
+    PAL_ATTEST_HASH_FAIL,
+    PAL_ATTEST_HASH_UNSUPPORTED,
+    PAL_ATTEST_HASH_BUFFER_SIZE,
+    PAL_ATTEST_ERR_PROTECTED_HEADERS,
+    PAL_ATTEST_ERR_SIGN_STRUCT,
     PAL_ATTEST_ERROR,
 };
 

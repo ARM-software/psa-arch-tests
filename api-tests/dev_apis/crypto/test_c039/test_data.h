@@ -167,13 +167,13 @@ static test_data check1[] = {
  128, 1024, PSA_SUCCESS
 },
 
-{"Test psa_asymmetric_encrypt - Small output buffer\n", 5, PSA_KEY_TYPE_RSA_PUBLIC_KEY,
-{0}, 162, PSA_KEY_USAGE_ENCRYPT | PSA_KEY_USAGE_DECRYPT, PSA_ALG_RSA_PKCS1V15_CRYPT,
+{"Test psa_asymmetric_encrypt - Small output buffer\n", 5, PSA_KEY_TYPE_RSA_KEYPAIR,
+{0}, 610, PSA_KEY_USAGE_ENCRYPT | PSA_KEY_USAGE_DECRYPT, PSA_ALG_RSA_PKCS1V15_CRYPT,
 {0}, 0,
 {0xba, 0x78, 0x16, 0xbf, 0x8f, 0x01, 0xcf, 0xea, 0x41, 0x41, 0x40, 0xde, 0x5d,
  0xae, 0x22, 0x23, 0xb0, 0x03, 0x61, 0xa3, 0x96, 0x17, 0x7a, 0x9c, 0xb4, 0x10,
- 0xff, 0x61, 0xf2, 0x00, 0x15, 0xad}, 22, 110,
- 128, 1024, PSA_ERROR_INVALID_ARGUMENT
+ 0xff, 0x61, 0xf2, 0x00, 0x15, 0xad}, 22, 120,
+ 128, 1024, PSA_ERROR_BUFFER_TOO_SMALL
 },
 #endif
 

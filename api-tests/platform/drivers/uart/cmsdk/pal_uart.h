@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,15 @@
 /* CMSDK_UART CTRL Register Definitions */
 #define CMSDK_UART_CTRL_TXEN_Pos          0       /* CMSDK_UART CTRL: TXEN Position */
 #define CMSDK_UART_CTRL_TXEN_Msk         (0x01UL) /* CMSDK_UART CTRL: TXEN Mask */
+#define CMSDK_UART_CTRL_TXIRQEN_Pos       2  /* CMSDK_UART CTRL: TXIRQEN Position */
+#define CMSDK_UART_CTRL_TXIRQEN_Msk       (0x01ul << CMSDK_UART_CTRL_TXIRQEN_Pos)
+                                            /* CMSDK_UART CTRL: TXIRQEN Mask */
+#define CMSDK_UART_INTCLEAR_TXIRQ_Pos  0   /* CMSDK_UART CLEAR: TXIRQ Position */
+#define CMSDK_UART_INTCLEAR_TXIRQ_Msk       (0x01ul << CMSDK_UART_INTCLEAR_TXIRQ_Pos)
+                                            /* CMSDK_UART CLEAR: TXIRQ Mask */
+#define CMSDK_UART_INTSTATUS_TXIRQ_Pos  0   /* CMSDK_UART STATUS: TXIRQ Position */
+#define CMSDK_UART_INTSTATUS_TXIRQ_Msk       (0x01ul << CMSDK_UART_INTSTATUS_TXIRQ_Pos)
+                                            /* CMSDK_UART STATUS: TXIRQ Mask */
 
 /* typedef's */
 typedef struct {
@@ -43,6 +52,8 @@ typedef struct {
 
 /* function prototypes */
 void pal_uart_cmsdk_init(uint32_t uart_base_addr);
-void pal_cmsdk_print(char *str, uint32_t data);
+void pal_cmsdk_print(char *str, int32_t data);
+void pal_uart_cmsdk_generate_irq(void);
+void pal_uart_cmsdk_disable_irq(void);
 
 #endif /* _PAL_UART_CMSDK_H_ */

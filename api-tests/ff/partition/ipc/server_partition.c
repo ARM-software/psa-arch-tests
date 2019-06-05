@@ -17,6 +17,9 @@
 
 #include "server_partition.h"
 
+val_api_t *val_server_sp = &val_api;
+psa_api_t *psa_server_sp = &psa_api;
+
 void server_main(void)
 {
     uint32_t        test_data = 0;
@@ -40,7 +43,7 @@ void server_main(void)
                     if (test_data != 0)
                     {
                         val_print(PRINT_ERROR, "must clear previous dispatcher connection\n", 0);
-                        psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
+                        psa_reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
                     }
                     else
                     {
@@ -56,7 +59,7 @@ void server_main(void)
                     }
                     if (VAL_ERROR(status))
                     {
-                        psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
+                        psa_reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
                         break;
                     }
 
@@ -80,7 +83,7 @@ void server_main(void)
                     }
                     else
                     {
-                        psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
+                        psa_reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
                     }
                     break;
                 case PSA_IPC_DISCONNECT:

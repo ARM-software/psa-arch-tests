@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 
 #include "pal_uart.h"
 
-volatile uint32_t uart;
+volatile uint32_t g_uart;
 
 /**
     @brief    - This function initializes the UART
@@ -25,7 +25,7 @@ volatile uint32_t uart;
 **/
 void pal_uart_pl011_init(uint32_t uart_base_addr)
 {
-    uart = uart_base_addr;
+    g_uart = uart_base_addr;
 }
 
 /**
@@ -33,11 +33,11 @@ void pal_uart_pl011_init(uint32_t uart_base_addr)
 **/
 static int pal_uart_is_tx_empty(void)
 {
-    if ((((uart_gt *)uart)->uartcr & UART_PL011_UATRCR_EN_MASK) &&
+    if ((((uart_t *)g_uart)->uartcr & UART_PL011_UATRCR_EN_MASK) &&
         /* UART is enabled */
-        (((uart_gt *)uart)->uartcr & UART_PL011_UARTCR_TX_EN_MASK) &&
+        (((uart_t *)g_uart)->uartcr & UART_PL011_UARTCR_TX_EN_MASK) &&
         /* Transmit is enabled */
-        ((((uart_gt *)uart)->uartfr & UART_PL011_UARTFR_TX_FIFO_FULL) == 0))
+        ((((uart_t *)g_uart)->uartfr & UART_PL011_UARTFR_TX_FIFO_FULL) == 0))
     {
         return 1;
     }
@@ -50,7 +50,7 @@ static int pal_uart_is_tx_empty(void)
 /**
     @brief    - This function checks for empty TX FIFO and writes to FIFO register
 **/
-static void pal_uart_putc(uint8_t c)
+void pal_uart_putc(uint8_t c)
 {
     const uint8_t pdata = (uint8_t)c;
 
@@ -58,7 +58,7 @@ static void pal_uart_putc(uint8_t c)
     while(!pal_uart_is_tx_empty());
 
     /* write the data (upper 24 bits are reserved) */
-    ((uart_gt *)uart)->uartdr = pdata;
+    ((uart_t *)g_uart)->uartdr = pdata;
 }
 
 /**
@@ -66,10 +66,10 @@ static void pal_uart_putc(uint8_t c)
     @param    - str      : Input String
               - data     : Value for format specifier
 **/
-void pal_uart_pl011_print(char *str, uint32_t data)
+void pal_uart_pl011_print(char *str, int32_t data)
 {
     uint8_t j, buffer[16];
-    int8_t  i = 0;
+    int8_t  i = 0, is_neg = 0;
 
     for (; *str != '\0'; ++str)
     {
@@ -78,6 +78,12 @@ void pal_uart_pl011_print(char *str, uint32_t data)
             ++str;
             if (*str == 'd')
             {
+                if (data < 0)
+                {
+                    data = -(data);
+                    is_neg = 1;
+                }
+
                 while (data != 0)
                 {
                     j         = data % 10;
@@ -85,6 +91,9 @@ void pal_uart_pl011_print(char *str, uint32_t data)
                     buffer[i] = j + 48;
                     i        += 1;
                 }
+
+                if (is_neg)
+                    buffer[i++] = '-';
             }
             else if (*str == 'x' || *str == 'X')
             {
@@ -118,4 +127,44 @@ void pal_uart_pl011_print(char *str, uint32_t data)
             }
         }
     }
+}
+
+/**
+    @brief    - This function checks for TX interrupt triggered or not
+**/
+static int pal_uart_pl011_is_tx_irq_triggerd(void)
+{
+    return (((uart_t *) g_uart)->uartris & UART_PL011_TX_INTR_MASK);
+}
+
+/**
+    @brief    - This function triggers the UART TX interrupt
+**/
+void pal_uart_pl011_generate_irq(void)
+{
+    volatile int bytecount = 32;
+
+    /* Enable TX interrupt */
+    ((uart_t *) g_uart)->uartimsc |= (uint32_t)(UART_PL011_TX_INTR_MASK);
+
+    /* Fill the TX buffer to generate TX IRQ. TX buffer is 16x8 bit wide */
+    do
+    {
+        pal_uart_putc(' ');
+    } while (--bytecount);
+
+    /* Loop until TX interrupt trigger */
+    while (!pal_uart_pl011_is_tx_irq_triggerd());
+}
+
+/**
+    @brief    - This function disable the UART TX interrupt
+**/
+void pal_uart_pl011_disable_irq(void)
+{
+    /* Clear TX interrupt */
+    ((uart_t *) g_uart)->uarticr = (uint32_t)(UART_PL011_TX_INTR_MASK);
+
+    /* Disable TX interrupt */
+    ((uart_t *) g_uart)->uartimsc &= (uint32_t)(~UART_PL011_TX_INTR_MASK);
 }

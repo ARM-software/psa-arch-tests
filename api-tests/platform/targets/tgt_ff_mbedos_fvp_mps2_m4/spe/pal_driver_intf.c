@@ -33,7 +33,7 @@ void pal_uart_init(uint32_t uart_base_addr)
               - data     : Value for format specifier
 **/
 
-void pal_print(char *str, uint32_t data)
+void pal_print(char *str, int32_t data)
 {
   pal_cmsdk_print(str,data);
 
@@ -110,3 +110,23 @@ int pal_wd_timer_is_enabled(addr_t base_addr)
     return (pal_wd_cmsdk_is_enabled(base_addr));
 }
 
+/**
+    @brief   - Trigger interrupt for irq signal assigned to driver partition
+               before return to caller.
+    @param   - void
+    @return  - void
+**/
+void pal_generate_interrupt(void)
+{
+    pal_uart_cmsdk_generate_irq();
+}
+
+/**
+    @brief   - Disable interrupt that was generated using pal_generate_interrupt API.
+    @param   - void
+    @return  - void
+**/
+void pal_disable_interrupt(void)
+{
+    pal_uart_cmsdk_disable_irq();
+}

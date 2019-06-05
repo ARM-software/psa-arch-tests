@@ -115,8 +115,8 @@ int32_t psa_destroy_key_test(security_t caller)
                     PSA_SUCCESS,
                     TEST_CHECKPOINT_NUM(6));
 
+        /* Check that metadata matches with given data */
         TEST_ASSERT_EQUAL(key_type, check1[i].key_type, TEST_CHECKPOINT_NUM(7));
-
         TEST_ASSERT_EQUAL(bits, check1[i].expected_bit_length, TEST_CHECKPOINT_NUM(8));
 
         /* Destroy a key and restore the slot to its default state */

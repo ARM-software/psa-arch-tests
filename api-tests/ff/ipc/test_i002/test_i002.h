@@ -28,7 +28,7 @@
 #define psa CONCAT(psa,_client_sp)
 #endif
 
-#define CONNECT_LIMIT 20
+#define CONNECT_LIMIT 50
 #define CONNECT_NUM 2
 
 extern val_api_t *val;

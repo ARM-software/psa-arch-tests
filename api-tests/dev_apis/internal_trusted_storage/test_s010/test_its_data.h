@@ -29,7 +29,7 @@ typedef struct {
 
 static const test_data s010_data[] = {
 {
-  VAL_ITS_SET, PSA_ITS_SUCCESS /* Create with UID value zero should fail */
+  VAL_ITS_SET, PSA_ITS_ERROR_INVALID_ARGUMENTS /* Create with UID value zero should fail */
 },
 };
 #endif /* _TEST_S010_ITS_DATA_TESTS_H_ */

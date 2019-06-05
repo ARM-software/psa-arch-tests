@@ -21,16 +21,21 @@ echo ""
 declare -a INCLUDE_PATHS
 export SUITE=" "
 export TEST_COMBINE_ARCHIVE=0
+export INCLUDE_PANIC_TESTS=0
+export WATCHDOG_AVAILABLE=0
+export SP_HEAP_MEM_SUPP=0
 export CLIENT_FILE_FOUND=0
 export SERVICE_FILE_FOUND=0
+export MANIFEST_OUT_FILE_FOUND=0
 export CRYPTO_FILE_FOUND=0
 export PROTECTED_STORAGE_FILE_FOUND=0
 export INTERNAL_TRUSTED_STORAGE_FILE_FOUND=0
 export INITIAL_ATTESTATION_FILE_FOUND=0
+export LIFECYCLE_FILE_FOUND=0
 
 IPC_HEADER_FILE_REQ="If PSA IPC implemented in your platform, include path must point to path
-where \"psa/client.h\", \"psa/service.h\" and test partition manifest output files
-(\"psa_manifest/sid.h\" and \"psa_manifest/<manifestfilename>.h\") are located.
+where \"psa/client.h\", \"psa/service.h\", \"psa/lifecycle.h\" and test partition manifest output files
+(\"psa_manifest/sid.h\", \"psa_manifest/pid.h\" and \"psa_manifest/<manifestfilename>.h\") are located.
 "
 CRYPTO_HEADER_FILE_REQ="If PSA CRYPTO APIs are implemented into your platform then you must provide
 \"psa/crypto.h\" file to setup.sh script using --include option to compile tests and framework.
@@ -42,7 +47,7 @@ ITS_HEADER_FILE_REQ="If PSA INTERNAL_TRUSTED_STORAGE APIs are implemented into y
 \"psa/internal_trusted_storage.h\" file to setup.sh script using --include option to compile tests and framework.
 "
 ATTESTATION_HEADER_FILE_REQ="If PSA INITIAL_ATTESTATION APIs are implemented into your platform then you must provide
-\"psa/initial_attestation.h\" file to setup.sh script using --include option to compile tests and framework.
+\"psa/initial_attestation.h\" and \"psa/crypto.h\" file to setup.sh script using --include option to compile tests and framework.
 "
 
 HELP="
@@ -50,6 +55,7 @@ HELP="
 Usage: setup.sh [--source SOURCE_DIR] [--build BUILD_DIR] [--target TARGET] [--suite SUITE]
                 [--toolchain TOOLCHAIN] [--cpu_arch CPU_ARCH] [--verbose PRINT_LEVEL]
                 [--include INCLUDE_PATH] [--help|-h]
+Toplevel script to build tests and framework sources for given test suite.
 
 Arguments Info:
     --source <SOURCE_DIR>   : SOURCE_DIR pointing to architecture test suite directory structure.
@@ -59,7 +65,8 @@ Arguments Info:
                               target.cfg file corresponding to input string must be avaiable at
                               platform/targets/<TARGET>/
     --suite <SUITE>         : Compile tests for given suite. Support values are:
-                              ipc, crypto, internal_trusted_storage, protected_storage and initial_attestation.
+                              ipc, crypto, internal_trusted_storage, protected_storage,
+                              and initial_attestation.
     --toolchain <TOOLCHAIN> : Build using the given TOOLCHAIN.
                               Supported values are GNUARM (GNU Arm Embedded) and ARMCLANG (ARM Compiler 6.x).
     --cpu_arch <CPU_ARCH>   : Provide cpu arch string as argument.
@@ -68,9 +75,13 @@ Arguments Info:
                               Supported print levels are:
                                 1 - INFO & above.
                                 2 - DEBUG & above.
-                                3 - TEST & above.
-                                4 - WARN & ERROR.(Default)
+                                3 - TEST & above.(Default)
+                                4 - WARN & ERROR.
                                 5 - ERROR.
+    --archive_tests         : Create combine test archive(.a) file by combining available test objects files.
+                              Absence of this option would create combine test binary(.bin) by combining available test elfs
+    --include_panic_tests   : Consider panic tests (mentioned in testsuite.db of respective suite) along with functional tests
+                              for building the final executables. Absence of this option would consider only non-panic (ie, functional) tests
     --include <INCLUDE_PATH>: Additional directory to be included into compiler search path. Provide --include <path>
                               where path pointing to location of PSA defined header files.
                               You can specify multiple source locations using --include option.
@@ -118,6 +129,9 @@ while [  $# -gt 0 ]; do
        --archive_tests )
                   export TEST_COMBINE_ARCHIVE=1
                   ;;
+       --include_panic_tests )
+                  export INCLUDE_PANIC_TESTS=1
+                  ;;
        --include )  shift
                   export INCLUDE="$INCLUDE -I $1/"
                   INCLUDE_PATHS=("${INCLUDE_PATHS[@]}" $1)
@@ -134,7 +148,7 @@ while [  $# -gt 0 ]; do
         shift
 done
 
-echo ">>>> Processing inputs..."
+echo "----------Process input arguments- start-------------"
 if [ -z "$SOURCE" ]
 then
    export SOURCE=./
@@ -179,6 +193,8 @@ PSA_CRYPTO_IMPLEMENTED=`grep -c "^ *PSA_CRYPTO_IMPLEMENTED\s*:=\s*1" $PLATFORM_M
 PSA_PROTECTED_STORAGE_IMPLEMENTED=`grep -c "^ *PSA_PROTECTED_STORAGE_IMPLEMENTED\s*:=\s*1" $PLATFORM_MAKEFILE`
 PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED=`grep -c "^ *PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED\s*:=\s*1" $PLATFORM_MAKEFILE`
 PSA_INITIAL_ATTESTATION_IMPLEMENTED=`grep -c "^ *PSA_INITIAL_ATTESTATION_IMPLEMENTED\s*:=\s*1" $PLATFORM_MAKEFILE`
+WATCHDOG_AVAILABLE=`grep -c "^ *watchdog.num\s*=\s*1\s*;" $SOURCE/platform/targets/$TARGET/target.cfg`
+SP_HEAP_MEM_SUPP=`grep -c "^ *dut.0.sp_heap_mem_supp\s*=\s*AVAILABLE\s*;" $SOURCE/platform/targets/$TARGET/target.cfg`
 
 # Check PSA_IPC_IMPLEMENTED validity
 if [ $SUITE == "ipc" ] && [ $PSA_IPC_IMPLEMENTED == "0" ]
@@ -238,6 +254,14 @@ then
             then
                 export SERVICE_FILE_FOUND=1
             fi
+            if [ -f "$path/psa_manifest/sid.h" ] && [ -f "$path/psa_manifest/pid.h" ]
+            then
+                export MANIFEST_OUT_FILE_FOUND=1
+            fi
+            if [ -f "$path/psa/lifecycle.h" ]
+            then
+                export LIFECYCLE_FILE_FOUND=1
+            fi
         done
         if [ $CLIENT_FILE_FOUND ==  "0" ]
         then
@@ -248,6 +272,18 @@ then
         if [ $SERVICE_FILE_FOUND == "0" ]
         then
             echo "Couldn't find psa/service.h file in paths: ${INCLUDE_PATHS[@]}"
+            echo "$IPC_HEADER_FILE_REQ"
+            exit 1
+        fi
+        if [ $MANIFEST_OUT_FILE_FOUND == "0" ]
+        then
+            echo "Couldn't find psa_manifest/sid.h or psa_manifest/pid.h file in paths: ${INCLUDE_PATHS[@]}"
+            echo "$IPC_HEADER_FILE_REQ"
+            exit 1
+        fi
+        if [ $LIFECYCLE_FILE_FOUND ==  "0" ]
+        then
+            echo "Couldn't find psa/lifecycle.h file in paths: ${INCLUDE_PATHS[@]}"
             echo "$IPC_HEADER_FILE_REQ"
             exit 1
         fi
@@ -344,7 +380,12 @@ then
             then
                 export INITIAL_ATTESTATION_FILE_FOUND=1
             fi
+            if [ -f "$path/psa/crypto.h" ]
+            then
+                export CRYPTO_FILE_FOUND=1
+            fi
         done
+
         if [ $INITIAL_ATTESTATION_FILE_FOUND ==  "0" ]
         then
             echo "Couldn't find psa/initial_attestation.h file in paths: ${INCLUDE_PATHS[@]}"
@@ -352,17 +393,22 @@ then
             exit 1
         elif [ $INITIAL_ATTESTATION_FILE_FOUND ==  "1" ]
         then
+            if [ $CRYPTO_FILE_FOUND ==  "0" ]
+            then
+                echo "Couldn't find psa/crypto.h file in paths: ${INCLUDE_PATHS[@]}"
+                echo "$CRYPTO_HEADER_FILE_REQ"
+                exit 1
+            fi
             if [ ! -d "$SOURCE/platform/targets/$TARGET/nspe/initial_attestation/ext" ]
             then
                 git clone https://github.com/laurencelundblade/QCBOR.git $SOURCE/platform/targets/$TARGET/nspe/initial_attestation/ext
-                cd $SOURCE/platform/targets/$TARGET/nspe/initial_attestation/ext; git checkout 01168ef3f20e81d5db1ebd0cfa9a70055ee5b155 ; cd -
+                cd $SOURCE/platform/targets/$TARGET/nspe/initial_attestation/ext; git checkout da53227db1488dde0952bdff66c3d904dce270b3 ; cd -
             else
                 echo "QCBOR library already cloned"
             fi
         fi
     fi
 fi
-
 
 if [ -z "$TOOLCHAIN" ]
 then
@@ -411,8 +457,22 @@ then
         exit 1
     fi
 else
-    export VERBOSE=4
+    export VERBOSE=3
 fi
+
+if [ $INCLUDE_PANIC_TESTS == "1" ] && [ $WATCHDOG_AVAILABLE == "0" ]
+then
+   echo "
+Warning: You have set watchdog.num to 0 in $SOURCE/platform/targets/$TARGET/target.cfg
+Note - To test PSA APIs panic conditions, test harness may require to access watchdog timer
+to recover from panic and to be able to continue with next test.
+Ignore this warning if system under test has capability to reset the system
+when it encounters panic condition.
+"
+fi
+
+echo "----------Process input arguments- complete-------------"
+echo ""
 
 MAKE_OPTIONS=" SOURCE=$SOURCE "
 MAKE_OPTIONS+=" BUILD=$BUILD "
@@ -422,6 +482,9 @@ MAKE_OPTIONS+=" TOOLCHAIN=$TOOLCHAIN "
 MAKE_OPTIONS+=" CPU_ARCH=$CPU_ARCH "
 MAKE_OPTIONS+=" VERBOSE=$VERBOSE "
 MAKE_OPTIONS+=" TEST_COMBINE_ARCHIVE=$TEST_COMBINE_ARCHIVE "
+MAKE_OPTIONS+=" INCLUDE_PANIC_TESTS=$INCLUDE_PANIC_TESTS "
+MAKE_OPTIONS+=" WATCHDOG_AVAILABLE=$WATCHDOG_AVAILABLE "
+MAKE_OPTIONS+=" SP_HEAP_MEM_SUPP=$SP_HEAP_MEM_SUPP "
 MAKE_OPTIONS+=" PSA_IPC_IMPLEMENTED=$PSA_IPC_IMPLEMENTED "
 MAKE_OPTIONS+=" PSA_CRYPTO_IMPLEMENTED=$PSA_CRYPTO_IMPLEMENTED "
 MAKE_OPTIONS+=" PSA_PROTECTED_STORAGE_IMPLEMENTED=$PSA_PROTECTED_STORAGE_IMPLEMENTED "

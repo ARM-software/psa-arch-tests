@@ -20,7 +20,7 @@
 #include "val_target.h"
 #else
 #include "val_client_defs.h"
-#include "val_partition_common.h"
+#include "val_service_defs.h"
 #endif
 
 #include "test_i063.h"
@@ -35,11 +35,11 @@ int32_t client_test_psa_wait_signal_mask(security_t caller)
 {
    psa_handle_t     handle = 0;
 
-   val->print(PRINT_TEST, "[Check1] Test psa_wait signal mask\n", 0);
+   val->print(PRINT_TEST, "[Check 1] Test psa_wait signal mask\n", 0);
 
    handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
 
-   if (handle != PSA_CONNECTION_REFUSED)
+   if (handle != PSA_ERROR_CONNECTION_REFUSED)
    {
        val->print(PRINT_ERROR, "psa_connect failed -1\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
@@ -47,7 +47,7 @@ int32_t client_test_psa_wait_signal_mask(security_t caller)
 
    handle = psa->connect(SERVER_RELAX_MINOR_VERSION_SID, 1);
 
-   if (handle != PSA_CONNECTION_REFUSED)
+   if (handle != PSA_ERROR_CONNECTION_REFUSED)
    {
        val->print(PRINT_ERROR, "psa_connect failed -2\n", 0);
        return VAL_STATUS_INVALID_HANDLE;

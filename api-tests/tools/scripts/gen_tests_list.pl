@@ -33,8 +33,6 @@ sub gen_test_entry_info
     my $test_entry_list             = "$build/val/test_entry_list.inc";
     my $test_entry_fn_declare_list  = "$build/val/test_entry_fn_declare_list.inc";
 
-    print "\n>>>> Generating tests list by referring testsuite.db \n";
-
     if ($suite eq "crypto")
     {
         $suite_base = 1;
@@ -73,7 +71,7 @@ sub gen_test_entry_info
     close IN;
     close OUT1;
     close OUT2;
-    print "Output files are:
+    print "Non-secure test entry symbol list:
     $test_entry_list,
     $test_entry_fn_declare_list\n";
 }
@@ -86,8 +84,6 @@ sub gen_secure_tests_list
     my $client_tests_list         = "$build/partition/client_tests_list.inc";
     my $server_tests_list_declare = "$build/partition/server_tests_list_declare.inc";
     my $server_tests_list         = "$build/partition/server_tests_list.inc";
-
-    print "\n>>>> Generating secure tests list files by referring testsuite.db \n";
 
     open(IN, $tests_list) or die "Unable to open $tests_list $!";
     open(OUT1, '>', $client_tests_list_declare) or die "Unable to open: $!";
@@ -123,7 +119,7 @@ sub gen_secure_tests_list
     close OUT3;
     close OUT4;
 
-    print "Output files are:
+    print "Secure test entry symbol list:
     $client_tests_list_declare,
     $client_tests_list,
     $server_tests_list_declare,

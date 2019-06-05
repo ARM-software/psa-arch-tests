@@ -15,8 +15,13 @@
  * limitations under the License.
 **/
 
-#include "val/common/val_client_defs.h"
-#include "val/spe/val_partition_common.h"
+#include "val_client_defs.h"
+#include "val_service_defs.h"
+
+#define val CONCAT(val,_server_sp)
+#define psa CONCAT(psa,_server_sp)
+extern val_api_t *val;
+extern psa_api_t *psa;
 
 
 int32_t server_test_psa_get_with_invalid_msg_pointer(void);
@@ -35,49 +40,61 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
    miscellaneous_desc_t    *misc_desc;
    memory_desc_t           *memory_desc;
 
-   /* Test is targeting fatal error condition and it will expect an error recovery(reboot)
-    * to happen. To decide, a reboot happened was intended as per test scenario or it happended
+   /*
+    * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
+    * PROGRAMMER ERROR could be either to return appropriate status code or panic the caller.
+    * When a Secure Partition panics, the SPE cannot continue normal execution, as defined
+    * in this specification. The behavior of the SPM following a Secure Partition panic is
+    * IMPLEMENTATION DEFINED- Arm recommends that the SPM causes the system to restart in
+    * this situation. Refer PSA-FF for more information on panic.
+    * For the cases where, SPM cannot capable to reboot the system (just hangs or power down),
+    * a watchdog timer set by val_test_init can reboot the system on timeout event. This will
+    * tests continuity and able to jump to next tests. Therefore, each test who checks for
+    * PROGRAMMER ERROR condition, expects system to get reset either by SPM or watchdog set by
+    * the test harness function.
+    *
+    * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
+    * timeout entries available in target.cfg.
+    *
+    * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
     * after targeted test check. After a reboot, these boot signatures are being read by the
     * VAL APIs to decide test status.
-    *
-    * Note: If SPM is not capable of rebooting (just hangs or power down) in fatal error condition,
-    * a watchdog timer enabled by val_test_init can reboot the system on timeout event.
-    * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
     */
 
-    signals = psa_wait(SERVER_UNSPECIFED_MINOR_V_SIG, PSA_BLOCK);
+    signals = psa->wait(SERVER_UNSPECIFED_MINOR_V_SIG, PSA_BLOCK);
     if ((signals & SERVER_UNSPECIFED_MINOR_V_SIG) == 0)
     {
-       val_print(PRINT_ERROR,
+       val->print(PRINT_ERROR,
                 "psa_wait returned with invalid signal value = 0x%x\n", signals);
        return VAL_STATUS_ERROR;
     }
 
-    /* Selection of invalid msg pointer:
+    /*
+     * Selection of invalid msg pointer:
+     *
      *  if (ISOLATION_LEVEL > 1)
      *       msg_pointer = driver_mmio_region_base;
      *  else
      *       msg_pointer = NULL;
      */
 
-    status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MISCELLANEOUS,
+    status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MISCELLANEOUS,
                                    MISCELLANEOUS_DUT, 0),
                                   (uint8_t **)&misc_desc,
                                   (uint32_t *)sizeof(miscellaneous_desc_t));
-    if (val_err_check_set(TEST_CHECKPOINT_NUM(201), status))
+    if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
     {
         return status;
     }
 
     if (misc_desc->implemented_psa_firmware_isolation_level > LEVEL1)
     {
-        status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
+        status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
                                       MEMORY_DRIVER_PARTITION_MMIO, 0),
                                       (uint8_t **)&memory_desc,
                                       (uint32_t *)sizeof(memory_desc_t));
-        if (val_err_check_set(TEST_CHECKPOINT_NUM(202), status))
+        if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
         {
             return status;
         }
@@ -86,26 +103,26 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
     }
 
     /* Setting boot.state before test check */
-    if (val_set_boot_flag(BOOT_EXPECTED_NS))
+    if (val->set_boot_flag(BOOT_EXPECTED_NS))
     {
-        val_print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
         return VAL_STATUS_ERROR;
     }
 
-    /* psa_get with invalid msg pointer */
-    psa_get(SERVER_UNSPECIFED_MINOR_V_SIG, invalid_msg);
+    /* psa_get with invalid msg pointer, call should panic */
+    psa->get(SERVER_UNSPECIFED_MINOR_V_SIG, invalid_msg);
 
     /* shouldn't have reached here */
-    val_print(PRINT_ERROR,
-             "\tpsa_get with invalid msg pointer should failed but successed\n", 0);
+    val->print(PRINT_ERROR,
+             "\tpsa_get with invalid msg pointer should failed but succeed\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
-    if (val_set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
+    if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
     {
-        val_print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
     }
 
     /* Reject the connection */
-    psa_reply(invalid_msg->handle, PSA_CONNECTION_REFUSED);
+    psa->reply(invalid_msg->handle, PSA_ERROR_CONNECTION_REFUSED);
     return VAL_STATUS_SPM_FAILED;
 }

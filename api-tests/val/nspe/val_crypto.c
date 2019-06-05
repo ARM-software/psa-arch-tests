@@ -30,7 +30,7 @@
 int32_t val_crypto_function(int type, ...)
 {
     va_list      valist;
-    val_status_t status;
+    int32_t      status;
 
     va_start(valist, type);
     status = pal_crypto_function(type, valist);

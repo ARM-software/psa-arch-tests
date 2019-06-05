@@ -30,16 +30,8 @@
 #include "val_target.c"
 #include "val_service_defs.h"
 
-/* "psa_manifest/<manifestfilename>.h" Manifest definitions. Only accessible to Secure Partition.
- * The file name is based on the name of the Secure Partitions manifest file.
- * The name must not collide with other header files.
- * Compliance tests expect the below manifest output files implementation from build tool.
- */
-#include "psa_manifest/client_partition_psa.h"
-#include "psa_manifest/server_partition_psa.h"
-
 __UNUSED STATIC_DECLARE val_status_t val_print
-                        (print_verbosity_t verbosity, char *string, uint32_t data);
+                        (print_verbosity_t verbosity, char *string, int32_t data);
 __UNUSED STATIC_DECLARE val_status_t val_ipc_connect
                         (uint32_t sid, uint32_t minor_version, psa_handle_t *handle );
 __UNUSED STATIC_DECLARE val_status_t val_ipc_call
@@ -52,7 +44,7 @@ __UNUSED STATIC_DECLARE val_status_t val_process_call_request(psa_signal_t sig, 
 __UNUSED STATIC_DECLARE val_status_t val_process_disconnect_request
                         (psa_signal_t sig, psa_msg_t *msg);
 __UNUSED STATIC_DECLARE val_status_t val_execute_secure_tests
-                        (uint32_t test_num, client_test_t *tests_list);
+                        (test_info_t test_info, client_test_t *tests_list);
 __UNUSED STATIC_DECLARE val_status_t val_execute_secure_test_func
                         (psa_handle_t *handle, test_info_t test_info, uint32_t sid);
 __UNUSED STATIC_DECLARE val_status_t val_get_secure_test_result(psa_handle_t *handle);
@@ -70,6 +62,9 @@ __UNUSED static val_api_t val_api = {
     .ipc_close                 = val_ipc_close,
     .set_boot_flag             = val_set_boot_flag,
     .target_get_config         = val_target_get_config,
+    .process_connect_request   = val_process_connect_request,
+    .process_call_request      = val_process_call_request,
+    .process_disconnect_request= val_process_disconnect_request,
 };
 
 __UNUSED static psa_api_t psa_api = {
@@ -78,6 +73,17 @@ __UNUSED static psa_api_t psa_api = {
     .connect               = psa_connect,
     .call                  = psa_call,
     .close                 = psa_close,
+    .wait                  = psa_wait,
+    .set_rhandle           = psa_set_rhandle,
+    .get                   = psa_get,
+    .read                  = psa_read,
+    .skip                  = psa_skip,
+    .write                 = psa_write,
+    .reply                 = psa_reply,
+    .notify                = psa_notify,
+    .clear                 = psa_clear,
+    .eoi                   = psa_eoi,
+    .rot_lifecycle_state   = psa_rot_lifecycle_state,
 };
 
 /**
@@ -88,7 +94,7 @@ __UNUSED static psa_api_t psa_api = {
               - data     : Value for format specifier
     @return   - val_status_t
 **/
-STATIC_DECLARE val_status_t val_print(print_verbosity_t verbosity, char *string, uint32_t data)
+STATIC_DECLARE val_status_t val_print(print_verbosity_t verbosity, char *string, int32_t data)
 {
     int             string_len = 0;
     char            *p = string;
@@ -108,7 +114,7 @@ STATIC_DECLARE val_status_t val_print(print_verbosity_t verbosity, char *string,
         p++;
     }
 
-    psa_invec data1[3] = {{&uart_fn, sizeof(uart_fn)}, {string, string_len+1}, {&data, 4}};
+    psa_invec data1[3] = {{&uart_fn, sizeof(uart_fn)}, {string, string_len+1}, {&data, sizeof(data)}};
     print_handle = psa_connect(DRIVER_UART_SID, 0);
 
     if (print_handle < 0)
@@ -301,23 +307,21 @@ wait3:
 /**
     @brief    - This function executes given list of tests from secure sequentially
                 This covers secure to secure IPC API scenario
-    @param    - test_num  : Test_num
+    @param    - test_info_t : test_num and block_num
     @param    - tests_list : list of tests to be executed
     @return   - val_status_t
 **/
-STATIC_DECLARE val_status_t val_execute_secure_tests(uint32_t test_num, client_test_t *tests_list)
+STATIC_DECLARE val_status_t val_execute_secure_tests(test_info_t test_info, client_test_t *tests_list)
 {
     val_status_t          status = VAL_STATUS_SUCCESS;
     val_status_t          test_status = VAL_STATUS_SUCCESS;
     psa_handle_t          handle;
-    int                   i = 1;
-    test_info_t           test_info;
-
-    test_info.test_num = test_num;
-    val_print(PRINT_TEST, "[Info] Executing tests from secure\n", 0);
+    int                   i = test_info.block_num;
 
     while (tests_list[i] != NULL)
     {
+        if (i == 1)
+        val_print(PRINT_TEST, "[Info] Executing tests from secure\n", 0);
 
         /* Handshake with server tests */
         test_info.block_num = i;
@@ -513,7 +517,7 @@ STATIC_DECLARE val_status_t val_set_boot_flag(boot_state_t state)
    status = val_nvmem_write(VAL_NVMEM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
    if (VAL_ERROR(status))
    {
-       val_print(PRINT_ERROR, "val_nvmem_write failed Error=0x%x\n", status);
+       val_print(PRINT_ERROR, "\tval_nvmem_write failed Error=0x%x\n", status);
        return status;
    }
    return status;

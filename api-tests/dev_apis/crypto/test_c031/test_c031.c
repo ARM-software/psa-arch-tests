@@ -86,6 +86,10 @@ int32_t psa_mac_abort_test(security_t caller)
         /* Multiple Abort a MAC operation should succeed */
         status = val->crypto_function(VAL_CRYPTO_MAC_ABORT, &operation);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
     }
 
     return VAL_STATUS_SUCCESS;
@@ -103,8 +107,8 @@ int32_t psa_mac_abort_before_finish_test(security_t caller)
     uint8_t             key_data[] = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7,
                                       0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c};
     uint8_t             input_data[] = {0x48, 0x69, 0x20, 0x54, 0x68, 0x65, 0x72, 0x65};
-    size_t              key_length = sizeof(key_data)/sizeof(key_data[0]);
-    size_t              inputdata_size = sizeof(input_data)/sizeof(input_data[0]);
+    size_t              key_length = sizeof(key_data);
+    size_t              inputdata_size = sizeof(input_data);
     int32_t             status;
 
     memset(data, 0, sizeof(data));
@@ -158,6 +162,10 @@ int32_t psa_mac_abort_before_finish_test(security_t caller)
     status = val->crypto_function(VAL_CRYPTO_MAC_SIGN_FINISH, &operation, data,
                 BUFFER_SIZE, &length);
     TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(9));
+
+    /* Destroy the key */
+    status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
 
     return VAL_STATUS_SUCCESS;
 }

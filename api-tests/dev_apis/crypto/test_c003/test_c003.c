@@ -112,8 +112,8 @@ int32_t psa_export_key_test(security_t caller)
                                        &key_type, &bits);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
+        /* Make sure the metada matches with the given data */
         TEST_ASSERT_EQUAL(key_type, check1[i].key_type, TEST_CHECKPOINT_NUM(7));
-
         TEST_ASSERT_EQUAL(bits, check1[i].expected_bit_length, TEST_CHECKPOINT_NUM(8));
 
         /* Export a key in binary format */
@@ -124,6 +124,7 @@ int32_t psa_export_key_test(security_t caller)
         if (check1[i].expected_status != PSA_SUCCESS)
             continue;
 
+        /* Check if the key length matches with the given length */
         TEST_ASSERT_EQUAL(length, check1[i].expected_key_length, TEST_CHECKPOINT_NUM(10));
 
         /* Check if original key data matches with the exported data */
@@ -177,7 +178,7 @@ int32_t psa_export_key_negative_test(security_t caller)
         /* Export a key in binary format */
         status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, check2[i].key_handle, data,
                                        check2[i].key_length, &length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_EMPTY_SLOT, TEST_CHECKPOINT_NUM(5));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_DOES_NOT_EXIST, TEST_CHECKPOINT_NUM(5));
 
         val->print(PRINT_TEST, "[Check %d] Test psa_export_key with zero as key handle\n",
                                                                                  g_test_count++);

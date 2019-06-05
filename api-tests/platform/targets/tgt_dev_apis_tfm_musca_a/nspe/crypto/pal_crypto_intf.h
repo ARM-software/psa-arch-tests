@@ -68,6 +68,7 @@ enum crypto_function_code {
     PAL_CRYPTO_ASYMMTERIC_VERIFY        = 0x31,
     PAL_CRYPTO_KEY_AGREEMENT            = 0x32,
     PAL_CRYPTO_ALLOCATE_KEY             = 0x33,
+    PAL_CRYPTO_COPY_KEY                 = 0x34,
     PAL_CRYPTO_FREE                     = 0xFE,
 };
 

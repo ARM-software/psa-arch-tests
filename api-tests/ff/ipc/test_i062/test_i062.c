@@ -20,7 +20,7 @@
 #include "val_target.h"
 #else
 #include "val_client_defs.h"
-#include "val_partition_common.h"
+#include "val_service_defs.h"
 #endif
 
 #include "test_i062.h"

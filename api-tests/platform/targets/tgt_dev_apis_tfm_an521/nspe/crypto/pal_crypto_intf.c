@@ -36,7 +36,7 @@ int32_t pal_crypto_function(int type, va_list valist)
     uint32_t                status;
     const void              *extra;
     size_t                  extra_size, capacity, *gen_cap, nonce_length, additional_data_length;
-    psa_key_handle_t        handle, *key_handle;
+    psa_key_handle_t        handle, *key_handle, target_handle;
     psa_key_type_t          key_type, *key_type_out;
     psa_key_policy_t        *policy;
     psa_key_usage_t         usage, *usage_out;
@@ -325,6 +325,11 @@ int32_t pal_crypto_function(int type, va_list valist)
         case PAL_CRYPTO_ALLOCATE_KEY:
             key_handle = (psa_key_handle_t *)va_arg(valist, int*);
             return psa_allocate_key(key_handle);
+        case PAL_CRYPTO_COPY_KEY:
+            handle = (psa_key_handle_t)va_arg(valist, int);
+            target_handle = (psa_key_handle_t)va_arg(valist, int);
+            policy = va_arg(valist, psa_key_policy_t*);
+            return psa_copy_key(handle, target_handle, policy);
         case PAL_CRYPTO_FREE:
             for (i = 0; i < PAL_KEY_SLOT_COUNT; i++)
                 psa_destroy_key(i);

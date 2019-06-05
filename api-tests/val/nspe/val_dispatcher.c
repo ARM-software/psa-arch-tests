@@ -126,7 +126,7 @@ int val_copy_elf(uint32_t saddr, uint32_t *info_addr)
 **/
 val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
 {
-#ifndef TEST_COMBINE_ARCHIVE
+#if (TEST_COMBINE_ARCHIVE == 0)
     test_header_t   test_header;
     addr_t          flash_addr = combine_test_binary_addr;
 
@@ -260,7 +260,7 @@ val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
 **/
 val_status_t val_get_test_entry_addr(addr_t *paddr)
 {
-#ifndef TEST_COMBINE_ARCHIVE
+#if (TEST_COMBINE_ARCHIVE == 0)
     *paddr = (addr_t)(((val_test_info_t *)g_test_info_addr)->entry_addr);
 #else
     *paddr = g_test_info_addr;

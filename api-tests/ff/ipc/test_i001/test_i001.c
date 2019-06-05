@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 #include "val_target.h"
 #else
 #include "val_client_defs.h"
-#include "val_partition_common.h"
+#include "val_service_defs.h"
 #endif
 
 #include "test_i001.h"
@@ -36,7 +36,7 @@ int32_t client_test_psa_framework_version(security_t caller)
 {
    int32_t         status = VAL_STATUS_SUCCESS;
 
-   val->print(PRINT_TEST, "[Check1] psa_framework_version\n", 0);
+   val->print(PRINT_TEST, "[Check 1] psa_framework_version\n", 0);
 
    /* Retrieve the version of the PSA Framework API that is implemented.*/
    if (psa->framework_version() != PSA_FRAMEWORK_VERSION)
@@ -54,7 +54,7 @@ int32_t client_test_psa_version(security_t caller)
    int32_t         status = VAL_STATUS_SUCCESS;
    uint32_t        version;
 
-   val->print(PRINT_TEST, "[Check2] psa_version\n", 0);
+   val->print(PRINT_TEST, "[Check 2] psa_version\n", 0);
 
    /*Return PSA_VERSION_NONE when the RoT Service is not implemented, or the caller is not permitted
    to access the service. Return minor version of the implemented and allowed RoT Service */

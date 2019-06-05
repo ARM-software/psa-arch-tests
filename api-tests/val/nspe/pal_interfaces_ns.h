@@ -100,7 +100,7 @@ int pal_uart_init_ns(uint32_t uart_base_addr);
  *   @return   - SUCCESS/FAILURE
 **/
 
-int pal_print_ns(char *str, uint32_t data);
+int pal_print_ns(char *str, int32_t data);
 
 /**
  *   @brief           - Initializes an hardware watchdog timer

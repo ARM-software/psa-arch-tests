@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,13 @@
  * limitations under the License.
 **/
 
-#include "val/common/val_client_defs.h"
-#include "val/spe/val_partition_common.h"
+#include "val_client_defs.h"
+#include "val_service_defs.h"
+
+#define val CONCAT(val,_server_sp)
+#define psa CONCAT(psa,_server_sp)
+extern val_api_t *val;
+extern psa_api_t *psa;
 
 int32_t server_test_secure_access_only_connection(void);
 
@@ -31,20 +36,38 @@ int32_t server_test_secure_access_only_connection(void)
     int32_t         status = VAL_STATUS_SUCCESS;
     psa_msg_t       msg = {0};
 
-    val_err_check_set(TEST_CHECKPOINT_NUM(201), status);
-    status = val_process_connect_request(SERVER_SECURE_CONNECT_ONLY_SIG, &msg);
-    if (val_err_check_set(TEST_CHECKPOINT_NUM(202), status))
+    val->err_check_set(TEST_CHECKPOINT_NUM(201), status);
+    status = val->process_connect_request(SERVER_SECURE_CONNECT_ONLY_SIG, &msg);
+    if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
-        psa_reply(msg.handle, PSA_CONNECTION_REFUSED);
+        psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
         return status;
     }
-    psa_reply(msg.handle, PSA_SUCCESS);
 
-    status = val_process_disconnect_request(SERVER_SECURE_CONNECT_ONLY_SIG, &msg);
-    if (val_err_check_set(TEST_CHECKPOINT_NUM(203), status))
+    if (msg.client_id < 0)
+    {
+        /*
+		 * Control shouldn't come here. NS client should get panic.
+		 * Resetting boot.state to catch unwanted reboot.
+		 * */
+        if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
+        {
+           val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        }
+
+        psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
+        return VAL_STATUS_SPM_FAILED;
+    }
+    else
+    {
+        psa->reply(msg.handle, PSA_SUCCESS);
+    }
+
+    status = val->process_disconnect_request(SERVER_SECURE_CONNECT_ONLY_SIG, &msg);
+    if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
     {
         return status;
     }
-    psa_reply(msg.handle, PSA_SUCCESS);
+    psa->reply(msg.handle, PSA_SUCCESS);
     return status;
 }

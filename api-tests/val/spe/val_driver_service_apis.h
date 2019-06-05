@@ -20,20 +20,13 @@
 
 #include "val.h"
 #include "val_client_defs.h"
-#include "val_service_defs.h"
 #include "pal_interfaces_s.h"
 
-/* "psa_manifest/<manifestfilename>.h" Manifest definitions. Only accessible to Secure Partition.
- * The file name is based on the name of the Secure Partitions manifest file.
- * The name must not collide with other header files.
- * Compliance tests expect the below manifest output files implementation from build tool.
- */
-#include "psa_manifest/driver_partition_psa.h"
-
-#define USE_RAW_PRINT_FOR_DRIVER_PARTITION 1
+#define DRIVER_PARTITION_INCLUDE
+#include "val_service_defs.h"
 
 val_status_t val_uart_init_sf(addr_t uart_base_addr);
-val_status_t val_print_sf(char *string, uint32_t data);
+val_status_t val_print_sf(char *string, int32_t data);
 val_status_t val_wd_timer_init_sf(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us);
 val_status_t val_wd_timer_enable_sf(addr_t base_addr);
 val_status_t val_wd_timer_disable_sf(addr_t base_addr);
@@ -42,4 +35,7 @@ val_status_t val_nvmem_read_sf(addr_t base, uint32_t offset, void *buffer, int s
 val_status_t val_nvmem_write_sf(addr_t base, uint32_t offset, void *buffer, int size);
 val_status_t val_driver_private_set_boot_flag_fn(boot_state_t state);
 val_status_t val_init_driver_memory(void);
+val_status_t val_get_driver_mmio_addr(addr_t *base_addr);
+void val_generate_interrupt(void);
+void val_disable_interrupt(void);
 #endif

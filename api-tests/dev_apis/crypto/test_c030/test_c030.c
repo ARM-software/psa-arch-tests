@@ -94,19 +94,28 @@ int32_t psa_mac_verify_finish_test(security_t caller)
             /* Abort a MAC operation */
             status = val->crypto_function(VAL_CRYPTO_MAC_ABORT, &operation);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+
+            /* Destroy the key */
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
             continue;
         }
 
-        /* Finish the calculation of the MAC of a message using same operation
+        /* Calling mac finish twice in a row.
+         * Finish the calculation of the MAC of a message using same operation
          * should return error
          */
         status = val->crypto_function(VAL_CRYPTO_MAC_VERIFY_FINISH, &operation,
                     check1[i].expected_mac, check1[i].mac_size);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(11));
 
         /* Abort a MAC operation */
         status = val->crypto_function(VAL_CRYPTO_MAC_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
+
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(13));
     }
 
     return VAL_STATUS_SUCCESS;

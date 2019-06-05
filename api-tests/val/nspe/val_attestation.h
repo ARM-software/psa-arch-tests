@@ -19,7 +19,6 @@
 #define _VAL_INITIAL_ATTESTATION_H_
 
 #include "val.h"
-
 #define MAX_CHALLENGE_SIZE      PSA_INITIAL_ATTEST_CHALLENGE_SIZE_64
 
 enum attestation_function_code {

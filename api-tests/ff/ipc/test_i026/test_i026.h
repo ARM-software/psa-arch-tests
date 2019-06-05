@@ -28,11 +28,6 @@
 #define psa CONCAT(psa,_client_sp)
 #endif
 
-/* Redefining PSA_MAX_IOVEC as it is undefined for client */
-#ifndef PSA_MAX_IOVEC
-#define PSA_MAX_IOVEC 4
-#endif
-
 extern val_api_t *val;
 extern psa_api_t *psa;
 

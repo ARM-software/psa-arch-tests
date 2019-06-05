@@ -20,7 +20,7 @@
 #include "val_target.h"
 #else
 #include "val_client_defs.h"
-#include "val_partition_common.h"
+#include "val_service_defs.h"
 #endif
 
 #include "test_i064.h"
@@ -33,20 +33,20 @@ client_test_t test_i064_client_tests_list[] = {
 
 int32_t client_test_psa_eoi_with_non_intr_signal(security_t caller)
 {
-   psa_handle_t         handle;
-   test_intr_fn_id_t    test_intr_fn_id = TEST_PSA_EOI_WITH_NON_INTR_SIGNAL;
+   psa_handle_t           handle;
+   driver_test_fn_id_t    driver_test_fn_id = TEST_PSA_EOI_WITH_NON_INTR_SIGNAL;
 
    /*
     * The interrupt related test check is captured in driver_partition.c as this is the
     * only partition in test suite that holds the interrupt line. The interrupt test check
-    * is invoked by client by calling to TEST_INTR_SID RoT service of driver partition that
+    * is invoked by client by calling to DRIVER_TEST_SID RoT service of driver partition that
     * hold the test check.
     */
 
-   val->print(PRINT_TEST, "[Check1] Test psa_eoi with non-interrupt signal\n", 0);
+   val->print(PRINT_TEST, "[Check 1] Test psa_eoi with non-interrupt signal\n", 0);
 
-   /* Connect to TEST_INTR_SID */
-   handle = psa->connect(TEST_INTR_SID, 1);
+   /* Connect to DRIVER_TEST_SID */
+   handle = psa->connect(DRIVER_TEST_SID, 1);
    if (handle < 0)
    {
        val->print(PRINT_ERROR, "\t psa_connect failed. handle=0x%x\n", handle);
@@ -54,11 +54,11 @@ int32_t client_test_psa_eoi_with_non_intr_signal(security_t caller)
    }
 
    /* Execute driver function related to TEST_PSA_EOI_WITH_NON_INTR_SIGNAL */
-   psa_invec invec = {&test_intr_fn_id, sizeof(test_intr_fn_id)};
+   psa_invec invec = {&driver_test_fn_id, sizeof(driver_test_fn_id)};
    psa->call(handle, &invec, 1, NULL, 0);
 
    psa->close(handle);
 
-   /* The expectation is that driver partition hang and control never reaches here. */
+   /* The expectation is that driver partition get panic and control never reaches here. */
    return VAL_STATUS_SPM_FAILED;
 }

@@ -15,8 +15,13 @@
  * limitations under the License.
 **/
 
-#include "val/common/val_client_defs.h"
-#include "val/spe/val_partition_common.h"
+#include "val_client_defs.h"
+#include "val_service_defs.h"
+
+#define val CONCAT(val,_server_sp)
+#define psa CONCAT(psa,_server_sp)
+extern val_api_t *val;
+extern psa_api_t *psa;
 
 #define NEG_PART_ID -10
 
@@ -31,37 +36,47 @@ server_test_t test_i059_server_tests_list[] = {
 int32_t server_test_psa_notify_with_neg_part_id(void)
 {
 
-   /* Test is targeting fatal error condition and it will expect an error recovery(reboot)
-    * to happen. To decide, a reboot happened was intended as per test scenario or it happended
+    val->print(PRINT_TEST, "[Check 1] Test psa_notify with neg partition id\n", 0);
+
+   /*
+    * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
+    * PROGRAMMER ERROR could be either to return appropriate status code or panic the caller.
+    * When a Secure Partition panics, the SPE cannot continue normal execution, as defined
+    * in this specification. The behavior of the SPM following a Secure Partition panic is
+    * IMPLEMENTATION DEFINED- Arm recommends that the SPM causes the system to restart in
+    * this situation. Refer PSA-FF for more information on panic.
+    * For the cases where, SPM cannot capable to reboot the system (just hangs or power down),
+    * a watchdog timer set by val_test_init can reboot the system on timeout event. This will
+    * tests continuity and able to jump to next tests. Therefore, each test who checks for
+    * PROGRAMMER ERROR condition, expects system to get reset either by SPM or watchdog set by
+    * the test harness function.
+    *
+    * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
+    * timeout entries available in target.cfg.
+    *
+    * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
     * after targeted test check. After a reboot, these boot signatures are being read by the
     * VAL APIs to decide test status.
-    *
-    * Note: If SPM is not capable of rebooting (just hangs or power down) in fatal error condition,
-    * a watchdog timer enabled by val_test_init can reboot the system on timeout event.
-    * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
     */
 
-    val_print(PRINT_TEST, "[Check1] Test psa_notify with neg partition id\n", 0);
-
     /* Setting boot.state before test check */
-    if (val_set_boot_flag(BOOT_EXPECTED_NS))
+    if (val->set_boot_flag(BOOT_EXPECTED_NS))
     {
-        val_print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
         return VAL_STATUS_ERROR;
     }
 
-    /* psa_notify_with_neg_part_id */
-    psa_notify(NEG_PART_ID);
+    /* psa_notify_with_neg_part_id, call should panic */
+    psa->notify(NEG_PART_ID);
 
     /* shouldn't have reached here */
-    val_print(PRINT_ERROR, "\tpsa_notify(-ve_part_ip) check failed\n", 0);
+    val->print(PRINT_ERROR, "\tpsa->notify(-ve_part_ip) check failed\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
-    if (val_set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
+    if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
     {
-        val_print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
         return VAL_STATUS_ERROR;
     }
 

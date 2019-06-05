@@ -27,4 +27,5 @@ extern psa_api_t *psa;
 extern client_test_t test_c018_crypto_list[];
 
 int32_t psa_generator_read_test(security_t caller);
+int32_t psa_generator_read_negative_test(security_t caller);
 #endif /* _TEST_C018_CLIENT_TESTS_H_ */

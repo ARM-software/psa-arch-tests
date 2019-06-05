@@ -21,7 +21,7 @@
 #include "val.h"
 
 val_status_t val_uart_init(void);
-val_status_t val_print(print_verbosity_t verbosity, char *string, uint32_t data);
+val_status_t val_print(print_verbosity_t verbosity, char *string, int32_t data);
 val_status_t val_spi_read(addr_t addr, uint8_t *data, uint32_t len);
 val_status_t val_nvmem_read(uint32_t offset, void *buffer, int size);
 val_status_t val_nvmem_write(uint32_t offset, void *buffer, int size);

@@ -178,12 +178,18 @@ typedef enum {
 } test_isolation_level_t;
 
 typedef enum {
-    BOOT_UNKNOWN               = 0x1,
-    BOOT_NOT_EXPECTED          = 0x2,
-    BOOT_EXPECTED_NS           = 0x3,
-    BOOT_EXPECTED_S            = 0x4,
-    BOOT_EXPECTED_BUT_FAILED   = 0x5,
-    BOOT_EXPECTED_CRYPTO       = 0x6,
+    /* VAL uses this boot flag to mark first time boot of the system  */
+    BOOT_UNKNOWN                       = 0x1,
+    /* VAL/Test uses this boot flag to catch any unwanted system reboot - SIM ERROR Cases*/
+    BOOT_NOT_EXPECTED                  = 0x2,
+    /* Test performs panic check for non-secure test run and expect reboot */
+    BOOT_EXPECTED_NS                   = 0x3,
+    /* Test performs panic check for secure test run and expect reboot */
+    BOOT_EXPECTED_S                    = 0x4,
+    /* Test expected reboot but it didn't happen */
+    BOOT_EXPECTED_BUT_FAILED           = 0x5,
+    /* Test expect reboot for secure/non-secure test run. If reboot happens, re-enter same test */
+    BOOT_EXPECTED_REENTER_TEST         = 0x6,
 } boot_state_t;
 
 typedef enum {
@@ -224,6 +230,7 @@ typedef enum {
   VAL_STATUS_INIT_ALREADY_DONE           = 0x29,
   VAL_STATUS_HEAP_NOT_AVAILABLE          = 0x2A,
   VAL_STATUS_UNSUPPORTED                 = 0x2B,
+  VAL_STATUS_DRIVER_FN_FAILED            = 0x2C,
   VAL_STATUS_ERROR_MAX                   = INT_MAX,
 } val_status_t;
 
@@ -237,13 +244,21 @@ typedef enum {
     PRINT_ALWAYS  = 9
 } print_verbosity_t;
 
-/* Interrupt test function id enums */
+/* Driver test function id enums */
 typedef enum {
     TEST_PSA_EOI_WITH_NON_INTR_SIGNAL    = 1,
     TEST_PSA_EOI_WITH_MULTIPLE_SIGNALS   = 2,
     TEST_PSA_EOI_WITH_UNASSERTED_SIGNAL  = 3,
     TEST_INTR_SERVICE                    = 4,
-} test_intr_fn_id_t;
+    TEST_ISOLATION_PSA_ROT_DATA_RD       = 5,
+    TEST_ISOLATION_PSA_ROT_DATA_WR       = 6,
+    TEST_ISOLATION_PSA_ROT_STACK_RD      = 7,
+    TEST_ISOLATION_PSA_ROT_STACK_WR      = 8,
+    TEST_ISOLATION_PSA_ROT_HEAP_RD       = 9,
+    TEST_ISOLATION_PSA_ROT_HEAP_WR       = 10,
+    TEST_ISOLATION_PSA_ROT_MMIO_RD       = 11,
+    TEST_ISOLATION_PSA_ROT_MMIO_WR       = 12,
+} driver_test_fn_id_t;
 
 /* typedef's */
 typedef struct {

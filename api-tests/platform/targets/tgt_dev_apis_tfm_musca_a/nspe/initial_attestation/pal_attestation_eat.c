@@ -15,10 +15,56 @@
  * limitations under the License.
 **/
 
-#include "pal_attestation_eat.h"
+#include "pal_attestation_crypto.h"
 
-uint32_t  mandatory_claims = 0, mandaroty_sw_components = 0;
-bool_t    sw_component_present = 0;
+uint32_t    mandatory_claims = 0;
+uint32_t    mandaroty_sw_components = 0;
+bool_t      sw_component_present = 0;
+
+static int pal_encode_cose_key(struct q_useful_buf_c *cose_key,
+                               struct q_useful_buf buffer_for_cose_key,
+                               struct q_useful_buf_c x_cord, struct q_useful_buf_c y_cord)
+{
+    uint32_t                  return_value;
+    QCBORError                qcbor_result;
+    QCBOREncodeContext        cbor_encode_ctx;
+    int32_t                   cose_curve_id = P_256;
+    struct q_useful_buf_c       encoded_key_id;
+
+    /* Get the public key x and y */
+    /* Encode it into a COSE_Key structure */
+    QCBOREncode_Init(&cbor_encode_ctx, buffer_for_cose_key);
+    QCBOREncode_OpenMap(&cbor_encode_ctx);
+    QCBOREncode_AddInt64ToMapN(&cbor_encode_ctx,
+                               COSE_KEY_COMMON_KTY,
+                               COSE_KEY_TYPE_EC2);
+    QCBOREncode_AddInt64ToMapN(&cbor_encode_ctx,
+                               COSE_KEY_PARAM_CRV,
+                               cose_curve_id);
+    QCBOREncode_AddBytesToMapN(&cbor_encode_ctx,
+                               COSE_KEY_PARAM_X_COORDINATE,
+                               x_cord);
+    QCBOREncode_AddBytesToMapN(&cbor_encode_ctx,
+                               COSE_KEY_PARAM_Y_COORDINATE,
+                               y_cord);
+    QCBOREncode_CloseMap(&cbor_encode_ctx);
+
+    qcbor_result = QCBOREncode_Finish(&cbor_encode_ctx, &encoded_key_id);
+    if (qcbor_result != QCBOR_SUCCESS)
+    {
+        /* Mainly means that the COSE_Key was too big for buffer_for_cose_key */
+        return_value = PAL_ATTEST_ERR_PROTECTED_HEADERS;
+        goto Done;
+    }
+
+    /* Finish up and return */
+    *cose_key = encoded_key_id;
+    return_value = PAL_ATTEST_SUCCESS;
+
+Done:
+    return return_value;
+}
+
 
 static int get_items_in_map(QCBORDecodeContext *decode_context,
                             struct items_to_get_t *item_list)
@@ -90,7 +136,7 @@ static int get_item_in_map(QCBORDecodeContext *decode_context,
 }
 
 static int parse_unprotected_headers(QCBORDecodeContext *decode_context,
-                                     struct useful_buf_c *child,
+                                     struct q_useful_buf_c *child,
                                      bool *loop_back)
 {
     struct items_to_get_t   item_list[3];
@@ -120,7 +166,7 @@ static int parse_unprotected_headers(QCBORDecodeContext *decode_context,
     return PAL_ATTEST_SUCCESS;
 }
 
-static int parse_protected_headers(struct useful_buf_c protected_headers,
+static int parse_protected_headers(struct q_useful_buf_c protected_headers,
                                    int32_t *alg_id)
 {
     QCBORDecodeContext  decode_context;
@@ -156,7 +202,7 @@ static int parse_protected_headers(struct useful_buf_c protected_headers,
     @return   - error status
 **/
 static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
-                                   struct useful_buf_c completed_challenge)
+                                   struct q_useful_buf_c completed_challenge)
 {
     int i, count = 0;
     int status = PAL_ATTEST_SUCCESS;
@@ -281,16 +327,42 @@ static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
 int32_t pal_initial_attest_verify_token(uint8_t *challenge, uint32_t challenge_size,
                                         uint8_t *token, uint32_t token_size)
 {
-    int                 status = PAL_ATTEST_SUCCESS;
+    int32_t             status = PAL_ATTEST_SUCCESS;
     bool                short_circuit;
     int32_t             cose_algorithm_id;
     QCBORItem           item;
     QCBORDecodeContext  decode_context;
-    struct useful_buf_c completed_challenge;
-    struct useful_buf_c completed_token;
-    struct useful_buf_c payload;
-    struct useful_buf_c protected_headers;
-    struct useful_buf_c kid;
+    struct q_useful_buf_c completed_challenge;
+    struct q_useful_buf_c completed_token;
+    struct q_useful_buf_c payload;
+    struct q_useful_buf_c signature;
+    struct q_useful_buf_c protected_headers;
+    struct q_useful_buf_c kid;
+    struct q_useful_buf_c x_cord;
+    struct q_useful_buf_c y_cord;
+    struct q_useful_buf_c cose_key_to_hash;
+    struct q_useful_buf_c key_hash;
+    struct q_useful_buf_c token_hash;
+    USEFUL_BUF_MAKE_STACK_UB(buf_to_hold_x_coord, T_COSE_CRYPTO_EC_P256_COORD_SIZE);
+    USEFUL_BUF_MAKE_STACK_UB(buf_to_hold_y_coord, T_COSE_CRYPTO_EC_P256_COORD_SIZE);
+    USEFUL_BUF_MAKE_STACK_UB(buffer_for_kid, T_COSE_CRYPTO_SHA256_SIZE);
+    USEFUL_BUF_MAKE_STACK_UB(buffer_for_cose_key, MAX_ENCODED_COSE_KEY_SIZE);
+    USEFUL_BUF_MAKE_STACK_UB(buffer_for_encoded_key, MAX_ENCODED_COSE_KEY_SIZE);
+    USEFUL_BUF_MAKE_STACK_UB(buffer_for_token_hash, T_COSE_CRYPTO_SHA256_SIZE);
+
+    kid.ptr = buffer_for_encoded_key.ptr;
+
+    memcpy(buf_to_hold_x_coord.ptr, (const void *)attest_key.pubx_key, attest_key.pubx_key_size);
+    memcpy(buf_to_hold_y_coord.ptr, (const void *)attest_key.puby_key, attest_key.puby_key_size);
+
+    /* Update size */
+    buf_to_hold_x_coord.len = attest_key.pubx_key_size;
+    buf_to_hold_y_coord.len = attest_key.puby_key_size;
+
+    x_cord.ptr = buf_to_hold_x_coord.ptr;
+    x_cord.len = buf_to_hold_x_coord.len;
+    y_cord.ptr = buf_to_hold_y_coord.ptr;
+    y_cord.len = buf_to_hold_y_coord.len;
 
     /* Construct the token buffer for validation */
     completed_token.ptr = token;
@@ -345,6 +417,27 @@ int32_t pal_initial_attest_verify_token(uint8_t *challenge, uint32_t challenge_s
     if (status != PAL_ATTEST_SUCCESS)
         return status;
 
+    /* Encode the given public key */
+    status = pal_encode_cose_key(&cose_key_to_hash, buffer_for_cose_key, x_cord, y_cord);
+    if (status != PAL_ATTEST_SUCCESS)
+        return status;
+
+    /* Create hash of the given public key */
+    status = pal_create_sha256(cose_key_to_hash, buffer_for_kid, &key_hash);
+    if (status != PSA_SUCCESS)
+        return status;
+
+    /* Compare the hash of the public key in token and hash of the given public key */
+    if (kid.len != key_hash.len)
+    {
+        return PAL_ATTEST_HASH_LENGTH_MISMATCH;
+    }
+
+    if (memcmp(kid.ptr, key_hash.ptr, kid.len) != 0)
+    {
+        return PAL_ATTEST_HASH_MISMATCH;
+    }
+
     /* Get the payload */
     QCBORDecode_GetNext(&decode_context, &item);
     if (item.uDataType != QCBOR_TYPE_BYTE_STRING)
@@ -356,6 +449,19 @@ int32_t pal_initial_attest_verify_token(uint8_t *challenge, uint32_t challenge_s
     QCBORDecode_GetNext(&decode_context, &item);
     if (item.uDataType != QCBOR_TYPE_BYTE_STRING)
         return PAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
+
+    signature = item.val.string;
+
+    /* Compute the hash from the token */
+    status = pal_compute_hash(cose_algorithm_id, buffer_for_token_hash, &token_hash,
+                              protected_headers, payload);
+    if (status != PAL_ATTEST_SUCCESS)
+        return status;
+
+    /* Verify the signature */
+    status = pal_crypto_pub_key_verify(cose_algorithm_id, token_hash, signature);
+    if (status != PAL_ATTEST_SUCCESS)
+        return status;
 
     /* Initialize the Decoder and validate the payload format */
     QCBORDecode_Init(&decode_context, payload, QCBOR_DECODE_MODE_NORMAL);

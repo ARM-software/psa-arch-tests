@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 #include "test_i027.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_FF_BASE, 27)
-#define TEST_DESC "Testing PSA_DROP_CONNECTION\n"
+#define TEST_DESC "Testing connection termination at PSA_IPC_CALL\n"
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;
 psa_api_t *psa = NULL;

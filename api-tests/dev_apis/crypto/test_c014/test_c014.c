@@ -38,7 +38,7 @@ int32_t psa_hash_finish_test(security_t caller)
     psa_hash_operation_t    operation;
     const char              *expected_hash;
     char                    hash[HASH_64B];
-    size_t                  hash_length, hash_size = sizeof(hash)/sizeof(hash[0]);
+    size_t                  hash_length, hash_size = sizeof(hash);
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -77,14 +77,10 @@ int32_t psa_hash_finish_test(security_t caller)
 
         if (check1[i].expected_status != PSA_SUCCESS)
         {
-            /*Abort the hash operation */
-            status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &operation);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
             continue;
         }
 
         TEST_ASSERT_EQUAL(hash_length, PSA_HASH_SIZE(check1[i].alg), TEST_CHECKPOINT_NUM(7));
-
         TEST_ASSERT_MEMCMP(hash, expected_hash, hash_length, TEST_CHECKPOINT_NUM(8));
 
         /*Abort the hash operation */
@@ -102,7 +98,7 @@ int32_t psa_hash_finish_inactive_operation_handle(security_t caller)
     size_t                  input_length = 1;
     psa_algorithm_t         alg = PSA_ALG_SHA_256;
     char                    hash[HASH_64B];
-    size_t                  hash_length, hash_size = sizeof(hash)/sizeof(hash[0]);
+    size_t                  hash_length, hash_size = sizeof(hash);
     int32_t                 status;
 
     /* Initialize the PSA crypto library*/

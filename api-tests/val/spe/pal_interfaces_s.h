@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@
 #define _VAL_PAL_INTERFACE_APIS_H_
 
 
-#include "val/common/val.h"
+#include "val.h"
 
 /* Peripherals APIs */
 
@@ -37,7 +37,7 @@ void pal_uart_init(addr_t uart_base_addr);
                - data           : Value for Format specifier
     @return    - void
  */
-void pal_print(char *str, uint32_t data);
+void pal_print(char *str, int32_t data);
 
 /**
     @brief           - Initializes an hardware watchdog timer
@@ -90,4 +90,19 @@ int  pal_nvmem_write(addr_t base, uint32_t offset, void *buffer, int size);
     @return    - error status 0:SUCCESS, 1:FAIL
 */
 int  pal_nvmem_read(addr_t base, uint32_t offset, void *buffer, int size);
+
+/**
+    @brief   - Trigger interrupt for irq signal assigned to driver partition
+               before return to caller.
+    @param   - void
+    @return  - void
+**/
+void pal_generate_interrupt(void);
+
+/**
+    @brief   - Disable interrupt that was generated using pal_generate_interrupt API.
+    @param   - void
+    @return  - void
+**/
+void pal_disable_interrupt(void);
 #endif

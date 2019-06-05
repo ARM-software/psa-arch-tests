@@ -105,6 +105,10 @@ int32_t psa_generator_abort_test(security_t caller)
         /* Abort the generator */
         status = val->crypto_function(VAL_CRYPTO_GENERATOR_ABORT, &generator);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
+
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
     }
 
     return VAL_STATUS_SUCCESS;

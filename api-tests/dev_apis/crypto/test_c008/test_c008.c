@@ -53,6 +53,8 @@ int32_t psa_get_key_policy_test(security_t caller)
          * usage of the key
          */
         val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
+        memset(&expected_usage, 0, sizeof(psa_key_usage_t));
+        memset(&expected_alg, 0, sizeof(psa_algorithm_t));
 
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);

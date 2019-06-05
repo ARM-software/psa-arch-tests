@@ -114,29 +114,37 @@ int32_t psa_cipher_finish_test(security_t caller)
             /* Abort a cipher operation */
             status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
+
+            /* Destroy the key */
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
             continue;
         }
 
         /* Check if the output length matches the expected length */
-        TEST_ASSERT_EQUAL(finish_length, check1[i].expected_output_length, TEST_CHECKPOINT_NUM(12));
+        TEST_ASSERT_EQUAL(finish_length, check1[i].expected_output_length, TEST_CHECKPOINT_NUM(13));
 
         /* Check if the output data matches the expected data */
         TEST_ASSERT_MEMCMP(output, check1[i].expected_output,
                           (update_length + finish_length),
-                           TEST_CHECKPOINT_NUM(13));
+                           TEST_CHECKPOINT_NUM(14));
 
         /* Finish encrypting or decrypting a message using an invalid operation should fail */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_FINISH, &invalid_operation, output,
                     check1[i].output_size[SLOT_2], &finish_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(14));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(15));
 
         /* Abort a cipher operation */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(15));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(16));
 
         /* Abort a cipher operation */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &invalid_operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(16));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(17));
+
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(18));
     }
 
     return VAL_STATUS_SUCCESS;

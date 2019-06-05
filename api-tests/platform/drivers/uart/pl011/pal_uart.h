@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,13 @@ typedef struct
     volatile uint32_t uartfbrd;        /* Offset: 0x028 (R/W) Fractional baud rate register */
     volatile uint32_t uartlcr_h;       /* Offset: 0x02C (R/W) Line control register */
     volatile uint32_t uartcr;          /* Offset: 0x030 (R/W) Control register */
-} uart_gt;
+    volatile uint32_t uartifls;        /* Offset: 0x034 (R/W) Interrupt FIFO level select reg */
+    volatile uint32_t uartimsc;        /* Offset: 0x038 (R/W) Interrupt mask set/clear register */
+    volatile uint32_t uartris;         /* Offset: 0x03C (R/ ) Raw interrupt status register */
+    volatile uint32_t uartmis;         /* Offset: 0x040 (R/ ) Masked interrupt status register */
+    volatile uint32_t uarticr;         /* Offset: 0x044 ( /W) Interrupt clear register */
+    volatile uint32_t uartdmacr;       /* Offset: 0x048 (R/W) DMA control register */
+} uart_t;
 
 #define UART_PL011_UARTCR_UARTEN_OFF       0x0u
 #define UART_PL011_UARTCR_TXE_OFF          0x8u
@@ -46,8 +52,15 @@ typedef struct
 #define UART_PL011_UARTCR_TX_EN_MASK       (0x1u << UART_PL011_UARTCR_TXE_OFF)
 #define UART_PL011_UARTFR_TX_FIFO_FULL     (0x1u << UART_PL011_UARTFR_TX_FIFO_FULL_OFF)
 
+#define UART_PL011_INTR_TX_OFF             0x5u
+#define UART_PL011_TX_INTR_MASK            (0x1u << UART_PL011_INTR_TX_OFF)
+#define UART_PL011_UARTLCR_H_FEN_OFF       0x4u
+#define UART_PL011_UARTLCR_H_FEN_MASK      (0x1u << UART_PL011_UARTLCR_H_FEN_OFF)
+
 /* function prototypes */
 void pal_uart_pl011_init(uint32_t uart_base_addr);
-void pal_uart_pl011_print(char *str, uint32_t data);
+void pal_uart_pl011_print(char *str, int32_t data);
+void pal_uart_pl011_generate_irq(void);
+void pal_uart_pl011_disable_irq(void);
 
 #endif /* _PAL_UART_CMSDK_H_ */

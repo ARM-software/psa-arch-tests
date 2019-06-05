@@ -97,6 +97,10 @@ int32_t psa_cipher_abort_test(security_t caller)
         /* Multiple abort cipher operation should return success*/
         status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
     }
 
     return VAL_STATUS_SUCCESS;
@@ -117,9 +121,9 @@ int32_t psa_cipher_abort_before_update_test(security_t caller)
                                        0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a};
     uint8_t                 iv[] = {0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a,
                                     0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a};
-    size_t                  key_length = sizeof(key_data)/sizeof(key_data[0]);
-    size_t                  input_length = sizeof(input)/sizeof(input[0]);
-    size_t                  iv_size = sizeof(iv)/sizeof(iv[0]);
+    size_t                  key_length = sizeof(key_data);
+    size_t                  input_length = sizeof(input);
+    size_t                  iv_size = sizeof(iv);
     int32_t                 status;
 
     /* Initialize the PSA crypto library*/
@@ -172,6 +176,10 @@ int32_t psa_cipher_abort_before_update_test(security_t caller)
     status = val->crypto_function(VAL_CRYPTO_CIPHER_UPDATE, &operation, input,
                 input_length, output, SIZE_32B, &length);
     TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(9));
+
+    /* Destroy the key */
+    status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
 
     return VAL_STATUS_SUCCESS;
 }

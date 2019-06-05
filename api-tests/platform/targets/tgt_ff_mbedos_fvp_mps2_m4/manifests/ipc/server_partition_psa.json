@@ -3,7 +3,6 @@
   "name": "SERVER_PARTITION",
   "type": "APPLICATION-ROT",
   "priority": "NORMAL",
-  "id": "0x00000002",
   "description": "Server partition executing server test func",
   "entry_point": "server_main",
   "stack_size": "0x400",
@@ -66,10 +65,5 @@
   "dependencies": [
     "DRIVER_UART_SID",
     "DRIVER_NVMEM_SID"
-  ],
-  "linker_pattern": {
-    "object_list": [
-    "server_partition.a"
-    ]
-  }
+  ]
 }

@@ -73,7 +73,7 @@ int32_t psa_sst_flags_not_supported(security_t caller)
        {
           test_status = psa_sst_remove_api(uid, TEST_BUFF_SIZE, write_buff,
                                           (flag & (~PSA_SST_FLAG_WRITE_ONCE)));
-	      if (test_status != VAL_STATUS_SUCCESS)
+          if (test_status != VAL_STATUS_SUCCESS)
              return test_status;
        }
        else if (status == s006_data[0].status)
