@@ -16,6 +16,10 @@ PSA APIs reference header files are located at [api-specs](api-specs/include) di
 ### PSA Functional API Certification
 The [PSA Dev API tests](api-tests/dev_apis) are the basis for getting the PSA Functional API Certification. For more information on the certification program, see [psacertified.org](https://www.psacertified.org/functional-api-certification/) 
 
+## GitHub branch
+  - For functional API certification, use the release branch and pick the appropriate release tag.
+  - To get the latest version of the code with bug fixes and new features, use the master branch.
+  
 ## Architecture test suite
 
 The current implementation of the Architecture test suite contains tests for following PSA specifications. Arm licensees may contact their partner manager to obtain a copy of this specification. <br />
