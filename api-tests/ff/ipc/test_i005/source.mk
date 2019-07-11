@@ -14,7 +14,7 @@
 # * limitations under the License.
 #**/
 
-CC_SOURCE  = test_entry.c test_i005.c
+CC_SOURCE  = test_entry_i005.c test_i005.c
 CC_OPTIONS =
 AS_SOURCE  =
 AS_OPTIONS =

@@ -24,7 +24,7 @@ LR_CODE TEST_CODE_START
 
     ER_CODE TEST_CODE_START (TEST_INFO_SIZE+TEST_TEXT_SIZE+TEST_DATA_SIZE)
     {
-        test_entry_nspe.o(.acs_test_info +FIRST)
+        test_entry_*_nspe.o(.acs_test_info +FIRST)
         * (+CODE)
         * (+RO)
         * (+ZI +RW)
