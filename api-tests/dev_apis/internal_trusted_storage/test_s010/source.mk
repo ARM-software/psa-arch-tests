@@ -14,7 +14,7 @@
 # * limitations under the License.
 #**/
 
-CC_SOURCE  = test_entry.c test_s010.c
+CC_SOURCE  = test_entry_s010.c test_s010.c
 CC_OPTIONS = -DITS_TEST
 AS_SOURCE  =
 AS_OPTIONS =
