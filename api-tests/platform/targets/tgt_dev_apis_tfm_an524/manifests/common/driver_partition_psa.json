@@ -1,0 +1,75 @@
+{
+  "psa_framework_version": 1.0,
+  "name": "DRIVER_PARTITION",
+  "type": "PSA-ROT",
+  "priority": "NORMAL",
+  "description": "Implements device services such print, flash read/write,. etc.",
+  "entry_point": "driver_main",
+  "stack_size": "0x400",
+  "services": [{
+      "name": "DRIVER_UART_SID",
+      "sid": "0x0000FC01",
+      "signal": "DRIVER_UART_SIG",
+      "non_secure_clients": true,
+      "minor_version": 1,
+      "minor_policy": "RELAXED"
+    },
+    {
+      "name": "DRIVER_WATCHDOG_SID",
+      "sid": "0x0000FC02",
+      "signal": "DRIVER_WATCHDOG_SIG",
+      "non_secure_clients": true,
+      "minor_version": 1,
+      "minor_policy": "RELAXED"
+    },
+    {
+      "name": "DRIVER_NVMEM_SID",
+      "sid": "0x0000FC03",
+      "signal": "DRIVER_NVMEM_SIG",
+      "non_secure_clients": true,
+      "minor_version": 1,
+      "minor_policy": "RELAXED"
+    },
+    {
+      "name": "DRIVER_TEST_SID",
+      "sid": "0x0000FC04",
+      "signal": "DRIVER_TEST_SIG",
+      "non_secure_clients": true,
+      "minor_version": 1,
+      "minor_policy": "RELAXED"
+    }
+  ],
+  "mmio_regions" : [
+    {
+      "name": "UART_REGION",
+      "base": "0x40004000",
+      "size": "0x1000",
+      "permission": "READ-WRITE"
+    },
+    {
+      "name": "WATCHDOG_REGION",
+      "base": "0x40008000",
+      "size": "0x1000",
+      "permission": "READ-WRITE"
+    },
+    {
+      "name": "NVMEM_REGION",
+      "base": "0x2002F000",
+      "size": "0x400",
+      "permission": "READ-WRITE"
+    },
+    {
+      "name": "DRIVER_PARTITION_MMIO",
+      "base": "0x200AF040",
+      "size": "0x20",
+      "permission": "READ-WRITE"
+    }
+  ],
+  "irqs": [
+    {
+       "description": "Using UART TX interrupt to test psa_wait and psa_eoi for irq_signal",
+       "signal": "DRIVER_UART_INTR_SIG",
+       "line_num": 37
+    }
+  ]
+}

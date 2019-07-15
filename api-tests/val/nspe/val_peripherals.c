@@ -170,6 +170,7 @@ val_status_t val_wd_reprogram_timer(wd_timeout_type_t timeout_type)
 {
     val_status_t    status = VAL_STATUS_SUCCESS;
 
+#ifdef WATCHDOG_AVAILABLE
     /* Disable watchdog Timer */
     val_wd_timer_disable();
 
@@ -186,6 +187,7 @@ val_status_t val_wd_reprogram_timer(wd_timeout_type_t timeout_type)
     {
         return status;
     }
+#endif
 
     return status;
 }

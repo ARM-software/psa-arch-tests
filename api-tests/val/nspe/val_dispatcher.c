@@ -29,6 +29,7 @@ addr_t          g_test_info_addr;
 uint32_t        combine_test_binary_in_ram;
 addr_t          combine_test_binary_addr;
 
+#if !defined(TEST_COMBINE_ARCHIVE)
 static const unsigned char elf_magic_header[ELF_IDENT] = {
     /* 0x7f, 'E', 'L', 'F' */
     0x7f, 0x45, 0x4c, 0x46,
@@ -116,6 +117,7 @@ int val_copy_elf(uint32_t saddr, uint32_t *info_addr)
     *info_addr = test_elfh.e_entry;
     return 0;
 }
+#endif
 
 /**
     @brief        - This function reads the test ELFs from RAM or secondary storage and loads into
@@ -126,7 +128,7 @@ int val_copy_elf(uint32_t saddr, uint32_t *info_addr)
 **/
 val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
 {
-#if (TEST_COMBINE_ARCHIVE == 0)
+#if !defined(TEST_COMBINE_ARCHIVE)
     test_header_t   test_header;
     addr_t          flash_addr = combine_test_binary_addr;
 
@@ -260,7 +262,7 @@ val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
 **/
 val_status_t val_get_test_entry_addr(addr_t *paddr)
 {
-#if (TEST_COMBINE_ARCHIVE == 0)
+#if !defined(TEST_COMBINE_ARCHIVE)
     *paddr = (addr_t)(((val_test_info_t *)g_test_info_addr)->entry_addr);
 #else
     *paddr = g_test_info_addr;

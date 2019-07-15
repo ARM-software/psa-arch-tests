@@ -36,7 +36,7 @@ client_test_t test_i074_client_tests_list[] = {
     NULL,
 };
 
-#if (SP_HEAP_MEM_SUPP == 1)
+#ifdef SP_HEAP_MEM_SUPP
 static int32_t get_secure_partition_address(addr_t *addr)
 {
    psa_handle_t            handle = 0;

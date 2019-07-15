@@ -26,7 +26,7 @@ extern psa_api_t *psa;
 int32_t server_test_sp_read_other_sp_heap(void);
 int32_t server_test_sp_write_other_sp_heap(void);
 
-#if (SP_HEAP_MEM_SUPP == 1)
+#ifdef SP_HEAP_MEM_SUPP
 void *malloc(size_t size);
 void free(void *ptr);
 #endif
@@ -41,7 +41,7 @@ server_test_t test_i086_server_tests_list[] = {
     NULL,
 };
 
-#if (SP_HEAP_MEM_SUPP == 1)
+#ifdef SP_HEAP_MEM_SUPP
 static int32_t send_secure_partition_address(uint8_t *heap)
 {
     int32_t         status = VAL_STATUS_SUCCESS;

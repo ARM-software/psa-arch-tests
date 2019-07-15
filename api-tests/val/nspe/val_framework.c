@@ -486,7 +486,7 @@ void val_test_init(uint32_t test_num, char8_t *desc, uint32_t test_bitfield)
        return;
    }
 
-#if (WATCHDOG_AVAILABLE == 1)
+#ifdef WATCHDOG_AVAILABLE
    /* Initialise watchdog */
    status = val_wd_timer_init(GET_WD_TIMOUT_TYPE(test_bitfield));
    if (VAL_ERROR(status))
@@ -518,7 +518,7 @@ void val_test_exit(void)
 {
     val_status_t         status = VAL_STATUS_SUCCESS;
 
-#if (WATCHDOG_AVAILABLE == 1)
+#ifdef WATCHDOG_AVAILABLE
     status = val_wd_timer_disable();
     if (VAL_ERROR(status))
     {

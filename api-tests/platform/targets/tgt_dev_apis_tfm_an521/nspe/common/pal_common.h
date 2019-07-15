@@ -24,10 +24,8 @@
 #include <limits.h>
 #include <stdarg.h>
 
-#ifndef TARGET_CFG_BUILD
 #include "pal_config.h"
 #include "pal_crypto_config.h"
-#endif
 
 /* typedef's */
 typedef uint8_t             bool_t;
@@ -87,7 +85,7 @@ typedef enum {
  * Redefining some of the client.h elements for compilation to go through
  * when PSA IPC APIs are not implemented.
  */
-#if (PSA_IPC_IMPLEMENTED == 0)
+#ifndef IPC
 
 #ifndef PSA_VERSION_NONE
 #define PSA_VERSION_NONE            (0)
@@ -113,6 +111,6 @@ typedef struct psa_outvec {
     size_t len;
 } psa_outvec;
 
-#endif /* PSA_IPC_IMPLEMENTED */
+#endif /* IPC */
 
 #endif /* _PAL_COMMON_H_ */

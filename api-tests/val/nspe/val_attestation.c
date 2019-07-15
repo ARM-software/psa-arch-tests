@@ -30,6 +30,7 @@
 
 int32_t val_attestation_function(int type, ...)
 {
+#ifdef INITIAL_ATTESTATION
     va_list      valist;
     val_status_t status;
 
@@ -37,4 +38,7 @@ int32_t val_attestation_function(int type, ...)
     status = pal_attestation_function(type, valist);
     va_end(valist);
     return status;
+#else
+    return VAL_STATUS_ERROR;
+#endif
 }

@@ -3,9 +3,10 @@
 
 Before starting the test suite build, ensure that the following requirements are met: <br />
 
-- Host Operating System     : Ubuntu 16.04
-- Scripting tools           : Perl 5.12.3, Python 3.1.7
+- Host Operating System     : Ubuntu 16.04, Windows 10
+- Scripting tools           : Python 3.1.7
 - Compiler toolchain        : GNU Arm Embedded Toolchain 6.3.1, Arm Compiler v6.7
+- Build tools               : CMake 3.10
 
 **Note**: To compile the test suite code, at least one of the above supported compiler toolchains
         must be available in the build environment.

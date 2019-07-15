@@ -15,7 +15,7 @@
  * limitations under the License.
 **/
 
-#include "val/spe/val_driver_service_apis.h"
+#include "val_driver_service_apis.h"
 
 #define DATA_VALUE  0x1111
 #define BUFFER_SIZE 4
@@ -574,7 +574,7 @@ void driver_test_isolation_psa_rot_stack_wr(psa_msg_t *msg)
 
 void driver_test_isolation_psa_rot_heap_rd(psa_msg_t *msg)
 {
-#if (SP_HEAP_MEM_SUPP == 1)
+#ifdef SP_HEAP_MEM_SUPP
     uint8_t         *buffer;
 
     buffer = (uint8_t *)malloc(sizeof(uint8_t) * BUFFER_SIZE);
@@ -589,7 +589,7 @@ void driver_test_isolation_psa_rot_heap_rd(psa_msg_t *msg)
 
 void driver_test_isolation_psa_rot_heap_wr(psa_msg_t *msg)
 {
-#if (SP_HEAP_MEM_SUPP == 1)
+#ifdef SP_HEAP_MEM_SUPP
     uint8_t         *buffer;
 
     buffer = (uint8_t *)malloc(sizeof(uint8_t) * BUFFER_SIZE);

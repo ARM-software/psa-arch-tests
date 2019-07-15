@@ -18,66 +18,32 @@
 #ifndef _PAL_CONFIG_H_
 #define _PAL_CONFIG_H_
 
-/*
- * List of macros used by test suite
- */
-#if !defined(PSA_IPC_IMPLEMENTED)
-#define PSA_IPC_IMPLEMENTED 0
-#endif
+/* Define PSA test suite dependent macros for non-cmake build */
+#if !defined(PSA_CMAKE_BUILD)
 
-#if !defined(PSA_CRYPTO_IMPLEMENTED)
-#define PSA_CRYPTO_IMPLEMENTED 0
-#endif
+/* Print verbosity = TEST */
+#define VERBOSE 3
 
-#if !defined(PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED)
-#define PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED 0
-#endif
+/* NSPE or SPE VAL build? */
+#define VAL_NSPE_BUILD
 
-#if !defined(PSA_PROTECTED_STORAGE_IMPLEMENTED)
-#define PSA_PROTECTED_STORAGE_IMPLEMENTED 0
-#endif
+/* NSPE or SPE TEST build? */
+#define NONSECURE_TEST_BUILD
 
-#if !defined(PSA_INITIAL_ATTESTATION_IMPLEMENTED)
-#define PSA_INITIAL_ATTESTATION_IMPLEMENTED 0
-#endif
+/* Combine test archive or binary? */
+#define TEST_COMBINE_ARCHIVE
 
-#if (PSA_IPC_IMPLEMENTED == 0) && \
-    (PSA_CRYPTO_IMPLEMENTED == 0) && \
-    (PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED == 0) && \
-    (PSA_PROTECTED_STORAGE_IMPLEMENTED == 0) && \
-    (PSA_INITIAL_ATTESTATION_IMPLEMENTED == 0)
-#error "You must define at least one of these macros to run test suite"
-#endif
+/* If not defined, skip watchdog programming */
+#define WATCHDOG_AVAILABLE
 
-#if !defined(VERBOSE)
-#define VERBOSE 3 /* Print verbosity = TEST */
-#endif
-
-#if (!defined(VAL_NSPE_BUILD) && !defined(SPE_BUILD))
-#define VAL_NSPE_BUILD 1
-#endif
-
-#if (!defined(NONSECURE_TEST_BUILD) && !defined(SPE_BUILD))
-#define NONSECURE_TEST_BUILD 1
-#endif
-
-#if !defined(TEST_COMBINE_ARCHIVE)
-#define TEST_COMBINE_ARCHIVE 0 /* Combine test archive or binary? */
-#endif
-
-#if !defined(WATCHDOG_AVAILABLE)
-#define WATCHDOG_AVAILABLE 0 /* If zero, skip watchdog programming */
-#endif
-
-#if !defined(SP_HEAP_MEM_SUPP)
-#define SP_HEAP_MEM_SUPP 0 /* Are Dynamic funcs available to secure partition? */
-#endif
+/* Are Dynamic memory APIs available to secure partition? */
+#define SP_HEAP_MEM_SUPP
+#endif /* PSA_CMAKE_BUILD */
 
 /*
  * Include of PSA defined Header files
  */
-
-#if PSA_IPC_IMPLEMENTED
+#ifdef IPC
 /* psa/client.h: Contains the PSA Client API elements */
 #include "psa/client.h"
 
@@ -96,22 +62,22 @@
 #include "psa_manifest/pid.h"
 #endif
 
-#if PSA_CRYPTO_IMPLEMENTED
+#ifdef CRYPTO
 /* psa/crypto.h: Contains the PSA Crypto API elements */
 #include "psa/crypto.h"
 #endif
 
-#if PSA_INTERNAL_TRUSTED_STORAGE_IMPLEMENTED
+#ifdef INTERNAL_TRUSTED_STORAGE
 /* psa/internal_trusted_storage.h: Contains the PSA ITS API elements */
 #include "psa/internal_trusted_storage.h"
 #endif
 
-#if PSA_PROTECTED_STORAGE_IMPLEMENTED
+#ifdef PROTECTED_STORAGE
 /* psa/protected_storage.h: Contains the PSA PS API elements */
 #include "psa/protected_storage.h"
 #endif
 
-#if PSA_INITIAL_ATTESTATION_IMPLEMENTED
+#ifdef INITIAL_ATTESTATION
 /* psa/initial_attestation.h: Contains the PSA Initial Attestation API elements */
 #include "psa/initial_attestation.h"
 #endif
