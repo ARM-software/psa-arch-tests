@@ -44,10 +44,6 @@ STATIC_DECLARE val_status_t val_target_cfg_get_next(void **blob)
     if (*blob == NULL)
     {
         *blob = (void *) &target_database;
-        if (blob == NULL)
-        {
-            return VAL_STATUS_NOT_FOUND;
-        }
         hdr = *blob;
 
         /* Sanity check signature and version here */
