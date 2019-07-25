@@ -25,7 +25,7 @@ extern psa_api_t *psa;
 
 #define SERVER_HEAP_SIZE 0x100 /* The size is same as heap_size field in manifest */
 
-#if (SP_HEAP_MEM_SUPP == 1)
+#ifdef SP_HEAP_MEM_SUPP
 void *malloc(size_t size);
 void free(void *ptr);
 void *realloc(void *ptr, size_t size);
@@ -42,7 +42,7 @@ server_test_t test_i067_server_tests_list[] = {
 int32_t server_test_dynamic_mem_alloc_fn(void)
 {
    /* Perform checks only if heap memory support available to secure partition */
-#if (SP_HEAP_MEM_SUPP == 1)
+#ifdef SP_HEAP_MEM_SUPP
    uint8_t              *buffer, *buffer1;
    uint8_t              cmpbuff[SERVER_HEAP_SIZE] = {0};
 

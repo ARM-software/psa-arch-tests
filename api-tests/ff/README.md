@@ -49,39 +49,43 @@ To build the test suite for your target platform, perform the following steps.
 
 3. Compile the tests as shown below. <br />
 ```
-   ./tools/scripts/setup.sh --target <platform_name> --cpu_arch <cpu_architecture_version> --suite <suite_name>  --build <build_dir> --include <include_path>  --archive_tests
+    cd api-tests
+    mkdir <build_dir>
+    cd <build_dir>
+    cmake ../ -G"<generator-name> -DTARGET=<platform_name> -DCPU_ARCH=<cpu_architecture_version> -DSUITE=<suite_name> -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>"
+    cmake --build .
 ```
 <br />  where:
 
+-   <generator-name> "Unix Makefiles" to generate Makefiles for Linux and Cygwin <br />
+                     "MinGW Makefiles" to generate Makefiles for cmd.exe on Windows  <br />
 -   <platform_name> is the same as the name of the target specific directory created in the **platform/targets/** directory.  <br />
 -   <cpu_architecture_version> is the Arm Architecture version name for which the tests should be compiled. For example, Armv7M, Armv8M-Baseline and Armv8M-Mainline Architecture.  <br />
 -   <suite_name> is the suite name which is the same as the suite name available in **ff/** directory. <br >
--   <build_dir> is a directory to store the build output files.  <br />
--   <include_path> is an additional directory to be included into the compiler search path. <br />
-Note: To compile IPC tests, the include path must point to the path where **psa/client.h**, **psa/service.h**,  **psa/lifecycle.h** and test partition manifest output files(**psa_manifest/sid.h**, **psa_manifest/pid.h** and **psa_manifest/<manifestfilename>.h**) are located in your build system.<br />
--  Use **--archive_tests** option to create a combined test archive(test_combine.a) file by combining the available test objects files. Not using this option will create a combined test binary(test_elf_combine.bin) by combining the available test ELFs.
+-   <include_path1>;<include_path2>;...;<include_pathn> is an additional directory to be included into the compiler search path. To compile IPC tests, the include path must point to the path where **psa/client.h**, **psa/service.h**,  **psa/lifecycle.h** and test partition manifest output files(**psa_manifest/sid.h**, **psa_manifest/pid.h** and **psa_manifest/<manifestfilename>.h**) are located in your build system.<br />
 
-For more information about options, refer to **./tools/scripts/setup.sh --help**.
-
-To compile IPC tests for **tgt_ff_mbedos_fvp_mps2_m4** platform, execute the following commands:
+To compile IPC tests for **tgt_ff_tfm_an521** platform, execute the following commands:
 ```
-cd api-tests
-./tools/scripts/setup.sh --target tgt_ff_mbedos_fvp_mps2_m4 --cpu_arch armv7m --suite ipc --build BUILD_IPC --include <include_path1> --include <include_path2> --archive_tests
+    cd api-tests
+    mkdir BUILD
+    cd  BUILD
+    cmake ../ -G"Unix Makefiles" -DTARGET=tgt_ff_tfm_an521 -DCPU_ARCH=armv8m_ml -DSUITE=IPC -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>"
+    cmake --build .
 ```
-**Note**: The default compilation flow includes the functional API tests to build the test suite. It does not include panic tests that check for the API's PROGRAMMER ERROR conditions as defined in the PSA-FF specification. You can include the panic tests for building the test suite just by passing **--include_panic_tests** option to script.
+**Note**: The default compilation flow includes the functional API tests to build the test suite. It does not include panic tests that check for the API's PROGRAMMER ERROR conditions as defined in the PSA-FF specification. You can include the panic tests for building the test suite just by passing **-DINCLUDE_PANIC_TESTS=1** to CMake.
 
 ### Build output
 The test suite build generates the following binaries:<br />
 
 NSPE libraries:<br />
-1. **<build_dir>/BUILD/val/val_nspe.a**
-2. **<build_dir>/BUILD/platform/pal_nspe.a**
-3. **<build_dir>/BUILD/ff/<suite_name>/test_combine.a**
+1. **<build_dir>/val/val_nspe.a**
+2. **<build_dir>/platform/pal_nspe.a**
+3. **<build_dir>/ff/<suite_name>/test_combine.a**
 
 SPE libraries explicitly for IPC test suite:<br />
-1. **<build_dir>/BUILD/partition/driver_partition.a**
-2. **<build_dir>/BUILD/partition/client_partition.a**
-3. **<build_dir>/BUILD/partition/server_partition.a**
+1. **<build_dir>/partition/driver_partition.a**
+2. **<build_dir>/partition/client_partition.a**
+3. **<build_dir>/partition/server_partition.a**
 
 ### Integrating the libraries into your target platform
 

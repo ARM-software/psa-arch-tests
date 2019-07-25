@@ -33,29 +33,23 @@ An example input configuration file is as shown.
 
 ### Adding a new target
 
-  1. Create a new directory in **platform/targets/<platform_name>**. For reference, see the existing platform tgt_ff_mbedos_fvp_mps2_m4 directory.
-  2. Execute `cp -rf platform/targets/tgt_ff_mbedos_fvp_mps2_m4/ platform/targets/<platform_name>/`.
+  1. Create a new directory in **platform/targets/<platform_name>**. For reference, see the existing platform tgt_ff_tfm_an521 directory.
+  2. Execute `cp -rf platform/targets/tgt_ff_tfm_an521/ platform/targets/<platform_name>/`.
   3. Update **platform/targets/<platform_name>/target.cfg** with your target platform details. Refer to **val/common/val_target.h** for structure details.
   4. Update the platform information available in manifest files located in  **platform/targets/<platform_name>/manifests/** directory with your platform information. The platform details must match the device details provided in the target.cfg file.
-  5. Update **platform/targets/<platform_name>/Makefile** appropriately to select the correct instances of PAL files for compilation. To compile IPC tests, you must set PSA_IPC_IMPLEMENTED to 1 and the remaining Developer APIs related variables to 0. This selects the Secure PAL instances for the driver services and eliminates dev_apis dependency for IPC tests.
-  6. Refer to the **List of PAL APIs** section to view the list of PAL APIs that must be ported for your target platform. These API definitions are available in **nspe/<suite_name>/pal_\*\_intf.c** and **spe/pal_\*\_intf.c** files. These APIs are written for **tgt_ff_mbedos_fvp_mps2_m4** platform. You can reuse the code if it works for your platform. Otherwise, you must port them for your platform-specific peripherals.
+  5. Update **platform/targets/<platform_name>/target.cmake** appropriately to select the correct instances of PAL files for compilation.
+  6. Refer to the **List of PAL APIs** section to view the list of PAL APIs that must be ported for your target platform. These API definitions are available in **nspe/<suite_name>/pal_\*\_intf.c** and **spe/pal_\*\_intf.c** files. These APIs are written for **tgt_ff_tfm_an521** platform. You can reuse the code if it works for your platform. Otherwise, you must port them for your platform-specific peripherals.
 
 **Note**:
-- The platform makefile is invoked as part of test suite build tool (**./setup.sh**) step and it creates **<build_dir>/BUILD/platform/pal_nspe.a** archive for NPSE files and respective object for SPE files at **<build_dir>/BUILD/platform/spe/\*\_driver_sp.o**. These SPE objects are used by **spbuild.mk** to create the  appropriate SPE partition archive file.
-- The test suite requires access to the peripherals mentioned below. When PSA_IPC_IMPLEMENTED is set to 1, driver functionalities are implemented as RoT-services in driver partition. Other Secure partitions and Non-secure code calls to these RoT-services to get appropriate driver services.
+- The test suite requires access to the peripherals mentioned below. For IPC suite, driver functionalities are implemented as RoT-services in driver partition. Other Secure partitions and Non-secure code calls to these RoT-services to get appropriate driver services.
   - One UART to print NSPE or SPE messages and to cover secure partition interrupt handling scenarios
   - One Watchdog timer to help recover from any fatal error conditions
   - Non-volatile memory support to preserve test status over watchdog timer reset
 
+
 ## List of PAL APIs
 
 Since the test suite is agnostic to various system targets, you must port the following PAL NSPE APIs before building the tests. Implement these functions for your target platform. <br />
-
-The following is the list of PAL APIs used in NSPE: <br />
-
-| No | Prototype                                                                                                                   | Description                                                            | Parameters                                               |
-|----|-----------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------|----------------------------------------------------------|
-| 01 | int pal_spi_read(addr_t addr, uint8_t *data, uint32_t len);                                                                 | Reads peripherals using SPI commands                 | addr : Address of the peripheral<br/>data : Read buffer<br/>len  : Length of the read buffer in bytes<br/>                    |
 
 The following is the list of PAL APIs used in SPE: <br />
 

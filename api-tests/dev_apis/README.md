@@ -31,32 +31,35 @@ Refer to the [PSA Developer APIs Test Suite Porting Guide](../docs/porting_guide
 To build the test suite for your target platform, execute the following commands:
 
 ```
-cd api-tests
-./tools/scripts/setup.sh --target <platform_name> --cpu_arch <cpu_architecture_version> --suite <suite_name>  --build <build_dir> --include <include_path> --archive_tests
+    cd api-tests
+    mkdir <build_dir>
+    cd <build_dir>
+    cmake ../ -G"<generator-name> -DTARGET=<platform_name> -DCPU_ARCH=<cpu_architecture_version> -DSUITE=<suite_name> -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>"
+    cmake --build .
 ```
 <br />  where:
 
--   <platform_name> is the same as the name of the target-specific directory created in the **platform/targets/** directory.  <br />
+-   <generator-name> "Unix Makefiles" to generate Makefiles for Linux and Cygwin <br />
+                     "MinGW Makefiles" to generate Makefiles for cmd.exe on Windows  <br />
+-   <platform_name> is the same as the name of the target-specific directory created in the **platform/targets/** directory. The current release has been tested on **tgt_dev_apis_tfm_an521**, **tgt_dev_apis_tfm_musca_b1** and **tgt_dev_apis_tfm_musca_a** platforms.<br />
 -   <cpu_architecture_version> is the Arm Architecture version name for which the tests should be compiled. For example, Armv7M, Armv8M-Baseline and Armv8M-Mainline Architecture.  <br />
 -   <suite_name> is the suite name that is the same as the suite name available in **dev_apis/** directory. <br />
--   <build_dir> is a directory to store build output files. <br />
--   <include_path> is an additional directory to be included into the compiler search path. <br />
-Note: You must provide Developer APIs header file implementation to the test suite build system using this option. For example, to compile Crypto tests, the include path must point to the path where **psa/crypto.h** is located in your build system.<br />
--  Use **--archive_tests** option to create a combined test archive (**test_combine.a**) file by combining available test object files. Absence of this option creates a combined test binary (**test_elf_combine.bin**) by combining the available test ELF files.
+-   <include_path1>;<include_path2>;...;<include_pathn> is an additional directory to be included into the compiler search path.You must provide Developer APIs header file implementation to the test suite build system using this option. For example, to compile Crypto tests, the include path must point to the path where **psa/crypto.h** is located in your build system.<br />
 
-For details about options, refer to **./tools/scripts/setup.sh --help**.
-
-To compile Crypto tests for **tgt_dev_apis_mbedos_fvp_mps2_m4** platform, execute the following commands:
+To compile Crypto tests for **tgt_dev_apis_tfm_an521** platform, execute the following commands:
 ```
-cd api-tests
-./tools/scripts/setup.sh --target tgt_dev_apis_mbedos_fvp_mps2_m4 --cpu_arch armv7m --suite crypto --build BUILD_CRYPTO --include <include_path>  --archive_tests
+    cd api-tests
+    mkdir BUILD
+    cd  BUILD
+    cmake ../ -G"Unix Makefiles" -DTARGET=tgt_dev_apis_tfm_an521 -DCPU_ARCH=armv8m_ml -DSUITE=CRYPTO -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>"
+    cmake --build .
 ```
 
 ### Build output
 Building the test suite generates the following NSPE binaries:<br />
-- **<build_dir>/BUILD/val/val_nspe.a**
-- **<build_dir>/BUILD/platform/pal_nspe.a**
-- **<build_dir>/BUILD/dev_apis/<suite_name>/test_combine.a**
+- **<build_dir>/val/val_nspe.a**
+- **<build_dir>/platform/pal_nspe.a**
+- **<build_dir>/dev_apis/<suite_name>/test_combine.a**
 
 ### Integrating the libraries into your target platform
 
