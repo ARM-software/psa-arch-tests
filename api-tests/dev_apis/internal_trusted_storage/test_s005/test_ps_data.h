@@ -20,39 +20,37 @@
 #include "val_protected_storage.h"
 
 #define SST_FUNCTION           val->ps_function
-#define psa_sst_uid_t          psa_ps_uid_t
-#define psa_sst_create_flags_t psa_ps_create_flags_t
 
 typedef struct {
     enum ps_function_code  api;
-    psa_ps_status_t        status;
+    psa_status_t        status;
 } test_data;
 
-static struct psa_ps_info_t info;
+static struct psa_storage_info_t info;
 static const test_data s005_data[] = {
 {
  0, 0 /* This is dummy for index0 */
 },
 {
- VAL_PS_SET, PSA_PS_SUCCESS /* Create a valid storage entity */
+ VAL_PS_SET, PSA_SUCCESS /* Create a valid storage entity */
 },
 {
- VAL_PS_GET, PSA_PS_SUCCESS /* Validate the data using get API */
-},
-{
- 0, 0 /* Index not used */
-},
-{
- VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Validate the data attributes get_info API */
+ VAL_PS_GET, PSA_SUCCESS /* Validate the data using get API */
 },
 {
  0, 0 /* Index not used */
 },
 {
+ VAL_PS_GET_INFO, PSA_SUCCESS /* Validate the data attributes get_info API */
+},
+{
  0, 0 /* Index not used */
 },
 {
- VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the valid storage entity */
+ 0, 0 /* Index not used */
+},
+{
+ VAL_PS_REMOVE, PSA_SUCCESS /* Remove the valid storage entity */
 },
 };
 #endif /* _TEST_S005_PS_DATA_TESTS_H_ */

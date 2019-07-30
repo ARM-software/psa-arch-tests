@@ -33,26 +33,11 @@ git clone https://github.com/ARM-software/psa-arch-tests.git
 ## Cloning the external repository
 
 To build Initial Attestation tests, the PSA APIs test suite clones the following
-git repository. The cloning is automated as part of the test suite
-build script **./setup.sh**:
+git repository. The cloning is automated as part of the test suite cmake build:
 
-~~~
-git clone https://github.com/laurencelundblade/QCBOR.git ./platform/targets/<platform_name>/nspe/initial_attestation/ext
-cd ./platform/targets/<platform_name>/nspe/initial_attestation/ext; git checkout da53227db1488dde0952bdff66c3d904dce270b3
-~~~
-
-## To build on Cygwin(32-bit)
-
-To build test suite on Cygwin ensure all the above prerequisite in place.
-
-**Note**: Downloading the test suite in Window platform can have extra
-newline chars than Unix. Therefore, it is recommended to execute the
-following command to change the newline char format before running
-any test suite command.<br />
-
-~~~
-dos2unix ./tools/scripts/setup.sh
-~~~
+**Repo** <br />
+Name      : https://github.com/laurencelundblade/QCBOR.git <br />
+Commit id : da53227db1488dde0952bdff66c3d904dce270b3
 
 ## License
 Arm PSA test suite is distributed under Apache v2.0 License.

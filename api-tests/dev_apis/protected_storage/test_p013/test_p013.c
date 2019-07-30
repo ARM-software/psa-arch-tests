@@ -28,7 +28,7 @@ client_test_t test_p013_sst_list[] = {
     NULL,
 };
 
-static psa_ps_uid_t p_uid = UID_BASE_VALUE + 4;
+static psa_storage_uid_t p_uid = UID_BASE_VALUE + 4;
 static uint8_t write_buff[TEST_BUFF_SIZE/2] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
 static uint8_t write_buff_2[TEST_BUFF_SIZE/2] = {0xFF, 0x11, 0xA2, 0xE3, 0x04, 0xA5, 0xD6, 0x97};
 static uint8_t read_buff[TEST_BUFF_SIZE]  = {0};
@@ -37,12 +37,12 @@ static uint8_t write_buff_3[TEST_BUFF_SIZE] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x0
 
 static int32_t psa_sst_set_extended_create_success()
 {
-    uint32_t status;
-    struct psa_ps_info_t info;
+    uint32_t status, p_data_length = 0;
+    struct psa_storage_info_t info;
 
     /* Create storage of zero length using create API */
     val->print(PRINT_TEST, "[Check 1] Create storage using create API for 0 length\n", 0);
-    status = SST_FUNCTION(p013_data[1].api, p_uid, 0, 0);
+    status = SST_FUNCTION(p013_data[1].api, p_uid, 0, PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, p013_data[1].status, TEST_CHECKPOINT_NUM(1));
 
     /* Set some data in the storage created */
@@ -62,7 +62,7 @@ static int32_t psa_sst_set_extended_create_success()
     TEST_ASSERT_EQUAL(status, p013_data[6].status, TEST_CHECKPOINT_NUM(6));
 
     /* Create a valid storage */
-    status = SST_FUNCTION(p013_data[7].api, p_uid, TEST_BUFF_SIZE, 0);
+    status = SST_FUNCTION(p013_data[7].api, p_uid, TEST_BUFF_SIZE, PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, p013_data[7].status, TEST_CHECKPOINT_NUM(7));
 
     /* Try to set data in first half of buffer */
@@ -76,43 +76,47 @@ static int32_t psa_sst_set_extended_create_success()
 
     /* Call the get function to match the data */
     val->print(PRINT_TEST, "[Check 4] Valid data written by multiple set_extended\n", 0);
-    status = SST_FUNCTION(p013_data[10].api, p_uid, 0, TEST_BUFF_SIZE, read_buff);
+    status = SST_FUNCTION(p013_data[10].api, p_uid, 0, TEST_BUFF_SIZE, read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, p013_data[10].status, TEST_CHECKPOINT_NUM(10));
     TEST_ASSERT_MEMCMP(read_buff, write_buff, TEST_BUFF_SIZE/2, TEST_CHECKPOINT_NUM(11));
     TEST_ASSERT_MEMCMP(read_buff + TEST_BUFF_SIZE/2, write_buff_2, TEST_BUFF_SIZE/2,\
                        TEST_CHECKPOINT_NUM(12));
+    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(13));
 
     /* Overwrite data using set API */
     val->print(PRINT_TEST, "[Check 5] Overwrite whole data using SET API\n", 0);
-    status = SST_FUNCTION(p013_data[13].api, p_uid, TEST_BUFF_SIZE, write_buff_3, 0);
-    TEST_ASSERT_EQUAL(status, p013_data[13].status, TEST_CHECKPOINT_NUM(13));
+    status = SST_FUNCTION(p013_data[13].api, p_uid, TEST_BUFF_SIZE, write_buff_3,
+                          PSA_STORAGE_FLAG_NONE);
+    TEST_ASSERT_EQUAL(status, p013_data[13].status, TEST_CHECKPOINT_NUM(14));
 
     /* Call the get function to match the data */
     val->print(PRINT_TEST, "[Check 6] Validate the data using get API\n", 0);
-    status = SST_FUNCTION(p013_data[14].api, p_uid, 0, TEST_BUFF_SIZE, read_buff);
-    TEST_ASSERT_EQUAL(status, p013_data[14].status, TEST_CHECKPOINT_NUM(14));
-    TEST_ASSERT_MEMCMP(read_buff, write_buff_3, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(15));
+    status = SST_FUNCTION(p013_data[14].api, p_uid, 0, TEST_BUFF_SIZE, read_buff, &p_data_length);
+    TEST_ASSERT_EQUAL(status, p013_data[14].status, TEST_CHECKPOINT_NUM(15));
+    TEST_ASSERT_MEMCMP(read_buff, write_buff_3, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(16));
+    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(17));
 
     /* Call create API for existing UID with same parameters */
     val->print(PRINT_TEST, "[Check 7] Call create API for existing UID with same parameters\n", 0);
-    status = SST_FUNCTION(p013_data[16].api, p_uid, TEST_BUFF_SIZE, 0);
-    TEST_ASSERT_EQUAL(status, p013_data[16].status, TEST_CHECKPOINT_NUM(16));
+    status = SST_FUNCTION(p013_data[16].api, p_uid, TEST_BUFF_SIZE, PSA_STORAGE_FLAG_NONE);
+    TEST_ASSERT_EQUAL(status, p013_data[16].status, TEST_CHECKPOINT_NUM(18));
 
     /* Call the get function to match the data */
     val->print(PRINT_TEST, "[Check 8] Validity of data after create API call\n", 0);
-    status = SST_FUNCTION(p013_data[17].api, p_uid, 0, TEST_BUFF_SIZE, read_buff);
-    TEST_ASSERT_EQUAL(status, p013_data[17].status, TEST_CHECKPOINT_NUM(17));
-    TEST_ASSERT_MEMCMP(read_buff, write_buff_3, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(18));
+    status = SST_FUNCTION(p013_data[17].api, p_uid, 0, TEST_BUFF_SIZE, read_buff, &p_data_length);
+    TEST_ASSERT_EQUAL(status, p013_data[17].status, TEST_CHECKPOINT_NUM(19));
+    TEST_ASSERT_MEMCMP(read_buff, write_buff_3, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(20));
+    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(21));
 
     /* Remove the storage */
     val->print(PRINT_TEST, "[Check 9] Remove the UID\n", 0);
     status = SST_FUNCTION(p013_data[19].api, p_uid);
-    TEST_ASSERT_EQUAL(status, p013_data[19].status, TEST_CHECKPOINT_NUM(19));
+    TEST_ASSERT_EQUAL(status, p013_data[19].status, TEST_CHECKPOINT_NUM(22));
 
     /* Validate there should not be duplicate UID present */
     val->print(PRINT_TEST, "[Check 10] No duplicate entry of UID present\n", 0);
     status = SST_FUNCTION(p013_data[20].api, p_uid, 0, TEST_BUFF_SIZE, read_buff);
-    TEST_ASSERT_EQUAL(status, p013_data[20].status, TEST_CHECKPOINT_NUM(20));
+    TEST_ASSERT_EQUAL(status, p013_data[20].status, TEST_CHECKPOINT_NUM(23));
 
     return VAL_STATUS_SUCCESS;
 }

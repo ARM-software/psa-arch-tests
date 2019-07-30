@@ -20,11 +20,10 @@
 #include "val_protected_storage.h"
 
 #define SST_FUNCTION val->ps_function
-#define psa_sst_uid_t psa_ps_uid_t
 
 typedef struct {
     enum ps_function_code  api;
-    psa_ps_status_t        status;
+    psa_status_t        status;
 } test_data;
 
 static const test_data s008_data[] = {
@@ -32,43 +31,43 @@ static const test_data s008_data[] = {
  0, 0 /* This is dummy for index0 */
 },
 {
- VAL_PS_SET, PSA_PS_SUCCESS /* Create a valid storage entity with zero flag value */
+ VAL_PS_SET, PSA_SUCCESS /* Create a valid storage entity with zero flag value */
 },
 {
- VAL_PS_GET, PSA_PS_SUCCESS /* Call get API with offset + data_len = total_size */
+ VAL_PS_GET, PSA_SUCCESS /* Call get API with offset + data_len = total_size */
 },
 {
  0, 0 /* This is dummy for index3 */
 },
 {
- VAL_PS_GET, PSA_PS_SUCCESS /* Call get API with offset + data_len < total_size */
+ VAL_PS_GET, PSA_SUCCESS /* Call get API with offset + data_len < total_size */
 },
 {
  0, 0 /* This is dummy for index5 */
 },
 {
- VAL_PS_GET, PSA_PS_SUCCESS/* Call get API with offset = total data_size + 1 */
+ VAL_PS_GET, PSA_SUCCESS/* Call get API with offset = total data_size + 1 */
 },
 {
  0, 0 /* This is dummy for index7 */
 },
 {
- VAL_PS_GET, PSA_PS_ERROR_INCORRECT_SIZE /* Call get API with offset + data_len > total data_size */
+ VAL_PS_GET, PSA_ERROR_INVALID_ARGUMENT /* Call get API with offset + data_len > total data_size */
 },
 {
  0, 0 /* This is dummy for index9 */
 },
 {
- VAL_PS_GET, PSA_PS_ERROR_INCORRECT_SIZE /* Call get API with invalid data len and offset zero */
+ VAL_PS_GET, PSA_ERROR_INVALID_ARGUMENT /* Call get API with invalid data len and offset zero */
 },
 {
  0, 0 /* This is dummy for index11 */
 },
 {
- VAL_PS_GET, PSA_PS_SUCCESS /* Call get API with offset = MAX_UINT32 */
+ VAL_PS_GET, PSA_SUCCESS /* Call get API with offset = MAX_UINT32 */
 },
 {
- VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the storage entity */
+ VAL_PS_REMOVE, PSA_SUCCESS /* Remove the storage entity */
 },
 };
 #endif /* _TEST_S008_PS_DATA_TESTS_H_ */

@@ -20,12 +20,11 @@
 #include "val_internal_trusted_storage.h"
 
 #define SST_FUNCTION val->its_function
-#define PSA_SST_SUCCESS  PSA_ITS_SUCCESS
-#define psa_sst_uid_t psa_its_uid_t
+#define PSA_SST_SUCCESS  PSA_SUCCESS
 
 typedef struct {
     enum its_function_code  api;
-    psa_its_status_t        status;
+    psa_status_t        status;
 } test_data;
 
 static const test_data s003_data[] = {
@@ -33,10 +32,10 @@ static const test_data s003_data[] = {
  0, 0 /* This is dummy for index0 */
 },
 {
- VAL_ITS_SET, PSA_ITS_ERROR_INSUFFICIENT_SPACE /* Call set API till insufficent space */
+ VAL_ITS_SET, PSA_ERROR_INSUFFICIENT_STORAGE /* Call set API till insufficent space */
 },
 {
- VAL_ITS_REMOVE, PSA_ITS_SUCCESS /* Remove the UID created */
+ VAL_ITS_REMOVE, PSA_SUCCESS /* Remove the UID created */
 },
 };
 #endif /* _TEST_S003_ITS_DATA_TESTS_H_ */

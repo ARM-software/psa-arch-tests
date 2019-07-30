@@ -23,27 +23,27 @@
 
 typedef struct {
     enum ps_function_code  api;
-    psa_ps_status_t        status;
+    psa_status_t        status;
 } test_data;
 
 static const test_data p011_data[] = {
 {
- VAL_PS_GET_SUPPORT, PSA_PS_SUPPORT_SET_EXTENDED /* Check if optional PS API supported */
+ VAL_PS_GET_SUPPORT, PSA_STORAGE_SUPPORT_SET_EXTENDED /* Check if optional PS API supported */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_PS_ERROR_UID_NOT_FOUND /* Call set_extended call for non-existing UID */
+ VAL_PS_SET_EXTENDED, PSA_ERROR_DOES_NOT_EXIST /* Call set_extended call for non-existing UID */
 },
 {
- VAL_PS_SET, PSA_PS_SUCCESS /* Create valid storage using set API */
+ VAL_PS_SET, PSA_SUCCESS /* Create valid storage using set API */
 },
 {
- VAL_PS_CREATE, PSA_PS_ERROR_INVALID_ARGUMENT /* Create API for present UID with different length */
+ VAL_PS_CREATE, PSA_ERROR_INVALID_ARGUMENT /* Create API for present UID with different length */
 },
 {
- VAL_PS_CREATE, PSA_PS_ERROR_INVALID_ARGUMENT /* Call create API for to set WRITE_ONCE flag */
+ VAL_PS_CREATE, PSA_ERROR_INVALID_ARGUMENT /* Call create API for to set WRITE_ONCE flag */
 },
 {
- VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Validate existing UID attributes maintained */
+ VAL_PS_GET_INFO, PSA_SUCCESS /* Validate existing UID attributes maintained */
 },
 {
  0, 0 /* This is dummy for index6 */
@@ -52,25 +52,25 @@ static const test_data p011_data[] = {
  0, 0 /* This is dummy for index7 */
 },
 {
- VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the UID */
+ VAL_PS_REMOVE, PSA_SUCCESS /* Remove the UID */
 },
 {
- VAL_PS_CREATE, PSA_PS_SUCCESS /* Create valid storage using create API */
+ VAL_PS_CREATE, PSA_SUCCESS /* Create valid storage using create API */
 },
 {
- VAL_PS_CREATE, PSA_PS_ERROR_INVALID_ARGUMENT /* Again call create API with different length */
+ VAL_PS_CREATE, PSA_ERROR_INVALID_ARGUMENT /* Again call create API with different length */
 },
 {
- VAL_PS_GET, PSA_PS_SUCCESS /* Validate the storage is empty */
+ VAL_PS_GET, PSA_SUCCESS /* Validate the storage is empty */
 },
 {
  0, 0 /* This is dummy for index12 */
 },
 {
- VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the UID */
+ VAL_PS_REMOVE, PSA_SUCCESS /* Remove the UID */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_PS_ERROR_UID_NOT_FOUND /* Set_extended call for removed UID */
+ VAL_PS_SET_EXTENDED, PSA_ERROR_DOES_NOT_EXIST /* Set_extended call for removed UID */
 }
 };
 #endif /* _TEST_P011_PS_DATA_TESTS_H_ */

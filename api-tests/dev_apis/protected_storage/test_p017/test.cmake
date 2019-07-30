@@ -15,27 +15,10 @@
 # * limitations under the License.
 #**/
 
-
-#List of tests to be compiled and run as part of protected storage suite
-
-(START)
-
-test_s001
-test_s002
-test_s003
-test_s004
-test_s005
-test_s006
-test_s007
-test_s008
-test_s009
-test_s010
-test_p011
-test_p012
-test_p013
-test_p014
-test_p015
-test_p016
-test_p017
-
-(END)
+list(APPEND CC_SOURCE
+	test_entry_p017.c
+	test_p017.c
+)
+list(APPEND CC_OPTIONS -DPS_TEST)
+list(APPEND AS_SOURCE  )
+list(APPEND AS_OPTIONS )

@@ -17,9 +17,9 @@
 #ifndef _TEST_P011_CLIENT_TESTS_H_
 #define _TEST_P011_CLIENT_TESTS_H_
 
-#define test_entry CONCAT(test_entry_, p011)
-#define val CONCAT(val,test_entry)
-#define psa CONCAT(psa,test_entry)
+#define test_entry CONCAT(test_entry_,  p011)
+#define val CONCAT(val, test_entry)
+#define psa CONCAT(psa, test_entry)
 
 extern val_api_t *val;
 extern psa_api_t *psa;

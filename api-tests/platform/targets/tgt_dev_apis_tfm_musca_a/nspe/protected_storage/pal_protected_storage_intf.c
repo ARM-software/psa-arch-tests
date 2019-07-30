@@ -26,45 +26,47 @@
 **/
 uint32_t pal_ps_function(int type, va_list valist)
 {
-    psa_ps_uid_t            uid;
-    uint32_t                data_length, size, offset;
-    const void              *p_write_data;
-    void                    *p_read_data;
-    psa_ps_create_flags_t   ps_create_flags;
-    struct psa_ps_info_t    *ps_p_info;
+    psa_storage_uid_t          uid;
+    uint32_t                   data_size, size, offset;
+    const void                 *p_write_data;
+    void                       *p_read_data;
+    size_t                     *p_data_length;
+    psa_storage_create_flags_t ps_create_flags;
+    struct psa_storage_info_t  *ps_p_info;
 
     switch (type)
     {
      case PAL_PS_SET:
-         uid = va_arg(valist, psa_ps_uid_t);
-         data_length = va_arg(valist, uint32_t);
+         uid = va_arg(valist, psa_storage_uid_t);
+         data_size = va_arg(valist, uint32_t);
          p_write_data = va_arg(valist, const void*);
-         ps_create_flags = va_arg(valist, psa_ps_create_flags_t);
-         return psa_ps_set(uid, data_length, p_write_data, ps_create_flags);
+         ps_create_flags = va_arg(valist, psa_storage_create_flags_t);
+         return psa_ps_set(uid, data_size, p_write_data, ps_create_flags);
      case PAL_PS_GET:
-         uid = va_arg(valist, psa_ps_uid_t);
+         uid = va_arg(valist, psa_storage_uid_t);
          offset = va_arg(valist, uint32_t);
-         data_length = va_arg(valist, uint32_t);
+         data_size = va_arg(valist, uint32_t);
          p_read_data = va_arg(valist, void*);
-         return psa_ps_get(uid, offset, data_length, p_read_data);
+         p_data_length = va_arg(valist, size_t*);
+         return psa_ps_get(uid, offset, data_size, p_read_data, p_data_length);
      case PAL_PS_GET_INFO:
-         uid = va_arg(valist, psa_ps_uid_t);
-         ps_p_info = va_arg(valist, struct psa_ps_info_t*);
+         uid = va_arg(valist, psa_storage_uid_t);
+         ps_p_info = va_arg(valist, struct psa_storage_info_t*);
          return psa_ps_get_info(uid, ps_p_info);
      case PAL_PS_REMOVE:
-         uid = va_arg(valist, psa_ps_uid_t);
+         uid = va_arg(valist, psa_storage_uid_t);
          return psa_ps_remove(uid);
      case PAL_PS_CREATE:
-         uid = va_arg(valist, psa_ps_uid_t);
+         uid = va_arg(valist, psa_storage_uid_t);
          size = va_arg(valist, uint32_t);
-         ps_create_flags = va_arg(valist, psa_ps_create_flags_t);
+         ps_create_flags = va_arg(valist, psa_storage_create_flags_t);
          return psa_ps_create(uid, size, ps_create_flags);
      case PAL_PS_SET_EXTENDED:
-         uid = va_arg(valist, psa_ps_uid_t);
+         uid = va_arg(valist, psa_storage_uid_t);
          offset = va_arg(valist, uint32_t);
-         data_length = va_arg(valist, uint32_t);
+         data_size = va_arg(valist, uint32_t);
          p_write_data = va_arg(valist, const void*);
-         return psa_ps_set_extended(uid, offset, data_length, p_write_data);
+         return psa_ps_set_extended(uid, offset, data_size, p_write_data);
      case PAL_PS_GET_SUPPORT:
          return psa_ps_get_support();
     default:

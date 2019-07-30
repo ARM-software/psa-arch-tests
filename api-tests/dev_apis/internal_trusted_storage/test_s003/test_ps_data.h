@@ -20,12 +20,10 @@
 #include "val_protected_storage.h"
 
 #define SST_FUNCTION val->ps_function
-#define PSA_SST_SUCCESS  PSA_PS_SUCCESS
-#define psa_sst_uid_t psa_ps_uid_t
 
 typedef struct {
     enum ps_function_code  api;
-    psa_ps_status_t        status;
+    psa_status_t        status;
 } test_data;
 
 static const test_data s003_data[] = {
@@ -33,10 +31,10 @@ static const test_data s003_data[] = {
  0, 0 /* This is dummy for index0 */
 },
 {
- VAL_PS_SET, PSA_PS_ERROR_INSUFFICIENT_SPACE /* Call set API till insufficent space */
+ VAL_PS_SET, PSA_ERROR_INSUFFICIENT_STORAGE /* Call set API till insufficent space */
 },
 {
- VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the UID created */
+ VAL_PS_REMOVE, PSA_SUCCESS /* Remove the UID created */
 },
 };
 #endif /* _TEST_S003_PS_DATA_TESTS_H_ */

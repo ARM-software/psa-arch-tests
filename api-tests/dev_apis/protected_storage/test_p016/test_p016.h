@@ -14,17 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
-#ifndef _TEST_P015_CLIENT_TESTS_H_
-#define _TEST_P015_CLIENT_TESTS_H_
+#ifndef _TEST_P016_CLIENT_TESTS_H_
+#define _TEST_P016_CLIENT_TESTS_H_
 
-#define test_entry CONCAT(test_entry_,  p015)
+#define test_entry CONCAT(test_entry_, p016)
 #define val CONCAT(val, test_entry)
 #define psa CONCAT(psa, test_entry)
 
 extern val_api_t *val;
 extern psa_api_t *psa;
-extern client_test_t test_p015_sst_list[];
+extern client_test_t test_p016_sst_list[];
 
-int32_t psa_sst_create_api_write_once_flag_check(security_t caller);
+int32_t psa_sst_optional_api_sst_capacity_check(security_t caller);
 
-#endif /* _TEST_P015_CLIENT_TESTS_H_ */
+#endif /* _TEST_P016_CLIENT_TESTS_H_ */
