@@ -20,62 +20,61 @@
 #include "val_internal_trusted_storage.h"
 
 #define SST_FUNCTION val->its_function
-#define psa_sst_uid_t psa_its_uid_t
 
 typedef struct {
     enum its_function_code  api;
-    psa_its_status_t        status;
+    psa_status_t        status;
 } test_data;
 
-static struct psa_its_info_t info;
+static struct psa_storage_info_t info;
 static const test_data s001_data[] = {
 {
  0, 0 /* Unused Index0 */
 },
 {
- VAL_ITS_GET, PSA_ITS_ERROR_UID_NOT_FOUND /* Call the get API when no UID is set */
+ VAL_ITS_GET, PSA_ERROR_DOES_NOT_EXIST /* Call the get API when no UID is set */
 },
 {
- VAL_ITS_GET_INFO, PSA_ITS_ERROR_UID_NOT_FOUND /* Call the get_info API when no UID is set */
+ VAL_ITS_GET_INFO, PSA_ERROR_DOES_NOT_EXIST /* Call the get_info API when no UID is set */
 },
 {
- VAL_ITS_REMOVE, PSA_ITS_ERROR_UID_NOT_FOUND /* Call the remove API when no UID is set */
+ VAL_ITS_REMOVE, PSA_ERROR_DOES_NOT_EXIST /* Call the remove API when no UID is set */
 },
 {
- VAL_ITS_SET, PSA_ITS_SUCCESS /* Create a valid storage entity with UID1 */
+ VAL_ITS_SET, PSA_SUCCESS /* Create a valid storage entity with UID1 */
 },
 {
- VAL_ITS_SET, PSA_ITS_SUCCESS /* Create a valid storage entity with UID2 */
+ VAL_ITS_SET, PSA_SUCCESS /* Create a valid storage entity with UID2 */
 },
 {
- VAL_ITS_REMOVE, PSA_ITS_SUCCESS /* Remove UID1 */
+ VAL_ITS_REMOVE, PSA_SUCCESS /* Remove UID1 */
 },
 {
- VAL_ITS_GET, PSA_ITS_ERROR_UID_NOT_FOUND /* Call get API for UID1 */
+ VAL_ITS_GET, PSA_ERROR_DOES_NOT_EXIST /* Call get API for UID1 */
 },
 {
- VAL_ITS_GET_INFO, PSA_ITS_ERROR_UID_NOT_FOUND /* Call get_info API for UID1 */
+ VAL_ITS_GET_INFO, PSA_ERROR_DOES_NOT_EXIST /* Call get_info API for UID1 */
 },
 {
- VAL_ITS_REMOVE, PSA_ITS_ERROR_UID_NOT_FOUND /* Call remove API for UID1 */
+ VAL_ITS_REMOVE, PSA_ERROR_DOES_NOT_EXIST /* Call remove API for UID1 */
 },
 {
- VAL_ITS_SET, PSA_ITS_SUCCESS /* Create a valid storage entity again with UID1 */
+ VAL_ITS_SET, PSA_SUCCESS /* Create a valid storage entity again with UID1 */
 },
 {
- VAL_ITS_GET, PSA_ITS_ERROR_UID_NOT_FOUND /* Call get API for UID not same as UID1 or UID2 */
+ VAL_ITS_GET, PSA_ERROR_DOES_NOT_EXIST /* Call get API for UID not same as UID1 or UID2 */
 },
 {
- VAL_ITS_GET_INFO, PSA_ITS_ERROR_UID_NOT_FOUND /* Call get_info for UID not same as UID1 or UID2 */
+ VAL_ITS_GET_INFO, PSA_ERROR_DOES_NOT_EXIST /* Call get_info for UID not same as UID1 or UID2 */
 },
 {
- VAL_ITS_REMOVE, PSA_ITS_ERROR_UID_NOT_FOUND /* Call remove API for UID not same as UID1 or UID2 */
+ VAL_ITS_REMOVE, PSA_ERROR_DOES_NOT_EXIST /* Call remove API for UID not same as UID1 or UID2 */
 },
 {
- VAL_ITS_REMOVE, PSA_ITS_SUCCESS /* Remove UID1 */
+ VAL_ITS_REMOVE, PSA_SUCCESS /* Remove UID1 */
 },
 {
- VAL_ITS_REMOVE, PSA_ITS_SUCCESS /* Remove UID2 */
+ VAL_ITS_REMOVE, PSA_SUCCESS /* Remove UID2 */
 },
 };
 #endif /* _TEST_S001_ITS_DATA_TESTS_H_ */

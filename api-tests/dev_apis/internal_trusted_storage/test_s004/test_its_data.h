@@ -20,11 +20,10 @@
 #include "val_internal_trusted_storage.h"
 
 #define SST_FUNCTION val->its_function
-#define psa_sst_uid_t psa_its_uid_t
 
 typedef struct {
     enum its_function_code  api;
-    psa_its_status_t        status;
+    psa_status_t        status;
 } test_data;
 
 static const test_data s004_data[] = {
@@ -32,25 +31,25 @@ static const test_data s004_data[] = {
  0, 0 /* This is dummy for index0 */
 },
 {
- VAL_ITS_SET, PSA_ITS_SUCCESS /* Create a valid storage entity */
+ VAL_ITS_SET, PSA_SUCCESS /* Create a valid storage entity */
 },
 {
- VAL_ITS_GET, PSA_ITS_SUCCESS /* Validate the data using get API after set API failure */
+ VAL_ITS_GET, PSA_SUCCESS /* Validate the data using get API after set API failure */
 },
 {
  0, 0 /* Index not used */
 },
 {
- VAL_ITS_SET, PSA_ITS_SUCCESS /* For same UID set the length as half of previous */
+ VAL_ITS_SET, PSA_SUCCESS /* For same UID set the length as half of previous */
 },
 {
- VAL_ITS_GET, PSA_ITS_ERROR_INCORRECT_SIZE /* Call get with incorrect length */
+ VAL_ITS_GET, PSA_ERROR_INVALID_ARGUMENT /* Call get with incorrect length */
 },
 {
  0, 0 /* No data should be returned */
 },
 {
- VAL_ITS_GET, PSA_ITS_SUCCESS /* Call get API with correct length */
+ VAL_ITS_GET, PSA_SUCCESS /* Call get API with correct length */
 },
 {
  0, 0 /* No data should be returned */
@@ -59,7 +58,7 @@ static const test_data s004_data[] = {
  0, 0 /* Check that we should not be able to access the old data */
 },
 {
- VAL_ITS_REMOVE, PSA_ITS_SUCCESS /* Remove the valid storage entity */
+ VAL_ITS_REMOVE, PSA_SUCCESS /* Remove the valid storage entity */
 },
 };
 #endif /* _TEST_S004_ITS_DATA_TESTS_H_ */

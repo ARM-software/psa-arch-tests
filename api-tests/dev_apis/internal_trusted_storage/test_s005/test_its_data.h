@@ -20,39 +20,37 @@
 #include "val_internal_trusted_storage.h"
 
 #define SST_FUNCTION           val->its_function
-#define psa_sst_uid_t          psa_its_uid_t
-#define psa_sst_create_flags_t psa_its_create_flags_t
 
 typedef struct {
     enum its_function_code  api;
-    psa_its_status_t        status;
+    psa_status_t        status;
 } test_data;
 
-static struct psa_its_info_t info;
+static struct psa_storage_info_t info;
 static const test_data s005_data[] = {
 {
  0, 0  /* This is dummy for index0 */
 },
 {
- VAL_ITS_SET, PSA_ITS_SUCCESS  /* Create a valid storage entity */
+ VAL_ITS_SET, PSA_SUCCESS  /* Create a valid storage entity */
 },
 {
- VAL_ITS_GET, PSA_ITS_SUCCESS  /* Validate the data using get API */
-},
-{
- 0, 0 /* Index not used */
-},
-{
- VAL_ITS_GET_INFO, PSA_ITS_SUCCESS  /* Validate the data attributes get_info API */
+ VAL_ITS_GET, PSA_SUCCESS  /* Validate the data using get API */
 },
 {
  0, 0 /* Index not used */
 },
 {
+ VAL_ITS_GET_INFO, PSA_SUCCESS  /* Validate the data attributes get_info API */
+},
+{
  0, 0 /* Index not used */
 },
 {
- VAL_ITS_REMOVE, PSA_ITS_SUCCESS /* Remove the valid storage entity */
+ 0, 0 /* Index not used */
+},
+{
+ VAL_ITS_REMOVE, PSA_SUCCESS /* Remove the valid storage entity */
 },
 };
 #endif /* _TEST_S005_ITS_DATA_TESTS_H_ */

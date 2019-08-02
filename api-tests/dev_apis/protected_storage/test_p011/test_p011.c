@@ -34,9 +34,9 @@ static uint8_t read_buff[TEST_BUFF_SIZE]  = {0};
 
 static int32_t psa_sst_uid_not_found()
 {
-    uint32_t status,j;
-    psa_ps_uid_t p_uid = UID_BASE_VALUE + 5;
-    struct psa_ps_info_t orig_info;
+    uint32_t status, j, p_data_length = 0;
+    psa_storage_uid_t p_uid = UID_BASE_VALUE + 5;
+    struct psa_storage_info_t orig_info;
 
     /* Call the set_extended API with UID which is not created */
     val->print(PRINT_TEST, "[Check 1] Call set_extended API for UID %d which is not set\n", p_uid);
@@ -44,54 +44,56 @@ static int32_t psa_sst_uid_not_found()
     TEST_ASSERT_EQUAL(status, p011_data[1].status, TEST_CHECKPOINT_NUM(1));
 
     /* Create a valid storage with set API */
-    status = SST_FUNCTION(p011_data[2].api, p_uid, TEST_BUFF_SIZE, write_buff, 0);
+    status = SST_FUNCTION(p011_data[2].api, p_uid, TEST_BUFF_SIZE, write_buff,
+                          PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, p011_data[2].status, TEST_CHECKPOINT_NUM(2));
 
     /* Try to change data length for same UID using create API */
     val->print(PRINT_TEST, "[Check 2] Call create API with length different than original\n", 0);
-    status = SST_FUNCTION(p011_data[3].api, p_uid, TEST_BUFF_SIZE/2, 0);
+    status = SST_FUNCTION(p011_data[3].api, p_uid, TEST_BUFF_SIZE/2, PSA_STORAGE_FLAG_WRITE_ONCE);
     TEST_ASSERT_EQUAL(status, p011_data[3].status, TEST_CHECKPOINT_NUM(3));
 
     /* Try to change flag value associated with the UID */
     val->print(PRINT_TEST, "[Check 3] Call create API with flag value different than original\n", 0);
-    status = SST_FUNCTION(p011_data[4].api, p_uid, TEST_BUFF_SIZE, PSA_PS_FLAG_WRITE_ONCE);
+    status = SST_FUNCTION(p011_data[4].api, p_uid, TEST_BUFF_SIZE, PSA_STORAGE_FLAG_WRITE_ONCE);
     TEST_ASSERT_EQUAL(status, p011_data[4].status, TEST_CHECKPOINT_NUM(4));
 
     /* Check the flag value should be same as original*/
     status = SST_FUNCTION(p011_data[5].api, p_uid, &orig_info);
     TEST_ASSERT_EQUAL(status, p011_data[5].status, TEST_CHECKPOINT_NUM(5));
     TEST_ASSERT_EQUAL(orig_info.size, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(6));
-    TEST_ASSERT_EQUAL(orig_info.flags, 0, TEST_CHECKPOINT_NUM(7));
+    TEST_ASSERT_EQUAL(orig_info.flags, PSA_STORAGE_FLAG_NONE, TEST_CHECKPOINT_NUM(7));
 
     /* Remove the UID */
     status = SST_FUNCTION(p011_data[8].api, p_uid);
     TEST_ASSERT_EQUAL(status, p011_data[8].status, TEST_CHECKPOINT_NUM(8));
 
     /* Create a valid storage */
-    status = SST_FUNCTION(p011_data[9].api, p_uid, TEST_BUFF_SIZE/2, 0);
+    status = SST_FUNCTION(p011_data[9].api, p_uid, TEST_BUFF_SIZE/2, PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, p011_data[9].status, TEST_CHECKPOINT_NUM(9));
 
     /* Try to change length using create API */
     val->print(PRINT_TEST, "[Check 4] Call create API with parameters different than original\n", 0);
-    status = SST_FUNCTION(p011_data[10].api, p_uid, TEST_BUFF_SIZE, 0);
+    status = SST_FUNCTION(p011_data[10].api, p_uid, TEST_BUFF_SIZE, PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, p011_data[10].status, TEST_CHECKPOINT_NUM(10));
 
     /* Check the storage should be empty */
-    status = SST_FUNCTION(p011_data[11].api, p_uid, 0, TEST_BUFF_SIZE, read_buff);
+    status = SST_FUNCTION(p011_data[11].api, p_uid, 0, TEST_BUFF_SIZE, read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, p011_data[11].status, TEST_CHECKPOINT_NUM(11));
     for (j = 0; j < TEST_BUFF_SIZE; j++)
     {
         TEST_ASSERT_EQUAL(read_buff[j], 0, TEST_CHECKPOINT_NUM(12));
     }
+    TEST_ASSERT_EQUAL(p_data_length, 0, TEST_CHECKPOINT_NUM(13));
 
     /* Remove the UID */
     status = SST_FUNCTION(p011_data[13].api, p_uid);
-    TEST_ASSERT_EQUAL(status, p011_data[13].api, TEST_CHECKPOINT_NUM(13));
+    TEST_ASSERT_EQUAL(status, p011_data[13].status, TEST_CHECKPOINT_NUM(14));
 
     /* Call the set_extended API with UID which is removed */
     val->print(PRINT_TEST, "[Check 5] Call set_extended API for UID %d which is removed\n", p_uid);
     status = SST_FUNCTION(p011_data[14].api, p_uid, 0, TEST_BUFF_SIZE, write_buff);
-    TEST_ASSERT_EQUAL(status, p011_data[14].status, TEST_CHECKPOINT_NUM(14));
+    TEST_ASSERT_EQUAL(status, p011_data[14].status, TEST_CHECKPOINT_NUM(15));
 
     return VAL_STATUS_SUCCESS;
 }
@@ -119,4 +121,3 @@ int32_t psa_sst_optional_api_uid_not_found(security_t caller)
 
     return VAL_STATUS_SUCCESS;
 }
-

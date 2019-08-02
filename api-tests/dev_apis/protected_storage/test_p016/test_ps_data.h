@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
-#ifndef _TEST_P014_PS_DATA_TESTS_H_
-#define _TEST_P014_PS_DATA_TESTS_H_
+#ifndef _TEST_P016_PS_DATA_TESTS_H_
+#define _TEST_P016_PS_DATA_TESTS_H_
 
 #include "val_protected_storage.h"
 
@@ -26,30 +26,51 @@ typedef struct {
     psa_status_t        status;
 } test_data;
 
-static const test_data p014_data[] = {
+static const test_data p016_data[] = {
 {
  VAL_PS_GET_SUPPORT, PSA_STORAGE_SUPPORT_SET_EXTENDED /* Check if Optional API supported */
 },
 {
- VAL_PS_CREATE, PSA_ERROR_NOT_SUPPORTED /* Create API call should fail */
+ VAL_PS_CREATE, PSA_SUCCESS /* Storage creation */
 },
 {
- VAL_PS_GET_INFO, PSA_ERROR_DOES_NOT_EXIST /* UID should not exist */
+ VAL_PS_CREATE, PSA_ERROR_ALREADY_EXISTS /* Calling create API for existing UID should fail */
 },
 {
- VAL_PS_SET, PSA_SUCCESS /* Create storage of non-zero length */
+ VAL_PS_GET_INFO, PSA_SUCCESS /* Check the storage attributes are unchanged */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_ERROR_NOT_SUPPORTED /* Set_extended API call should fail */
+ 0, 0 /* Unused Index4 */
 },
 {
- VAL_PS_GET, PSA_SUCCESS /* Validate the data should not changed */
+ 0, 0 /* Unused Index5 */
 },
 {
- 0, 0 /* Unused Index */
+ VAL_PS_SET, PSA_SUCCESS /* Set API can change capacity of storage */
+},
+{
+ VAL_PS_GET_INFO, PSA_SUCCESS /* Check the storage attributes are changed */
+},
+{
+ 0, 0 /* Unused Index8 */
+},
+{
+ 0, 0 /* Unused Index9 */
+},
+{
+ VAL_PS_SET_EXTENDED, PSA_ERROR_STORAGE_FAILURE /* Set_extended on old capacity should not work */
+},
+{
+ VAL_PS_REMOVE, PSA_SUCCESS /* Remove the UID */
+},
+{
+ VAL_PS_SET, PSA_SUCCESS /* Storage creation */
+},
+{
+ VAL_PS_CREATE, PSA_ERROR_ALREADY_EXISTS /* Calling create API for existing UID should fail */
 },
 {
  VAL_PS_REMOVE, PSA_SUCCESS /* Remove the UID */
 },
 };
-#endif /* _TEST_P014_PS_DATA_TESTS_H_ */
+#endif /* _TEST_P016_PS_DATA_TESTS_H_ */

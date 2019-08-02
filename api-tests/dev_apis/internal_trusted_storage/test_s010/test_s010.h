@@ -19,13 +19,13 @@
 
 #ifdef ITS_TEST
 #define VAL_STORAGE_BASE VAL_INTERNAL_TRUSTED_STORAGE_BASE
-#define test_entry CONCAT(test_entry_, s010)
+#define test_entry CONCAT(test_entry_,  s010)
 #elif PS_TEST
 #define VAL_STORAGE_BASE VAL_PROTECTED_STORAGE_BASE
-#define test_entry CONCAT(test_entry_, p010)
+#define test_entry CONCAT(test_entry_,  p010)
 #endif
-#define val CONCAT(val,test_entry)
-#define psa CONCAT(psa,test_entry)
+#define val CONCAT(val, test_entry)
+#define psa CONCAT(psa, test_entry)
 
 extern val_api_t *val;
 extern psa_api_t *psa;

@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
-#ifndef _TEST_S007_PS_DATA_TESTS_H_
-#define _TEST_S007_PS_DATA_TESTS_H_
+#ifndef _TEST_P017_PS_DATA_TESTS_H_
+#define _TEST_P017_PS_DATA_TESTS_H_
 
 #include "val_protected_storage.h"
 
@@ -26,39 +26,33 @@ typedef struct {
     psa_status_t        status;
 } test_data;
 
-static const test_data s007_data[] = {
+static const test_data p017_data[] = {
 {
- 0, 0 /* This is dummy for index0 */
+ VAL_PS_GET_SUPPORT, PSA_STORAGE_SUPPORT_SET_EXTENDED /* Check if Optional API supported */
 },
 {
- VAL_PS_SET, PSA_SUCCESS /* Create a valid storage entity */
+ VAL_PS_CREATE, PSA_SUCCESS /* Storage creation */
 },
 {
- VAL_PS_SET, PSA_SUCCESS /* Increase the length of storage */
+ VAL_PS_SET_EXTENDED, PSA_SUCCESS /* Write data in created storage  */
 },
 {
- VAL_PS_GET, PSA_SUCCESS /* Try to access old length */
+ VAL_PS_SET_EXTENDED, PSA_ERROR_STORAGE_FAILURE /* Try to set data in noncontinous manner */
 },
 {
- VAL_PS_GET, PSA_SUCCESS /* Try to access valid length less than set length */
+ VAL_PS_SET_EXTENDED, PSA_SUCCESS /* Overwrite the existing data */
 },
 {
- 0, 0 /* This is dummy for index5 */
+ VAL_PS_GET_INFO, PSA_SUCCESS /* Check for valid storage attributes */
 },
 {
- VAL_PS_SET, PSA_SUCCESS /* Decrease the length of storage */
+ 0, 0 /* Unused index */
 },
 {
- VAL_PS_GET, PSA_ERROR_INVALID_ARGUMENT /* Try to access old length */
+ 0, 0 /* Unused index */
 },
 {
- VAL_PS_GET, PSA_ERROR_INVALID_ARGUMENT /* Try to access old length */
-},
-{
- VAL_PS_GET, PSA_SUCCESS /* Try to access data with correct length */
-},
-{
- VAL_PS_REMOVE, PSA_SUCCESS /* Remove the storage entity */
+ VAL_PS_REMOVE, PSA_SUCCESS /* Remove the UID */
 },
 };
-#endif /* _TEST_S007_PS_DATA_TESTS_H_ */
+#endif /* _TEST_P017_PS_DATA_TESTS_H_ */

@@ -41,8 +41,8 @@ static char test_desc[2][80] = {
 
 int32_t psa_sst_insufficient_space(security_t caller)
 {
-    uint32_t status = PSA_SST_SUCCESS;
-    psa_sst_uid_t uid;
+    uint32_t status = PSA_SUCCESS;
+    psa_storage_uid_t uid;
     uint32_t count = 0, results[NUM_ITERATIONS] = {0};
     int i = 0;
 
@@ -51,12 +51,13 @@ int32_t psa_sst_insufficient_space(security_t caller)
     {
         val->print(PRINT_TEST, "[Check %d] ", i + 1);
         val->print(PRINT_TEST, &test_desc[i][0], 0);
-        for (uid = TEST_BASE_UID_VALUE; status == PSA_SST_SUCCESS; uid++)
+        for (uid = TEST_BASE_UID_VALUE; status == PSA_SUCCESS; uid++)
         {
             val->print(PRINT_INFO, "Setting 0x%x bytes for ", TEST_BUFF_SIZE);
             val->print(PRINT_INFO, "UID %d\n", uid);
-            status = SST_FUNCTION(s003_data[1].api, uid, TEST_BUFF_SIZE, write_buff, 0);
-            if (status != PSA_SST_SUCCESS)
+            status = SST_FUNCTION(s003_data[1].api, uid, TEST_BUFF_SIZE, write_buff,
+                                  PSA_STORAGE_FLAG_NONE);
+            if (status != PSA_SUCCESS)
             {
                 val->print(PRINT_INFO, "UID %d set failed due to insufficient space\n", uid);
                 break;
@@ -74,7 +75,7 @@ int32_t psa_sst_insufficient_space(security_t caller)
         {
             val->print(PRINT_INFO, "Removing UID %d\n", uid);
             status = SST_FUNCTION(s003_data[2].api, uid);
-            if (status != PSA_SST_SUCCESS)
+            if (status != PSA_SUCCESS)
                 break;
         }
         if (count)
