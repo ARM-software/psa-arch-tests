@@ -111,7 +111,8 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
        return status;
     }
 
-    if (boot.state == BOOT_NOT_EXPECTED || boot.state == BOOT_EXPECTED_REENTER_TEST)
+    if (boot.state == BOOT_NOT_EXPECTED || boot.state == BOOT_EXPECTED_REENTER_TEST
+        || boot.state == BOOT_EXPECTED_CONT_TEST_EXEC)
     {
         while (tests_list[i] != NULL)
         {
@@ -127,10 +128,13 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
                 continue;
             }
 
-            status = val_set_boot_flag(BOOT_NOT_EXPECTED);
-            if (VAL_ERROR(status))
+            if (boot.state != BOOT_EXPECTED_CONT_TEST_EXEC)
             {
-                return status;
+                status = val_set_boot_flag(BOOT_NOT_EXPECTED);
+                if (VAL_ERROR(status))
+                {
+                    return status;
+                }
             }
 
             if (i == 1)
@@ -556,7 +560,8 @@ val_status_t val_get_last_run_test_id(test_id_t *test_id)
                                     BOOT_EXPECTED_NS,
                                     BOOT_EXPECTED_S,
                                     BOOT_EXPECTED_BUT_FAILED,
-                                    BOOT_EXPECTED_REENTER_TEST
+                                    BOOT_EXPECTED_REENTER_TEST,
+                                    BOOT_EXPECTED_CONT_TEST_EXEC
                                     };
 
     status = val_get_boot_flag(&boot.state);

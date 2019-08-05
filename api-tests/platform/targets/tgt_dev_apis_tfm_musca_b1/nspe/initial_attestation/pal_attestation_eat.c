@@ -29,7 +29,7 @@ static int pal_encode_cose_key(struct q_useful_buf_c *cose_key,
     QCBORError                qcbor_result;
     QCBOREncodeContext        cbor_encode_ctx;
     int32_t                   cose_curve_id = P_256;
-    struct q_useful_buf_c       encoded_key_id;
+    struct q_useful_buf_c     encoded_key_id;
 
     /* Get the public key x and y */
     /* Encode it into a COSE_Key structure */
@@ -136,24 +136,16 @@ static int get_item_in_map(QCBORDecodeContext *decode_context,
 }
 
 static int parse_unprotected_headers(QCBORDecodeContext *decode_context,
-                                     struct q_useful_buf_c *child,
-                                     bool *loop_back)
+                                     struct q_useful_buf_c *child)
 {
     struct items_to_get_t   item_list[3];
 
     item_list[0].label = COSE_HEADER_PARAM_KID;
-    item_list[1].label = T_COSE_SHORT_CIRCUIT_LABEL;
-    item_list[2].label = 0;
-    *loop_back = false;
+    item_list[1].label = 0;
 
     if (get_items_in_map(decode_context, item_list))
     {
         return PAL_ATTEST_ERROR;
-    }
-
-    if (item_list[1].item.uDataType == QCBOR_TYPE_TRUE)
-    {
-        *loop_back = true;
     }
 
     if (item_list[0].item.uDataType != QCBOR_TYPE_BYTE_STRING)
@@ -324,11 +316,10 @@ static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
                 token_size      : Size of the token buffer
     @return   - error status
 **/
-int32_t pal_initial_attest_verify_token(uint8_t *challenge, uint32_t challenge_size,
-                                        uint8_t *token, uint32_t token_size)
+int32_t pal_initial_attest_verify_token(uint8_t *challenge, size_t challenge_size,
+                                        uint8_t *token, size_t token_size)
 {
     int32_t             status = PAL_ATTEST_SUCCESS;
-    bool                short_circuit;
     int32_t             cose_algorithm_id;
     QCBORItem           item;
     QCBORDecodeContext  decode_context;
@@ -412,8 +403,7 @@ int32_t pal_initial_attest_verify_token(uint8_t *challenge, uint32_t challenge_s
         return status;
 
     /* Parse the unprotected headers and check the data type and value */
-    short_circuit = false;
-    status = parse_unprotected_headers(&decode_context, &kid, &short_circuit);
+    status = parse_unprotected_headers(&decode_context, &kid);
     if (status != PAL_ATTEST_SUCCESS)
         return status;
 

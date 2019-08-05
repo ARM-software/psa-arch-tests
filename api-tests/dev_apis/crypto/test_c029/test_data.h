@@ -17,8 +17,6 @@
 
 #include "val_crypto.h"
 
-#define EMPTY_KEY_SLOT      31
-
 typedef struct {
     char                    test_desc[75];
     psa_key_handle_t        key_handle;

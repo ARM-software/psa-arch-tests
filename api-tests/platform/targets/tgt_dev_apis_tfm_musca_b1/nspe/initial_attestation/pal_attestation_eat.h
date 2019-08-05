@@ -140,8 +140,7 @@
                                                 1 << (EAT_CBOR_ARM_RANGE_BASE                      \
                                                     - EAT_CBOR_ARM_LABEL_NO_SW_COMPONENTS))
 
-#define MANDATORY_SW_COMP                      (1 << EAT_CBOR_SW_COMPONENT_MEASUREMENT      |     \
-                                                1 << EAT_CBOR_SW_COMPONENT_SIGNER_ID)
+#define MANDATORY_SW_COMP                      (1 << EAT_CBOR_SW_COMPONENT_MEASUREMENT)
 
 #define NULL_USEFUL_BUF_C  NULLUsefulBufC
 
@@ -158,6 +157,8 @@ enum attestation_error_code {
     PAL_ATTEST_HASH_BUFFER_SIZE,
     PAL_ATTEST_ERR_PROTECTED_HEADERS,
     PAL_ATTEST_ERR_SIGN_STRUCT,
+    PAL_ATTEST_ERR_KEY_FAIL,
+    PAL_ATTEST_ERR_SIGNATURE_FAIL,
     PAL_ATTEST_ERROR,
 };
 
@@ -166,5 +167,5 @@ struct items_to_get_t {
     QCBORItem item;
 };
 
-int32_t pal_initial_attest_verify_token(uint8_t *challenge, uint32_t challenge_size,
-                                        uint8_t *token, uint32_t token_size);
+int32_t pal_initial_attest_verify_token(uint8_t *challenge, size_t challenge_size,
+                                        uint8_t *token, size_t token_size);

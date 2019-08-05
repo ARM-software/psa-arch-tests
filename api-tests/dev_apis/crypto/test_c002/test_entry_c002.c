@@ -21,6 +21,7 @@
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_CRYPTO_BASE, 2)
 #define TEST_DESC "Testing crypto key management APIs\n"
+
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;
 psa_api_t *psa = NULL;

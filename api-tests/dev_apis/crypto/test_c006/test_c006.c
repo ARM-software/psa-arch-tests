@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,159 +19,62 @@
 #include "val_target.h"
 #include "test_c006.h"
 #include "test_data.h"
+#include "val_crypto.h"
 
 client_test_t test_c006_crypto_list[] = {
     NULL,
-    psa_get_key_information_test,
-    psa_get_key_information_invalid_test,
+    psa_hash_compute_test,
     NULL,
 };
 
 static int g_test_count = 1;
 
-int32_t psa_get_key_information_test(security_t caller)
+int32_t psa_hash_compute_test(security_t caller)
 {
-    int32_t          i, status;
-    const uint8_t    *key_data;
-    psa_key_policy_t policy;
-    psa_key_type_t   key_type;
-    size_t           bits;
-    int              num_checks = sizeof(check1)/sizeof(check1[0]);
+    int                     num_checks = sizeof(check1)/sizeof(check1[0]);
+    int32_t                 i, status;
+    const char              *expected_hash;
+    char                    hash[HASH_64B];
+    size_t                  hash_length, hash_size = sizeof(hash);
+
+    if (num_checks == 0)
+    {
+        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+    }
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
 
-    /* Set the key data buffer to the input base on algorithm */
     for (i = 0; i < num_checks; i++)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
 
-        /* Initialize a key policy structure to a default that forbids all
-         * usage of the key
-         */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
-
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-        if (PSA_KEY_TYPE_IS_RSA(check1[i].key_type))
-        {
-            if (check1[i].key_type == PSA_KEY_TYPE_RSA_KEYPAIR)
-            {
-                if (check1[i].expected_bit_length == BYTES_TO_BITS(384))
-                    key_data = rsa_384_keypair;
-                else if (check1[i].expected_bit_length == BYTES_TO_BITS(256))
-                    key_data = rsa_256_keypair;
-                else
-                    return VAL_STATUS_INVALID;
-            }
-            else
-            {
-                if (check1[i].expected_bit_length == BYTES_TO_BITS(384))
-                    key_data = rsa_384_keydata;
-                else if (check1[i].expected_bit_length == BYTES_TO_BITS(256))
-                    key_data = rsa_256_keydata;
-                else
-                    return VAL_STATUS_INVALID;
-            }
-        }
-        else if (PSA_KEY_TYPE_IS_ECC(check1[i].key_type))
-        {
-            if (PSA_KEY_TYPE_IS_ECC_KEYPAIR(check1[i].key_type))
-                key_data = ec_keypair;
-            else
-                key_data = ec_keydata;
-        }
+        if (check1[i].alg == PSA_ALG_SHA_384)
+            expected_hash = sha384_hash;
+        else if (check1[i].alg == PSA_ALG_SHA_512)
+            expected_hash = sha512_hash;
         else
-            key_data = check1[i].key_data;
+            expected_hash = check1[i].hash;
 
-        /* Set the standard fields of a policy structure */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check1[i].usage,
-                                                                          check1[i].key_alg);
-
-        /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
-
-        /* Set the usage policy on a key slot */
-        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_handle, &policy);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
-
-        /* Import the key data into the key slot */
-        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, check1[i].key_handle,
-                                      check1[i].key_type, key_data, check1[i].key_length);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
-
-        /* Get basic metadata about a key */
-        status = val->crypto_function(VAL_CRYPTO_GET_KEY_INFORMATION, check1[i].key_handle,
-                                      &key_type, &bits);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
+        /* Calculate the hash (digest) of a message */
+        status = val->crypto_function(VAL_CRYPTO_HASH_COMPUTE, check1[i].alg, &check1[i].input,
+                 check1[i].input_length, hash, hash_size, &hash_length);
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(5));
 
         if (check1[i].expected_status != PSA_SUCCESS)
+        {
             continue;
+        }
 
-        /* Check that it matches with given data */
-        TEST_ASSERT_EQUAL(key_type, check1[i].key_type, TEST_CHECKPOINT_NUM(7));
-        TEST_ASSERT_EQUAL(bits, check1[i].expected_bit_length, TEST_CHECKPOINT_NUM(8));
-    }
-
-    return VAL_STATUS_SUCCESS;
-}
-
-int32_t psa_get_key_information_invalid_test(security_t caller)
-{
-    int              num_checks = sizeof(check2)/sizeof(check2[0]);
-    int32_t          i, status;
-
-    /* Initialize the PSA crypto library*/
-    status = val->crypto_function(VAL_CRYPTO_INIT);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
-
-    for (i = 0; i < num_checks; i++)
-    {
-        val->print(PRINT_TEST, "[Check %d] Test psa_get_key_information with unallocated"
-                                                        " key handle\n", g_test_count++);
-        /* Setting up the watchdog timer for each check */
-        status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
-        TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
-
-        /* Get basic metadata about a key */
-        status = val->crypto_function(VAL_CRYPTO_GET_KEY_INFORMATION, check2[i].key_handle,
-                                      &check2[i].key_type, &check2[i].key_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));
-
-        val->print(PRINT_TEST, "[Check %d] Test psa_get_key_information with zero as"
-                                                        " key handle\n", g_test_count++);
-        status = val->crypto_function(VAL_CRYPTO_GET_KEY_INFORMATION, 0,
-                                      &check2[i].key_type, &check2[i].key_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
-
-        val->print(PRINT_TEST, "[Check %d] Test psa_get_key_information with empty key handle\n",
-                                                                         g_test_count++);
-
-        /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check2[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
-
-        /* Get basic metadata about a key */
-        status = val->crypto_function(VAL_CRYPTO_GET_KEY_INFORMATION, check2[i].key_handle,
-                                      &check2[i].key_type, &check2[i].key_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_DOES_NOT_EXIST, TEST_CHECKPOINT_NUM(6));
-
-        val->print(PRINT_TEST, "[Check %d] Test psa_get_key_information with destroyed"
-                                                        " key handle\n", g_test_count++);
-        /* Destroy a key and restore the slot to its default state */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check2[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
-
-        /* Get basic metadata about a key */
-        status = val->crypto_function(VAL_CRYPTO_GET_KEY_INFORMATION, check2[i].key_handle,
-                                      &check2[i].key_type, &check2[i].key_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(8));
-
+        TEST_ASSERT_EQUAL(hash_length, PSA_HASH_SIZE(check1[i].alg), TEST_CHECKPOINT_NUM(7));
+        TEST_ASSERT_MEMCMP(hash, expected_hash, hash_length, TEST_CHECKPOINT_NUM(8));
     }
 
     return VAL_STATUS_SUCCESS;

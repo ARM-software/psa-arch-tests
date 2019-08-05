@@ -158,7 +158,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_CRYPT
-{"Test psa_asymmetric_encrypt - RSA KEYPAIR PKCS1V15\n", 4, PSA_KEY_TYPE_RSA_KEYPAIR,
+{"Test psa_asymmetric_encrypt - RSA KEY_PAIR PKCS1V15\n", 4, PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 610, PSA_KEY_USAGE_ENCRYPT | PSA_KEY_USAGE_DECRYPT, PSA_ALG_RSA_PKCS1V15_CRYPT,
 {0}, 0,
 {0xba, 0x78, 0x16, 0xbf, 0x8f, 0x01, 0xcf, 0xea, 0x41, 0x41, 0x40, 0xde, 0x5d,
@@ -167,7 +167,7 @@ static test_data check1[] = {
  128, 1024, PSA_SUCCESS
 },
 
-{"Test psa_asymmetric_encrypt - Small output buffer\n", 5, PSA_KEY_TYPE_RSA_KEYPAIR,
+{"Test psa_asymmetric_encrypt - Small output buffer\n", 5, PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 610, PSA_KEY_USAGE_ENCRYPT | PSA_KEY_USAGE_DECRYPT, PSA_ALG_RSA_PKCS1V15_CRYPT,
 {0}, 0,
 {0xba, 0x78, 0x16, 0xbf, 0x8f, 0x01, 0xcf, 0xea, 0x41, 0x41, 0x40, 0xde, 0x5d,
@@ -227,7 +227,7 @@ static test_data check1[] = {
 }
 
 {"Test psa_asymmetric_encrypt - ECC keypair\n", 10,
- PSA_KEY_TYPE_ECC_KEYPAIR(PSA_ECC_CURVE_SECP256R1),
+ PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1),
 {0}, 97, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_DETERMINISTIC_ECDSA(PSA_ALG_SHA_256),
 {0}, 0,
 {0xba, 0x78, 0x16, 0xbf, 0x8f, 0x01, 0xcf, 0xea, 0x41, 0x41, 0x40, 0xde, 0x5d,

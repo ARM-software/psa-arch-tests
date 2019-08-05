@@ -22,9 +22,9 @@
 
 typedef struct{
     uint8_t  *pubx_key;
-    uint32_t  pubx_key_size;
+    size_t    pubx_key_size;
     uint8_t  *puby_key;
-    uint32_t  puby_key_size;
+    size_t    puby_key_size;
 } ecc_key_t;
 
 struct ecc_public_key_t {
@@ -48,11 +48,11 @@ static const struct ecc_public_key_t attest_public_key = {
 };
 
 struct pal_cose_crypto_hash {
-    /* Can't put the actual size here without creating dependecy on
-     * actual hash implementation, so this is a fairly large and
-     * accommodating size.
-     */
-    uint8_t bytes[128];
+    union {
+        void    *ptr;
+        uint64_t handle;
+    } context;
+    int64_t status;
 };
 
 struct pal_cose_psa_crypto_hash {
@@ -95,7 +95,6 @@ int pal_create_sha256(struct q_useful_buf_c bytes_to_hash, struct q_useful_buf b
 uint32_t pal_compute_hash(int32_t cose_alg_id, struct q_useful_buf buffer_for_hash,
                           struct q_useful_buf_c *hash, struct q_useful_buf_c protected_headers,
                           struct q_useful_buf_c payload);
-uint32_t pal_import_attest_key(int32_t alg);
 uint32_t pal_crypto_pub_key_verify(int32_t cose_algorithm_id, struct q_useful_buf_c token_hash,
                                    struct q_useful_buf_c signature);
 

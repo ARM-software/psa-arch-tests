@@ -19,37 +19,21 @@
 
 typedef struct {
     char                    test_desc[75];
-    psa_key_usage_t         usage;
     psa_algorithm_t         key_alg;
+    size_t                  capacity;
+    psa_status_t            expected_status;
 } test_data;
 
 static test_data check1[] = {
-#ifdef ARCH_TEST_HKDF
-#ifdef ARCH_TEST_SHA256
-{"Test psa_key_policy_get_usage with usage as encrypt\n",
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_HKDF(PSA_ALG_SHA_256),
+{"Test psa_key_derivation_set_get_capacity - Less than operation's capacity\n",
+ PSA_ALG_HKDF(PSA_ALG_SHA_256), 42, PSA_SUCCESS
 },
 
-{"Test psa_key_policy_get_usage with usage as decrypt\n",
- PSA_KEY_USAGE_DECRYPT, PSA_ALG_HKDF(PSA_ALG_SHA_256),
+{"Test psa_key_derivation_set_get_capacity - Equal to operation's capacity\n",
+ PSA_ALG_HKDF(PSA_ALG_SHA_256), 8160, PSA_SUCCESS
 },
 
-{"Test psa_key_policy_get_usage with usage as derive\n",
- PSA_KEY_USAGE_DERIVE, PSA_ALG_HKDF(PSA_ALG_SHA_256),
+{"Test psa_key_derivation_set_get_capacity - More than operation's capacity\n",
+ PSA_ALG_HKDF(PSA_ALG_SHA_256), 10000, PSA_ERROR_INVALID_ARGUMENT
 },
-
-{"Test psa_key_policy_get_usage with usage as export\n",
- PSA_KEY_USAGE_EXPORT, PSA_ALG_HKDF(PSA_ALG_SHA_256),
-},
-
-{"Test psa_key_policy_get_usage with usage as sign\n",
- PSA_KEY_USAGE_SIGN, PSA_ALG_HKDF(PSA_ALG_SHA_256),
-},
-
-{"Test psa_key_policy_get_usage with usage as verify\n",
- PSA_KEY_USAGE_VERIFY, PSA_ALG_HKDF(PSA_ALG_SHA_256),
-},
-#endif
-#endif
-
 };

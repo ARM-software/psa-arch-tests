@@ -20,7 +20,8 @@
 #include "test_c010.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_CRYPTO_BASE, 10)
-#define TEST_DESC "Testing crypto key management APIs\n"
+#define TEST_DESC "Testing crypto key attributes APIs\n"
+
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;
 psa_api_t *psa = NULL;
