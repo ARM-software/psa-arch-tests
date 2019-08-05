@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,21 +21,25 @@
 #include "test_data.h"
 #include "val_crypto.h"
 
-#define  MAX_KEYS   100
-
 client_test_t test_c009_crypto_list[] = {
     NULL,
-    psa_allocate_key_test,
-    psa_allocate_key_negative_test,
+    psa_key_derivation_input_bytes_test,
     NULL,
 };
 
 static int g_test_count = 1;
 
-int32_t psa_allocate_key_test(security_t caller)
+int32_t psa_key_derivation_input_bytes_test(security_t caller)
 {
-    int              num_checks = sizeof(check1)/sizeof(check1[0]);
-    int32_t          i, status;
+    int32_t                        i, status;
+    int                            num_checks = sizeof(check1)/sizeof(check1[0]);
+    psa_key_derivation_operation_t operation = PSA_KEY_DERIVATION_OPERATION_INIT;
+
+    if (num_checks == 0)
+    {
+        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+    }
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -51,45 +55,27 @@ int32_t psa_allocate_key_test(security_t caller)
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-        /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(3));
-
-        /* Destroy a key */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
-    }
-
-    return VAL_STATUS_SUCCESS;
-}
-
-int32_t psa_allocate_key_negative_test(security_t caller)
-{
-    int32_t             i, j, status;
-    psa_key_handle_t    key_handle[MAX_KEYS];
-
-    /* Initialize the PSA crypto library*/
-    status = val->crypto_function(VAL_CRYPTO_INIT);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
-
-    val->print(PRINT_TEST, "[Check %d] Testing the insufficient memory\n", g_test_count++);
-
-    for (i = 0; i < MAX_KEYS; i++)
-    {
-        /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &key_handle[i]);
-        if (status != PSA_SUCCESS)
-        {
-            TEST_ASSERT_EQUAL(status, PSA_ERROR_INSUFFICIENT_MEMORY, TEST_CHECKPOINT_NUM(2));
-            break;
-        }
-    }
-
-    for (j = 0; j < i; j++)
-    {
-        /* Destroy a key */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle[j]);
+        /* Set up a key derivation operation */
+        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_SETUP, &operation, check1[i].alg);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+
+        /* Provide an input for key derivation or key agreement */
+        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_BYTES, &operation,
+                 check1[i].step, check1[i].data, check1[i].data_length);
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
+
+        /* Abort the key derivation operation */
+        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &operation);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+
+        if (check1[i].expected_status != PSA_SUCCESS)
+            continue;
+
+        /* Key derivation on an aborted operation should fail */
+        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_BYTES, &operation,
+                 check1[i].step, check1[i].data, check1[i].data_length);
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(6));
+
     }
 
     return VAL_STATUS_SUCCESS;

@@ -18,9 +18,9 @@
 #define _TEST_C001_CLIENT_TESTS_H_
 
 #include "val_crypto.h"
-#define test_entry CONCAT(test_entry_,c001)
-#define val CONCAT(val,test_entry)
-#define psa CONCAT(psa,test_entry)
+#define test_entry CONCAT(test_entry_, c001)
+#define val CONCAT(val, test_entry)
+#define psa CONCAT(psa, test_entry)
 
 #define  GENERATE_SIZE               32
 

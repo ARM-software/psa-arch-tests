@@ -35,8 +35,14 @@ int32_t psa_cipher_abort_test(security_t caller)
 {
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
-    psa_key_policy_t        policy;
     psa_cipher_operation_t  operation;
+    psa_key_attributes_t    attributes = PSA_KEY_ATTRIBUTES_INIT;
+
+    if (num_checks == 0)
+    {
+        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+    }
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -48,32 +54,19 @@ int32_t psa_cipher_abort_test(security_t caller)
         val->print(PRINT_TEST, check1[i].test_desc, 0);
         memset(&operation, 0, sizeof(operation));
 
-        /* Initialize a key policy structure to a default that forbids all
-         * usage of the key
-         */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
-
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-        /* Set the standard fields of a policy structure */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check1[i].usage,
-                                                                          check1[i].key_alg);
-
-        /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
-
-        /* Set the usage policy on a key slot */
-        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_handle,
-                        &policy);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
+        /* Setup the attributes for the key */
+        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE, &attributes, check1[i].key_type);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM, &attributes, check1[i].key_alg);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage);
 
         /* Import the key data into the key slot */
-        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, check1[i].key_handle,
-                    check1[i].key_type, check1[i].key_data, check1[i].key_length);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].key_data,
+                 check1[i].key_length, &check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         if (check1[i].usage == PSA_KEY_USAGE_ENCRYPT)
         {
@@ -101,6 +94,9 @@ int32_t psa_cipher_abort_test(security_t caller)
         /* Destroy the key */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
+
+        /* Reset the key attributes and check if psa_import_key fails */
+        val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
     }
 
     return VAL_STATUS_SUCCESS;
@@ -109,7 +105,6 @@ int32_t psa_cipher_abort_test(security_t caller)
 int32_t psa_cipher_abort_before_update_test(security_t caller)
 {
     size_t                  length;
-    psa_key_policy_t        policy;
     psa_algorithm_t         key_alg = PSA_ALG_CBC_NO_PADDING;
     psa_key_usage_t         usage = PSA_KEY_USAGE_ENCRYPT;
     psa_key_handle_t        key_handle = 13;
@@ -125,6 +120,7 @@ int32_t psa_cipher_abort_before_update_test(security_t caller)
     size_t                  input_length = sizeof(input);
     size_t                  iv_size = sizeof(iv);
     int32_t                 status;
+    psa_key_attributes_t    attributes = PSA_KEY_ATTRIBUTES_INIT;
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -134,52 +130,44 @@ int32_t psa_cipher_abort_before_update_test(security_t caller)
     val->print(PRINT_TEST, "Test psa_cipher_update after psa_cipher_abort should fail\n", 0);
     memset(&operation, 0, sizeof(operation));
 
-    /* Initialize a key policy structure to a default that forbids all
-     * usage of the key
-     */
-    val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
-
     /* Setting up the watchdog timer for each check */
     status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
     TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-    /* Set the standard fields of a policy structure */
-    val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, usage, key_alg);
-
-    /* Allocate a key slot for a transient key */
-    status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &key_handle);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
-
-    /* Set the usage policy on a key slot */
-    status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, key_handle,  &policy);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
+    /* Setup the attributes for the key */
+    val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE, &attributes, key_type);
+    val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM, &attributes, key_alg);
+    val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, usage);
 
     /* Import the key data into the key slot */
-    status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, key_handle,
-                key_type, key_data, key_length);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+    status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, key_data,
+             key_length, &key_handle);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
     /* Set the key for a multipart symmetric encryption operation */
     status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation,
                 key_handle, key_alg);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
     /* Set an IV for a symmetric encryption operation */
     status = val->crypto_function(VAL_CRYPTO_CIPHER_SET_IV, &operation, iv, iv_size);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
     /* Abort a cipher operation */
     status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
     /* Encrypt or decrypt a message fragment in an active cipher operation */
     status = val->crypto_function(VAL_CRYPTO_CIPHER_UPDATE, &operation, input,
                 input_length, output, SIZE_32B, &length);
-    TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(9));
+    TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(7));
 
     /* Destroy the key */
     status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+
+    /* Reset the key attributes and check if psa_import_key fails */
+    val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
 
     return VAL_STATUS_SUCCESS;
 }

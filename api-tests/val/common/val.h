@@ -186,10 +186,16 @@ typedef enum {
     BOOT_EXPECTED_NS                   = 0x3,
     /* Test performs panic check for secure test run and expect reboot */
     BOOT_EXPECTED_S                    = 0x4,
-    /* Test expected reboot but it didn't happen */
+    /* Test expects reboot but it didn't happen */
     BOOT_EXPECTED_BUT_FAILED           = 0x5,
-    /* Test expect reboot for secure/non-secure test run. If reboot happens, re-enter same test */
+    /* Test expects reboot for secure/non-secure test run. If reboot happens,
+     * re-enter the same test and execute the next check function
+     */
     BOOT_EXPECTED_REENTER_TEST         = 0x6,
+    /* Test expect reboot for the test run. If reboot happens,
+     * re-enter the same test and continue executing the same check function
+     */
+    BOOT_EXPECTED_CONT_TEST_EXEC       = 0x7,
 } boot_state_t;
 
 typedef enum {
@@ -197,6 +203,9 @@ typedef enum {
     NV_TEST_ID_PREVIOUS = 0x1,
     NV_TEST_ID_CURRENT  = 0x2,
     NV_TEST_CNT         = 0x3,
+    NV_TEST_DATA1       = 0x4,
+    NV_TEST_DATA2       = 0x5,
+    NV_TEST_DATA3       = 0x6,
 } nvmem_index_t;
 
 /* enums to report test sub-state */
@@ -231,6 +240,7 @@ typedef enum {
   VAL_STATUS_HEAP_NOT_AVAILABLE          = 0x2A,
   VAL_STATUS_UNSUPPORTED                 = 0x2B,
   VAL_STATUS_DRIVER_FN_FAILED            = 0x2C,
+  VAL_STATUS_NO_TESTS                    = 0X2D,
   VAL_STATUS_ERROR_MAX                   = INT_MAX,
 } val_status_t;
 

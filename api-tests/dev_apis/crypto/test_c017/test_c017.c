@@ -27,7 +27,7 @@ client_test_t test_c017_crypto_list[] = {
     NULL,
 };
 
-static int g_test_count = 1;
+static int     g_test_count = 1;
 static uint8_t data[BUFFER_SIZE], changed[BUFFER_SIZE];
 
 int32_t psa_generate_random_test(security_t caller)
@@ -36,6 +36,12 @@ int32_t psa_generate_random_test(security_t caller)
     uint32_t    i, j, run;
     uint8_t     trail[] = "don't overwrite me";
     int32_t     status;
+
+    if (num_checks == 0)
+    {
+        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+    }
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);

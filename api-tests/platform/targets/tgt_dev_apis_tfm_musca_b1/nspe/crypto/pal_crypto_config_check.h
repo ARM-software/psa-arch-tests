@@ -94,13 +94,13 @@
 #error "ARCH_TEST_CTR_AES defined, but not all prerequisites"
 #endif
 
-#if (defined(ARCH_TEST_CBC_AES)|| defined(ARCH_TEST_CBC_AES_NO_PADDING)) &&\
+#if (defined(ARCH_TEST_CBC_AES) || defined(ARCH_TEST_CBC_AES_NO_PADDING)) &&\
     (!defined(ARCH_TEST_CIPER) || !defined(ARCH_TEST_AES) || !defined(ARCH_TEST_CIPER_MODE_CBC))
 #error "ARCH_TEST_CBC_AES defined, but not all prerequisites"
 #endif
 
 #if (defined(ARCH_TEST_CBC_NO_PADDING)) &&\
-    (!defined(ARCH_TEST_CIPER) ||!defined(ARCH_TEST_CIPER_MODE_CBC))
+    (!defined(ARCH_TEST_CIPER) || !defined(ARCH_TEST_CIPER_MODE_CBC))
 #error "ARCH_TEST_CBC_NO_PADDING defined, but not all prerequisites"
 #endif
 

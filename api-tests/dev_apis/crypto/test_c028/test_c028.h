@@ -18,9 +18,9 @@
 #define _TEST_C028_CLIENT_TESTS_H_
 
 #include "val_crypto.h"
-#define test_entry CONCAT(test_entry_,c028)
-#define val CONCAT(val,test_entry)
-#define psa CONCAT(psa,test_entry)
+#define test_entry CONCAT(test_entry_, c028)
+#define val CONCAT(val, test_entry)
+#define psa CONCAT(psa, test_entry)
 
 extern val_api_t *val;
 extern psa_api_t *psa;

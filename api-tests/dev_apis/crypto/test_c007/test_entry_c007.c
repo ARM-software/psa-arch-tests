@@ -19,8 +19,9 @@
 #include "val_target.h"
 #include "test_c007.h"
 
-#define TEST_NUM  VAL_CREATE_TEST_ID(VAL_CRYPTO_BASE, 7)
-#define TEST_DESC "Testing crypto key management APIs\n"
+#define TEST_NUM  VAL_CREATE_TEST_ID(VAL_CRYPTO_BASE, 07)
+#define TEST_DESC "Testing crypto hash functions APIs\n"
+
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;
 psa_api_t *psa = NULL;

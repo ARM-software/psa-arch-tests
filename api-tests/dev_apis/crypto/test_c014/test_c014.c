@@ -40,6 +40,12 @@ int32_t psa_hash_finish_test(security_t caller)
     char                    hash[HASH_64B];
     size_t                  hash_length, hash_size = sizeof(hash);
 
+    if (num_checks == 0)
+    {
+        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+    }
+
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));

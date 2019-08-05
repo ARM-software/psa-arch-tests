@@ -18,34 +18,153 @@
 #include "val_crypto.h"
 
 typedef struct {
-    char                    test_desc[75];
-    psa_key_handle_t        key_handle;
-    psa_key_type_t          key_type;
-    uint8_t                 key_data[32];
-    uint32_t                key_length;
-    psa_key_usage_t         usage;
-    psa_algorithm_t         key_alg;
-    uint8_t                 salt[16];
-    size_t                  salt_length;
-    uint8_t                 label[16];
-    size_t                  label_length;
-    size_t                  capacity;
-    size_t                  size;
-    psa_status_t            expected_status;
+    char                        test_desc[75];
+    psa_key_handle_t            key_handle;
+    psa_key_type_t              key_type;
+    uint8_t                     key_data[34];
+    uint32_t                    key_length;
+    psa_key_usage_t             usage;
+    psa_algorithm_t             key_alg;
+    psa_key_derivation_step_t   step;
+    size_t                      capacity;
+    uint8_t                     data[16];
+    size_t                      data_length;
+    psa_key_type_t              derive_key_type;
+    size_t                      derive_key_bits;
+    psa_key_usage_t             derive_usage;
+    psa_algorithm_t             derive_key_alg;
+    psa_status_t                expected_status;
 } test_data;
 
 static test_data check1[] = {
-#ifdef ARCH_TEST_HKDF
-#ifdef ARCH_TEST_CIPER_MODE_CTR
-#ifdef ARCH_TEST_SHA256
-{"Test psa_generator_abort\n", 1, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_output_key - Key\n", 1, PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
- 0x5F, 0xC9},
- AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE, PSA_ALG_HKDF(PSA_ALG_SHA_256),
- {0}, 0, {0}, 0, 32,
- 16, PSA_SUCCESS
+ 0x5F, 0xC9, 0x77},
+ AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ PSA_KEY_DERIVATION_INPUT_SECRET, 32, {0}, 0,
+ PSA_KEY_TYPE_AES, BYTES_TO_BITS(AES_32B_KEY_SIZE), PSA_KEY_USAGE_EXPORT,
+ PSA_ALG_CTR,
+ PSA_SUCCESS
 },
-#endif
-#endif
-#endif
+
+{"Test psa_key_derivation_output_key - Info\n", 1, PSA_KEY_TYPE_DERIVE,
+{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
+ 0x5F, 0xC9, 0x77},
+ AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ PSA_KEY_DERIVATION_INPUT_INFO, 32, "This is the info", 16,
+ PSA_KEY_TYPE_AES, BYTES_TO_BITS(AES_32B_KEY_SIZE), PSA_KEY_USAGE_EXPORT,
+ PSA_ALG_CTR,
+ PSA_SUCCESS
+},
+
+{"Test psa_key_derivation_output_key - Label\n", 1, PSA_KEY_TYPE_DERIVE,
+{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
+ 0x5F, 0xC9, 0x77},
+ AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ PSA_KEY_DERIVATION_INPUT_LABEL, 32, "This is the info", 16,
+ PSA_KEY_TYPE_AES, BYTES_TO_BITS(AES_32B_KEY_SIZE), PSA_KEY_USAGE_EXPORT,
+ PSA_ALG_CTR,
+ PSA_SUCCESS
+},
+
+{"Test psa_key_derivation_output_key - Seed\n", 1, PSA_KEY_TYPE_DERIVE,
+{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
+ 0x5F, 0xC9, 0x77},
+ AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ PSA_KEY_DERIVATION_INPUT_SEED, 32, "This is the info", 16,
+ PSA_KEY_TYPE_AES, BYTES_TO_BITS(AES_32B_KEY_SIZE), PSA_KEY_USAGE_EXPORT,
+ PSA_ALG_CTR,
+ PSA_SUCCESS
+},
+
+{"Test psa_key_derivation_output_key - Salt\n", 1, PSA_KEY_TYPE_DERIVE,
+{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
+ 0x5F, 0xC9, 0x77},
+ AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ PSA_KEY_DERIVATION_INPUT_SALT, 32, "This is the info", 16,
+ PSA_KEY_TYPE_AES, BYTES_TO_BITS(AES_32B_KEY_SIZE), PSA_KEY_USAGE_EXPORT,
+ PSA_ALG_CTR,
+ PSA_SUCCESS
+},
+
+{"Test psa_key_derivation_output_key - DES key export\n", 1, PSA_KEY_TYPE_DERIVE,
+{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
+ 0x5F, 0xC9, 0x77},
+ AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ PSA_KEY_DERIVATION_INPUT_SECRET, 32, {0}, 0,
+ PSA_KEY_TYPE_DES, BYTES_TO_BITS(DES3_3KEY_SIZE), PSA_KEY_USAGE_EXPORT,
+ PSA_ALG_CTR,
+ PSA_SUCCESS
+},
+
+{"Test psa_key_derivation_output_key - Greater Capacity than available\n", 1, PSA_KEY_TYPE_DERIVE,
+{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
+ 0x5F, 0xC9, 0x77},
+ AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ PSA_KEY_DERIVATION_INPUT_SECRET, 16, {0}, 0,
+ PSA_KEY_TYPE_AES, BYTES_TO_BITS(AES_32B_KEY_SIZE), PSA_KEY_USAGE_EXPORT,
+ PSA_ALG_CTR,
+ PSA_ERROR_INSUFFICIENT_DATA
+},
+
+{"Test psa_key_derivation_output_key - ECC Public key\n", 1, PSA_KEY_TYPE_DERIVE,
+{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
+ 0x5F, 0xC9, 0x77},
+ AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ PSA_KEY_DERIVATION_INPUT_SECRET, 256, {0}, 0,
+ PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1), 256, PSA_KEY_USAGE_EXPORT,
+ PSA_ERROR_NOT_SUPPORTED,
+},
+
+{"Test psa_key_derivation_output_key -  ECC keypair\n", 1, PSA_KEY_TYPE_DERIVE,
+{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
+ 0x5F, 0xC9, 0x77},
+ AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ PSA_KEY_DERIVATION_INPUT_SECRET, 224, {0}, 0,
+ PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1), 224, PSA_KEY_USAGE_EXPORT,
+ PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
+ PSA_SUCCESS
+},
+
+{"Test psa_key_derivation_output_key -  RSA Public Key", 1, PSA_KEY_TYPE_DERIVE,
+{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
+ 0x5F, 0xC9, 0x77},
+ AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ PSA_KEY_DERIVATION_INPUT_SECRET, 256, {0}, 0,
+ PSA_KEY_TYPE_RSA_PUBLIC_KEY, 2048, PSA_KEY_USAGE_EXPORT,
+ PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
+ PSA_ERROR_NOT_SUPPORTED,
+},
+
+{"Test psa_key_derivation_output_key -  RSA keypair\n", 1, PSA_KEY_TYPE_DERIVE,
+{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
+ 0x5F, 0xC9, 0x77},
+ AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ PSA_KEY_DERIVATION_INPUT_SECRET, 256, {0}, 0,
+ PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1), 2046, PSA_KEY_USAGE_EXPORT,
+ PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
+ PSA_SUCCESS
+},
+
+{"Test psa_key_derivation_output_key - Invalid key size\n", 1, PSA_KEY_TYPE_DERIVE,
+{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
+ 0x5F, 0xC9, 0x77},
+ AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ PSA_KEY_DERIVATION_INPUT_SECRET, 32, {0}, 0,
+ PSA_KEY_TYPE_AES, BYTES_TO_BITS(AES_18B_KEY_SIZE), PSA_KEY_USAGE_EXPORT,
+ PSA_ALG_CTR,
+ PSA_ERROR_NOT_SUPPORTED
+},
 };

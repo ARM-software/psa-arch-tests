@@ -117,7 +117,7 @@ static const uint8_t rsa_128_keypair[] = {
 static test_data check1[] = {
 #ifdef ARCH_TEST_RSA_1024
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
-{"Test psa_asymmetric_verify - RSA KEYPAIR PKCS1V15 RAW\n", 1, PSA_KEY_TYPE_RSA_KEYPAIR,
+{"Test psa_asymmetric_verify - RSA KEY_PAIR PKCS1V15 RAW\n", 1, PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 610, PSA_KEY_USAGE_VERIFY, PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
 {0x61, 0x62, 0x63}, 3,
 {0x2c, 0x77, 0x44, 0x98, 0x3f, 0x02, 0x3a, 0xc7, 0xbb, 0x1c, 0x55, 0x52, 0x9d,
@@ -136,7 +136,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN
 #ifdef ARCH_TEST_SHA256
-{"Test psa_asymmetric_verify - RSA KEYPAIR PKCS1V15 SHA-256\n", 2, PSA_KEY_TYPE_RSA_KEYPAIR,
+{"Test psa_asymmetric_verify - RSA KEY_PAIR PKCS1V15 SHA-256\n", 2, PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 610, PSA_KEY_USAGE_VERIFY, PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
 {0xba, 0x78, 0x16, 0xbf, 0x8f, 0x01, 0xcf, 0xea, 0x41, 0x41, 0x40, 0xde, 0x5d,
  0xae, 0x22, 0x23, 0xb0, 0x03, 0x61, 0xa3, 0x96, 0x17, 0x7a, 0x9c, 0xb4, 0x10,
@@ -160,8 +160,8 @@ static test_data check1[] = {
 #ifdef ARCH_TEST_SHA256
 #ifdef ARCH_TEST_DETERMINISTIC_ECDSA
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
-{"Test psa_asymmetric_verify - ECDSA KEYPAIR SECP256R1 SHA-256\n", 3,
- PSA_KEY_TYPE_ECC_KEYPAIR(PSA_ECC_CURVE_SECP256R1), {0}, 32,
+{"Test psa_asymmetric_verify - ECDSA KEY_PAIR SECP256R1 SHA-256\n", 3,
+ PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1), {0}, 32,
  PSA_KEY_USAGE_VERIFY, PSA_ALG_DETERMINISTIC_ECDSA(PSA_ALG_SHA_256),
 {0x9a, 0xc4, 0x33, 0x5b, 0x46, 0x9b, 0xbd, 0x79, 0x14, 0x39, 0x24, 0x85, 0x04,
  0xdd, 0x0d, 0x49, 0xc7, 0x13, 0x49, 0xa2, 0x95, 0xfe, 0xe5, 0xa1, 0xc6, 0x85,
@@ -197,7 +197,7 @@ PSA_KEY_TYPE_RSA_PUBLIC_KEY,
  128, 1024, PSA_SUCCESS
 },
 
-{"Test psa_asymmetric_verify - Small output buffer\n", 5, PSA_KEY_TYPE_RSA_KEYPAIR,
+{"Test psa_asymmetric_verify - Small output buffer\n", 5, PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 610, PSA_KEY_USAGE_VERIFY, PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
 {0xba, 0x78, 0x16, 0xbf, 0x8f, 0x01, 0xcf, 0xea, 0x41, 0x41, 0x40, 0xde, 0x5d,
  0xae, 0x22, 0x23, 0xb0, 0x03, 0x61, 0xa3, 0x96, 0x17, 0x7a, 0x9c, 0xb4, 0x10,
@@ -216,7 +216,7 @@ PSA_KEY_TYPE_RSA_PUBLIC_KEY,
 },
 #endif
 
-{"Test psa_asymmetric_verify - Invalid algorithm\n", 6, PSA_KEY_TYPE_RSA_KEYPAIR,
+{"Test psa_asymmetric_verify - Invalid algorithm\n", 6, PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 610, PSA_KEY_USAGE_VERIFY, PSA_ALG_SHA_256,
 {0x61, 0x62, 0x63}, 3,
 {0x2c, 0x77, 0x44, 0x98, 0x3f, 0x02, 0x3a, 0xc7, 0xbb, 0x1c, 0x55, 0x52, 0x9d,
@@ -258,7 +258,7 @@ PSA_KEY_TYPE_RSA_PUBLIC_KEY,
 
 #ifdef ARCH_TEST_RSA_1024
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
-{"Test psa_asymmetric_verify - Invalid usage\n", 8, PSA_KEY_TYPE_RSA_KEYPAIR,
+{"Test psa_asymmetric_verify - Invalid usage\n", 8, PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 610, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
 {0x61, 0x62, 0x63}, 3,
 {0x2c, 0x77, 0x44, 0x98, 0x3f, 0x02, 0x3a, 0xc7, 0xbb, 0x1c, 0x55, 0x52, 0x9d,
@@ -277,7 +277,7 @@ PSA_KEY_TYPE_RSA_PUBLIC_KEY,
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN
 #ifdef ARCH_TEST_SHA256
-{"Test psa_asymmetric_verify - Wrong hash size\n", 9, PSA_KEY_TYPE_RSA_KEYPAIR,
+{"Test psa_asymmetric_verify - Wrong hash size\n", 9, PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 610, PSA_KEY_USAGE_VERIFY, PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
 {0xba, 0x78, 0x16, 0xbf, 0x8f, 0x01, 0xcf, 0xea, 0x41, 0x41, 0x40, 0xde, 0x5d,
  0xae, 0x22, 0x23, 0xb0, 0x03, 0x61, 0xa3, 0x96, 0x17, 0x7a, 0x9c, 0xb4, 0x10,
@@ -353,7 +353,7 @@ PSA_KEY_TYPE_RSA_PUBLIC_KEY,
 static test_data check2[] = {
 #ifdef ARCH_TEST_RSA_1024
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
-{"Test psa_asymmetric_verify - Negative case\n", 13, PSA_KEY_TYPE_RSA_KEYPAIR,
+{"Test psa_asymmetric_verify - Negative case\n", 13, PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 610, PSA_KEY_USAGE_VERIFY, PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
 {0x61, 0x62, 0x63}, 3,
 {0x2c, 0x77, 0x44, 0x98, 0x3f, 0x02, 0x3a, 0xc7, 0xbb, 0x1c, 0x55, 0x52, 0x9d,

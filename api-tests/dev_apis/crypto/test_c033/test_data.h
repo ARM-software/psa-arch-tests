@@ -17,8 +17,6 @@
 
 #include "val_crypto.h"
 
-#define EMPTY_KEY_SLOT      31
-
 typedef struct {
     char                    test_desc[75];
     psa_key_handle_t        key_handle;
@@ -276,7 +274,7 @@ static test_data check1[] = {
  PSA_ERROR_INVALID_ARGUMENT
 },
 
-{"Test psa_cipher_decrypt_setup - RSA keypair\n", 13, PSA_KEY_TYPE_RSA_KEYPAIR,
+{"Test psa_cipher_decrypt_setup - RSA keypair\n", 13, PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 1193,
  PSA_KEY_USAGE_DECRYPT, PSA_ALG_RSA_PKCS1V15_SIGN_RAW, 2048,
  PSA_ERROR_INVALID_ARGUMENT
@@ -295,7 +293,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_ECC_CURVE_SECP224R1
 {"Test psa_cipher_decrypt_setup - EC keypair\n", 15,
- PSA_KEY_TYPE_ECC_KEYPAIR(PSA_ECC_CURVE_SECP224R1), {0}, 28,
+ PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1), {0}, 28,
  PSA_KEY_USAGE_DECRYPT, PSA_ALG_RSA_PKCS1V15_CRYPT, 224,
  PSA_ERROR_INVALID_ARGUMENT
 },

@@ -40,6 +40,9 @@
 #define SP_HEAP_MEM_SUPP
 #endif /* PSA_CMAKE_BUILD */
 
+/* Version of crypto spec used in attestation */
+#define CRYPTO_VERSION_BETA2
+
 /*
  * Include of PSA defined Header files
  */
