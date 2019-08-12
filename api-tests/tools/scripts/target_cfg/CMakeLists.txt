@@ -55,6 +55,7 @@ add_custom_command(
 	${OUTPUT_HEADER}
 	COMMENT "[PSA] : Creating output header ${OUTPUT_HEADER}"
 	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}
+	DEPENDS ${TGT_CONFIG_SOURCE_C}
 )
 
 # Adding executable
@@ -69,6 +70,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-m32")
 add_custom_target(
 	run_generator_output ALL
 	SOURCES ${OUTPUT_HEADER}
+	DEPENDS ${PROJECT_NAME}
 )
 
 # install target to put the OUTPUT_HEADER to it's final location
