@@ -215,17 +215,20 @@ static test_data check1[] = {
 #endif
 #endif
 
-#ifdef FUTURE_SUPPORT
+#ifdef ARCH_TEST_ECDSA
+#ifdef ARCH_TEST_ECC_CURVE_SECP192R1
 {"Test psa_asymmetric_encrypt - ECC public key\n", 9,
- PSA_KEY_TYPE_ECC_PUBLIC_KEY_BASE | PSA_ECC_CURVE_SECP192R1,
+ PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP192R1),
 {0}, 75, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_ECDSA_ANY,
 {0}, 0,
 {0xba, 0x78, 0x16, 0xbf, 0x8f, 0x01, 0xcf, 0xea, 0x41, 0x41, 0x40, 0xde, 0x5d,
  0xae, 0x22, 0x23, 0xb0, 0x03, 0x61, 0xa3, 0x96, 0x17, 0x7a, 0x9c, 0xb4, 0x10,
  0xff, 0x61, 0xf2, 0x00, 0x15, 0xad}, 22, 128,
  0, 192, PSA_SUCCESS
-}
+},
+#endif
 
+#ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {"Test psa_asymmetric_encrypt - ECC keypair\n", 10,
  PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1),
 {0}, 97, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_DETERMINISTIC_ECDSA(PSA_ALG_SHA_256),
@@ -235,6 +238,7 @@ static test_data check1[] = {
  0xff, 0x61, 0xf2, 0x00, 0x15, 0xad}, 22, 128,
  0, 192, PSA_SUCCESS
 }
+#endif
 #endif
 };
 

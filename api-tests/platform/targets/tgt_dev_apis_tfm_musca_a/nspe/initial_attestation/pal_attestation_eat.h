@@ -140,7 +140,8 @@
                                                 1 << (EAT_CBOR_ARM_RANGE_BASE                      \
                                                     - EAT_CBOR_ARM_LABEL_NO_SW_COMPONENTS))
 
-#define MANDATORY_SW_COMP                      (1 << EAT_CBOR_SW_COMPONENT_MEASUREMENT)
+#define MANDATORY_SW_COMP                      (1 << EAT_CBOR_SW_COMPONENT_MEASUREMENT      |     \
+                                                1 << EAT_CBOR_SW_COMPONENT_SIGNER_ID)
 
 #define NULL_USEFUL_BUF_C  NULLUsefulBufC
 

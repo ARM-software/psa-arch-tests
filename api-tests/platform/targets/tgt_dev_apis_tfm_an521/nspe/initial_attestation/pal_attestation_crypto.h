@@ -47,19 +47,6 @@ static const struct ecc_public_key_t attest_public_key = {
       0x0F, 0x34, 0x11, 0x7D, 0x97, 0x1D, 0x68, 0x64},
 };
 
-struct pal_cose_crypto_hash {
-    union {
-        void    *ptr;
-        uint64_t handle;
-    } context;
-    int64_t status;
-};
-
-struct pal_cose_psa_crypto_hash {
-    psa_status_t         status;
-    psa_hash_operation_t operation;
-};
-
 static const uint8_t initial_attestation_public_x_key[] =
 {
     0x79, 0xEB, 0xA9, 0x0E, 0x8B, 0xF4, 0x50, 0xA6,
@@ -84,10 +71,10 @@ static const ecc_key_t attest_key = {
         sizeof(initial_attestation_public_y_key)
 };
 
-int32_t pal_cose_crypto_hash_start(struct pal_cose_crypto_hash *hash_ctx, int32_t cose_hash_alg_id);
-void pal_cose_crypto_hash_update(struct pal_cose_crypto_hash *hash_ctx,
+int32_t pal_cose_crypto_hash_start(psa_hash_operation_t *psa_hash, int32_t cose_hash_alg_id);
+void pal_cose_crypto_hash_update(psa_hash_operation_t *psa_hash,
                                  struct q_useful_buf_c data_to_hash);
-int32_t pal_cose_crypto_hash_finish(struct pal_cose_crypto_hash *hash_ctx,
+int32_t pal_cose_crypto_hash_finish(psa_hash_operation_t *psa_hash,
                                     struct q_useful_buf buffer_to_hold_result,
                                     struct q_useful_buf_c *hash_result);
 int pal_create_sha256(struct q_useful_buf_c bytes_to_hash, struct q_useful_buf buffer_for_hash,
