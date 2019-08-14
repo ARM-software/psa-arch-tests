@@ -70,35 +70,24 @@ static int32_t hash_alg_id_from_sig_alg_id(int32_t cose_sig_alg_id)
     }
 }
 
-int32_t pal_cose_crypto_hash_start(struct pal_cose_crypto_hash *hash_ctx, int32_t cose_hash_alg_id)
+int32_t pal_cose_crypto_hash_start(psa_hash_operation_t *psa_hash, int32_t cose_hash_alg_id)
 {
-    psa_hash_operation_t psa_hash = PSA_HASH_OPERATION_INIT;
     psa_algorithm_t      psa_alg;
+    psa_status_t         status = PSA_ERROR_GENERIC_ERROR;
 
     /* Map the algorithm ID */
     psa_alg = cose_hash_alg_id_to_psa(cose_hash_alg_id);
 
     /* Actually do the hash set up */
-    hash_ctx->status = psa_hash_setup(&psa_hash, psa_alg);
+    status = psa_hash_setup(psa_hash, psa_alg);
 
-    /* Copy the PSA handle back into the context */
-    hash_ctx->context.handle = psa_hash.handle;
+    return status;
 
-    /* Map errors and return */
-    return (psa_status_t)hash_ctx->status;
 }
 
-void pal_cose_crypto_hash_update(struct pal_cose_crypto_hash *hash_ctx,
+void pal_cose_crypto_hash_update(psa_hash_operation_t *psa_hash,
                                  struct q_useful_buf_c data_to_hash)
 {
-    psa_hash_operation_t psa_hash;
-
-    /* Copy the PSA handle out of the generic context */
-    psa_hash.handle = (uint32_t)hash_ctx->context.handle;
-
-    if (hash_ctx->status != PSA_SUCCESS)
-        return;
-
     if (data_to_hash.ptr == NULL) {
         /* No data was passed in to be hashed indicating the mode of use is
          * the computation of the size of hash. This mode is hashing is used
@@ -111,55 +100,41 @@ void pal_cose_crypto_hash_update(struct pal_cose_crypto_hash *hash_ctx,
     }
 
     /* Actually hash the data */
-    hash_ctx->status = psa_hash_update(&psa_hash, data_to_hash.ptr, data_to_hash.len);
-
-    /* Copy the PSA handle back into the context. */
-    hash_ctx->context.handle = psa_hash.handle;
+    psa_hash_update(psa_hash, data_to_hash.ptr, data_to_hash.len);
 }
 
-int32_t pal_cose_crypto_hash_finish(struct pal_cose_crypto_hash *hash_ctx,
+int32_t pal_cose_crypto_hash_finish(psa_hash_operation_t *psa_hash,
                                     struct q_useful_buf buffer_to_hold_result,
                                     struct q_useful_buf_c *hash_result)
 {
-    psa_hash_operation_t psa_hash;
-
-    /* Copy the PSA handle out of the generic context */
-    psa_hash.handle = (uint32_t)hash_ctx->context.handle;
-
-    if (hash_ctx->status != PSA_SUCCESS)
-        goto Done;
+    psa_status_t         status = PSA_ERROR_GENERIC_ERROR;
 
     /* Actually finish up the hash */
-    hash_ctx->status = psa_hash_finish(&psa_hash, buffer_to_hold_result.ptr,
+    status = psa_hash_finish(psa_hash, buffer_to_hold_result.ptr,
                                        buffer_to_hold_result.len, &(hash_result->len));
-
     hash_result->ptr = buffer_to_hold_result.ptr;
 
-    /* Copy the PSA handle back into the context. */
-    hash_ctx->context.handle = psa_hash.handle;
-
-Done:
-    return ((psa_status_t)hash_ctx->status);
+    return status;
 
 }
 
 int pal_create_sha256(struct q_useful_buf_c bytes_to_hash, struct q_useful_buf buffer_for_hash,
                       struct q_useful_buf_c *hash)
 {
-    uint32_t                      return_value = 0;
-    struct pal_cose_crypto_hash   hash_ctx;
+    psa_status_t            status = PSA_ERROR_GENERIC_ERROR;
+    psa_hash_operation_t    psa_hash = PSA_HASH_OPERATION_INIT;
 
-    return_value = pal_cose_crypto_hash_start(&hash_ctx, COSE_ALG_SHA256_PROPRIETARY);
-    if (return_value)
+    status = pal_cose_crypto_hash_start(&psa_hash, COSE_ALG_SHA256_PROPRIETARY);
+    if (status != PSA_SUCCESS)
         goto Done;
 
-    pal_cose_crypto_hash_update(&hash_ctx, bytes_to_hash);
-    return_value = pal_cose_crypto_hash_finish(&hash_ctx,
-                                             buffer_for_hash,
-                                             hash);
+    pal_cose_crypto_hash_update(&psa_hash, bytes_to_hash);
 
+    status = pal_cose_crypto_hash_finish(&psa_hash, buffer_for_hash, hash);
+    if (status != PSA_SUCCESS)
+        goto Done;
 Done:
-    return return_value;
+    return status;
 }
 
 uint32_t pal_compute_hash(int32_t cose_alg_id, struct q_useful_buf buffer_for_hash,
@@ -170,9 +145,9 @@ uint32_t pal_compute_hash(int32_t cose_alg_id, struct q_useful_buf buffer_for_ha
     QCBOREncodeContext          cbor_encode_ctx;
     struct q_useful_buf_c       tbs_first_part;
     QCBORError                  qcbor_result;
-    struct pal_cose_crypto_hash hash_ctx = {{0}};
     int32_t                     hash_alg_id;
     UsefulBuf_MAKE_STACK_UB    (buffer_for_TBS_first_part, T_COSE_SIZE_OF_TBS);
+    psa_hash_operation_t        psa_hash = PSA_HASH_OPERATION_INIT;
 
     /* This builds the CBOR-format to-be-signed bytes */
     QCBOREncode_Init(&cbor_encode_ctx, buffer_for_TBS_first_part);
@@ -209,20 +184,20 @@ uint32_t pal_compute_hash(int32_t cose_alg_id, struct q_useful_buf buffer_for_ha
     /* Don't check hash_alg_id for failure. pal_cose_crypto_hash_start()
      * will handle it properly
      */
-    status = pal_cose_crypto_hash_start(&hash_ctx, hash_alg_id);
+    status = pal_cose_crypto_hash_start(&psa_hash, hash_alg_id);
     if (status)
         goto Done;
 
     /* This is hashing of the first part, all the CBOR
      * except the payload.
      */
-    pal_cose_crypto_hash_update(&hash_ctx, useful_buf_head(tbs_first_part, tbs_first_part.len));
+    pal_cose_crypto_hash_update(&psa_hash, useful_buf_head(tbs_first_part, tbs_first_part.len));
 
     /* Hash the payload, the second part. */
-    pal_cose_crypto_hash_update(&hash_ctx, payload);
+    pal_cose_crypto_hash_update(&psa_hash, payload);
 
     /* Finish the hash and set up to return it */
-    status = pal_cose_crypto_hash_finish(&hash_ctx, buffer_for_hash, hash);
+    status = pal_cose_crypto_hash_finish(&psa_hash, buffer_for_hash, hash);
 
 Done:
     return status;
