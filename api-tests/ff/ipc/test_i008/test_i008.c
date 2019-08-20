@@ -61,7 +61,7 @@ int32_t client_test_secure_access_only_connection(security_t caller)
     */
 
    /* Setting boot.state before test check for NS */
-   if (caller == NONSECURE)
+   if (caller == PSA_NONSECURE)
    {
        status = val->set_boot_flag(BOOT_EXPECTED_NS);
    }
@@ -77,7 +77,7 @@ int32_t client_test_secure_access_only_connection(security_t caller)
     */
    handle = psa->connect(SERVER_SECURE_CONNECT_ONLY_SID, 1);
 
-   if (caller == NONSECURE)
+   if (caller == PSA_NONSECURE)
    {
        /*
         * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether

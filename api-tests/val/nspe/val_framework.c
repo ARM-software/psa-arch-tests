@@ -159,7 +159,7 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
             }
 
             /* Execute client tests */
-            test_status = tests_list[i](NONSECURE);
+            test_status = tests_list[i](PSA_NONSECURE);
 
             if (server_hs == TRUE)
             {

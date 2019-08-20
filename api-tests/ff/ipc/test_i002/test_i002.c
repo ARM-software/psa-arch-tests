@@ -201,13 +201,13 @@ int32_t client_test_identity(security_t caller)
        status = VAL_STATUS_CALL_FAILED;
    }
    /* For NSPE access, identity should be < 0 */
-   else if ((caller == NONSECURE) && ((id_at_connect != id_at_call)
+   else if ((caller == PSA_NONSECURE) && ((id_at_connect != id_at_call)
             || (id_at_connect >=0) || (id_at_call >=0)))
    {
        status = VAL_STATUS_WRONG_IDENTITY;
    }
    /* For SPE access, identity should be > 0 */
-   else if ((caller == SECURE) && ((id_at_connect != id_at_call)
+   else if ((caller == PSA_SECURE) && ((id_at_connect != id_at_call)
             || (id_at_connect <=0) || (id_at_call <=0)))
    {
        status = VAL_STATUS_WRONG_IDENTITY;

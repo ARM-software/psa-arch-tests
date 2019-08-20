@@ -78,7 +78,7 @@ int32_t client_test_psa_call_with_invalid_invec_end_addr(security_t caller)
    /*
     * Selection of invalid size for psa_invec:
     *
-    * if caller == NONSECURE
+    * if caller == PSA_NONSECURE
     *    valid_base = nspe_mmio_region_base;
     *    invalid_size = (driver_mmio_region_base - nspe_mmio_region_base + 1);
     * else
@@ -97,7 +97,7 @@ int32_t client_test_psa_call_with_invalid_invec_end_addr(security_t caller)
        return status;
    }
 
-   if (caller == NONSECURE)
+   if (caller == PSA_NONSECURE)
        memory_cfg_id = MEMORY_NSPE_MMIO;
    else
        memory_cfg_id = MEMORY_SERVER_PARTITION_MMIO;
@@ -116,7 +116,7 @@ int32_t client_test_psa_call_with_invalid_invec_end_addr(security_t caller)
    invalid_size = (memory_desc_driver->start - memory_desc->start + 1);
 
    /* Setting boot.state before test check */
-   boot_state = (caller == NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
+   boot_state = (caller == PSA_NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
    if (val->set_boot_flag(boot_state))
    {
        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
@@ -133,7 +133,7 @@ int32_t client_test_psa_call_with_invalid_invec_end_addr(security_t caller)
     * a PROGRAMMER ERROR will panic or return PSA_ERROR_PROGRAMMER_ERROR.
     * For SPE caller, it must panic.
     */
-   if (caller == NONSECURE && status_of_call == PSA_ERROR_PROGRAMMER_ERROR)
+   if (caller == PSA_NONSECURE && status_of_call == PSA_ERROR_PROGRAMMER_ERROR)
    {
        psa->close(handle);
        return VAL_STATUS_SUCCESS;

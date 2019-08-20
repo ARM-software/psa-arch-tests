@@ -167,8 +167,8 @@
 
 /* enums */
 typedef enum {
-    NONSECURE = 0x0,
-    SECURE    = 0x1,
+    PSA_NONSECURE = 0x0,
+    PSA_SECURE    = 0x1,
 } security_t;
 
 typedef enum {

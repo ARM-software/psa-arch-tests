@@ -71,8 +71,8 @@ int32_t client_test_psa_version(security_t caller)
 
    /* psa_version() check for implemented SID but allows only secure connection */
    version = psa->version(SERVER_SECURE_CONNECT_ONLY_SID);
-   if (((caller == NONSECURE) && (version != PSA_VERSION_NONE))
-       || ((caller == SECURE) && (version != 2)))
+   if (((caller == PSA_NONSECURE) && (version != PSA_VERSION_NONE))
+       || ((caller == PSA_SECURE) && (version != 2)))
    {
        status = VAL_STATUS_VERSION_API_FAILED;
        val->print(PRINT_ERROR,
