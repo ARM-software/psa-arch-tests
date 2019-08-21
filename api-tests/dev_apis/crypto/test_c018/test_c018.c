@@ -30,7 +30,7 @@ client_test_t test_c018_crypto_list[] = {
 
 static int g_test_count = 1;
 
-int32_t psa_key_derivation_input_key_test(security_t caller)
+int32_t psa_key_derivation_input_key_test(caller_security_t caller)
 {
     int32_t                        i, status;
     const uint8_t                 *key_data;
@@ -148,7 +148,7 @@ int32_t psa_key_derivation_input_key_test(security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_key_derivation_input_key_negative_test(security_t caller)
+int32_t psa_key_derivation_input_key_negative_test(caller_security_t caller)
 {
     int32_t                        i, status;
     int                            num_checks = sizeof(check2)/sizeof(check2[0]);

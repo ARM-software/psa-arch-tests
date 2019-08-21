@@ -26,7 +26,7 @@ extern val_api_t *val;
 extern psa_api_t *psa;
 extern client_test_t test_c029_crypto_list[];
 
-int32_t psa_mac_verify_setup_test(security_t caller);
-int32_t psa_mac_verify_setup_negative_test(security_t caller);
+int32_t psa_mac_verify_setup_test(caller_security_t caller);
+int32_t psa_mac_verify_setup_negative_test(caller_security_t caller);
 
 #endif /* _TEST_C029_CLIENT_TESTS_H_ */

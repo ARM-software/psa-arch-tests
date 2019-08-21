@@ -31,7 +31,7 @@ client_test_t test_i018_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_set_rhandle_with_invalid_handle(security_t caller)
+int32_t client_test_psa_set_rhandle_with_invalid_handle(caller_security_t caller)
 {
    psa_handle_t       handle = 0;
 

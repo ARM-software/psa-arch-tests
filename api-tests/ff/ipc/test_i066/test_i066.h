@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i066_client_tests_list[];
 
-int32_t client_test_psa_eoi_with_multiple_signals(security_t);
+int32_t client_test_psa_eoi_with_multiple_signals(caller_security_t);
 #endif

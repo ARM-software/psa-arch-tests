@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i067_client_tests_list[];
 
-int32_t client_test_dynamic_mem_alloc_fn(security_t);
+int32_t client_test_dynamic_mem_alloc_fn(caller_security_t);
 #endif

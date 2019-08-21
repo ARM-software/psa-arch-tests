@@ -28,7 +28,7 @@ client_test_t test_c054_crypto_list[] = {
 
 static int g_test_count = 1;
 
-int32_t psa_aead_generate_nonce_test(security_t caller)
+int32_t psa_aead_generate_nonce_test(caller_security_t caller)
 {
     int32_t               i, j, status, nonce_sum;
     uint8_t               nonce[SIZE_32B];

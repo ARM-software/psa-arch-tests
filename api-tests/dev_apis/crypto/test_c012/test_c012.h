@@ -26,7 +26,7 @@ extern val_api_t *val;
 extern psa_api_t *psa;
 extern client_test_t test_c012_crypto_list[];
 
-int32_t psa_hash_update_test(security_t caller);
-int32_t psa_hash_update_invalid_handle(security_t caller);
-int32_t psa_hash_update_with_completed_handle(security_t caller);
+int32_t psa_hash_update_test(caller_security_t caller);
+int32_t psa_hash_update_invalid_handle(caller_security_t caller);
+int32_t psa_hash_update_with_completed_handle(caller_security_t caller);
 #endif /* _TEST_C012_CLIENT_TESTS_H_ */

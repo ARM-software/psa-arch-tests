@@ -31,7 +31,7 @@ client_test_t test_i015_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_get_with_non_rot_signal(security_t caller)
+int32_t client_test_psa_get_with_non_rot_signal(caller_security_t caller)
 {
    psa_handle_t       handle = 0;
 

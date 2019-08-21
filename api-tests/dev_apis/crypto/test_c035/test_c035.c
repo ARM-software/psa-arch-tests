@@ -30,7 +30,7 @@ client_test_t test_c035_crypto_list[] = {
 
 static int     g_test_count = 1;
 
-int32_t psa_cipher_set_iv_test(security_t caller)
+int32_t psa_cipher_set_iv_test(caller_security_t caller)
 {
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;

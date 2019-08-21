@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i005_client_tests_list[];
 
-int32_t client_test_strict_policy_higher_minor_version(security_t);
+int32_t client_test_strict_policy_higher_minor_version(caller_security_t);
 #endif

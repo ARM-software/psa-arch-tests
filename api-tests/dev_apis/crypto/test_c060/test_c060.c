@@ -29,7 +29,7 @@ client_test_t test_c060_crypto_list[] = {
 
 static int g_test_count = 1;
 
-int32_t psa_aead_abort_test(security_t caller)
+int32_t psa_aead_abort_test(caller_security_t caller)
 {
     int32_t               i, status;
     int                   num_checks = sizeof(check1)/sizeof(check1[0]);
@@ -85,7 +85,7 @@ int32_t psa_aead_abort_test(security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_aead_abort_init_test(security_t caller)
+int32_t psa_aead_abort_init_test(caller_security_t caller)
 {
     int32_t               i, status;
     psa_aead_operation_t  operation[] = {PSA_AEAD_OPERATION_INIT, psa_aead_operation_init(), {0} };

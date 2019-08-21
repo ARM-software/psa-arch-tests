@@ -32,7 +32,7 @@ client_test_t test_i001_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_framework_version(security_t caller)
+int32_t client_test_psa_framework_version(caller_security_t caller)
 {
    int32_t         status = VAL_STATUS_SUCCESS;
 
@@ -49,7 +49,7 @@ int32_t client_test_psa_framework_version(security_t caller)
    return status;
 }
 
-int32_t client_test_psa_version(security_t caller)
+int32_t client_test_psa_version(caller_security_t caller)
 {
    int32_t         status = VAL_STATUS_SUCCESS;
    uint32_t        version;
@@ -71,8 +71,8 @@ int32_t client_test_psa_version(security_t caller)
 
    /* psa_version() check for implemented SID but allows only secure connection */
    version = psa->version(SERVER_SECURE_CONNECT_ONLY_SID);
-   if (((caller == NONSECURE) && (version != PSA_VERSION_NONE))
-       || ((caller == SECURE) && (version != 2)))
+   if (((caller == CALLER_NONSECURE) && (version != PSA_VERSION_NONE))
+       || ((caller == CALLER_SECURE) && (version != 2)))
    {
        status = VAL_STATUS_VERSION_API_FAILED;
        val->print(PRINT_ERROR,

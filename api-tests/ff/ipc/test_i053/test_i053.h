@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i053_client_tests_list[];
 
-int32_t client_test_psa_call_with_invalid_outvec_end_addr(security_t);
+int32_t client_test_psa_call_with_invalid_outvec_end_addr(caller_security_t);
 #endif

@@ -55,7 +55,7 @@ void test_i068_dummy_func(void)
 {
 }
 
-int32_t client_test_instr_exec_from_writable_mem(security_t caller)
+int32_t client_test_instr_exec_from_writable_mem(caller_security_t caller)
 {
   val->print(PRINT_TEST, "[Check 1] Test Instr execution from writable memory\n", 0);
 

@@ -31,7 +31,7 @@ client_test_t test_c022_crypto_list[] = {
 static int         g_test_count = 1;
 static uint8_t     output[BUFFER_SIZE];
 
-int32_t psa_key_derivation_abort_test(security_t caller)
+int32_t psa_key_derivation_abort_test(caller_security_t caller)
 {
     int32_t                         status;
     psa_key_derivation_operation_t  func = psa_key_derivation_operation_init();

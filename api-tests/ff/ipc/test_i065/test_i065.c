@@ -31,7 +31,7 @@ client_test_t test_i065_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_eoi_with_unasserted_signal(security_t caller)
+int32_t client_test_psa_eoi_with_unasserted_signal(caller_security_t caller)
 {
    psa_handle_t           handle;
    driver_test_fn_id_t    driver_test_fn_id = TEST_PSA_EOI_WITH_UNASSERTED_SIGNAL;

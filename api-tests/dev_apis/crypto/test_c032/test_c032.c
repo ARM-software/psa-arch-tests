@@ -31,7 +31,7 @@ client_test_t test_c032_crypto_list[] = {
 static int                     g_test_count = 1;
 static psa_cipher_operation_t  operation;
 
-int32_t psa_cipher_encrypt_setup_test(security_t caller)
+int32_t psa_cipher_encrypt_setup_test(caller_security_t caller)
 {
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
@@ -129,7 +129,7 @@ int32_t psa_cipher_encrypt_setup_test(security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_cipher_encrypt_setup_negative_test(security_t caller)
+int32_t psa_cipher_encrypt_setup_negative_test(caller_security_t caller)
 {
     int                     num_checks = sizeof(check2)/sizeof(check2[0]);
     int32_t                 i, status;

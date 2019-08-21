@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i021_client_tests_list[];
 
-int32_t client_test_irq_routing(security_t);
+int32_t client_test_irq_routing(caller_security_t);
 #endif

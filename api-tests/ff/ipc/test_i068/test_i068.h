@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i068_client_tests_list[];
 
-int32_t client_test_instr_exec_from_writable_mem(security_t);
+int32_t client_test_instr_exec_from_writable_mem(caller_security_t);
 #endif

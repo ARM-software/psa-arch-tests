@@ -98,7 +98,7 @@ static int32_t psa_sst_uid_not_found()
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_sst_optional_api_uid_not_found(security_t caller)
+int32_t psa_sst_optional_api_uid_not_found(caller_security_t caller)
 {
     uint32_t status;
     int32_t test_status;

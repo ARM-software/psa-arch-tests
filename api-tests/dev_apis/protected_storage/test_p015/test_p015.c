@@ -30,7 +30,7 @@ client_test_t test_p015_sst_list[] = {
 
 static psa_storage_uid_t p_uid = UID_BASE_VALUE + 5;
 
-int32_t psa_sst_create_api_write_once_flag_check(security_t caller)
+int32_t psa_sst_create_api_write_once_flag_check(caller_security_t caller)
 {
     uint32_t status;
 

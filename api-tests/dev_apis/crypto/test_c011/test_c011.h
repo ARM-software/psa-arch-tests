@@ -26,6 +26,6 @@ extern val_api_t *val;
 extern psa_api_t *psa;
 extern client_test_t test_c011_crypto_list[];
 
-int32_t psa_hash_setup_test(security_t caller);
-int32_t psa_get_key_lifetime_negative_test(security_t caller);
+int32_t psa_hash_setup_test(caller_security_t caller);
+int32_t psa_get_key_lifetime_negative_test(caller_security_t caller);
 #endif /* _TEST_C011_CLIENT_TESTS_H_ */

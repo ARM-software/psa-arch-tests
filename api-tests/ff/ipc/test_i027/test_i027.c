@@ -31,7 +31,7 @@ client_test_t test_i027_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_drop_connection(security_t caller)
+int32_t client_test_psa_drop_connection(caller_security_t caller)
 {
    int32_t            status = VAL_STATUS_SUCCESS;
    psa_handle_t       handle = 0;
@@ -71,7 +71,7 @@ int32_t client_test_psa_drop_connection(security_t caller)
    }
 
    /* Setting boot.state before test check */
-   boot_state = (caller == NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
+   boot_state = (caller == CALLER_NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
    if (val->set_boot_flag(boot_state))
    {
        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
@@ -85,7 +85,7 @@ int32_t client_test_psa_drop_connection(security_t caller)
     * a PROGRAMMER ERROR will panic or return PSA_ERROR_PROGRAMMER_ERROR.
     * For SPE caller, it must panic.
     */
-   if (caller == NONSECURE && status_of_call == PSA_ERROR_PROGRAMMER_ERROR)
+   if (caller == CALLER_NONSECURE && status_of_call == PSA_ERROR_PROGRAMMER_ERROR)
    {
        /* Resetting boot.state to catch unwanted reboot */
        if (val->set_boot_flag(BOOT_NOT_EXPECTED))

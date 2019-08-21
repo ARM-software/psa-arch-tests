@@ -41,7 +41,7 @@ static bool_t is_buffer_empty(uint8_t *buffer, size_t size)
     return TRUE;
 }
 
-int32_t psa_aead_encrypt_test(security_t caller)
+int32_t psa_aead_encrypt_test(caller_security_t caller)
 {
     int32_t               i, status;
     uint8_t               ciphertext[BUFFER_SIZE];

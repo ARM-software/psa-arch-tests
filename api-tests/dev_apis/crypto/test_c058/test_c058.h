@@ -26,6 +26,6 @@ extern val_api_t *val;
 extern psa_api_t *psa;
 extern client_test_t test_c058_crypto_list[];
 
-int32_t psa_aead_update_test(security_t caller);
+int32_t psa_aead_update_test(caller_security_t caller);
 
 #endif /* _TEST_C058_CLIENT_TESTS_H_ */

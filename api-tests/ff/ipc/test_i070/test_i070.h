@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i070_client_tests_list[];
 
-int32_t client_test_write_to_const_data(security_t);
+int32_t client_test_write_to_const_data(caller_security_t);
 #endif

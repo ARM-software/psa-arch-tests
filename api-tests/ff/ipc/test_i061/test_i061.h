@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i061_client_tests_list[];
 
-int32_t client_test_psa_clear_at_unasserted_doorbell_sig(security_t);
+int32_t client_test_psa_clear_at_unasserted_doorbell_sig(caller_security_t);
 #endif

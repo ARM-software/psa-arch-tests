@@ -33,6 +33,6 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i084_client_tests_list[];
 
-int32_t client_test_sp_read_other_sp_variable(security_t);
-int32_t client_test_sp_write_other_sp_variable(security_t);
+int32_t client_test_sp_read_other_sp_variable(caller_security_t);
+int32_t client_test_sp_write_other_sp_variable(caller_security_t);
 #endif

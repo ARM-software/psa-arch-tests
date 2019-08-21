@@ -30,7 +30,7 @@ client_test_t test_c034_crypto_list[] = {
 
 static int     g_test_count = 1;
 
-int32_t psa_cipher_generate_iv_test(security_t caller)
+int32_t psa_cipher_generate_iv_test(caller_security_t caller)
 {
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     uint32_t                i, j, iv_sum;

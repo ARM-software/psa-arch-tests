@@ -36,7 +36,7 @@ client_test_t test_i067_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_dynamic_mem_alloc_fn(security_t caller)
+int32_t client_test_dynamic_mem_alloc_fn(caller_security_t caller)
 {
   /* Check heap memory support available to secure partition */
 #ifdef SP_HEAP_MEM_SUPP

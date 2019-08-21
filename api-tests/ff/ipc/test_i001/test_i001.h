@@ -33,6 +33,6 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i001_client_tests_list[];
 
-int32_t client_test_psa_framework_version(security_t);
-int32_t client_test_psa_version(security_t);
+int32_t client_test_psa_framework_version(caller_security_t);
+int32_t client_test_psa_version(caller_security_t);
 #endif

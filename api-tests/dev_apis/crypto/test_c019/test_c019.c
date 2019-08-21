@@ -29,7 +29,7 @@ client_test_t test_c019_crypto_list[] = {
 
 static int         g_test_count = 1;
 
-int32_t psa_key_derivation_key_agreement_test(security_t caller)
+int32_t psa_key_derivation_key_agreement_test(caller_security_t caller)
 {
     int                             num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                         i, status;
@@ -94,7 +94,7 @@ int32_t psa_key_derivation_key_agreement_test(security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_key_derivation_key_agreement_negative_test(security_t caller)
+int32_t psa_key_derivation_key_agreement_negative_test(caller_security_t caller)
 {
     int32_t                         i, status;
     int                             num_checks = sizeof(check2)/sizeof(check2[0]);

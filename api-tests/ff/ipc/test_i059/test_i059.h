@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i059_client_tests_list[];
 
-int32_t client_test_psa_notify_with_neg_part_id(security_t);
+int32_t client_test_psa_notify_with_neg_part_id(caller_security_t);
 #endif

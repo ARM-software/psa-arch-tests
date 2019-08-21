@@ -30,7 +30,7 @@ client_test_t test_c044_crypto_list[] = {
 static int g_test_count = 1;
 static uint8_t data[BUFFER_SIZE];
 
-int32_t psa_copy_key_test(security_t caller)
+int32_t psa_copy_key_test(caller_security_t caller)
 {
     uint32_t              length, i;
     const uint8_t        *key_data;

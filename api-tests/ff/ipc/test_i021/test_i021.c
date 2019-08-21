@@ -31,7 +31,7 @@ client_test_t test_i021_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_irq_routing(security_t caller)
+int32_t client_test_irq_routing(caller_security_t caller)
 {
    psa_handle_t           handle;
    driver_test_fn_id_t    driver_test_fn_id = TEST_INTR_SERVICE;

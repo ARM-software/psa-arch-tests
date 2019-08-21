@@ -145,7 +145,7 @@ static int32_t sst_remove_stray_uid(psa_storage_uid_t p_uid)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_sst_uid_not_found(security_t caller)
+int32_t psa_sst_uid_not_found(caller_security_t caller)
 {
     int32_t test_status;
     psa_storage_uid_t uid = UID_BASE_VALUE + 6;

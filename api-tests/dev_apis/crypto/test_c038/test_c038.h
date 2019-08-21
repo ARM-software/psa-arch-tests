@@ -26,6 +26,6 @@ extern val_api_t *val;
 extern psa_api_t *psa;
 extern client_test_t test_c038_crypto_list[];
 
-int32_t psa_cipher_abort_test(security_t caller);
-int32_t psa_cipher_abort_before_update_test(security_t caller);
+int32_t psa_cipher_abort_test(caller_security_t caller);
+int32_t psa_cipher_abort_before_update_test(caller_security_t caller);
 #endif /* _TEST_C038_CLIENT_TESTS_H_ */

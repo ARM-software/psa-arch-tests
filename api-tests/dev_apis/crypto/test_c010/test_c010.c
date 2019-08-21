@@ -29,7 +29,7 @@ client_test_t test_c010_crypto_list[] = {
 
 static int g_test_count = 1;
 
-int32_t psa_key_attributes_set_get_test(security_t caller)
+int32_t psa_key_attributes_set_get_test(caller_security_t caller)
 {
     int32_t               i, status;
     psa_key_type_t        get_key_type;
