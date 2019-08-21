@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,9 +18,10 @@
 #include "val_test_common.h"
 
 #define FUSE_SIZE  32
+
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 9),
-                  CREATE_TEST_TITLE("Check if a lockable fuse is fixed in its current state"), 
+                  CREATE_TEST_TITLE("Check if a lockable fuse is fixed in its current state"),
                   CREATE_REF_TAG("R120/R140_TBSA_FUSE"),
                   entry_hook,
                   test_payload,
@@ -58,32 +59,32 @@ void test_payload(tbsa_val_api_t *val)
     }
 
     if (fuse_desc->def_val == 0) {
-        for (i = 0; i < fuse_desc->size; i++)
+        for (i = 0; i < MIN(FUSE_SIZE, fuse_desc->size); i++)
             wr_data[i] = 0xFFFFFFFF;
     } else {
-        for (i = 0; i < fuse_desc->size; i++)
+        for (i = 0; i < MIN(FUSE_SIZE, fuse_desc->size); i++)
             wr_data[i] = 0;
     }
 
-    status = val->fuse_ops(FUSE_READ, fuse_desc->addr, fuse_data, fuse_desc->size);
+    status = val->fuse_ops(FUSE_READ, fuse_desc->addr, fuse_data, MIN(FUSE_SIZE, fuse_desc->size));
     if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
         return;
     }
 
-    status = val->fuse_ops(FUSE_WRITE, fuse_desc->addr, wr_data, fuse_desc->size);
+    status = val->fuse_ops(FUSE_WRITE, fuse_desc->addr, wr_data, MIN(FUSE_SIZE, fuse_desc->size));
     if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
         return;
     }
 
-    status = val->fuse_ops(FUSE_READ, fuse_desc->addr, rd_data, fuse_desc->size);
+    status = val->fuse_ops(FUSE_READ, fuse_desc->addr, rd_data, MIN(FUSE_SIZE, fuse_desc->size));
     if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
         return;
     }
 
     /* Check that the fuse is not modified */
-    for (i = 0; i < fuse_desc->size; i++) {
+    for (i = 0; i < MIN(FUSE_SIZE, fuse_desc->size); i++) {
         if (fuse_data[i] != rd_data[i]) {
-            val->print(PRINT_ERROR, "\n        Able to modify locked fuse", 0);
+            val->print(PRINT_ERROR, "\n\r\tAble to modify locked fuse", 0);
             val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_ERROR);
             return;
         }

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -239,6 +239,7 @@ tbsa_status_t val_nvram_init (void)
     tbsa_status_t  status       = TBSA_STATUS_SUCCESS;
     memory_desc_t  *memory_desc;
     test_id_t      test_id;
+    uint32_t       active_test;
     boot_t         boot;
 
     status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVRAM, 0),
@@ -266,6 +267,12 @@ tbsa_status_t val_nvram_init (void)
         boot.cb    = BOOT_UNKNOWN;
         boot.wdogb = BOOT_UNKNOWN;
         status = val_nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
+        if(status != TBSA_STATUS_SUCCESS) {
+            return status;
+        }
+
+        active_test = 0xFFFFFFFFUL;
+        status = val_nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_ACT_TST), &active_test, sizeof(active_test));
         if(status != TBSA_STATUS_SUCCESS) {
             return status;
         }
@@ -332,7 +339,6 @@ tbsa_status_t val_infra_init(test_id_t *test_id)
     val_mem_reg_write(SYST_CSR, 0x0);
     val_mem_reg_write(SYST_CSR_NS, 0x0);
 
-    /* It is assumed that UART instance 0 is used for flushing print messages */
     do{
         status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, SOC_PERIPHERAL_UART, instance),
                                        (uint8_t **)&uart_desc,
@@ -577,6 +583,8 @@ bool_t val_system_reset_type(system_reset_t reset_type)
             return pal_is_cold_reset();
         case WARM_RESET:
             return pal_is_warm_reset();
+        case WDOG_RESET:
+            return pal_is_wdog_reset();
         default:
             return UNKNOWN_RESET;
     }

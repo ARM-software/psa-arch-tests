@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -63,7 +63,7 @@ void test_payload(tbsa_val_api_t *val)
             return;
 
         key_present = TRUE;
-        status = val->fuse_ops(FUSE_READ, key_info_rev->addr, key, key_info_rev->size);
+        status = val->fuse_ops(FUSE_READ, key_info_rev->addr, key, MIN(KEY_SIZE, key_info_rev->size));
         if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
             return;
         }
@@ -71,18 +71,18 @@ void test_payload(tbsa_val_api_t *val)
         if (key_info_rev->def_val == 0) {
             data = 0;
             /* Check that if Key is non-zero*/
-            for(i = 0; i < key_info_rev->size; i++)
+            for(i = 0; i < MIN(KEY_SIZE, key_info_rev->size); i++)
                 data += key[i];
 
             if (!data) {
-                val->print(PRINT_ERROR, "\n        Incorrect key", 0);
+                val->print(PRINT_ERROR, "\n\r\tIncorrect key - all bits are zero", 0);
                 val->err_check_set(TEST_CHECKPOINT_4, TBSA_STATUS_INCORRECT_VALUE);
                 return;
             }
         } else {
-            for (i = 0; i < key_info_rev->size; i++) {
+            for (i = 0; i < MIN(KEY_SIZE, key_info_rev->size); i++) {
                 if (key[i] == key_info_rev->def_val) {
-                    val->print(PRINT_ERROR, "\n        Incorrect key", 0);
+                    val->print(PRINT_ERROR, "\n\r\tIncorrect key - insufficient entropy/unprogrammed word", 0);
                     val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_INCORRECT_VALUE);
                     return;
                 }
@@ -94,15 +94,15 @@ void test_payload(tbsa_val_api_t *val)
             return;
         }
 
-        status = val->fuse_ops(FUSE_READ, key_info_rev->addr, rev_key, key_info_rev->size);
+        status = val->fuse_ops(FUSE_READ, key_info_rev->addr, rev_key, MIN(KEY_SIZE, key_info_rev->size));
         if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
             return;
         }
 
         /* Check that if Key is not same after it is revoked*/
-        for(i = 0; i < key_info_rev->size; i++) {
+        for(i = 0; i < MIN(KEY_SIZE, key_info_rev->size); i++) {
             if(key[i] == rev_key[i]) {
-                val->print(PRINT_ERROR, "\n        Key is not revoked", 0);
+                val->print(PRINT_ERROR, "\n\r\tKey is not revoked", 0);
                 val->err_check_set(TEST_CHECKPOINT_8, TBSA_STATUS_ERROR);
                 return;
             }

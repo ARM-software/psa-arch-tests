@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -65,12 +65,12 @@ void test_payload(tbsa_val_api_t *val)
 
         case ECC:
             if (key_desc->size >= TBSA_ROTPK_ECC_SIZE) {
-                status = val->fuse_ops(FUSE_READ, key_desc->addr, key, key_desc->size);
+                status = val->fuse_ops(FUSE_READ, key_desc->addr, key, MIN(TBSA_ROTPK_RSA_SIZE, key_desc->size));
                 if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
                     return;
                 }
 
-                status = val->crypto_validate_public_key(ECC, key, key_desc->size, key_desc->addr, &key_valid);
+                status = val->crypto_validate_public_key(ECC, key, MIN(TBSA_ROTPK_RSA_SIZE, key_desc->size), key_desc->addr, &key_valid);
                 if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
                     return;
                 }
@@ -80,8 +80,9 @@ void test_payload(tbsa_val_api_t *val)
                 else
                     val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_ZERO_COUNT_ERROR);
 
-            } else
+            } else {
                 val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_INCORRECT_KEY_SIZE);
+            }
             break;
         case RSA:
             if (key_desc->size >= TBSA_ROTPK_RSA_SIZE) {
@@ -105,38 +106,33 @@ void test_payload(tbsa_val_api_t *val)
             break;
         default:
             switch (key_desc->type & SYM_MSK) {
-            case HASH:
-                status = val->fuse_ops(FUSE_READ, key_desc->addr, data1, key_desc->size);
-                if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
-                    return;
-                }
-
-                /*Try corrupting the hash by writing some random data.*/
-                status = val->fuse_ops(FUSE_WRITE, key_desc->addr, data2, key_desc->size);
-                if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
-                    val->print(PRINT_ERROR, "\n        Write Failed", 0);
-                    return;
-                }
-
-                status = val->fuse_ops(FUSE_READ, key_desc->addr, data2, key_desc->size);
-                if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
-                    val->print(PRINT_ERROR, "\n        Read Failed", 0);
-                    return;
-                }
-
-                for(i=0; i<key_desc->size; i++) {
-                    if(data1[i] != data2[i]) {
-                        val->err_check_set(TEST_CHECKPOINT_E, TBSA_STATUS_ERROR);
-                        val->print(PRINT_ERROR, "\n        HASH of ROTPK was not immutable", 0);
+                case HASH:
+                    status = val->fuse_ops(FUSE_READ, key_desc->addr, data1, MIN(MAX_HASH_SIZE, key_desc->size));
+                    if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
                         return;
-                    } else {
-                        val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
                     }
-                }
-                break;
-            default:
-                val->print(PRINT_ERROR, "\n        No ROTPK was found in the system", 0);
-                val->err_check_set(TEST_CHECKPOINT_F, TBSA_STATUS_NOT_FOUND);
+
+                    /* Try corrupting the hash by writing some random data.*/
+                    val->fuse_ops(FUSE_WRITE, key_desc->addr, data2, MIN(MAX_HASH_SIZE, key_desc->size));
+
+                    status = val->fuse_ops(FUSE_READ, key_desc->addr, data2, MIN(MAX_HASH_SIZE, key_desc->size));
+                    if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
+                        return;
+                    }
+
+                    for(i=0; i< MIN(MAX_HASH_SIZE, key_desc->size); i++) {
+                        if(data1[i] != data2[i]) {
+                            val->err_check_set(TEST_CHECKPOINT_D, TBSA_STATUS_ERROR);
+                            val->print(PRINT_ERROR, "\n\r\tHASH of ROTPK was not immutable", 0);
+                            return;
+                        } else {
+                            val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
+                        }
+                    }
+                    break;
+                default:
+                    val->print(PRINT_ERROR, "\n\r\tNo ROTPK was found in the system", 0);
+                    val->err_check_set(TEST_CHECKPOINT_E, TBSA_STATUS_NOT_FOUND);
             }
     }
     return;
@@ -145,4 +141,3 @@ void test_payload(tbsa_val_api_t *val)
 void exit_hook(tbsa_val_api_t *val)
 {
 }
-

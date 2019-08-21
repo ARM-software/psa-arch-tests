@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,7 +50,9 @@
 #define CREATE_REF_TAG(tag)             #tag"\n"
 
 #define TBSA_TEST_PUBLISH(test_id, title, tag, entry, payload, exit) \
-        const tbsa_test_info_t __attribute__((section(".tbsa_info"))) tbsa_test_info = {test_id, {title}, {tag}, {entry, payload, exit}}
+        const tbsa_test_info_t __attribute__((section(".tbsa_test_info"))) tbsa_test_info = {test_id, {title}, {tag}, {entry, payload, exit}}
+
+#define MIN(x,y)  (((x) < (y)) ? (x) : (y))
 
 /* typedef's */
 

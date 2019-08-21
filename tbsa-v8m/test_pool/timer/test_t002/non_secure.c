@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 
 #include "val_test_common.h"
 
-#define TIMEOUT_VALUE    0xFFFFFFFF
+#define TIMEOUT_VALUE    (0xFFFFFFFFUL)
 
 /**
   Publish these functions to the external world as associated to this test ID
@@ -48,12 +48,12 @@ void entry_hook(tbsa_val_api_t *val)
 
     /* Disabling SecureFault, UsageFault, BusFault, MemFault temporarily */
     status = val->mem_reg_read(SHCSR, &shcsr);
-    if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
         return;
     }
 
     status = val->mem_reg_write(SHCSR, (shcsr & ~0xF0000));
-    if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
         return;
     }
 
@@ -73,9 +73,11 @@ void test_payload(tbsa_val_api_t *val)
     status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, 0, 0),
                                     (uint8_t **)&soc_per,
                                     (uint32_t *)sizeof(soc_peripheral_hdr_t));
-    if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
         return;
     }
+
+    trusted_wd_timer_found = FALSE;
 
     /* Check we have at least one trusted watch dog timer */
     while (per_num < soc_per->num) {
@@ -86,7 +88,7 @@ void test_payload(tbsa_val_api_t *val)
             break;
         }
 
-        if (val->err_check_set(TEST_CHECKPOINT_E, status)) {
+        if (status == TBSA_STATUS_NOT_FOUND) {
             return;
         }
 
@@ -109,23 +111,38 @@ void test_payload(tbsa_val_api_t *val)
         /* Wait here till pending status is cleared by secure fault or timeout occurs, whichever comes early */
         while (IS_TEST_PENDING(val->get_status()) && (--timeout));
 
+        if(!timeout) {
+            val->print(PRINT_ERROR, "\n\r\tNo fault occurred when accessing Secure WDOG 0x%X from NT world!", (uint32_t)(soc_per_desc->base));
+            val->err_check_set(TEST_CHECKPOINT_D, TBSA_STATUS_TIMEOUT);
+            return;
+        }
+
         trusted_wd_timer_found = TRUE;
 
         val->set_status(RESULT_PENDING(status));
 
+        timeout = TIMEOUT_VALUE;
         /* Trying to read the clock source base address for a given trusted wd timer, expect secure fault? */
         val_mem_read_wide((uint32_t *)soc_per_desc->clk_src, &data);
 
         /* wait here till pending status is cleared by secure fault */
-        while (IS_TEST_PENDING(val->get_status()));
+        while (IS_TEST_PENDING(val->get_status()) && --timeout);
+
+        if(!timeout) {
+            val->print(PRINT_ERROR, "\n\r\tNo fault occurred when accessing clock source for Secure WDOG 0x%X from NT world!", (uint32_t)(soc_per_desc->base));
+            val->err_check_set(TEST_CHECKPOINT_E, TBSA_STATUS_TIMEOUT);
+            return;
+        }
 
         /* moving to next watchdog instance */
         instance++;
+        timeout = TIMEOUT_VALUE;
     }
 
     if (!trusted_wd_timer_found) {
         /* We did not find any trusted watch dog */
-        val->set_status(RESULT_FAIL(status));
+        val->err_check_set(TEST_CHECKPOINT_F, TBSA_STATUS_TIMEOUT);
+        return;
     }
 }
 
@@ -135,13 +152,13 @@ void exit_hook(tbsa_val_api_t *val)
 
     /* Restoring default Handler */
     status = val->interrupt_restore_handler(EXCP_NUM_HF);
-    if (val->err_check_set(TEST_CHECKPOINT_F, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_10, status)) {
         return;
     }
 
     /* Restoring faults */
     status = val->mem_reg_write(SHCSR, shcsr);
-    if (val->err_check_set(TEST_CHECKPOINT_10, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_11, status)) {
         return;
     }
 }

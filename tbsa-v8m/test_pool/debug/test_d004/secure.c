@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,7 +60,7 @@ tbsa_status_t test_env_reset(void)
     if (g_val->err_check_set(TEST_CHECKPOINT_18, status)) {
         return status;
     }
-     return TBSA_STATUS_SUCCESS;
+    return TBSA_STATUS_SUCCESS;
 }
 
 tbsa_status_t test_dbg_seq_write(uint32_t addr, dbg_seq_status_t seq_status)
@@ -114,7 +114,7 @@ void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
     uint32_t      data, dpm_instance, timeout, dpm_lock, reset_done=0, dpm_status;
-    uint32_t      region_num = 0, instance = 0, minor_id = 1, region_num_inst;
+    uint32_t      region_num = 0, instance = 0, minor_id = MEMORY_SRAM, region_num_inst;
     dpm_hdr_t     *dpm_hdr;
     memory_hdr_t  *memory_hdr;
     memory_desc_t *memory_desc;
@@ -144,7 +144,7 @@ void test_payload(tbsa_val_api_t *val)
     if (!reset_done) {
         /* Check if DPM is present.*/
         if (!dpm_hdr->num) {
-            val->print(PRINT_ERROR, "\nNo DPM present in the platform", 0);
+            val->print(PRINT_ERROR, "\n\t\rNo DPM present in the platform", 0);
             val->err_check_set(TEST_CHECKPOINT_4, TBSA_STATUS_NOT_FOUND);
             return;
         }
@@ -189,10 +189,10 @@ void test_payload(tbsa_val_api_t *val)
                           lock implemented.
         */
         dpm_not_locked = FALSE;
-        dpm_lock = DPM_LOCK_IMPLEMENTED|DPM_LOCK_VALUE;
+        dpm_lock = DPM_LOCK_IMPLEMENTED|DPM_LOCK_STATE;
         if ((dpm_status & dpm_lock) == dpm_lock) {
             if (dpm_hdr->num == 1) {
-                val->print(PRINT_WARN, "\n        The only DPM in the system is in locked state, cannot check access.", 0);
+                val->print(PRINT_WARN, "\n\t\rThe only DPM in the system is in locked state, cannot check access.", 0);
                 val->set_status(RESULT_SKIP(1));
                 goto clean_up;
             }
@@ -207,7 +207,7 @@ void test_payload(tbsa_val_api_t *val)
             goto clean_up;
         }
         /*Check for R/W address controlled by DPM under check, and access*/
-        for (region_num = 0; region_num < memory_hdr->num; region_num++) {
+        for (region_num = 0; region_num < memory_hdr->num;) {
             instance = 0;
             /* If reset was done then over-write loop variables from stored NV RAM*/
             if(reset_done) {
@@ -221,9 +221,7 @@ void test_payload(tbsa_val_api_t *val)
             do {
                 status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, minor_id, instance),
                                       (uint8_t **)&memory_desc, (uint32_t *)sizeof(memory_desc_t));
-                if (status == TBSA_STATUS_NOT_FOUND) {
-                    break;
-                } else if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
+                if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
                     goto clean_up;
                 }
                 if(!reset_done)
@@ -240,7 +238,7 @@ void test_payload(tbsa_val_api_t *val)
                         /* Reset will only be triggered in case if DPM was not locked at reset*/
                         if (dpm_not_locked) {
                             /* Set the DPM state to Locked.*/
-                            status = val->dpm_set_state(dpm_desc->index, DPM_LOCKED_STATE, 0);
+                            status = val->dpm_set_state(dpm_desc, DPM_LOCKED_STATE);
                             if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
                                 goto clean_up;
                             }
@@ -280,23 +278,19 @@ void test_payload(tbsa_val_api_t *val)
 
                     if (data == TEST_DATA) {
                         val->err_check_set(TEST_CHECKPOINT_11, TBSA_STATUS_ERROR);
-                        val->print(PRINT_ERROR, "\nDPM could not restrict access in Locked State", 0);
-                        val->print(PRINT_ERROR, "\nDebugger read the actual data = 0x%x", TEST_DATA);
+                        val->print(PRINT_ERROR, "\n\t\rDPM could not restrict access in Locked State", 0);
+                        val->print(PRINT_ERROR, "\n\t\rDebugger read the actual data = 0x%x", TEST_DATA);
                         val->print(PRINT_ERROR, " at address = 0x%x", (uint32_t)(memory_desc->start));
                         goto clean_up;
                     }
                 }
                 instance++;
-            } while (instance < region_num_inst);
+            } while (instance < GET_NUM_INSTANCE(memory_desc));
             minor_id++;
-            if (status == TBSA_STATUS_NOT_FOUND)
-                region_num -= 1;
-            else
-                region_num += region_num_inst - 1;
+            region_num += GET_NUM_INSTANCE(memory_desc);
         }
         reset_done = 0;
     }
-
 
     if (test_env_reset())
     return;

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,8 @@
 
 #include "val_test_common.h"
 
+#define TIMEOUT (0xFFFFFFFFUL)
+
 /**
   Publish these functions to the external world as associated to this test ID
 **/
@@ -30,6 +32,7 @@ TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_TRUSTED_TIMERS_BASE, 3),
 soc_peripheral_hdr_t  *soc_per;
 soc_peripheral_desc_t *soc_per_desc;
 memory_desc_t         *memory_desc;
+uint32_t              shcsr;
 
 void entry_hook(tbsa_val_api_t *val)
 {
@@ -46,9 +49,9 @@ void test_payload(tbsa_val_api_t *val)
     tbsa_status_t status;
     uint32_t      instance;
     uint32_t      data;
-    bool_t        trtc_found    = FALSE;
+    bool_t        trtc_found = FALSE;
     boot_t        boot;
-    uint32_t      shcsr;
+    uint32_t      timeout    = TIMEOUT;
 
     status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVRAM, 0),
                                    (uint8_t **)&memory_desc,
@@ -64,13 +67,13 @@ void test_payload(tbsa_val_api_t *val)
 
     if (boot.cb != COLD_BOOT_REQUESTED) {
         instance = 0UL;
-        status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SPAD), &instance, sizeof(instance));
+        status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SPAD1), &instance, sizeof(instance));
         if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
             return;
         }
     } else {
         /* Getting instance value from NVRAM */
-        status = val->nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SPAD), &instance, sizeof(instance));
+        status = val->nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SPAD1), &instance, sizeof(instance));
         if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
             return;
         }
@@ -93,14 +96,14 @@ void test_payload(tbsa_val_api_t *val)
                     return;
                 }
                 /* Writing instance value into NVRAM so that we go to next instance of TRTC in next run after reset */
-                status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SPAD), &instance, sizeof(instance));
+                status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SPAD1), &instance, sizeof(instance));
                 if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
                     return;
                 }
                 /* Issuing cold boot request */
                 val->system_reset(COLD_RESET);
                 /* Shouldn't come here */
-                val->print(PRINT_ERROR, "\n\t  Shouldn't comer here", 0);
+                val->print(PRINT_ERROR, "\n\r\tShouldn't comer here", 0);
                 val->err_check_set(TEST_CHECKPOINT_9, TBSA_STATUS_ERROR);
                 return;
             }
@@ -127,6 +130,7 @@ void test_payload(tbsa_val_api_t *val)
                     }
                     break;
                 }
+                val->print(PRINT_DEBUG, "\n\r\tRTC is not trustable - not synced with server!", 0);
             }
             /* Indicates TRTC is not Trusted when there is outage of power to TRTC */
             boot.cb = COLD_BOOT_COMPLETED;
@@ -166,24 +170,32 @@ void test_payload(tbsa_val_api_t *val)
             val_mem_read_wide((uint32_t *)(soc_per_desc->base + soc_per_desc->offset), &data);
 
             /* wait here till pending status is cleared by secure fault */
-            while (IS_TEST_PENDING(val->get_status()));
+            while (IS_TEST_PENDING(val->get_status()) && --timeout);
+
+            if(!timeout) {
+                val->print(PRINT_ERROR, "\n\r\tNo fault occurred when accessing TRTC address 0x%X from NT world!", (uint32_t)(soc_per_desc->base));
+                val->err_check_set(TEST_CHECKPOINT_11, TBSA_STATUS_TIMEOUT);
+                return;
+            }
 
             val->set_status(RESULT_PENDING(status));
 
+            timeout = TIMEOUT;
             /* Trying to read the clock source base address for a given TRTC, expect secure fault? */
             val_mem_read_wide((uint32_t *)soc_per_desc->clk_src, &data);
 
             /* wait here till pending status is cleared by secure fault */
-            while (IS_TEST_PENDING(val->get_status()));
+            while (IS_TEST_PENDING(val->get_status()) && --timeout);
+
+            if(!timeout) {
+                val->print(PRINT_ERROR, "\n\r\tNo fault occurred when accessing clock source for TRTC 0x%X from NT world!", (uint32_t)(soc_per_desc->base));
+                val->err_check_set(TEST_CHECKPOINT_12, TBSA_STATUS_TIMEOUT);
+                return;
+            }
         }
         instance++;
+        timeout = TIMEOUT;
     } while(instance < GET_NUM_INSTANCE(soc_per_desc));
-
-    /* Restoring faults */
-    status = val->mem_reg_write(SHCSR, shcsr);
-    if (val->err_check_set(TEST_CHECKPOINT_11, status)) {
-        return;
-    }
 
     val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
 }
@@ -192,16 +204,29 @@ void exit_hook(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
     boot_t        boot;
+    uint32_t      default_val;
+
+    /* Restoring faults */
+    status = val->mem_reg_write(SHCSR, shcsr);
+    if (val->err_check_set(TEST_CHECKPOINT_13, status)) {
+        return;
+    }
 
     /* Restoring default Handler */
     status = val->interrupt_restore_handler(EXCP_NUM_HF);
-    if (val->err_check_set(TEST_CHECKPOINT_12, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_14, status)) {
         return;
     }
 
     boot.cb = BOOT_UNKNOWN;
     status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot));
-    if (val->err_check_set(TEST_CHECKPOINT_13, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_15, status)) {
+        return;
+    }
+
+    default_val = 0xFFFFFFFFUL;
+    status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SPAD1), &default_val, sizeof(default_val));
+    if (val->err_check_set(TEST_CHECKPOINT_16, status)) {
         return;
     }
 }

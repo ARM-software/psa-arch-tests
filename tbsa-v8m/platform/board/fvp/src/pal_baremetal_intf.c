@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -242,6 +242,11 @@ int pal_is_warm_reset(void)
     return x;
 }
 
+int pal_is_wdog_reset(void)
+{
+    return 0;
+}
+
 int pal_fuse_get_lcs(uint32_t *pLcs)
 {
     return PAL_STATUS_ERROR;
@@ -293,6 +298,16 @@ int pal_firmware_version_read(uint32_t instance, uint32_t firmware_version_type)
 }
 
 int pal_crypto_revoke_key(uint32_t index, addr_t addr, uint32_t size)
+{
+    return PAL_STATUS_ERROR;
+}
+
+int pal_dpm_set_state(uint32_t index, uint32_t dpm_status, uint32_t unlock_token, void *token)
+{
+    return PAL_STATUS_ERROR;
+}
+
+int pal_dpm_get_state(uint32_t index, uint32_t *dpm_status)
 {
     return PAL_STATUS_ERROR;
 }

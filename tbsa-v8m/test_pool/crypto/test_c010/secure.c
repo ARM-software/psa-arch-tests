@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@
 #include "val_test_common.h"
 
 #define FUSE_SIZE  32
+
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 10),
                   CREATE_TEST_TITLE("Check blowing fuses when the device has left the manufacturing facility."),
@@ -40,13 +41,16 @@ void entry_hook(tbsa_val_api_t *val)
 
 void test_payload(tbsa_val_api_t *val)
 {
-    tbsa_status_t   status;
-    uint32_t        crypto_lcs;
-    uint32_t        i, index = 0;
-    crypto_hdr_t    *crypto_hdr;
-    crypto_desc_t   *crypto_desc;
-    fuse_desc_t     *fuse_desc;
-    uint32_t        rd_data[FUSE_SIZE], wr_data[FUSE_SIZE] = {0xFFFFFFFF};
+    tbsa_status_t status;
+    uint32_t      crypto_lcs;
+    uint32_t      i, index = 0;
+    crypto_hdr_t  *crypto_hdr;
+    crypto_desc_t *crypto_desc;
+    fuse_desc_t   *fuse_desc;
+    uint32_t      rd_data[FUSE_SIZE], wr_data[FUSE_SIZE];
+    bool_t        secure_crypto_found = FALSE;
+
+    val->memset(wr_data, 0xFF, sizeof(wr_data)/sizeof(uint32_t));
 
     status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
     if (val->err_check_set(TEST_CHECKPOINT_1, status)) {
@@ -80,11 +84,13 @@ void test_payload(tbsa_val_api_t *val)
             continue;
        }
 
+       secure_crypto_found = TRUE;
+
        break;
     }
 
-    if (!(crypto_desc->lcs == LCS_SEC_ENABLED || crypto_lcs == LCS_SEC_ENABLED)) {
-        val->print(PRINT_ERROR, "\n        Device has not left the manufacturing facility", 0);
+    if (secure_crypto_found && (!(crypto_desc->lcs == LCS_SEC_ENABLED || crypto_lcs == LCS_SEC_ENABLED))) {
+        val->print(PRINT_ERROR, "\n\r\tDevice has not left the manufacturing facility", 0);
         val->set_status(RESULT_SKIP(1));
         return;
     }
@@ -94,42 +100,41 @@ void test_payload(tbsa_val_api_t *val)
         return;
     }
 
-    status = val->fuse_ops(FUSE_READ, fuse_desc->addr, rd_data, fuse_desc->size);
+    status = val->fuse_ops(FUSE_READ, fuse_desc->addr, rd_data, MIN(FUSE_READ, fuse_desc->size));
     if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
         return;
     }
 
     if (fuse_desc->def_val != 0) {
-         for (i = 0; i < fuse_desc->size; i++)
+         for (i = 0; i < MIN(FUSE_READ, fuse_desc->size); i++)
             wr_data[i] = 0;
    }
 
-    for (i = 0; i < fuse_desc->size; i++) {
+    for (i = 0; i < MIN(FUSE_READ, fuse_desc->size); i++) {
         if (rd_data[i] != fuse_desc->def_val) {
-            val->print(PRINT_ERROR, "\n        Given fuse is not empty", 0);
+            val->print(PRINT_ERROR, "\n\r\tGiven fuse is not empty", 0);
             val->err_check_set(TEST_CHECKPOINT_7, TBSA_STATUS_INVALID);
             return;
         }
     }
 
-    status = val->fuse_ops(FUSE_WRITE, fuse_desc->addr, wr_data, fuse_desc->size);
+    status = val->fuse_ops(FUSE_WRITE, fuse_desc->addr, wr_data, MIN(FUSE_READ, fuse_desc->size));
     if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
         return;
     }
 
-    status = val->fuse_ops(FUSE_READ, fuse_desc->addr, rd_data, fuse_desc->size);
+    status = val->fuse_ops(FUSE_READ, fuse_desc->addr, rd_data, MIN(FUSE_READ, fuse_desc->size));
     if (val->err_check_set(TEST_CHECKPOINT_9, status)) {
         return;
     }
 
-    for (i = 0; i < fuse_desc->size; i++) {
+    for (i = 0; i < MIN(FUSE_READ, fuse_desc->size); i++) {
         if (rd_data[i] != wr_data[i]) {
-            val->print(PRINT_ERROR, "\n        Not able to program the fuse", 0);
+            val->print(PRINT_ERROR, "\n\r\tNot able to program the fuse", 0);
             val->err_check_set(TEST_CHECKPOINT_A, status);
             return;
         }
     }
-
 }
 
 void exit_hook(tbsa_val_api_t *val)
