@@ -28,7 +28,7 @@ client_test_t test_c051_crypto_list[] = {
 
 static int g_test_count = 1;
 
-int32_t psa_close_key_test(security_t caller)
+int32_t psa_close_key_test(caller_security_t caller)
 {
     int32_t               i, status;
     const uint8_t        *key_data;

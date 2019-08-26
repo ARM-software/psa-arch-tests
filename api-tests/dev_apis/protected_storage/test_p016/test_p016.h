@@ -25,6 +25,6 @@ extern val_api_t *val;
 extern psa_api_t *psa;
 extern client_test_t test_p016_sst_list[];
 
-int32_t psa_sst_optional_api_sst_capacity_check(security_t caller);
+int32_t psa_sst_optional_api_sst_capacity_check(caller_security_t caller);
 
 #endif /* _TEST_P016_CLIENT_TESTS_H_ */

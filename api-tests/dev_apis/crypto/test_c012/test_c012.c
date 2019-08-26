@@ -31,7 +31,7 @@ client_test_t test_c012_crypto_list[] = {
 
 static int g_test_count = 1;
 
-int32_t psa_hash_update_test(security_t caller)
+int32_t psa_hash_update_test(caller_security_t caller)
 {
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
@@ -76,7 +76,7 @@ int32_t psa_hash_update_test(security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_hash_update_invalid_handle(security_t caller)
+int32_t psa_hash_update_invalid_handle(caller_security_t caller)
 {
     psa_hash_operation_t    operation;
     uint8_t                 input[] = "Hello World";
@@ -108,7 +108,7 @@ int32_t psa_hash_update_invalid_handle(security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_hash_update_with_completed_handle(security_t caller)
+int32_t psa_hash_update_with_completed_handle(caller_security_t caller)
 {
     psa_hash_operation_t    operation;
     uint8_t                 input[] = {0xbd};

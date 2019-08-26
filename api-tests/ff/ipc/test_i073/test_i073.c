@@ -55,7 +55,7 @@ static int32_t get_secure_partition_address(addr_t *addr)
    return VAL_STATUS_SUCCESS;
 }
 
-int32_t client_test_nspe_read_app_rot_stack(security_t caller)
+int32_t client_test_nspe_read_app_rot_stack(caller_security_t caller)
 {
    addr_t   app_rot_addr;
    uint32_t data = 0x1234;
@@ -93,7 +93,7 @@ int32_t client_test_nspe_read_app_rot_stack(security_t caller)
    return VAL_STATUS_SPM_FAILED;
 }
 
-int32_t client_test_nspe_write_app_rot_stack(security_t caller)
+int32_t client_test_nspe_write_app_rot_stack(caller_security_t caller)
 {
    addr_t   app_rot_addr;
    uint32_t data = 0x1234;

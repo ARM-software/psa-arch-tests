@@ -31,7 +31,7 @@ client_test_t test_i069_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_write_to_code_space(security_t caller)
+int32_t client_test_write_to_code_space(caller_security_t caller)
 {
   int32_t *p;
 

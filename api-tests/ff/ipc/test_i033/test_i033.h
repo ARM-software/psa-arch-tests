@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i033_client_tests_list[];
 
-int32_t client_test_psa_read_with_invec_greater_than_max_iovec(security_t);
+int32_t client_test_psa_read_with_invec_greater_than_max_iovec(caller_security_t);
 #endif

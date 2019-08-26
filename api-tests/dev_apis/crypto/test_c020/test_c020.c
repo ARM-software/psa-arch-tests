@@ -30,7 +30,7 @@ client_test_t test_c020_crypto_list[] = {
 static int      g_test_count = 1;
 static uint8_t  output[BUFFER_SIZE];
 
-int32_t psa_key_derivation_output_bytes_test(security_t caller)
+int32_t psa_key_derivation_output_bytes_test(caller_security_t caller)
 {
     uint32_t                        i, status;
     int                             num_checks = sizeof(check1)/sizeof(check1[0]);

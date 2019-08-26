@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i017_client_tests_list[];
 
-int32_t client_test_partition_calling_its_own_rot_service(security_t);
+int32_t client_test_partition_calling_its_own_rot_service(caller_security_t);
 #endif

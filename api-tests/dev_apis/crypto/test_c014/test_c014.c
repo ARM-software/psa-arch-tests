@@ -31,7 +31,7 @@ client_test_t test_c014_crypto_list[] = {
 
 static int g_test_count = 1;
 
-int32_t psa_hash_finish_test(security_t caller)
+int32_t psa_hash_finish_test(caller_security_t caller)
 {
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
@@ -97,7 +97,7 @@ int32_t psa_hash_finish_test(security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_hash_finish_inactive_operation_handle(security_t caller)
+int32_t psa_hash_finish_inactive_operation_handle(caller_security_t caller)
 {
     psa_hash_operation_t    operation;
     char                    input = 0xbd;
@@ -145,7 +145,7 @@ int32_t psa_hash_finish_inactive_operation_handle(security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_hash_finish_invalid_hash_buffer_size(security_t caller)
+int32_t psa_hash_finish_invalid_hash_buffer_size(caller_security_t caller)
 {
     psa_hash_operation_t    operation;
     char                    input = 0xbd;

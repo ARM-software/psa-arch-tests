@@ -38,7 +38,7 @@ client_test_t test_i002_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_connection_busy_and_reject(security_t caller)
+int32_t client_test_connection_busy_and_reject(caller_security_t caller)
 {
     int32_t         status = VAL_STATUS_SUCCESS;
     psa_handle_t    handle = 0;
@@ -73,7 +73,7 @@ int32_t client_test_connection_busy_and_reject(security_t caller)
    return status;
 }
 
-int32_t client_test_accept_and_close_connect(security_t caller)
+int32_t client_test_accept_and_close_connect(caller_security_t caller)
 {
    psa_handle_t     handle = 0;
 
@@ -94,7 +94,7 @@ int32_t client_test_accept_and_close_connect(security_t caller)
    return VAL_STATUS_SUCCESS;
 }
 
-int32_t client_test_connect_with_allowed_minor_version_policy(security_t caller)
+int32_t client_test_connect_with_allowed_minor_version_policy(caller_security_t caller)
 {
    psa_handle_t     handle = 0;
    uint32_t         i = 0;
@@ -153,7 +153,7 @@ int32_t psa_call_with_null_msg(int32_t expected_status)
    return status;
 }
 
-int32_t client_test_psa_call_with_allowed_status_code(security_t caller)
+int32_t client_test_psa_call_with_allowed_status_code(caller_security_t caller)
 {
    int32_t         status = VAL_STATUS_SUCCESS;
    psa_status_t    expected_status_code[] = {PSA_SUCCESS, 1, 2, INT32_MAX, -1, -2, INT32_MIN+128};
@@ -175,7 +175,7 @@ int32_t client_test_psa_call_with_allowed_status_code(security_t caller)
    return status;
 }
 
-int32_t client_test_identity(security_t caller)
+int32_t client_test_identity(caller_security_t caller)
 {
    int32_t         status = VAL_STATUS_SUCCESS;
    psa_handle_t    handle = 0;
@@ -201,13 +201,13 @@ int32_t client_test_identity(security_t caller)
        status = VAL_STATUS_CALL_FAILED;
    }
    /* For NSPE access, identity should be < 0 */
-   else if ((caller == NONSECURE) && ((id_at_connect != id_at_call)
+   else if ((caller == CALLER_NONSECURE) && ((id_at_connect != id_at_call)
             || (id_at_connect >=0) || (id_at_call >=0)))
    {
        status = VAL_STATUS_WRONG_IDENTITY;
    }
    /* For SPE access, identity should be > 0 */
-   else if ((caller == SECURE) && ((id_at_connect != id_at_call)
+   else if ((caller == CALLER_SECURE) && ((id_at_connect != id_at_call)
             || (id_at_connect <=0) || (id_at_call <=0)))
    {
        status = VAL_STATUS_WRONG_IDENTITY;
@@ -217,7 +217,7 @@ int32_t client_test_identity(security_t caller)
    return status;
 }
 
-int32_t client_test_spm_concurrent_connect_limit(security_t caller)
+int32_t client_test_spm_concurrent_connect_limit(caller_security_t caller)
 {
    int32_t         status = VAL_STATUS_SUCCESS;
    psa_handle_t    handle[CONNECT_LIMIT] = {0};
@@ -276,13 +276,13 @@ int32_t client_test_psa_wait(void)
    return VAL_STATUS_SUCCESS;
 }
 
-int32_t client_test_psa_block_behave(security_t caller)
+int32_t client_test_psa_block_behave(caller_security_t caller)
 {
    val->print(PRINT_TEST, "[Check 7] Test PSA_BLOCK\n", 0);
    return (client_test_psa_wait());
 }
 
-int32_t client_test_psa_poll_behave(security_t caller)
+int32_t client_test_psa_poll_behave(caller_security_t caller)
 {
    val->print(PRINT_TEST, "[Check 8] Test PSA_POLL\n", 0);
    return (client_test_psa_wait());

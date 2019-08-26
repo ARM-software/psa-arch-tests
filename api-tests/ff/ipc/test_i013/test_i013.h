@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i013_client_tests_list[];
 
-int32_t client_test_psa_get_with_more_than_one_signal(security_t);
+int32_t client_test_psa_get_with_more_than_one_signal(caller_security_t);
 #endif

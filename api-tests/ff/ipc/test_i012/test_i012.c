@@ -31,7 +31,7 @@ client_test_t test_i012_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_close_with_invalid_handle(security_t caller)
+int32_t client_test_psa_close_with_invalid_handle(caller_security_t caller)
 {
    boot_state_t       boot_state;
 
@@ -60,7 +60,7 @@ int32_t client_test_psa_close_with_invalid_handle(security_t caller)
     */
 
    /* Setting boot.state before test check */
-   boot_state = (caller == NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
+   boot_state = (caller == CALLER_NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
    if (val->set_boot_flag(boot_state))
    {
        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
@@ -75,7 +75,7 @@ int32_t client_test_psa_close_with_invalid_handle(security_t caller)
     * a PROGRAMMER ERROR will panic or return with no effect.
     * For SPE caller, it must panic.
     */
-   if (caller == NONSECURE)
+   if (caller == CALLER_NONSECURE)
    {
        return VAL_STATUS_SUCCESS;
    }

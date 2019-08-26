@@ -71,7 +71,7 @@ static int32_t psa_sst_optional_api_not_supported()
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_sst_optional_api_not_supported_check(security_t caller)
+int32_t psa_sst_optional_api_not_supported_check(caller_security_t caller)
 {
     uint32_t status;
     int32_t test_status;

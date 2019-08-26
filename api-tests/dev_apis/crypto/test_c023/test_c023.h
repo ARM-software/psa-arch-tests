@@ -26,5 +26,5 @@ extern val_api_t *val;
 extern psa_api_t *psa;
 extern client_test_t test_c023_crypto_list[];
 
-int32_t psa_key_derivation_set_get_capacity_test(security_t caller);
+int32_t psa_key_derivation_set_get_capacity_test(caller_security_t caller);
 #endif /* _TEST_C023_CLIENT_TESTS_H_ */

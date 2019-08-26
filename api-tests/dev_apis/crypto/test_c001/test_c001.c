@@ -27,7 +27,7 @@ client_test_t test_c001_crypto_list[] = {
     NULL,
 };
 
-int32_t psa_generate_random_without_init_test(security_t caller)
+int32_t psa_generate_random_without_init_test(caller_security_t caller)
 {
     uint8_t         output[GENERATE_SIZE];
     int32_t         status;
@@ -44,7 +44,7 @@ int32_t psa_generate_random_without_init_test(security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_crypto_init_test(security_t caller)
+int32_t psa_crypto_init_test(caller_security_t caller)
 {
     int32_t        status;
 
@@ -57,7 +57,7 @@ int32_t psa_crypto_init_test(security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t multiple_psa_crypto_init_test(security_t caller)
+int32_t multiple_psa_crypto_init_test(caller_security_t caller)
 {
     int32_t         i, status;
 

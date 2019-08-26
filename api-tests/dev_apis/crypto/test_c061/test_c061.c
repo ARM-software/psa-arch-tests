@@ -28,7 +28,7 @@ client_test_t test_c061_crypto_list[] = {
 
 static int g_test_count = 1;
 
-int32_t psa_aead_verify_test(security_t caller)
+int32_t psa_aead_verify_test(caller_security_t caller)
 {
     int32_t               i, status;
     uint8_t               output[BUFFER_SIZE], tag[SIZE_128B];

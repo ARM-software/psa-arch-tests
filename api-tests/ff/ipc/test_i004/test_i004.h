@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i004_client_tests_list[];
 
-int32_t client_test_sid_does_not_exists(security_t);
+int32_t client_test_sid_does_not_exists(caller_security_t);
 #endif

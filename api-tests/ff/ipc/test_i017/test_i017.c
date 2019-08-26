@@ -31,7 +31,7 @@ client_test_t test_i017_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_partition_calling_its_own_rot_service(security_t caller)
+int32_t client_test_partition_calling_its_own_rot_service(caller_security_t caller)
 {
    psa_handle_t       handle = 0;
 

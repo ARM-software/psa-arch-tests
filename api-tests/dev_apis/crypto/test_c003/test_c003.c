@@ -29,7 +29,7 @@ client_test_t test_c003_crypto_list[] = {
 static int      g_test_count = 1;
 static uint8_t  data[BUFFER_SIZE];
 
-int32_t psa_export_key_test(security_t caller)
+int32_t psa_export_key_test(caller_security_t caller)
 {
     int32_t               i, status;
     size_t                length;

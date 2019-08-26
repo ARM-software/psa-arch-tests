@@ -113,7 +113,7 @@ static int32_t psa_sst_bad_pointer()
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_sst_optional_api_offset_invalid(security_t caller)
+int32_t psa_sst_optional_api_offset_invalid(caller_security_t caller)
 {
     uint32_t status;
     int32_t test_status;

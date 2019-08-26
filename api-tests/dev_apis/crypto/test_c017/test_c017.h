@@ -26,5 +26,5 @@ extern val_api_t *val;
 extern psa_api_t *psa;
 extern client_test_t test_c017_crypto_list[];
 
-int32_t psa_generate_random_test(security_t caller);
+int32_t psa_generate_random_test(caller_security_t caller);
 #endif /* _TEST_C017_CLIENT_TESTS_H_ */

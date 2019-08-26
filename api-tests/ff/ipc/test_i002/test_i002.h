@@ -36,12 +36,12 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i002_client_tests_list[];
 
-int32_t client_test_connection_busy_and_reject(security_t);
-int32_t client_test_accept_and_close_connect(security_t);
-int32_t client_test_connect_with_allowed_minor_version_policy(security_t);
-int32_t client_test_psa_call_with_allowed_status_code(security_t);
-int32_t client_test_identity(security_t);
-int32_t client_test_spm_concurrent_connect_limit(security_t);
-int32_t client_test_psa_block_behave(security_t);
-int32_t client_test_psa_poll_behave(security_t);
+int32_t client_test_connection_busy_and_reject(caller_security_t);
+int32_t client_test_accept_and_close_connect(caller_security_t);
+int32_t client_test_connect_with_allowed_minor_version_policy(caller_security_t);
+int32_t client_test_psa_call_with_allowed_status_code(caller_security_t);
+int32_t client_test_identity(caller_security_t);
+int32_t client_test_spm_concurrent_connect_limit(caller_security_t);
+int32_t client_test_psa_block_behave(caller_security_t);
+int32_t client_test_psa_poll_behave(caller_security_t);
 #endif

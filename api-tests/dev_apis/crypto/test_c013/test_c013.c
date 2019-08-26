@@ -30,7 +30,7 @@ client_test_t test_c013_crypto_list[] = {
 
 static int g_test_count = 1;
 
-int32_t psa_hash_verify_test(security_t caller)
+int32_t psa_hash_verify_test(caller_security_t caller)
 {
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
@@ -86,7 +86,7 @@ int32_t psa_hash_verify_test(security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_hash_verify_inactive_operation_handle(security_t caller)
+int32_t psa_hash_verify_inactive_operation_handle(caller_security_t caller)
 {
     psa_hash_operation_t    operation, invalid_operation;
     char                    input = 0xbd;

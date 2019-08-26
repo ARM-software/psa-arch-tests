@@ -33,6 +33,6 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i072_client_tests_list[];
 
-int32_t client_test_nspe_read_app_rot_variable(security_t);
-int32_t client_test_nspe_write_app_rot_variable(security_t);
+int32_t client_test_nspe_read_app_rot_variable(caller_security_t);
+int32_t client_test_nspe_write_app_rot_variable(caller_security_t);
 #endif

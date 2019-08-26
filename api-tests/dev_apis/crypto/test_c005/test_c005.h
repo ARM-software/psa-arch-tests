@@ -26,5 +26,5 @@ extern val_api_t *val;
 extern psa_api_t *psa;
 extern client_test_t test_c005_crypto_list[];
 
-int32_t psa_destroy_key_test(security_t caller);
+int32_t psa_destroy_key_test(caller_security_t caller);
 #endif /* _TEST_C005_CLIENT_TESTS_H_ */

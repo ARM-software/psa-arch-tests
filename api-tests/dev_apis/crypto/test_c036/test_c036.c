@@ -33,7 +33,7 @@ static int                     g_test_count = 1;
 static uint8_t                 input[SIZE_32B];
 static uint8_t                 output[SIZE_32B];
 
-int32_t psa_cipher_update_test(security_t caller)
+int32_t psa_cipher_update_test(caller_security_t caller)
 {
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
@@ -128,7 +128,7 @@ int32_t psa_cipher_update_test(security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_cipher_update_negative_test(security_t caller)
+int32_t psa_cipher_update_negative_test(caller_security_t caller)
 {
     int32_t                 i, status;
     psa_cipher_operation_t  operations[] = {psa_cipher_operation_init(),

@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i069_client_tests_list[];
 
-int32_t client_test_write_to_code_space(security_t);
+int32_t client_test_write_to_code_space(caller_security_t);
 #endif

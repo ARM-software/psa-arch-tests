@@ -29,7 +29,7 @@ client_test_t test_c030_crypto_list[] = {
 
 static int g_test_count = 1;
 
-int32_t psa_mac_verify_finish_test(security_t caller)
+int32_t psa_mac_verify_finish_test(caller_security_t caller)
 {
     int                   num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t               i, status;

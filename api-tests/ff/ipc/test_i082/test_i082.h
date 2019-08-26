@@ -33,6 +33,6 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i082_client_tests_list[];
 
-int32_t client_test_app_rot_read_psa_rot_heap(security_t);
-int32_t client_test_app_rot_write_psa_rot_heap(security_t);
+int32_t client_test_app_rot_read_psa_rot_heap(caller_security_t);
+int32_t client_test_app_rot_write_psa_rot_heap(caller_security_t);
 #endif

@@ -60,7 +60,7 @@ static int32_t get_secure_partition_address(addr_t *addr)
    return VAL_STATUS_SUCCESS;
 }
 
-int32_t client_test_sp_read_other_sp_heap(security_t caller)
+int32_t client_test_sp_read_other_sp_heap(caller_security_t caller)
 {
    addr_t   app_rot_addr;
    uint8_t  data = DATA_VALUE;
@@ -98,7 +98,7 @@ int32_t client_test_sp_read_other_sp_heap(security_t caller)
    return VAL_STATUS_SPM_FAILED;
 }
 
-int32_t client_test_sp_write_other_sp_heap(security_t caller)
+int32_t client_test_sp_write_other_sp_heap(caller_security_t caller)
 {
    addr_t   app_rot_addr;
    uint8_t  data = DATA_VALUE;
@@ -129,14 +129,14 @@ int32_t client_test_sp_write_other_sp_heap(security_t caller)
    return VAL_STATUS_SUCCESS;
 }
 #else
-int32_t client_test_sp_read_other_sp_heap(security_t caller)
+int32_t client_test_sp_read_other_sp_heap(caller_security_t caller)
 {
    val->print(PRINT_TEST, "[Check 1] Test SP reading other SP heap\n", 0);
    val->print(PRINT_ERROR, "\tSkipping test as heap memory not supported\n", 0);
    return RESULT_SKIP(VAL_STATUS_HEAP_NOT_AVAILABLE);
 }
 
-int32_t client_test_sp_write_other_sp_heap(security_t caller)
+int32_t client_test_sp_write_other_sp_heap(caller_security_t caller)
 {
    val->print(PRINT_TEST, "[Check 2] Test SP writing other SP heap\n", 0);
    val->print(PRINT_ERROR, "\tSkipping test as heap memory not supported\n", 0);

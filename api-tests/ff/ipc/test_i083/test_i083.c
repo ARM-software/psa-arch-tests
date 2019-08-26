@@ -71,7 +71,7 @@ static void close_driver_fn(psa_handle_t *handle)
    psa->close(*handle);
 }
 
-int32_t client_test_app_rot_read_psa_rot_mmio(security_t caller)
+int32_t client_test_app_rot_read_psa_rot_mmio(caller_security_t caller)
 {
    addr_t       psa_rot_addr;
    uint32_t     data = DATA_VALUE;
@@ -114,7 +114,7 @@ int32_t client_test_app_rot_read_psa_rot_mmio(security_t caller)
    return VAL_STATUS_SPM_FAILED;
 }
 
-int32_t client_test_app_rot_write_psa_rot_mmio(security_t caller)
+int32_t client_test_app_rot_write_psa_rot_mmio(caller_security_t caller)
 {
    addr_t       psa_rot_addr;
    uint32_t     data = DATA_VALUE;

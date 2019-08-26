@@ -25,6 +25,6 @@ extern val_api_t *val;
 extern psa_api_t *psa;
 extern client_test_t test_p015_sst_list[];
 
-int32_t psa_sst_create_api_write_once_flag_check(security_t caller);
+int32_t psa_sst_create_api_write_once_flag_check(caller_security_t caller);
 
 #endif /* _TEST_P015_CLIENT_TESTS_H_ */

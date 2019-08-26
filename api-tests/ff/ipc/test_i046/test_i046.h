@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i046_client_tests_list[];
 
-int32_t client_test_psa_write_with_size_overflow(security_t);
+int32_t client_test_psa_write_with_size_overflow(caller_security_t);
 #endif

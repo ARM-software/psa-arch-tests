@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i060_client_tests_list[];
 
-int32_t client_test_psa_notify_with_invalid_pos_part_id(security_t);
+int32_t client_test_psa_notify_with_invalid_pos_part_id(caller_security_t);
 #endif

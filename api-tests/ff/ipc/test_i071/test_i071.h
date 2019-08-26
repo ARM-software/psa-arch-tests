@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i071_client_tests_list[];
 
-int32_t client_test_mem_manipulation_fn(security_t);
+int32_t client_test_mem_manipulation_fn(caller_security_t);
 #endif

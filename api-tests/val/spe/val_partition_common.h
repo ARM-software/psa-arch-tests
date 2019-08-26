@@ -337,7 +337,7 @@ STATIC_DECLARE val_status_t val_execute_secure_tests(test_info_t test_info, clie
         }
 
         /* Execute client tests */
-        test_status = tests_list[i](SECURE);
+        test_status = tests_list[i](CALLER_SECURE);
 
         /* Retrive Server test status */
         status = val_get_secure_test_result(&handle);

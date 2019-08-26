@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i064_client_tests_list[];
 
-int32_t client_test_psa_eoi_with_non_intr_signal(security_t);
+int32_t client_test_psa_eoi_with_non_intr_signal(caller_security_t);
 #endif

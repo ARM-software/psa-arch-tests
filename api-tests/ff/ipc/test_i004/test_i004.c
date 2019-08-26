@@ -31,7 +31,7 @@ client_test_t test_i004_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_sid_does_not_exists(security_t caller)
+int32_t client_test_sid_does_not_exists(caller_security_t caller)
 {
    psa_handle_t       handle = 0;
    boot_state_t       boot_state;
@@ -61,7 +61,7 @@ int32_t client_test_sid_does_not_exists(security_t caller)
     */
 
    /* Setting boot.state before test check */
-   boot_state = (caller == NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
+   boot_state = (caller == CALLER_NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
    if (val->set_boot_flag(boot_state))
    {
        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
@@ -76,7 +76,7 @@ int32_t client_test_sid_does_not_exists(security_t caller)
     * a PROGRAMMER ERROR will panic or return PSA_ERROR_CONNECTION_REFUSED.
     * For SPE caller, it must panic.
     */
-   if (caller == NONSECURE && handle == PSA_ERROR_CONNECTION_REFUSED)
+   if (caller == CALLER_NONSECURE && handle == PSA_ERROR_CONNECTION_REFUSED)
    {
        return VAL_STATUS_SUCCESS;
    }

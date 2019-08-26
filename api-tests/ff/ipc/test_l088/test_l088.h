@@ -33,5 +33,5 @@ extern psa_api_t *psa;
 
 extern client_test_t test_i088_client_tests_list[];
 
-int32_t client_test_psa_rot_lifecycle_state(security_t);
+int32_t client_test_psa_rot_lifecycle_state(caller_security_t);
 #endif
