@@ -26,10 +26,10 @@ The test suite for this specification is located in the **dev_apis** directory o
 
 | Test Category            | Specification Version                |
 |--------------------------|--------------------------------------|
-| Crypto                   | [PSA Crypto API 1.0-Beta1](../api-specs/crypto/v1.0-beta1/)     |
-| Protected Storage        | [PSA Protected Storage API 1.0-Beta2](../api-specs/storage/v1.0-beta2/) |
-| Internal Trusted Storage | [PSA Internal Trusted Storage API 1.0-Beta2](../api-specs/storage/v1.0-beta2/) |
-| Initial Attestation      | [PSA Initial Attestation API 1.0-Beta0](../api-specs/attestation/v1.0-beta0/)  |
+| Crypto                   | [PSA Crypto API 1.0-Beta3](../api-specs/crypto/v1.0-beta3/doc/)     |
+| Protected Storage        | [PSA Protected Storage API 1.0.0](../api-specs/storage/v1.0/doc/) |
+| Internal Trusted Storage | [PSA Internal Trusted Storage API 1.0.0](../api-specs/storage/v1.0/doc/) |
+| Initial Attestation      | [PSA Initial Attestation API 1.0.0](../api-specs/attestation/v1.0/doc/)  |
 
 2. PSA-FF tests that are written for version 1.0-Beta1 of the PSA FF specification.
 
