@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -109,29 +109,35 @@ tbsa_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
     addr_t             sflash_addr = g_test_binary_src_addr;
 
     /*
-     * The combined Test ELF binary:
-     *
-     * ------------------------
-     * |TBSA_TEST_START_MARKER|
-     * ------------------------
-     * | Custom Test Header*  |
-     * ------------------------
-     * | Secure Image         |
-     * |----------------------|
-     * | Non-Secure Image     |
-     * ------------------------
-     * | Custom Test Header*  |
-     * ------------------------
-     * | Secure Image         |
-     * |----------------------|
-     * | Non-Secure Image     |
-     *          :
-     *          :
-     * ------------------------
-     * | TBSA_TEST_END_MARKER |
-     * ------------------------
-     *
+       The combined Test ELF binary:
+       +---------------+             +----------------+
+       | TEST#0 header |-----------> |  START MARKER  |
+       |               |             |----------------|
+       | Test#0 S ELF  |             |   Test#n ID    |
+       |               |             |----------------|
+       | Test#0 NS ELF |             | Test#n S size  |
+       +---------------+             |----------------|
+       | TEST#1 header |             | Test#n NS size |
+       |               |             +----------------+
+       | Test#1 S ELF  |
+       |               |
+       | Test#1 NS ELF |
+       +---------------+
+              |
+              .
+               |
+               .
+       +---------------+
+       | TEST#n header |
+       |               |
+       | Test#n S ELF  |
+       |               |
+       | Test#n NS ELF |
+       +---------------+
+       |  END MARKER   |
+       +---------------+
      */
+
     if (test_id_prev != TBSA_TEST_INVALID) {
         /* Reading TBSA header */
         do

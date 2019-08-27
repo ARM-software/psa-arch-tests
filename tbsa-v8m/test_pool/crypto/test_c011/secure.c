@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@
 #include "val_test_common.h"
 
 #define FUSE_SIZE  32
+
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 11),
                   CREATE_TEST_TITLE("Check a confidential SW receipient fuse is readable by privileged software."),
@@ -55,10 +56,12 @@ void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t   status;
     fuse_desc_t     *fuse_desc;
-    uint32_t        data[FUSE_SIZE], data1[FUSE_SIZE] = {0};
+    uint32_t        data[FUSE_SIZE], data1[FUSE_SIZE];
     boot_t          boot;
     uint32_t        shcsr = 0UL;
     uint32_t        control, i;
+
+    val->memset(data1, 0x0, sizeof(data1)/sizeof(uint32_t));
 
     status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVRAM, 0),
                                    (uint8_t **)&memory_desc,
@@ -72,12 +75,12 @@ void test_payload(tbsa_val_api_t *val)
         return;
     }
 
-    status = val->interrupt_setup_handler(EXCP_NUM_HF, 0, HF_Handler);
-    if(val->err_check_set(TEST_CHECKPOINT_3, status)) {
-        return;
-    }
-
     if (boot.wb != WARM_BOOT_REQUESTED) {
+
+        status = val->interrupt_setup_handler(EXCP_NUM_HF, 0, HF_Handler);
+        if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
+            return;
+        }
 
         status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
         if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
@@ -113,14 +116,14 @@ void test_payload(tbsa_val_api_t *val)
             return;
         }
 
-        status = val->fuse_ops(FUSE_READ, fuse_desc->addr, data, fuse_desc->size);
+        status = val->fuse_ops(FUSE_READ, fuse_desc->addr, data, MIN(FUSE_SIZE, fuse_desc->size));
         if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
             return;
         }
 
-        for (i = 0; i < fuse_desc->size; i++) {
+        for (i = 0; i < MIN(FUSE_SIZE, fuse_desc->size); i++) {
             if (data[i] == fuse_desc->def_val) {
-                val->print(PRINT_ERROR, "\n        The given fuse is empty", 0);
+                val->print(PRINT_ERROR, "\n\r\tThe given fuse is empty", 0);
                 val->err_check_set(TEST_CHECKPOINT_B, TBSA_STATUS_ERROR);
                 return;
             }
@@ -132,19 +135,28 @@ void test_payload(tbsa_val_api_t *val)
         asm volatile ("MSR control, %0" : : "r" (control) : "memory");
 
         /* Performing unprivilege access to Confidential fuse */
-        status = val->fuse_ops(FUSE_READ, fuse_desc->addr, data1, fuse_desc->size);
+        status = val->fuse_ops(FUSE_READ, fuse_desc->addr, data1, MIN(FUSE_SIZE, fuse_desc->size));
         if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
             return;
         }
 
-        for (i = 0; i < fuse_desc->size; i++) {
+        for (i = 0; i < MIN(FUSE_SIZE, fuse_desc->size); i++) {
             if (data1[i] == data[i]) {
-                val->print(PRINT_ERROR, "\n        Able to access confidential fuse in unprivilege mode", 0);
+                val->print(PRINT_ERROR, "\n\r\tAble to access confidential fuse in unprivilege mode", 0);
                 val->err_check_set(TEST_CHECKPOINT_D, TBSA_STATUS_ERROR);
                 return;
             }
         }
     }
+
+    val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
+}
+
+void exit_hook(tbsa_val_api_t *val)
+{
+    tbsa_status_t   status;
+    boot_t          boot;
+    uint32_t        shcsr = 0UL;
 
     /* Restoring the state */
     boot.wb = BOOT_UNKNOWN;
@@ -163,13 +175,6 @@ void test_payload(tbsa_val_api_t *val)
     if (val->err_check_set(TEST_CHECKPOINT_10, status)) {
         return;
     }
-
-    val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
-}
-
-void exit_hook(tbsa_val_api_t *val)
-{
-    tbsa_status_t   status;
 
     /* Restoring default Handler */
     status = val->interrupt_restore_handler(EXCP_NUM_HF);

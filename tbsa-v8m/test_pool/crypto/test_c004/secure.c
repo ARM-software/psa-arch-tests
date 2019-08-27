@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,9 +44,10 @@ void entry_hook(tbsa_val_api_t *val)
 void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
-    uint32_t      data, expected_fuse_type, i, instance = 0;
+    uint32_t      expected_fuse_type, i, instance = 0;
     uint32_t      key[KEY_SIZE];
-    uint32_t      rd_data[KEY_SIZE], wr_data[KEY_SIZE] = {0xFFFFFFFF};
+    uint32_t      rd_data[KEY_SIZE], wr_data[KEY_SIZE];
+    uint32_t      key_mask, result;
     key_desc_t    *key_info_static;
     bool_t        key_present = FALSE;
 
@@ -55,10 +56,13 @@ void test_payload(tbsa_val_api_t *val)
         return;
     }
 
+    val->memset(wr_data, 0xFF, sizeof(wr_data)/sizeof(uint32_t));
+
     do {
         status = val->crypto_get_key_info(&key_info_static, STATIC, &instance);
         if (status != TBSA_STATUS_SUCCESS && key_present == FALSE) {
-            val->err_check_set(TEST_CHECKPOINT_2, status);
+            val->print(PRINT_ALWAYS, "\n\r\tStatic key is not available to check", 0);
+            val->set_status(RESULT_SKIP(status));
             return;
         }
 
@@ -69,61 +73,53 @@ void test_payload(tbsa_val_api_t *val)
         key_present = TRUE;
         expected_fuse_type = FUSE_BULK | FUSE_LOCKABLE;
         if ((key_info_static->type & expected_fuse_type) != expected_fuse_type) {
-            val->print(PRINT_ERROR, "\n        Fuse type in which static key stored is non-compliant", 0);
-            val->print(PRINT_ERROR, "\n        Fuse type %x", key_info_static->type);
-            val->print(PRINT_ERROR, "\n        Expected Fuse type %x", expected_fuse_type);
-            val->err_check_set(TEST_CHECKPOINT_3, TBSA_STATUS_ERROR);
+            val->print(PRINT_ERROR, "\n\r\tFuse type in which static key stored is non-compliant", 0);
+            val->print(PRINT_ERROR, "\n\r\tFuse type %x", key_info_static->type);
+            val->print(PRINT_ERROR, "\n\r\tExpected Fuse type %x", expected_fuse_type);
+            val->err_check_set(TEST_CHECKPOINT_2, TBSA_STATUS_ERROR);
             return;
         }
 
         if ((key_info_static->state & FUSE_OPEN) == FUSE_OPEN) {
-            status = val->fuse_ops(FUSE_READ, key_info_static->addr, key, key_info_static->size);
+            status = val->fuse_ops(FUSE_READ, key_info_static->addr, key, MIN(KEY_SIZE, key_info_static->size));
+            if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
+                return;
+            }
+
+            result   = 0;
+            key_mask = 0;
+            /* check whether key holds the default value, if so warn ! */
+            for (i = 0; i < MIN(KEY_SIZE, key_info_static->size); i++) {
+                if (key[i] == key_info_static->def_val) {
+                    result |= (1U << i);
+                }
+                key_mask |= (1U << i);
+            }
+
+            if (result == key_mask) {
+                val->print(PRINT_ALWAYS, "\n\r\tStatic key having the default value : %X", key_info_static->def_val);
+            }
+
+            status = val->fuse_ops(FUSE_WRITE, key_info_static->addr, wr_data, MIN(KEY_SIZE, key_info_static->size));
             if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
                 return;
             }
 
-            if (key_info_static->def_val == 0) {
-                data = 0;
-                /* Check that the static key is non-zero*/
-                for(i = 0; i < key_info_static->size; i++)
-                    data += key[i];
-
-                if (!data) {
-                    val->print(PRINT_ERROR, "\n        Incorrect Static Key", 0);
-                    val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_ERROR);
-                    return;
-                }
-            } else {
-                for (i = 0; i < key_info_static->size; i++) {
-                    wr_data[i] = 0;
-                    /* Check that the static key is not equal to default value */
-                    if (key[i] == key_info_static->def_val) {
-                        val->print(PRINT_ERROR, "\n        Incorrect HUK", 0);
-                        val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_ERROR);
-                        return;
-                    }
-                }
-            }
-
-            status = val->fuse_ops(FUSE_WRITE, key_info_static->addr, wr_data, key_info_static->size);
-            if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
+            status = val->fuse_ops(FUSE_READ, key_info_static->addr, rd_data, MIN(KEY_SIZE, key_info_static->size));
+            if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
                 return;
             }
 
-            status = val->fuse_ops(FUSE_READ, key_info_static->addr, rd_data, key_info_static->size);
-            if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
-                return;
-            }
-
-            for (i = 0; i < key_info_static->size; i++) {
+            for (i = 0; i < MIN(KEY_SIZE, key_info_static->size); i++) {
                 if (key[i] != rd_data[i]) {
-                    val->print(PRINT_ERROR, "\n        Able to modify static key", 0);
-                    val->err_check_set(TEST_CHECKPOINT_9, TBSA_STATUS_ERROR);
+                    val->print(PRINT_ERROR, "\n\r\tAble to modify static key", 0);
+                    val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_ERROR);
                     return;
                 }
             }
         } else {
-           val->print(PRINT_INFO, "\n        Static key is not open", 0);
+           val->set_status(RESULT_SKIP(status));
+           val->print(PRINT_ALWAYS, "\n\r\tStatic key %d is not open", instance);
         }
 
         instance++;

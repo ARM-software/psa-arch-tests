@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_BASE_BASE, 1),
                   CREATE_TEST_TITLE("Check Trusted and Non-trusted world asset access"),
-                  CREATE_REF_TAG("R010/R020_TBSA_BASE-R010/R020/R030/R220_TBSA_INFRA-R040_TBSA_EIP"),
+                  CREATE_REF_TAG("R010/R020_TBSA_BASE-R010/R020/R030/R170/R220_TBSA_INFRA-R040_TBSA_EIP"),
                   entry_hook,
                   test_payload,
                   exit_hook);
@@ -89,7 +89,7 @@ void test_payload(tbsa_val_api_t *val)
 
     /* Perform read access on all address regions, and a write access only when the region is
        marked as normal read-write */
-    for (region_num = 0; region_num < memory_hdr->num; region_num++) {
+    for (region_num = 0; region_num < memory_hdr->num;) {
         instance = 0;
         do {
             status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, minor_id, instance),
@@ -112,20 +112,20 @@ void test_payload(tbsa_val_api_t *val)
             instance++;
         } while (instance < GET_NUM_INSTANCE(memory_desc));
         minor_id++;
-        if (status == TBSA_STATUS_NOT_FOUND)
-            region_num -= 1;
-        else
-            region_num += (GET_NUM_INSTANCE(memory_desc) - 1);
+        if (status != TBSA_STATUS_NOT_FOUND) {
+            region_num += GET_NUM_INSTANCE(memory_desc);
+        }
     }
 
     status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, 0, 0),
                                     (uint8_t **)&soc_peripheral_hdr,
                                     (uint32_t *)sizeof(soc_peripheral_hdr_t));
-    if (val->err_check_set(TEST_CHECKPOINT_3, status))
+    if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
         return;
+    }
 
     minor_id = 1;
-    for (per_num = 0; per_num < soc_peripheral_hdr->num; per_num++) {
+    for (per_num = 0; per_num < soc_peripheral_hdr->num;) {
         instance = 0;
         do {
             status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_SOC_PERIPHERAL, minor_id, instance),
@@ -141,10 +141,9 @@ void test_payload(tbsa_val_api_t *val)
             instance++;
         } while (instance < GET_NUM_INSTANCE(soc_peripheral_desc));
         minor_id++;
-        if (status == TBSA_STATUS_NOT_FOUND)
-            per_num -= 1;
-        else
-            per_num += (GET_NUM_INSTANCE(soc_peripheral_desc) - 1);
+        if(status != TBSA_STATUS_NOT_FOUND) {
+            per_num += GET_NUM_INSTANCE(soc_peripheral_desc);
+        }
     }
 
     status = setup_ns_env();

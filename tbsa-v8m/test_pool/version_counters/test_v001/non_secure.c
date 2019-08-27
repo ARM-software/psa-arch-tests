@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@
 
 #define TF_MIN_VER_CNT    64
 #define NTF_MIN_VER_CNT   256
+
 /**
   Publish these functions to the external world as associated to this test ID
 **/
@@ -49,25 +50,25 @@ void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
     uint32_t      instance = 0;
-    uint32_t      fw_ver_count;
+    uint32_t      fw_ver_count, fused_ver_count = 0;
     boot_t        boot;
     uint32_t      shcsr = 0;
 
     status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
-    if (val->err_check_set(TEST_CHECKPOINT_1, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
         return;
     }
 
     status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVRAM, 0),
                                     (uint8_t **)&memory_desc,
                                     (uint32_t *)sizeof(memory_desc_t));
-    if (val->err_check_set(TEST_CHECKPOINT_2, status)) {
-        goto cleanup;
+    if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
+        return;
     }
 
     status = val->nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
-    if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
-        goto cleanup;
+    if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
+        return;
     }
 
     if (boot.cb != COLD_BOOT_REQUESTED) {
@@ -75,23 +76,23 @@ void test_payload(tbsa_val_api_t *val)
             status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MISCELLANEOUS, MISCELLANEOUS_VER_COUNT, instance),
                                             (uint8_t **)&misc_desc,
                                             (uint32_t *)sizeof(miscellaneous_desc_t));
-            if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
-                goto cleanup;
+            if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
+                return;
             }
 
             /* Checking for on-chip non-volatile version counter range */
             if ((misc_desc->fw_ver_type == TRUSTED) || (misc_desc->fw_ver_type == NON_TRUSTED)) {
                 if (misc_desc->fw_ver_type == TRUSTED) {
                     if (misc_desc->fw_ver_cnt_max < TF_MIN_VER_CNT) {
-                        val->print(PRINT_DEBUG, "\nTrusted firmware version counter max should be >= %d", TF_MIN_VER_CNT);
-                        val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_INCORRECT_VALUE);
-                        goto cleanup;
+                        val->print(PRINT_DEBUG, "\n\r\tTrusted firmware version counter max should be >= %d", TF_MIN_VER_CNT);
+                        val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_INCORRECT_VALUE);
+                        return;
                     }
                 } else {
                     if (misc_desc->fw_ver_cnt_max < NTF_MIN_VER_CNT) {
-                        val->print(PRINT_DEBUG, "\nNon-trusted firmware version counter max should be >= %d", NTF_MIN_VER_CNT);
-                        val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_INCORRECT_VALUE);
-                        goto cleanup;
+                        val->print(PRINT_DEBUG, "\n\r\tNon-trusted firmware version counter max should be >= %d", NTF_MIN_VER_CNT);
+                        val->err_check_set(TEST_CHECKPOINT_7, TBSA_STATUS_INCORRECT_VALUE);
+                        return;
                     }
                 }
             }
@@ -99,40 +100,48 @@ void test_payload(tbsa_val_api_t *val)
             /* Reading the current firmware version counter */
             fw_ver_count = val->firmware_version_read(instance, misc_desc->fw_ver_type);
 
+            /* Skip the test if max version was already fused */
+            if (fw_ver_count == misc_desc->fw_ver_cnt_max) {
+                val->set_status(RESULT_SKIP(status));
+                return;
+            }
+
             /* Updating the firmware version count(trusted mode) */
-            status = val->firmware_version_update(instance, misc_desc->fw_ver_type, ++fw_ver_count);
-            if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
-                goto cleanup;
-            }
+            val->firmware_version_update(instance, misc_desc->fw_ver_type, ++fw_ver_count);
 
-            /* Updating firmware version(lower than previous counter), expecting failure ! */
-            status = val->firmware_version_update(instance, misc_desc->fw_ver_type, --fw_ver_count);
-            if (status == TBSA_STATUS_SUCCESS) {
+            /* Check if the versoin is incremented */
+            fused_ver_count = val->firmware_version_read(instance, misc_desc->fw_ver_type);
+            if (fused_ver_count != (fw_ver_count)) {
                 val->err_check_set(TEST_CHECKPOINT_8, TBSA_STATUS_INVALID);
-                goto cleanup;
+                return;
             }
 
-            /* which confirms we cannot decrement firmware version counter */
+            /* Updating firmware version(lower than previous counter)
+             * which confirms we cannot decrement firmware version counter
+             */
+            val->firmware_version_update(instance, misc_desc->fw_ver_type, --fw_ver_count);
+            fused_ver_count = val->firmware_version_read(instance, misc_desc->fw_ver_type);
+            if (fused_ver_count != (++fw_ver_count)) {
+	            val->err_check_set(TEST_CHECKPOINT_9, TBSA_STATUS_INVALID);
+                return;
+            }
+
+            /* Updating the firmware version count to max */
+            val->firmware_version_update(instance, misc_desc->fw_ver_type, misc_desc->fw_ver_cnt_max);
+            fused_ver_count = val->firmware_version_read(instance, misc_desc->fw_ver_type);
+            if (fused_ver_count != misc_desc->fw_ver_cnt_max) {
+                val->err_check_set(TEST_CHECKPOINT_A, TBSA_STATUS_INVALID);
+                return;
+            }
 
             /* When a version counter reaches its maximum value, it must not roll over,
              * and no further changes must be possible
              */
-            status = val->firmware_version_update(instance, misc_desc->fw_ver_type, misc_desc->fw_ver_cnt_max);
-            if (status != TBSA_STATUS_SUCCESS) {
-                val->err_check_set(TEST_CHECKPOINT_9, TBSA_STATUS_INVALID);
-                goto cleanup;
-            }
-
             status = val->firmware_version_update(instance, misc_desc->fw_ver_type, (misc_desc->fw_ver_cnt_max + 1));
-            if (status == TBSA_STATUS_SUCCESS) {
-                val->err_check_set(TEST_CHECKPOINT_A, TBSA_STATUS_INVALID);
-                goto cleanup;
-            }
-
-            /* Reading trusted firmware version counter */
-            if(misc_desc->fw_ver_cnt_max != val->firmware_version_read(instance, misc_desc->fw_ver_type)) {
+            fused_ver_count = val->firmware_version_read(instance, misc_desc->fw_ver_type);
+            if (misc_desc->fw_ver_cnt_max != fused_ver_count) {
                 val->err_check_set(TEST_CHECKPOINT_B, TBSA_STATUS_INVALID);
-                goto cleanup;
+                return;
             }
 
             /* Updating the firmware version count(non-trusted mode) */
@@ -140,7 +149,7 @@ void test_payload(tbsa_val_api_t *val)
                 boot.cb = COLD_BOOT_REQUESTED;
                 status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
                 if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
-                    goto cleanup;
+                    return;
                 }
 
                 /* Disabling SecureFault, UsageFault, BusFault, MemFault temporarily */
@@ -159,13 +168,15 @@ void test_payload(tbsa_val_api_t *val)
                     return;
                 }
 
+                val_crypto_set_base_addr(SECURE_PROGRAMMABLE);
+
                 /* Updating the firmware version count(non-trusted mode), secure-fault is expected! */
-                val_firmware_version_update(instance, misc_desc->fw_ver_type, fw_ver_count);
+                val_firmware_version_update(instance, misc_desc->fw_ver_type, ++fw_ver_count);
 
                 /* Test shouldn't come here */
-                val->print(PRINT_ERROR, "\n\t Error: able to update the version counter from NTW", 0);
+                val->print(PRINT_ERROR, "\n\r\t Error: able to update the version counter from NTW", 0);
                 val->err_check_set(TEST_CHECKPOINT_10, TBSA_STATUS_ERROR);
-                goto cleanup;
+                return;
             }
 
             /* confirms roll over didn't happen */
@@ -176,18 +187,18 @@ void test_payload(tbsa_val_api_t *val)
         boot.cb = BOOT_UNKNOWN;
         status = val->nvram_write(memory_desc->start, TBSA_NVRAM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
         if (val->err_check_set(TEST_CHECKPOINT_11, status)) {
-            goto cleanup;
+            return;
         }
 
         status = val->nvram_read(memory_desc->start, TBSA_NVRAM_OFFSET(NV_SHCSR), &shcsr, sizeof(shcsr));
         if (val->err_check_set(TEST_CHECKPOINT_12, status)) {
-            goto cleanup;
+            return;
         }
 
         /* Restoring faults */
         status = val->mem_reg_write(SHCSR, shcsr);
         if (val->err_check_set(TEST_CHECKPOINT_13, status)) {
-            goto cleanup;
+            return;
         }
 
         do {
@@ -195,29 +206,28 @@ void test_payload(tbsa_val_api_t *val)
                                             (uint8_t **)&misc_desc,
                                             (uint32_t *)sizeof(miscellaneous_desc_t));
             if (val->err_check_set(TEST_CHECKPOINT_14, status)) {
-                goto cleanup;
+                return;
             }
 
             /* Check if version is preserved across reset */
             if(misc_desc->fw_ver_cnt_max != val->firmware_version_read(instance, misc_desc->fw_ver_type)) {
                 val->err_check_set(TEST_CHECKPOINT_15, TBSA_STATUS_INVALID);
-                goto cleanup;
+                return;
             }
             instance++;
         } while (instance < GET_NUM_INSTANCE(misc_desc));
-
     }
 
     val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
+}
 
-cleanup:
+void exit_hook(tbsa_val_api_t *val)
+{
+    tbsa_status_t status;
+
     /* Restoring default Handler */
     status = val->interrupt_restore_handler(EXCP_NUM_HF);
     if (val->err_check_set(TEST_CHECKPOINT_16, status)) {
         return;
     }
-}
-
-void exit_hook(tbsa_val_api_t *val)
-{
 }

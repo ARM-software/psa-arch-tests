@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,8 +29,7 @@ TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_VERSION_COUNTERS_BASE, 1),
 
 tbsa_val_api_t        *g_val;
 
-void
-hard_fault_esr (unsigned long *sf_args)
+void hard_fault_esr (unsigned long *sf_args)
 {
     /* Issue system warm reset */
     g_val->system_reset(COLD_RESET);
@@ -40,8 +39,7 @@ hard_fault_esr (unsigned long *sf_args)
 }
 
 __attribute__((naked))
-void
-HF_Handler(void)
+void HF_Handler(void)
 {
     asm volatile("mrs r0, control_ns \n"
                  "mov r1, #0x2       \n"
@@ -53,16 +51,6 @@ HF_Handler(void)
                  "_psp_ns:           \n"
                  "mrs r0, psp_ns     \n"
                  "b hard_fault_esr \n");
-}
-
-void
-setup_ns_env(void)
-{
-    tbsa_status_t status;
-
-    /* Installing Trusted Fault Handler for NS test */
-    status = g_val->interrupt_setup_handler(EXCP_NUM_HF, 0, HF_Handler);
-    g_val->err_check_set(TEST_CHECKPOINT_1, status);
 }
 
 void entry_hook(tbsa_val_api_t *val)
@@ -79,8 +67,14 @@ void entry_hook(tbsa_val_api_t *val)
 
 void test_payload(tbsa_val_api_t *val)
 {
+    tbsa_status_t status;
+
     /* setup environment for NS test */
-    setup_ns_env();
+    /* Installing Trusted Fault Handler for NS test */
+    status = val->interrupt_setup_handler(EXCP_NUM_HF, 0, HF_Handler);
+    if (val->err_check_set(TEST_CHECKPOINT_1, status)) {
+        return;
+    }
 
     val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
 }

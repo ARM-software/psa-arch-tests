@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -314,6 +314,13 @@ int  pal_is_cold_reset(void);
 */
 int  pal_is_warm_reset(void);
 
+/*
+    @brief     - Reports whether the last reset is watch dog reset
+    @param     - void
+    @return    - YES(1)/NO(0)
+*/
+int pal_is_wdog_reset(void);
+
 /**
     @brief    - This function will set the debug permission based on the input arg
     @param    - index          : DPM index
@@ -457,5 +464,25 @@ int pal_firmware_version_read(uint32_t instance, uint32_t firmware_version_type)
     @return   - error status
 **/
 int pal_crypto_revoke_key(uint32_t index, addr_t addr, uint32_t size);
+
+/**
+    @brief    - This function will set the DPM state
+    @param    - index          : DPM index
+                dpm_status     : DPM status as per TBSA spec, can returned as logical OR of in relevant cases
+                                 DPM_LOCK_IMPLEMENTED/DPM_LOCK_VALUE
+                                 DPM_EN_IMPLEMENTED/DPM_EN_VALUE
+                unlock_token   : unlock token in case of unlocking the DPM state
+                token          : Pointer to passowrd or certificate or challenge response
+    @return   - error status
+**/
+int pal_dpm_set_state(uint32_t index, uint32_t dpm_status, uint32_t unlock_token, void *token);
+
+/**
+    @brief    - This function will get the DPM state
+    @param    - index          : DPM index
+              - dpm_status     : DPM status as per TBSA spec, defined in dpm_status_t
+    @return   - error status
+**/
+int pal_dpm_get_state(uint32_t index, uint32_t *dpm_status);
 
 #endif /* PAL_INTERFACES_H */

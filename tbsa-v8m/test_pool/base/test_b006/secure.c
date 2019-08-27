@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,8 +33,6 @@ void hard_fault_esr (unsigned long *sf_args)
 {
     if (IS_TEST_PENDING(g_val->get_status())) {
         g_val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
-    } else {
-        g_val->set_status(RESULT_FAIL(TBSA_STATUS_INVALID));
     }
 
     /* Updating the return address in the stack frame in order to avoid periodic fault */

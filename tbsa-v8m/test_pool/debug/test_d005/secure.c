@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -82,8 +82,8 @@ void test_payload(tbsa_val_api_t *val)
                 val->set_status(RESULT_FAIL(TBSA_STATUS_ERROR));
                 return;
             }
-            dpm_enable = DPM_EN_IMPLEMENTED|DPM_EN_VALUE;
-            if (((dpm_status & DPM_LOCK_VALUE) != DPM_LOCK_VALUE) || ((dpm_status & dpm_enable) != dpm_enable)) {
+            dpm_enable = DPM_EN_IMPLEMENTED|DPM_EN_STATE;
+            if (((dpm_status & DPM_LOCK_STATE) != DPM_LOCK_STATE) || ((dpm_status & dpm_enable) != dpm_enable)) {
                 val->print(PRINT_ERROR, "\n        DPM default state is not closed or locked for DPM %d", dpm_desc->index);
                 val->set_status(RESULT_FAIL(TBSA_STATUS_ERROR));
                 return;

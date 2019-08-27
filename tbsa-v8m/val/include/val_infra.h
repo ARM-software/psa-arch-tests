@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,6 +32,8 @@
 #define TBSA_TEST_MINOR_GROUP_MASK      0x00FF0000UL
 #define TBSA_TEST_CFG_INSTANCE_MASK     0x0000FFFFUL
 #define TBSA_TEST_INVALID_CFG_ID        0xFFFFFFFFUL
+#define TBSA_S_TEST_ACTIVE              0xAAAAAAAAUL
+#define TBSA_NS_TEST_ACTIVE             0x55555555UL
 
 /* typedef's */
 typedef struct
@@ -75,7 +77,8 @@ typedef enum
 {
     WARM_RESET    = 0x1,
     COLD_RESET    = 0x2,
-    UNKNOWN_RESET = 0x3
+    WDOG_RESET    = 0x3,
+    UNKNOWN_RESET = 0x4
 }system_reset_t;
 
 typedef enum
@@ -86,7 +89,9 @@ typedef enum
     NV_DPM1     = 0x3,
     NV_DPM2     = 0x4,
     NV_SHCSR    = 0x5,
-    NV_SPAD     = 0x6,
+    NV_SPAD1    = 0x6,
+    NV_SPAD2    = 0x7,
+    NV_ACT_TST  = 0x8,
 }nvram_index_t;
 
 /* prototypes */

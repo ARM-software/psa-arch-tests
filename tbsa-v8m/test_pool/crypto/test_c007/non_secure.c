@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 7),
                   CREATE_TEST_TITLE("A confidential hardware IP fuse must not be readable by any software"),
-                  CREATE_REF_TAG("R080/R090_TBSA_KEY"),
+                  CREATE_REF_TAG("R080/R090_TBSA_FUSE"),
                   entry_hook,
                   test_payload,
                   exit_hook);

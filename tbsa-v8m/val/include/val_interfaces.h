@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -81,7 +81,7 @@ typedef struct {
     tbsa_status_t (*get_fuse_info)             (fuse_desc_t **fuse_info_desc, fuse_type_t fuse_type, uint32_t instance);
     tbsa_status_t (*debug_get_status)          (dbg_access_t dbg_access);
     tbsa_status_t (*debug_set_status)          (dbg_access_t dbg_access, dbg_seq_status_t dbg_status);
-    tbsa_status_t (*dpm_set_state)             (uint32_t index, dpm_status_t dbg_status, unlock_token_t unlock_token);
+    tbsa_status_t (*dpm_set_state)             (dpm_desc_t *dpm_desc, dpm_status_t dbg_status);
     tbsa_status_t (*dpm_get_state)             (uint32_t index, uint32_t *dbg_status);
     tbsa_status_t (*dpm_set_access_ns_only)    (uint32_t index, bool_t access_ns);
     tbsa_status_t (*mpc_configure_security_attribute)    (addr_t mpc, addr_t start_addr,addr_t end_addr, mem_tgt_attr_t sec_attr);
@@ -162,7 +162,7 @@ uint32_t      val_firmware_version_read_nsc   (uint32_t instance, firmware_versi
 
 tbsa_status_t val_debug_get_status_nsc  (dbg_access_t dbg_access);
 tbsa_status_t val_debug_set_status_nsc  (dbg_access_t dbg_access, dbg_seq_status_t dbg_status);
-tbsa_status_t val_dpm_set_state_nsc     (uint32_t index, dpm_status_t dbg_status, unlock_token_t unlock_token);
+tbsa_status_t val_dpm_set_state_nsc     (dpm_desc_t *dpm_desc, dpm_status_t dbg_status);
 tbsa_status_t val_dpm_get_state_nsc     (uint32_t index, uint32_t *dbg_status);
 tbsa_status_t val_dpm_set_access_ns_only_nsc(uint32_t index, bool_t access_ns);
 tbsa_status_t val_mpc_configure_security_attribute_nsc    (addr_t mpc, addr_t start_addr,addr_t end_addr, mem_tgt_attr_t sec_attr);

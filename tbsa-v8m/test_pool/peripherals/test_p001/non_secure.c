@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,8 @@
 **/
 
 #include "val_test_common.h"
+
+#define TIMEOUT (0xFFFFFFFFUL)
 
 /**
   Publish these functions to the external world as associated to this test ID
@@ -59,6 +61,7 @@ void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
     uint32_t      data;
+    uint32_t      timeout = TIMEOUT;
 
     status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_CLOCKS, CLOCKS_SYS_FREQ, 0),
                                     (uint8_t **)&clocks_desc,
@@ -73,13 +76,21 @@ void test_payload(tbsa_val_api_t *val)
     val_mem_read_wide((uint32_t *)(clocks_desc->pll_base + clocks_desc->offset), &data);
 
     /* wait here till pending status is cleared by secure fault */
-    while (IS_TEST_PENDING(val->get_status()));
+    while (IS_TEST_PENDING(val->get_status()) && --timeout);
 
     /* Restoring default Handler */
     status = val->interrupt_restore_handler(EXCP_NUM_HF);
     if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
         return;
     }
+
+    if(!timeout) {
+        val->print(PRINT_ERROR, "\n\r\tNo fault occurred when accessing clock source from NT world!", (uint32_t)(clocks_desc->pll_base + clocks_desc->offset));
+        val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_TIMEOUT);
+        return;
+    }
+
+    val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
 }
 
 void exit_hook(tbsa_val_api_t *val)

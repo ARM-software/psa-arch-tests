@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 
 #include "val_test_common.h"
 
-#define KEY_SIZE  32
+#define KEY_SIZE  32 /* 32*32 = 1024 bits = 1K */
 
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_CRYPTO_BASE, 5),
@@ -45,8 +45,13 @@ void test_payload(tbsa_val_api_t *val)
     tbsa_status_t   status;
     fuse_desc_t     *fuse_desc;
     uint32_t        i;
-    uint32_t        rd_data1[KEY_SIZE] = {0}, rd_data2[KEY_SIZE] = {0};
-    uint32_t        wr_data1[KEY_SIZE] = {0}, wr_data2[KEY_SIZE] = {0xF0F0F0F0};
+    uint32_t        rd_data1[KEY_SIZE], rd_data2[KEY_SIZE];
+    uint32_t        wr_data1[KEY_SIZE], wr_data2[KEY_SIZE];
+
+    val->memset(rd_data1, 0x0, sizeof(rd_data1)/sizeof(uint32_t));
+    val->memset(rd_data2, 0x0, sizeof(rd_data2)/sizeof(uint32_t));
+    val->memset(wr_data1, 0x0, sizeof(wr_data1)/sizeof(uint32_t));
+    val->memset(wr_data2, 0xF0, sizeof(wr_data2)/sizeof(uint32_t));
 
     status = val->crypto_set_base_addr(SECURE_PROGRAMMABLE);
     if (val->err_check_set(TEST_CHECKPOINT_1, status)) {
@@ -59,41 +64,41 @@ void test_payload(tbsa_val_api_t *val)
     }
 
     if (fuse_desc->def_val == 0) {
-        for (i = 0; i < fuse_desc->size; i++)
+        for (i = 0; i < MIN(KEY_SIZE, fuse_desc->size); i++)
             wr_data1[i] = 0xFFFFFFFF;
     }
 
-    status = val->fuse_ops(FUSE_WRITE, fuse_desc->addr, wr_data1, fuse_desc->size);
+    status = val->fuse_ops(FUSE_WRITE, fuse_desc->addr, wr_data1, MIN(KEY_SIZE, fuse_desc->size));
     if (val->err_check_set(TEST_CHECKPOINT_3, status)) {
         return;
     }
 
-    status = val->fuse_ops(FUSE_READ, fuse_desc->addr, rd_data1, fuse_desc->size);
+    status = val->fuse_ops(FUSE_READ, fuse_desc->addr, rd_data1, MIN(KEY_SIZE, fuse_desc->size));
     if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
         return;
     }
 
-    for (i = 0; i < fuse_desc->size; i++) {
+    for (i = 0; i < MIN(KEY_SIZE, fuse_desc->size); i++) {
         if (rd_data1[i] != wr_data1[i]) {
             val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_WRITE_ERROR);
             return;
         }
     }
 
-    status = val->fuse_ops(FUSE_WRITE, fuse_desc->addr, wr_data2, fuse_desc->size);
+    status = val->fuse_ops(FUSE_WRITE, fuse_desc->addr, wr_data2, MIN(KEY_SIZE, fuse_desc->size));
     if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
         return;
     }
 
-    status = val->fuse_ops(FUSE_READ, fuse_desc->addr, rd_data2, fuse_desc->size);
+    status = val->fuse_ops(FUSE_READ, fuse_desc->addr, rd_data2, MIN(KEY_SIZE, fuse_desc->size));
     if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
         return;
     }
 
-    for (i = 0; i < fuse_desc->size; i++) {
+    for (i = 0; i < MIN(KEY_SIZE, fuse_desc->size); i++) {
         if (rd_data2[i] != rd_data1[i])
         {
-            val->print(PRINT_ERROR, "\n        Able to modify programmable bits", 0);
+            val->print(PRINT_ERROR, "\n\r\tAble to modify programmed bits", 0);
             val->err_check_set(TEST_CHECKPOINT_8, TBSA_STATUS_ERROR);
             return;
         }
@@ -105,4 +110,3 @@ void test_payload(tbsa_val_api_t *val)
 void exit_hook(tbsa_val_api_t *val)
 {
 }
-

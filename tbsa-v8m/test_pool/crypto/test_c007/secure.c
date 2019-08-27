@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -68,6 +68,8 @@ void test_payload(tbsa_val_api_t *val)
     boot_t        boot;
     uint32_t      shcsr = 0UL;
 
+    val->memset(key, 0x0, sizeof(key)/sizeof(uint32_t));
+
     status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVRAM, 0),
                                    (uint8_t **)&memory_desc,
                                    (uint32_t *)sizeof(memory_desc_t));
@@ -113,14 +115,14 @@ void test_payload(tbsa_val_api_t *val)
             return;
         }
 
-        status = val->fuse_ops(FUSE_READ, fuse_desc->addr, key, fuse_desc->size);
+        status = val->fuse_ops(FUSE_READ, fuse_desc->addr, key, MIN(KEY_SIZE, fuse_desc->size));
         if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
             return;
         }
 
-        for (i = 0; i < fuse_desc->size; i++) {
+        for (i = 0; i < MIN(KEY_SIZE, fuse_desc->size); i++) {
             if (key[i] != fuse_desc->def_val) {
-                val->print(PRINT_ERROR, "\n        Able to read the confidential fuse", 0);
+                val->print(PRINT_ERROR, "\n\r\tAble to read the confidential fuse", 0);
                 val->err_check_set(TEST_CHECKPOINT_C, TBSA_STATUS_ERROR);
                 return;
             }
