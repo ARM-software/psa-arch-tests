@@ -25,7 +25,7 @@ The tests are available as open source. The tests and the corresponding abstract
  - Code Quality: Beta <br />
    The suite is in development. This indicates that the suite contains tests which have not been validated on any platform. Please use this opportunity to suggest enhancements and point out errors.
 
- - The TBSA-v8M tests are written for version 1.1 of the TBSA-v8M specification.
+ - The TBSA-v8M tests are written for version 1.0 Beta 1 of the [TBSA-M specification](https://developer.arm.com/-/media/Files/pdf/PlatformSecurityArchitecture/Architect/DEN0083-PSA_TBSA-M_1.0-bet1.pdf?revision=804e230c-34b6-457d-9801-9608c1609015&la=en).
  - This test suite is not a substitute for design verification.
 
  - To review the test logs, Arm licensees can contact Arm directly through their partner managers.
