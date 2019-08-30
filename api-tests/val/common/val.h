@@ -241,6 +241,7 @@ typedef enum {
   VAL_STATUS_UNSUPPORTED                 = 0x2B,
   VAL_STATUS_DRIVER_FN_FAILED            = 0x2C,
   VAL_STATUS_NO_TESTS                    = 0X2D,
+  VAL_STATUS_TEST_FAILED                 = 0x2E,
   VAL_STATUS_ERROR_MAX                   = INT_MAX,
 } val_status_t;
 

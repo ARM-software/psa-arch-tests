@@ -23,18 +23,21 @@
 /**
     @brief    - PSA C main function, does VAL init and calls test dispatcher
     @param    - None
-    @return   - void
+    @return   - status - error code 
 **/
-void val_entry(void)
+int32_t val_entry(void)
 {
     test_id_t       test_id;
+    int32_t         status;
 
-    if (VAL_ERROR(val_uart_init()))
+    status = val_uart_init();
+    if (VAL_ERROR(status))
     {
         goto exit;
     }
 
-    if (VAL_ERROR(val_get_last_run_test_id(&test_id)))
+    status = val_get_last_run_test_id(&test_id);
+    if (VAL_ERROR(status))
     {
         goto exit;
     }
@@ -48,10 +51,12 @@ void val_entry(void)
     }
 
     /* Call dispatcher routine*/
-    val_dispatcher(test_id);
+    status = val_dispatcher(test_id);
 
 exit:
     val_print(PRINT_ALWAYS, "\nEntering standby.. \n", 0);
 
     pal_terminate_simulation();
+
+    return status;
 }
