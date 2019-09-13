@@ -115,20 +115,20 @@ int32_t psa_asymmetric_sign_test(caller_security_t caller)
         {
             /* Destroy the key */
             status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
             continue;
         }
 
         /* Check if the output length matches with the expected length */
-        TEST_ASSERT_EQUAL(length, check1[i].expected_signature_length, TEST_CHECKPOINT_NUM(5));
+        TEST_ASSERT_EQUAL(length, check1[i].expected_signature_length, TEST_CHECKPOINT_NUM(6));
 
         /* Check if the output matches with the expected data */
-        TEST_ASSERT_MEMCMP(signature, check1[i].expected_signature, length, TEST_CHECKPOINT_NUM(6));
+        TEST_ASSERT_MEMCMP(signature, check1[i].expected_signature, length, TEST_CHECKPOINT_NUM(7));
 
         /* Destroy the key */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
     }
 
     return VAL_STATUS_SUCCESS;

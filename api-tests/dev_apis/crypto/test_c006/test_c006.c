@@ -66,15 +66,15 @@ int32_t psa_hash_compute_test(caller_security_t caller)
         /* Calculate the hash (digest) of a message */
         status = val->crypto_function(VAL_CRYPTO_HASH_COMPUTE, check1[i].alg, &check1[i].input,
                  check1[i].input_length, hash, hash_size, &hash_length);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(5));
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(3));
 
         if (check1[i].expected_status != PSA_SUCCESS)
         {
             continue;
         }
 
-        TEST_ASSERT_EQUAL(hash_length, PSA_HASH_SIZE(check1[i].alg), TEST_CHECKPOINT_NUM(7));
-        TEST_ASSERT_MEMCMP(hash, expected_hash, hash_length, TEST_CHECKPOINT_NUM(8));
+        TEST_ASSERT_EQUAL(hash_length, PSA_HASH_SIZE(check1[i].alg), TEST_CHECKPOINT_NUM(4));
+        TEST_ASSERT_MEMCMP(hash, expected_hash, hash_length, TEST_CHECKPOINT_NUM(5));
     }
 
     return VAL_STATUS_SUCCESS;

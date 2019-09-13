@@ -92,15 +92,15 @@ int32_t psa_aead_set_nonce_test(caller_security_t caller)
         /* Setting the nonce on an ongoing operation should be an error */
         status = val->crypto_function(VAL_CRYPTO_AEAD_SET_NONCE, &operation, check1[i].nonce,
                  check1[i].nonce_size);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE,  TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE,  TEST_CHECKPOINT_NUM(8));
 
         /* Abort the AEAD operation */
         status = val->crypto_function(VAL_CRYPTO_AEAD_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
         /* Destroy the key */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
 
         /* Reset the key attributes */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
@@ -108,7 +108,7 @@ int32_t psa_aead_set_nonce_test(caller_security_t caller)
         /* Setting the nonce on an aborted operation should be an error */
         status = val->crypto_function(VAL_CRYPTO_AEAD_SET_NONCE, &operation, check1[i].nonce,
                  check1[i].nonce_size);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE,  TEST_CHECKPOINT_NUM(12));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE,  TEST_CHECKPOINT_NUM(11));
 
     }
 

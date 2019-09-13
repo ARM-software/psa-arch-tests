@@ -86,7 +86,7 @@ int32_t psa_raw_key_agreement_test(caller_security_t caller)
 
         /* Destroy a key and restore the slot to its default state */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(14));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
     }
 
     return VAL_STATUS_SUCCESS;
@@ -115,7 +115,7 @@ int32_t psa_raw_key_agreement_negative_test(caller_security_t caller)
         status = val->crypto_function(VAL_CRYPTO_RAW_KEY_AGREEMENT, check2[i].key_alg,
                     check2[i].key_handle, check2[i].peer_key, check2[i].peer_key_length,
                     output, check2[i].output_size, &output_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));
 
         val->print(PRINT_TEST, "[Check %d] Test psa_raw_key_agreement - Zero as key handle\n",
                                                                                  g_test_count++);
