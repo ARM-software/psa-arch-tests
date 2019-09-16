@@ -96,8 +96,6 @@ _check_arguments("TARGET")
 _check_arguments("SUITE")
 # Check for PSA_INCLUDE_PATHS command line argument
 _check_arguments("PSA_INCLUDE_PATHS")
-# Check for CPU_ARCH command line argument
-_check_arguments("CPU_ARCH")
 
 string(TOLOWER ${SUITE} SUITE_LOWER)
 
@@ -191,11 +189,16 @@ if(NOT DEFINED TOOLCHAIN)
         message(STATUS "[PSA] : Defaulting compiler to ${TOOLCHAIN}")
 endif()
 
-# Check for CPU architecture
-if(NOT ${CPU_ARCH} IN_LIST PSA_CPU_ARCH_SUPPORT)
-	message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DCPU_ARCH=, supported CPU arch are : ${PSA_CPU_ARCH_SUPPORT}")
+if(${TOOLCHAIN} STREQUAL "ARMCLANG" OR ${TOOLCHAIN} STREQUAL "GNUARM")
+    if(NOT DEFINED CPU_ARCH)
+	    message(FATAL_ERROR "[PSA] : Error: -DCPU_ARCH option missing")
+    else()
+        # Check for CPU architecture
+        if(NOT ${CPU_ARCH} IN_LIST PSA_CPU_ARCH_SUPPORT)
+	        message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DCPU_ARCH=, supported CPU arch are : ${PSA_CPU_ARCH_SUPPORT}")
+        endif()
+    endif()
 endif()
-
 
 # Check for VERBOSE
 if(NOT DEFINED VERBOSE)
