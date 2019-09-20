@@ -36,6 +36,7 @@ int32_t psa_import_key_test(caller_security_t caller)
     size_t                length;
     const uint8_t        *key_data;
     psa_key_type_t        get_key_type;
+    size_t                get_key_bits;
     int                   num_checks = sizeof(check1)/sizeof(check1[0]);
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_key_attributes_t  get_attributes = PSA_KEY_ATTRIBUTES_INIT;
@@ -110,14 +111,11 @@ int32_t psa_import_key_test(caller_security_t caller)
                  &get_attributes);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
-        val->crypto_function(VAL_CRYPTO_GET_KEY_TYPE, &attributes, &get_key_type);
+        val->crypto_function(VAL_CRYPTO_GET_KEY_TYPE, &get_attributes, &get_key_type);
         TEST_ASSERT_EQUAL(get_key_type, check1[i].key_type, TEST_CHECKPOINT_NUM(5));
 
-        if (check1[i].attr_bits != 0)
-            TEST_ASSERT_EQUAL(get_attributes.bits, check1[i].attr_bits, TEST_CHECKPOINT_NUM(6));
-        else
-            TEST_ASSERT_EQUAL(get_attributes.bits, check1[i].expected_bit_length,
-                              TEST_CHECKPOINT_NUM(7));
+        val->crypto_function(VAL_CRYPTO_GET_KEY_BITS, &get_attributes, &get_key_bits);
+        TEST_ASSERT_EQUAL(get_key_bits, check1[i].expected_bit_length, TEST_CHECKPOINT_NUM(6));
 
         /* Export a key in binary format */
         status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, check1[i].key_handle, data,

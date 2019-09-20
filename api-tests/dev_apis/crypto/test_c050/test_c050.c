@@ -33,7 +33,7 @@ int32_t psa_open_key_test(caller_security_t caller)
 {
     int32_t               status, i = 0;
     uint8_t               data[BUFFER_SIZE];
-    size_t                length;
+    size_t                length, get_key_bits;
     const uint8_t        *key_data;
     psa_key_type_t        get_key_type;
     psa_key_usage_t       get_key_usage_flags;
@@ -183,38 +183,34 @@ int32_t psa_open_key_test(caller_security_t caller)
                      &get_attributes);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(16));
 
-            val->crypto_function(VAL_CRYPTO_GET_KEY_TYPE, &attributes, &get_key_type);
+            val->crypto_function(VAL_CRYPTO_GET_KEY_TYPE, &get_attributes, &get_key_type);
             TEST_ASSERT_EQUAL(get_key_type, check1[i].key_type, TEST_CHECKPOINT_NUM(17));
 
-            if (check1[i].attr_bits != 0)
-                TEST_ASSERT_EQUAL(get_attributes.bits, check1[i].attr_bits,
-                TEST_CHECKPOINT_NUM(18));
-            else
-                TEST_ASSERT_EQUAL(get_attributes.bits, check1[i].expected_bit_length,
-                TEST_CHECKPOINT_NUM(19));
+            val->crypto_function(VAL_CRYPTO_GET_KEY_BITS, &get_attributes, &get_key_bits);
+            TEST_ASSERT_EQUAL(get_key_bits, check1[i].expected_bit_length, TEST_CHECKPOINT_NUM(18));
 
             val->crypto_function(VAL_CRYPTO_GET_KEY_USAGE_FLAGS, &attributes, &get_key_usage_flags);
-            TEST_ASSERT_EQUAL(get_key_usage_flags, check1[i].usage, TEST_CHECKPOINT_NUM(20));
+            TEST_ASSERT_EQUAL(get_key_usage_flags, check1[i].usage, TEST_CHECKPOINT_NUM(19));
 
             val->crypto_function(VAL_CRYPTO_GET_KEY_ALGORITHM, &attributes, &get_key_algorithm);
-            TEST_ASSERT_EQUAL(get_key_algorithm, check1[i].key_alg, TEST_CHECKPOINT_NUM(21));
+            TEST_ASSERT_EQUAL(get_key_algorithm, check1[i].key_alg, TEST_CHECKPOINT_NUM(20));
 
             /* Export a key in binary format */
             status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, key_handle, data,
                                           BUFFER_SIZE, &length);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(22));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(21));
 
             /* Check the value of the exported key */
-            TEST_ASSERT_EQUAL(length, check1[i].expected_key_length, TEST_CHECKPOINT_NUM(23));
+            TEST_ASSERT_EQUAL(length, check1[i].expected_key_length, TEST_CHECKPOINT_NUM(22));
 
             if (PSA_KEY_TYPE_IS_UNSTRUCTURED(check1[i].key_type))
             {
-                TEST_ASSERT_MEMCMP(data, check1[i].key_data, length, TEST_CHECKPOINT_NUM(24));
+                TEST_ASSERT_MEMCMP(data, check1[i].key_data, length, TEST_CHECKPOINT_NUM(23));
             }
             else if (PSA_KEY_TYPE_IS_RSA(check1[i].key_type)
                   || PSA_KEY_TYPE_IS_ECC(check1[i].key_type))
             {
-                TEST_ASSERT_MEMCMP(key_data, data, length, TEST_CHECKPOINT_NUM(25));
+                TEST_ASSERT_MEMCMP(key_data, data, length, TEST_CHECKPOINT_NUM(24));
             }
             else
             {
@@ -227,10 +223,10 @@ int32_t psa_open_key_test(caller_security_t caller)
             /* Save the check ID and set boot flags */
              ++i;
             status = val->nvmem_write(VAL_NVMEM_OFFSET(NV_TEST_DATA1), &i, sizeof(int32_t));
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(26));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(25));
 
             status = val->set_boot_flag(BOOT_NOT_EXPECTED);
-            TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(27));
+            TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(26));
 
         }
         else

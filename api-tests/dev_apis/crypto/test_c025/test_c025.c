@@ -100,28 +100,28 @@ int32_t psa_aead_decrypt_test(caller_security_t caller)
                   check1[i].key_alg, nonce, check1[i].nonce_length, additional_data,
                   check1[i].additional_data_length, check1[i].ciphertext, check1[i].ciphertext_size,
                   plaintext, check1[i].plaintext_size, &plaintext_length);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
         if (check1[i].expected_status != PSA_SUCCESS)
         {
             /* Destroy the key */
             status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
             continue;
         }
 
         /* Check if the length matches */
         TEST_ASSERT_EQUAL(plaintext_length, check1[i].expected_plaintext_length,
-                          TEST_CHECKPOINT_NUM(8));
+                          TEST_CHECKPOINT_NUM(6));
 
         /* Check if the data matches */
         TEST_ASSERT_MEMCMP(plaintext, check1[i].expected_plaintext, plaintext_length,
-                           TEST_CHECKPOINT_NUM(9));
+                           TEST_CHECKPOINT_NUM(7));
 
         /* Destroy the key */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
         /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
@@ -131,7 +131,7 @@ int32_t psa_aead_decrypt_test(caller_security_t caller)
                   check1[i].key_alg, nonce, check1[i].nonce_length, additional_data,
                   check1[i].additional_data_length, check1[i].ciphertext, check1[i].ciphertext_size,
                   plaintext, check1[i].plaintext_size, &plaintext_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(11));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(9));
     }
 
     return VAL_STATUS_SUCCESS;

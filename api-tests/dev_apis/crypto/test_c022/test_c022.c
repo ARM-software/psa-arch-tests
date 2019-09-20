@@ -52,18 +52,18 @@ int32_t psa_key_derivation_abort_test(caller_security_t caller)
     val->print(PRINT_TEST, "Test psa_key_derivation_abort\n", 0);
 
     status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &func);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(2));
-
-    status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &init);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
-    status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &zero);
+    status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &init);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
+
+    status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &zero);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
     /* Read some data from a key derivation operation with no data in the operation */
     status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_OUTPUT_BYTES, &func, output,
              BUFFER_SIZE);
-    TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(5));
+    TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(6));
 
     return VAL_STATUS_SUCCESS;
 }

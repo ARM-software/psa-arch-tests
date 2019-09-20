@@ -37,6 +37,7 @@ int32_t psa_generate_key_test(caller_security_t caller)
     psa_key_type_t        get_key_type;
     psa_key_usage_t       get_key_usage;
     psa_algorithm_t       get_key_alg;
+    size_t                get_key_bits;
     int                   num_checks = sizeof(check1)/sizeof(check1[0]);
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_key_attributes_t  get_attributes = PSA_KEY_ATTRIBUTES_INIT;
@@ -82,25 +83,22 @@ int32_t psa_generate_key_test(caller_security_t caller)
         val->crypto_function(VAL_CRYPTO_GET_KEY_TYPE, &get_attributes, &get_key_type);
         TEST_ASSERT_EQUAL(get_key_type, check1[i].key_type, TEST_CHECKPOINT_NUM(5));
 
-        if (check1[i].attr_bits != 0)
-            TEST_ASSERT_EQUAL(get_attributes.bits, check1[i].attr_bits, TEST_CHECKPOINT_NUM(6));
-        else
-            TEST_ASSERT_EQUAL(get_attributes.bits, check1[i].expected_bit_length,
-                              TEST_CHECKPOINT_NUM(7));
+        val->crypto_function(VAL_CRYPTO_GET_KEY_BITS, &get_attributes, &get_key_bits);
+        TEST_ASSERT_EQUAL(get_key_bits, check1[i].expected_bit_length, TEST_CHECKPOINT_NUM(6));
 
         val->crypto_function(VAL_CRYPTO_GET_KEY_USAGE_FLAGS, &get_attributes, &get_key_usage);
-        TEST_ASSERT_EQUAL(get_key_usage, check1[i].usage, TEST_CHECKPOINT_NUM(8));
+        TEST_ASSERT_EQUAL(get_key_usage, check1[i].usage, TEST_CHECKPOINT_NUM(7));
 
         val->crypto_function(VAL_CRYPTO_GET_KEY_ALGORITHM, &get_attributes, &get_key_alg);
-        TEST_ASSERT_EQUAL(get_key_alg, check1[i].key_alg, TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_EQUAL(get_key_alg, check1[i].key_alg, TEST_CHECKPOINT_NUM(8));
 
         /* Export a key in binary format */
         status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, check1[i].key_handle, data,
                                       BUFFER_SIZE, &length);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
         /* Check the attributes of the exported key */
-        TEST_ASSERT_EQUAL(length, check1[i].expected_key_length, TEST_CHECKPOINT_NUM(11));
+        TEST_ASSERT_EQUAL(length, check1[i].expected_key_length, TEST_CHECKPOINT_NUM(10));
 
         /* Reset the attributes */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
@@ -108,7 +106,7 @@ int32_t psa_generate_key_test(caller_security_t caller)
 
         /* Destroy the key */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
     }
 
     return VAL_STATUS_SUCCESS;

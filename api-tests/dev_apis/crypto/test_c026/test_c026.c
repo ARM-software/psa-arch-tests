@@ -53,6 +53,10 @@ int32_t psa_mac_sign_setup_test(caller_security_t caller)
         val->print(PRINT_TEST, check1[i].test_desc, 0);
         memset(&operation, 0, sizeof(operation));
 
+        /* Setting up the watchdog timer for each check */
+        status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
+        TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
+
         /* Setup the attributes for the key */
         val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE, &attributes, check1[i].key_type);
         val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage);
@@ -66,13 +70,13 @@ int32_t psa_mac_sign_setup_test(caller_security_t caller)
         /* Start a multipart MAC calculation operation */
         status = val->crypto_function(VAL_CRYPTO_MAC_SIGN_SETUP, &operation,
                     check1[i].key_handle, check1[i].key_alg);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
         /* Whether setup succeeded or failed, abort must succeed.
            Abort a MAC operation
          */
         status = val->crypto_function(VAL_CRYPTO_MAC_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
         /* If setup failed, reproduce the failure, so that the caller can
          * test the resulting state of the operation object.
@@ -81,12 +85,12 @@ int32_t psa_mac_sign_setup_test(caller_security_t caller)
         {
             status = val->crypto_function(VAL_CRYPTO_MAC_SIGN_SETUP, &operation,
                     check1[i].key_handle, check1[i].key_alg);
-            TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(8));
+            TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
         }
 
         /* Destroy the key */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
         /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
