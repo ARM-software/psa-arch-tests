@@ -99,7 +99,7 @@ The following steps describe the execution flow before the test execution: <br /
 
 1. The target platform must load the above binaries into appropriate memory. <br />
 2. The *System Under Test* (SUT) boots to an environment that initializes the SPM and the test suite partitions are ready to accept requests. <br />
-3. On the Non-secure side, the SUT boot software gives control to the test suite entry point **void val_entry(void);** as an application entry point. <br />
+3. On the Non-secure side, the SUT boot software gives control to the test suite entry point **int32_t val_entry(void);** as an application entry point returning test status code. <br />
 4. The tests are executed sequentially in a loop in the test_dispatcher function. <br />
 
 For details on test suite integration, refer to the **Integrating the test suite with the SUT** section of [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf).
