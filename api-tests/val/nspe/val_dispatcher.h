@@ -66,5 +66,5 @@ typedef struct {
     uint32_t  elf_size;
 } test_header_t;
 
-void val_dispatcher(test_id_t);
+int32_t val_dispatcher(test_id_t);
 #endif

@@ -26,7 +26,7 @@
 /**
     @brief    - PSA Test Suite C main function, does VAL init and calls test dispatcher
     @param    - None
-    @return   - void
+    @return   - int32_t
 **/
-extern void val_entry(void);
+extern int32_t val_entry(void);
 #endif
