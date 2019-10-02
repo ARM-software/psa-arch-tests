@@ -44,10 +44,14 @@ if(${SUITE} STREQUAL "CRYPTO")
 	)
 endif()
 if(${SUITE} STREQUAL "PROTECTED_STORAGE")
-	message(FATAL_ERROR "Protected Storage not supported")
+  list(APPEND PAL_SRC_C_NSPE
+    ${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/protected_storage/pal_protected_storage_intf.c
+    )
 endif()
 if(${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE")
-	message(FATAL_ERROR "Internal Trusted Storage not support")
+  list(APPEND PAL_SRC_C_NSPE
+    ${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/internal_trusted_storage/pal_internal_trusted_storage_intf.c
+    )
 endif()
 if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
 	message(FATAL_ERROR "Initial attestation not supported")
