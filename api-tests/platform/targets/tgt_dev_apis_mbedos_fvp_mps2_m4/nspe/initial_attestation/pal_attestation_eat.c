@@ -21,7 +21,7 @@ uint32_t    mandatory_claims = 0;
 uint32_t    mandaroty_sw_components = 0;
 bool_t      sw_component_present = 0;
 
-static int pal_encode_cose_key(struct q_useful_buf_c *cose_key,
+int pal_encode_cose_key(struct q_useful_buf_c *cose_key,
                                struct q_useful_buf buffer_for_cose_key,
                                struct q_useful_buf_c x_cord, struct q_useful_buf_c y_cord)
 {
@@ -145,15 +145,8 @@ static int parse_unprotected_headers(QCBORDecodeContext *decode_context,
 
     if (get_items_in_map(decode_context, item_list))
     {
-        return PAL_ATTEST_ERROR;
+        return PAL_ATTEST_ERR_CBOR_STRUCTURE;
     }
-
-    if (item_list[0].item.uDataType != QCBOR_TYPE_BYTE_STRING)
-    {
-        return PAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
-    }
-
-    *child = item_list[0].item.val.string;
 
     return PAL_ATTEST_SUCCESS;
 }
@@ -329,15 +322,9 @@ int32_t pal_initial_attest_verify_token(uint8_t *challenge, size_t challenge_siz
     struct q_useful_buf_c signature;
     struct q_useful_buf_c protected_headers;
     struct q_useful_buf_c kid;
-    struct q_useful_buf_c x_cord;
-    struct q_useful_buf_c y_cord;
-    struct q_useful_buf_c cose_key_to_hash;
-    struct q_useful_buf_c key_hash;
     struct q_useful_buf_c token_hash;
     USEFUL_BUF_MAKE_STACK_UB(buf_to_hold_x_coord, T_COSE_CRYPTO_EC_P256_COORD_SIZE);
     USEFUL_BUF_MAKE_STACK_UB(buf_to_hold_y_coord, T_COSE_CRYPTO_EC_P256_COORD_SIZE);
-    USEFUL_BUF_MAKE_STACK_UB(buffer_for_kid, T_COSE_CRYPTO_SHA256_SIZE);
-    USEFUL_BUF_MAKE_STACK_UB(buffer_for_cose_key, MAX_ENCODED_COSE_KEY_SIZE);
     USEFUL_BUF_MAKE_STACK_UB(buffer_for_encoded_key, MAX_ENCODED_COSE_KEY_SIZE);
     USEFUL_BUF_MAKE_STACK_UB(buffer_for_token_hash, T_COSE_CRYPTO_SHA256_SIZE);
 
@@ -349,11 +336,6 @@ int32_t pal_initial_attest_verify_token(uint8_t *challenge, size_t challenge_siz
     /* Update size */
     buf_to_hold_x_coord.len = attest_key.pubx_key_size;
     buf_to_hold_y_coord.len = attest_key.puby_key_size;
-
-    x_cord.ptr = buf_to_hold_x_coord.ptr;
-    x_cord.len = buf_to_hold_x_coord.len;
-    y_cord.ptr = buf_to_hold_y_coord.ptr;
-    y_cord.len = buf_to_hold_y_coord.len;
 
     /* Construct the token buffer for validation */
     completed_token.ptr = token;
@@ -406,27 +388,6 @@ int32_t pal_initial_attest_verify_token(uint8_t *challenge, size_t challenge_siz
     status = parse_unprotected_headers(&decode_context, &kid);
     if (status != PAL_ATTEST_SUCCESS)
         return status;
-
-    /* Encode the given public key */
-    status = pal_encode_cose_key(&cose_key_to_hash, buffer_for_cose_key, x_cord, y_cord);
-    if (status != PAL_ATTEST_SUCCESS)
-        return status;
-
-    /* Create hash of the given public key */
-    status = pal_create_sha256(cose_key_to_hash, buffer_for_kid, &key_hash);
-    if (status != PSA_SUCCESS)
-        return status;
-
-    /* Compare the hash of the public key in token and hash of the given public key */
-    if (kid.len != key_hash.len)
-    {
-        return PAL_ATTEST_HASH_LENGTH_MISMATCH;
-    }
-
-    if (memcmp(kid.ptr, key_hash.ptr, kid.len) != 0)
-    {
-        return PAL_ATTEST_HASH_MISMATCH;
-    }
 
     /* Get the payload */
     QCBORDecode_GetNext(&decode_context, &item);
