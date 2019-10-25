@@ -17,13 +17,12 @@
 
 foreach(test ${PSA_TEST_LIST})
 	string(SUBSTRING ${test} 0 6 ITS_TEST_STR)
-	if((${SUITE} STREQUAL "PROTECTED_STORAGE") AND
-	   (${ITS_TEST_STR} STREQUAL "test_s"))
+	if(${ITS_TEST_STR} STREQUAL "test_s")
 		string(REPLACE ${SUITE_LOWER} "internal_trusted_storage" ACTUAL_PSA_SUITE_DIR ${PSA_SUITE_DIR})
 	else()
 		set(ACTUAL_PSA_SUITE_DIR ${PSA_SUITE_DIR})
 	endif()
-	include(${ACTUAL_PSA_SUITE_DIR}/${test}/test.cmake)
+	include(${PSA_SUITE_DIR}/${test}/test.cmake)
 	foreach(source_file ${CC_SOURCE})
 		list(APPEND SUITE_CC_SOURCE
 			${ACTUAL_PSA_SUITE_DIR}/${test}/${source_file}
@@ -34,24 +33,19 @@ foreach(test ${PSA_TEST_LIST})
 			${ACTUAL_PSA_SUITE_DIR}/${test}/${asm_file}
 		)
 	endforeach()
-	if((${SUITE} STREQUAL "PROTECTED_STORAGE") AND
-	   (${ITS_TEST_STR} STREQUAL "test_p"))
-		add_definitions(${CC_OPTIONS})
-		add_definitions(${AS_OPTIONS})
-	endif()
 	unset(CC_SOURCE)
 	unset(AS_SOURCE)
 	unset(ACTUAL_PSA_SUITE_DIR)
-	unset(CC_OPTIONS)
 endforeach()
 
+add_definitions(${CC_OPTIONS})
+add_definitions(${AS_OPTIONS})
 add_library(${PSA_TARGET_TEST_COMBINE_LIB} STATIC ${SUITE_CC_SOURCE} ${SUITE_AS_SOURCE})
 
 # Test related Include directories
 foreach(test ${PSA_TEST_LIST})
 	string(SUBSTRING ${test} 0 6 ITS_TEST_STR)
-	if((${SUITE} STREQUAL "PROTECTED_STORAGE") AND
-	   (${ITS_TEST_STR} STREQUAL "test_s"))
+	if(${ITS_TEST_STR} STREQUAL "test_s")
 		string(REPLACE ${SUITE_LOWER} "internal_trusted_storage" ACTUAL_PSA_SUITE_DIR ${PSA_SUITE_DIR})
 	else()
 		set(ACTUAL_PSA_SUITE_DIR ${PSA_SUITE_DIR})
