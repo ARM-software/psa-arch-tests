@@ -204,6 +204,5 @@ STATIC_DECLARE val_status_t val_target_get_config(cfg_id_t cfg_id, uint8_t **dat
 STATIC_DECLARE val_status_t val_target_cfg_get_next(void **blob);
 STATIC_DECLARE val_status_t val_target_get_cfg_blob(cfg_id_t cfg_id, uint8_t **data,
                                                     uint32_t *size);
-STATIC_DECLARE val_status_t val_target_get_config(cfg_id_t cfg_id, uint8_t **data, uint32_t *size);
 #endif
 #endif
