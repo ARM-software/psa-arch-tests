@@ -45,9 +45,12 @@ list(APPEND PSA_SUITES
 list(APPEND PSA_IPC_FILES
 	"psa/client.h"
 	"psa/service.h"
+	"psa/lifecycle.h"
 	"psa_manifest/sid.h"
 	"psa_manifest/pid.h"
-	"psa/lifecycle.h"
+	"psa_manifest/driver_partition_psa.h"
+	"psa_manifest/client_partition_psa.h"
+	"psa_manifest/server_partition_psa.h"
 )
 
 # list of crypto files required
@@ -224,13 +227,13 @@ else()
 endif()
 
 if(NOT DEFINED WATCHDOG_AVAILABLE)
-	set(WATCHDOG_AVAILABLE	1 CACHE INTERNAL "By default watchdog is enabled" FORCE)
-        message(STATUS "[PSA] : Watchdog is enabled by default")
+	set(WATCHDOG_AVAILABLE	1 CACHE INTERNAL "Assuming watchdog is available to program by test suite" FORCE)
+        message(STATUS "[PSA] : Watchdog is available by default")
 endif()
 
 if((INCLUDE_PANIC_TESTS EQUAL 1) AND
    (WATCHDOG_AVAILABLE EQUAL 0))
-	message(FATAL_ERROR "[PSA]: Panic test execution needs watchdog to be enabled! set -DWATCHDOG_AVAILABLE=1")
+	message(FATAL_ERROR "[PSA]: Panic test execution needs watchdog access. set -DWATCHDOG_AVAILABLE=1")
 endif()
 
 if(NOT DEFINED SP_HEAP_MEM_SUPP)
