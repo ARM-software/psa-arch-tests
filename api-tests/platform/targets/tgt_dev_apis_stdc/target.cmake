@@ -15,6 +15,53 @@
 # * limitations under the License.
 #**/
 
+###############################################################################
+# FUNCTION: _create_psa_storage_exe()
+#  Function for generating PSA Storage test binaries. This function requires
+#  PSA_STORAGE_LIB_FILENAME to be specificed on the cmake command line,
+#  where the symbol is defined as the full path to the external PSA storage
+#  library to test. e.g.
+#    cmake ... -DPSA_STORAGE_LIB_FILENAME=/wdir/usr/lib/libpsastorage.so
+# ARGUMENTS:
+#   _exe_name     Name of the test binary to generate
+#   _api_dir      PSA storage API directory name e.g. internal_trusted_storage
+#                 or protected_storage
+###############################################################################
+function(_create_psa_storage_exe _exe_name _api_dir)
+
+	if(NOT DEFINED PSA_STORAGE_LIB_FILENAME)
+		message(FATAL_ERROR "ERROR: PSA_STORAGE_LIB_FILENAME undefined.")
+	endif()
+
+	# Create the PSA PS Storage test binary.
+	set(EXE_NAME ${_exe_name})
+
+	# Define PSA_LIB_NAME to be the name of the PSA Storage library to be tested.
+	get_filename_component(PSA_STORAGE_LIB_NAME ${PSA_STORAGE_LIB_FILENAME} NAME [CACHE])
+	set(PSA_LIB_NAME ${PSA_STORAGE_LIB_NAME})
+
+	# The path to the PSA Storage libpsastorage.so (external to this project)
+	# is specified on the cmake command line with the PSA_STORAGE_LD_LIBRARY_PATH
+	# symbol, and used as the the link directory.
+	get_filename_component(PSA_STORAGE_LIB_DIR ${PSA_STORAGE_LIB_FILENAME} DIRECTORY [CACHE])
+	link_directories(${PSA_STORAGE_LIB_DIR})
+
+	# Create list of test binary source files.
+	list(APPEND EXE_SRC ${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common/main.c)
+
+	# Create list of libraries to link to test binary
+	list(APPEND EXE_LIBS
+		${PROJECT_BINARY_DIR}/dev_apis/${_api_dir}/test_combine.a
+		${PROJECT_BINARY_DIR}/val/val_nspe.a
+		${PROJECT_BINARY_DIR}/platform/pal_nspe.a
+		${PROJECT_BINARY_DIR}/dev_apis/${_api_dir}/test_combine.a
+		${PSA_LIB_NAME}
+	)
+
+	add_executable(${EXE_NAME} ${EXE_SRC})
+	target_link_libraries(${EXE_NAME} ${EXE_LIBS})
+endfunction(_create_psa_storage_exe)
+
 # PAL C source files part of NSPE library
 list(APPEND PAL_SRC_C_NSPE )
 
@@ -26,7 +73,6 @@ list(APPEND PAL_SRC_C_DRIVER_SP )
 
 # PAL ASM source files part of SPE library - driver partition
 list(APPEND PAL_SRC_ASM_DRIVER_SP )
-
 
 # Listing all the sources required for given target
 if(${SUITE} STREQUAL "IPC")
@@ -44,10 +90,16 @@ if(${SUITE} STREQUAL "CRYPTO")
 	)
 endif()
 if(${SUITE} STREQUAL "PROTECTED_STORAGE")
-	message(FATAL_ERROR "Protected Storage not supported")
+	list(APPEND PAL_SRC_C_NSPE
+		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/protected_storage/pal_protected_storage_intf.c
+	)
+	_create_psa_storage_exe(psa-arch-tests-ps protected_storage)
 endif()
 if(${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE")
-	message(FATAL_ERROR "Internal Trusted Storage not support")
+	list(APPEND PAL_SRC_C_NSPE
+		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/internal_trusted_storage/pal_internal_trusted_storage_intf.c
+	)
+	_create_psa_storage_exe(psa-arch-tests-its internal_trusted_storage)
 endif()
 if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
 	message(FATAL_ERROR "Initial attestation not supported")
