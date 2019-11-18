@@ -43,9 +43,6 @@ function(_create_psa_stdc_exe _exe_name _api_dir)
 	# Define PSA_STORAGE_LIB_NAME to be the name of the PSA Storage library to be tested.
 	get_filename_component(PSA_STORAGE_LIB_NAME ${PSA_STORAGE_LIB_FILENAME} NAME)
 
-	# The path to the PSA Storage libpsastorage.so (external to this project)
-	# is specified on the cmake command line with the PSA_STORAGE_LIB_FILENAME
-	# symbol, and used as the the link directory.
 	get_filename_component(PSA_STORAGE_LIB_DIR ${PSA_STORAGE_LIB_FILENAME} DIRECTORY)
 	link_directories(${PSA_STORAGE_LIB_DIR})
 
@@ -53,9 +50,6 @@ function(_create_psa_stdc_exe _exe_name _api_dir)
 		# Define PSA_CRYPTO_LIB_NAME to be the name of the PSA Crypto library to be tested.
 		get_filename_component(PSA_CRYPTO_LIB_NAME ${PSA_CRYPTO_LIB_FILENAME} NAME)
 
-		# The path to the PSA Crypto libmbedcrypto.a (external to this project)
-		# is specified on the cmake command line with the PSA_CRYPTO_LIB_FILENAME
-		# symbol, and used as the the link directory.
 		get_filename_component(PSA_CRYPTO_LIB_DIR ${PSA_CRYPTO_LIB_FILENAME} DIRECTORY)
 		link_directories(${PSA_CRYPTO_LIB_DIR})
 	endif()
