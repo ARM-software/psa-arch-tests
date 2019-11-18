@@ -16,22 +16,26 @@
 #**/
 
 ###############################################################################
-# FUNCTION: _create_psa_storage_exe()
-#  Function for generating PSA Storage test binaries. This function requires
+# FUNCTION: _create_psa_stdc_exe()
+#  Function for generating PSA stdc test binaries linking with libraries
+#  external to the psa-arch-tests project. This function requires
 #  PSA_STORAGE_LIB_FILENAME to be specificed on the cmake command line,
 #  where the symbol is defined as the full path to the external PSA storage
 #  library to test. e.g.
 #    cmake ... -DPSA_STORAGE_LIB_FILENAME=/wdir/usr/lib/libpsastorage.so
+#  If the function is being used to generate a test binary for testing 
+#  the mbed-crypto libaryr then the function requires 
+#  PSA_CRYPTO_LIB_FILENAME to be specificed on the cmake command line,
+#  where the symbol is defined as the full path to the external PSA crypto
+#  library to test. e.g.
+#    cmake ... -DPSA_CRYPTO_LIB_FILENAME=/wdir/mbed-crypto/library/    \
+#                                                               libmbedcrypto.a
 # ARGUMENTS:
 #   _exe_name     Name of the test binary to generate
-#   _api_dir      PSA storage API directory name e.g. internal_trusted_storage
-#                 or protected_storage
+#   _api_dir      PSA  API directory name e.g. crypto, 
+#                 internal_trusted_storage or protected_storage/
 ###############################################################################
-function(_create_psa_storage_exe _exe_name _api_dir)
-
-	if(NOT DEFINED PSA_STORAGE_LIB_FILENAME)
-		message(FATAL_ERROR "ERROR: PSA_STORAGE_LIB_FILENAME undefined.")
-	endif()
+function(_create_psa_stdc_exe _exe_name _api_dir)
 
 	# Create the PSA PS Storage test binary.
 	set(EXE_NAME ${_exe_name})
@@ -41,10 +45,21 @@ function(_create_psa_storage_exe _exe_name _api_dir)
 	set(PSA_LIB_NAME ${PSA_STORAGE_LIB_NAME})
 
 	# The path to the PSA Storage libpsastorage.so (external to this project)
-	# is specified on the cmake command line with the PSA_STORAGE_LD_LIBRARY_PATH
+	# is specified on the cmake command line with the PSA_STORAGE_LIB_FILENAME
 	# symbol, and used as the the link directory.
 	get_filename_component(PSA_STORAGE_LIB_DIR ${PSA_STORAGE_LIB_FILENAME} DIRECTORY [CACHE])
 	link_directories(${PSA_STORAGE_LIB_DIR})
+
+	if(DEFINED PSA_CRYPTO_LIB_FILENAME)
+		# Define PSA_CRYPTO_LIB_NAME to be the name of the PSA Crypto library to be tested.
+		get_filename_component(PSA_CRYPTO_LIB_NAME ${PSA_CRYPTO_LIB_FILENAME} NAME [CACHE])
+
+		# The path to the PSA Crypto libmbedcrypto.a (external to this project)
+		# is specified on the cmake command line with the PSA_CRYPTO_LIB_FILENAME
+		# symbol, and used as the the link directory.
+		get_filename_component(PSA_CRYPTO_LIB_DIR ${PSA_CRYPTO_LIB_FILENAME} DIRECTORY [CACHE])
+		link_directories(${PSA_CRYPTO_LIB_DIR})
+	endif()
 
 	# Create list of test binary source files.
 	list(APPEND EXE_SRC ${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common/main.c)
@@ -55,12 +70,13 @@ function(_create_psa_storage_exe _exe_name _api_dir)
 		${PROJECT_BINARY_DIR}/val/val_nspe.a
 		${PROJECT_BINARY_DIR}/platform/pal_nspe.a
 		${PROJECT_BINARY_DIR}/dev_apis/${_api_dir}/test_combine.a
+		${PSA_CRYPTO_LIB_NAME}
 		${PSA_LIB_NAME}
 	)
 
 	add_executable(${EXE_NAME} ${EXE_SRC})
 	target_link_libraries(${EXE_NAME} ${EXE_LIBS})
-endfunction(_create_psa_storage_exe)
+endfunction(_create_psa_stdc_exe)
 
 # PAL C source files part of NSPE library
 list(APPEND PAL_SRC_C_NSPE )
@@ -88,18 +104,28 @@ if(${SUITE} STREQUAL "CRYPTO")
 	list(APPEND PAL_SRC_C_NSPE
 		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto/pal_crypto_intf.c
 	)
+	if(NOT DEFINED PSA_CRYPTO_LIB_FILENAME)
+		message(FATAL_ERROR "ERROR: PSA_CRYPTO_LIB_FILENAME undefined.")
+	endif()
+	_create_psa_stdc_exe(psa-arch-tests-crypto crypto)
 endif()
 if(${SUITE} STREQUAL "PROTECTED_STORAGE")
 	list(APPEND PAL_SRC_C_NSPE
 		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/protected_storage/pal_protected_storage_intf.c
 	)
-	_create_psa_storage_exe(psa-arch-tests-ps protected_storage)
+	if(NOT DEFINED PSA_STORAGE_LIB_FILENAME)
+		message(FATAL_ERROR "ERROR: PSA_STORAGE_LIB_FILENAME undefined.")
+	endif()
+	_create_psa_stdc_exe(psa-arch-tests-ps protected_storage)
 endif()
 if(${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE")
 	list(APPEND PAL_SRC_C_NSPE
 		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/internal_trusted_storage/pal_internal_trusted_storage_intf.c
 	)
-	_create_psa_storage_exe(psa-arch-tests-its internal_trusted_storage)
+	if(NOT DEFINED PSA_STORAGE_LIB_FILENAME)
+		message(FATAL_ERROR "ERROR: PSA_STORAGE_LIB_FILENAME undefined.")
+	endif()
+	_create_psa_stdc_exe(psa-arch-tests-its internal_trusted_storage)
 endif()
 if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
 	message(FATAL_ERROR "Initial attestation not supported")
