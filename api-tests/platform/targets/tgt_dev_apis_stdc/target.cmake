@@ -40,11 +40,13 @@ function(_create_psa_stdc_exe _exe_name _api_dir)
 	# Create the PSA test binary.
 	set(EXE_NAME ${_exe_name})
 
-	# Define PSA_STORAGE_LIB_NAME to be the name of the PSA Storage library to be tested.
-	get_filename_component(PSA_STORAGE_LIB_NAME ${PSA_STORAGE_LIB_FILENAME} NAME)
+	if(DEFINED PSA_STORAGE_LIB_FILENAME)
+		# Define PSA_STORAGE_LIB_NAME to be the name of the PSA Storage library to be tested.
+		get_filename_component(PSA_STORAGE_LIB_NAME ${PSA_STORAGE_LIB_FILENAME} NAME)
 
-	get_filename_component(PSA_STORAGE_LIB_DIR ${PSA_STORAGE_LIB_FILENAME} DIRECTORY)
-	link_directories(${PSA_STORAGE_LIB_DIR})
+		get_filename_component(PSA_STORAGE_LIB_DIR ${PSA_STORAGE_LIB_FILENAME} DIRECTORY)
+		link_directories(${PSA_STORAGE_LIB_DIR})
+	endif()
 
 	if(DEFINED PSA_CRYPTO_LIB_FILENAME)
 		# Define PSA_CRYPTO_LIB_NAME to be the name of the PSA Crypto library to be tested.
