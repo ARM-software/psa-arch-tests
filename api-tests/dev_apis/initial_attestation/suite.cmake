@@ -35,6 +35,12 @@ add_definitions(${CC_OPTIONS})
 add_definitions(${AS_OPTIONS})
 add_library(${PSA_TARGET_TEST_COMBINE_LIB} STATIC ${SUITE_CC_SOURCE} ${SUITE_AS_SOURCE})
 
+if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
+target_include_directories(${PSA_TARGET_TEST_COMBINE_LIB} PRIVATE
+    ${PSA_QCBOR_INCLUDE_PATH}
+)
+endif()
+
 # Test related Include directories
 foreach(test ${PSA_TEST_LIST})
 	target_include_directories(${PSA_TARGET_TEST_COMBINE_LIB} PRIVATE ${PSA_SUITE_DIR}/${test})

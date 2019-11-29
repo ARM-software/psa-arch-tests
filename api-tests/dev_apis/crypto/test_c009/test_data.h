@@ -52,14 +52,14 @@ static test_data check1[] = {
  PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
  "abcdefghijklmnop", 16,
  PSA_KEY_DERIVATION_INPUT_LABEL,
- PSA_SUCCESS,
+ PSA_ERROR_INVALID_ARGUMENT,
 },
 
 {"Test psa_key_derivation_input_bytes - Step as seed\n",
  PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
  "abcdefghijklmnop", 16,
  PSA_KEY_DERIVATION_INPUT_SEED,
- PSA_SUCCESS,
+ PSA_ERROR_INVALID_ARGUMENT,
 },
 
 {"Test psa_key_derivation_input_bytes - Invalid step\n",

@@ -15,8 +15,8 @@
  * limitations under the License.
 **/
 
-#ifndef _PAL_INITIAL_ATTESTATION_H_
-#define _PAL_INITIAL_ATTESTATION_H_
+#ifndef _PAL_ATTESTATION_INTF_H_
+#define _PAL_ATTESTATION_INTF_H_
 
 #include "pal_attestation_crypto.h"
 
@@ -24,7 +24,9 @@ enum attestation_function_code {
     PAL_INITIAL_ATTEST_GET_TOKEN        = 0x1,
     PAL_INITIAL_ATTEST_GET_TOKEN_SIZE   = 0x2,
     PAL_INITIAL_ATTEST_VERIFY_TOKEN     = 0x3,
+    PAL_INITIAL_ATTEST_COMPUTE_HASH     = 0x4,
+    PAL_INITIAL_ATTEST_VERIFY_WITH_PK   = 0x5,
 };
 
 int32_t pal_attestation_function(int type, va_list valist);
-#endif /* _PAL_INITIAL_ATTESTATION_H_ */
+#endif /* _PAL_ATTESTATION_INTF_H_ */

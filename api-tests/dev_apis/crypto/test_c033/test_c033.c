@@ -115,11 +115,15 @@ int32_t psa_cipher_decrypt_setup_test(caller_security_t caller)
             status = val->crypto_function(VAL_CRYPTO_CIPHER_DECRYPT_SETUP, &operation,
                         check1[i].key_handle, check1[i].key_alg);
             TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
+
+            /* Abort a cipher operation */
+            status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
         }
 
         /* Destroy the key */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
          /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
@@ -157,6 +161,8 @@ int32_t psa_cipher_decrypt_setup_negative_test(caller_security_t caller)
                     0, check2[i].key_alg);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
 
+        status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
     }
 
     return VAL_STATUS_SUCCESS;

@@ -146,7 +146,7 @@ int32_t psa_import_key_test(caller_security_t caller)
 
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, key_data,
                  check1[i].key_length, &check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_ARGUMENT, TEST_CHECKPOINT_NUM(12));
+        TEST_ASSERT_NOT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
 
         TEST_ASSERT_EQUAL(check1[i].key_handle, 0, TEST_CHECKPOINT_NUM(13));
     }

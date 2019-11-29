@@ -38,6 +38,12 @@ foreach(psa_inc_path ${PSA_INCLUDE_PATHS})
         target_include_directories(${PSA_TARGET_VAL_NSPE_LIB} PRIVATE ${psa_inc_path})
 endforeach()
 
+if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
+target_include_directories(${PSA_TARGET_VAL_NSPE_LIB} PRIVATE
+    ${PSA_QCBOR_INCLUDE_PATH}
+)
+endif()
+
 target_include_directories(${PSA_TARGET_VAL_NSPE_LIB} PRIVATE
 	${CMAKE_CURRENT_BINARY_DIR}
 	${PSA_ROOT_DIR}/val/common
