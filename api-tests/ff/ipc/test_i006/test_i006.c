@@ -27,16 +27,16 @@
 
 client_test_t test_i006_client_tests_list[] = {
     NULL,
-    client_test_strict_policy_lower_minor_version,
+    client_test_strict_policy_lower_version,
     NULL,
 };
 
-int32_t client_test_strict_policy_lower_minor_version(caller_security_t caller)
+int32_t client_test_strict_policy_lower_version(caller_security_t caller)
 {
    psa_handle_t       handle = 0;
    boot_state_t       boot_state;
 
-   val->print(PRINT_TEST, "[Check 1] Test STRICT policy with lower minor version\n", 0);
+   val->print(PRINT_TEST, "[Check 1] Test STRICT policy with lower version\n", 0);
 
    /*
     * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
@@ -69,7 +69,7 @@ int32_t client_test_strict_policy_lower_minor_version(caller_security_t caller)
    }
 
    /* Version policy is strict and requested version is smaller than the minimum version */
-   handle = psa->connect(SERVER_STRICT_MINOR_VERSION_SID, 1);
+   handle = psa->connect(SERVER_STRICT_VERSION_SID, SERVER_STRICT_VERSION_VERSION - 1);
 
    /*
     * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether
@@ -83,7 +83,7 @@ int32_t client_test_strict_policy_lower_minor_version(caller_security_t caller)
 
    /* If PROGRAMMER ERROR results into panic then control shouldn't have reached here */
    val->print(PRINT_ERROR,
-           "\tSTRICT policy with lower minor version should have failed but succeeded\n", 0);
+           "\tSTRICT policy with lower version should have failed but succeeded\n", 0);
 
    /* Resetting boot.state to catch unwanted reboot */
    if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))

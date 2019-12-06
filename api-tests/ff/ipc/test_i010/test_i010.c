@@ -27,17 +27,17 @@
 
 client_test_t test_i010_client_tests_list[] = {
     NULL,
-    client_test_unspecified_policy_with_higher_minor_ver,
+    client_test_unspecified_policy_with_higher_version,
     NULL,
 };
 
-int32_t client_test_unspecified_policy_with_higher_minor_ver(caller_security_t caller)
+int32_t client_test_unspecified_policy_with_higher_version(caller_security_t caller)
 {
    psa_handle_t       handle = 0;
    boot_state_t       boot_state;
 
    val->print(PRINT_TEST,
-        "[Check 1] Test un-specified minor_policy with higher minor version\n", 0);
+        "[Check 1] Test un-specified version_policy with higher version\n", 0);
 
    /*
     * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
@@ -70,11 +70,11 @@ int32_t client_test_unspecified_policy_with_higher_minor_ver(caller_security_t c
    }
 
    /*
-    * The minor_version and minor_policy attributes do not need to be specified.
+    * The SID version and version_policy attributes do not need to be specified.
     * If they are not specified in the manifest, the RoT Service will have
-    * default attributes of minor_version=1 and minor_policy="STRICT".
+    * default attributes of version=1 and version_policy="STRICT".
     */
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 3);
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION + 1);
 
    /*
     * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether
@@ -88,7 +88,7 @@ int32_t client_test_unspecified_policy_with_higher_minor_ver(caller_security_t c
 
    /* If PROGRAMMER ERROR results into panic then control shouldn't have reached here */
    val->print(PRINT_ERROR,
-        "\tun-specified policy with higher minor version should have failed but succeeded\n", 0);
+        "\tun-specified policy with higher version should have failed but succeeded\n", 0);
 
    /* Resetting boot.state to catch unwanted reboot */
    if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))

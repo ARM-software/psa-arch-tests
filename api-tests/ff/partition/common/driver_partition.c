@@ -58,9 +58,9 @@ void driver_main(void)
         signals = psa_wait(PSA_WAIT_ANY, PSA_BLOCK);
 
         /* Service Print functionality */
-        if (signals & DRIVER_UART_SIG)
+        if (signals & DRIVER_UART_SIGNAL)
         {
-            psa_get(DRIVER_UART_SIG, &msg);
+            psa_get(DRIVER_UART_SIGNAL, &msg);
             switch (msg.type)
             {
                 case PSA_IPC_CONNECT:
@@ -109,9 +109,9 @@ void driver_main(void)
         }
 
         /* Service Watchdog functionality */
-        else if (signals & DRIVER_WATCHDOG_SIG)
+        else if (signals & DRIVER_WATCHDOG_SIGNAL)
         {
-            psa_get(DRIVER_WATCHDOG_SIG, &msg);
+            psa_get(DRIVER_WATCHDOG_SIGNAL, &msg);
             switch (msg.type)
             {
                 case PSA_IPC_CALL:
@@ -162,9 +162,9 @@ void driver_main(void)
         }
 
          /* Service NVMEM functionality */
-        else if (signals & DRIVER_NVMEM_SIG)
+        else if (signals & DRIVER_NVMEM_SIGNAL)
         {
-            psa_get(DRIVER_NVMEM_SIG, &msg);
+            psa_get(DRIVER_NVMEM_SIGNAL, &msg);
             switch (msg.type)
             {
                 case PSA_IPC_CALL:
@@ -221,9 +221,9 @@ void driver_main(void)
             }
         }
         /* SID reserved for Driver test functions */
-        else if (signals & DRIVER_TEST_SIG)
+        else if (signals & DRIVER_TEST_SIGNAL)
         {
-            psa_get(DRIVER_TEST_SIG, &msg);
+            psa_get(DRIVER_TEST_SIGNAL, &msg);
             switch (msg.type)
             {
                 case PSA_IPC_CALL:
@@ -381,7 +381,7 @@ int32_t driver_test_psa_eoi_with_multiple_signals(void)
     }
 
     /* psa_eoi should panic as irq_signal is provided with multiple signals */
-    psa_eoi(DRIVER_UART_INTR_SIG|DRIVER_TEST_SIG);
+    psa_eoi(DRIVER_UART_INTR_SIG|DRIVER_TEST_SIGNAL);
 
     /* Control shouldn't have reached here */
     val_print_sf("\tCheck for psa_eoi(multiple_signals) failed\n", 0);
@@ -404,7 +404,7 @@ int32_t driver_test_irq_routing(void)
     val_generate_interrupt();
 
     /* Wait for DRIVER_UART_INTR_SIG signal */
-    signals = psa_wait(PSA_WAIT_ANY, PSA_BLOCK);
+    signals = psa_wait(DRIVER_UART_INTR_SIG, PSA_BLOCK);
 
     if (signals & DRIVER_UART_INTR_SIG)
     {
@@ -453,9 +453,9 @@ wait:
             goto wait;
         }
 
-        if ((msg->type != PSA_IPC_CALL) || (msg->handle <= 0))
+        if ((msg->type < PSA_IPC_CALL) || (msg->handle <= 0))
         {
-            val_print_sf("\tpsa_get failed for PSA_IPC_CALL\n", 0);
+            val_print_sf("\tpsa_get failed for request message\n", 0);
             res = VAL_STATUS_ERROR;
         }
         else
@@ -473,15 +473,19 @@ wait:
 
 void driver_test_isolation_psa_rot_data_rd(psa_msg_t *msg)
 {
+    uint32_t *addr = &g_psa_rot_data;
+
     /* Send PSA RoT data address - global variable */
-    psa_write(msg->handle, 0, (void *) &g_psa_rot_data, sizeof(addr_t));
+    psa_write(msg->handle, 0, (void *) &addr, sizeof(addr_t));
     psa_reply(msg->handle, PSA_SUCCESS);
 }
 
 void driver_test_isolation_psa_rot_data_wr(psa_msg_t *msg)
 {
+    uint32_t *addr = &g_psa_rot_data;
+
     /* Send PSA RoT data address - global variable */
-    psa_write(msg->handle, 0, (void *) &g_psa_rot_data, sizeof(addr_t));
+    psa_write(msg->handle, 0, (void *) &addr, sizeof(addr_t));
 
     /* Setting boot.state before test check */
     if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_S))
@@ -492,7 +496,7 @@ void driver_test_isolation_psa_rot_data_wr(psa_msg_t *msg)
     psa_reply(msg->handle, PSA_SUCCESS);
 
     /* Process second call request */
-    if (VAL_ERROR(process_call_request(DRIVER_TEST_SIG, msg)))
+    if (VAL_ERROR(process_call_request(DRIVER_TEST_SIGNAL, msg)))
     {
         psa_reply(msg->handle, -2);
         return;
@@ -521,21 +525,23 @@ void driver_test_isolation_psa_rot_data_wr(psa_msg_t *msg)
 void driver_test_isolation_psa_rot_stack_rd(psa_msg_t *msg)
 {
     uint32_t l_psa_rot_data = DATA_VALUE;
+    uint32_t *addr = &l_psa_rot_data;
 
     /* Send PSA RoT stack address - local variable */
-    psa_write(msg->handle, 0, (void *) &l_psa_rot_data, sizeof(addr_t));
+    psa_write(msg->handle, 0, (void *) &addr, sizeof(addr_t));
     psa_reply(msg->handle, PSA_SUCCESS);
 
     /* Dummy print to avoid compiler optimisation on local variable */
-    val_print_sf("\tl_psa_rot_data value 0x%x\n", l_psa_rot_data);
+    val_print_sf("\tStack data 0x%x\n", (int)l_psa_rot_data);
 }
 
 void driver_test_isolation_psa_rot_stack_wr(psa_msg_t *msg)
 {
     uint32_t l_psa_rot_data = DATA_VALUE;
+    uint32_t *addr = &l_psa_rot_data;
 
     /* Send PSA RoT stack address - local variable */
-    psa_write(msg->handle, 0, (void *) &l_psa_rot_data, sizeof(addr_t));
+    psa_write(msg->handle, 0, (void *) &addr, sizeof(addr_t));
 
     /* Setting boot.state before test check */
     if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_S))
@@ -546,7 +552,7 @@ void driver_test_isolation_psa_rot_stack_wr(psa_msg_t *msg)
     psa_reply(msg->handle, PSA_SUCCESS);
 
     /* Process second call request */
-    if (VAL_ERROR(process_call_request(DRIVER_TEST_SIG, msg)))
+    if (VAL_ERROR(process_call_request(DRIVER_TEST_SIGNAL, msg)))
     {
         psa_reply(msg->handle, -2);
         return;
@@ -581,7 +587,7 @@ void driver_test_isolation_psa_rot_heap_rd(psa_msg_t *msg)
     memset((uint8_t *)buffer, (uint8_t)DATA_VALUE, BUFFER_SIZE);
 
     /* Send PSA RoT heap address */
-    psa_write(msg->handle, 0, (void *) buffer, BUFFER_SIZE);
+    psa_write(msg->handle, 0, (void *) &buffer, BUFFER_SIZE);
     psa_reply(msg->handle, PSA_SUCCESS);
     free(buffer);
 #endif
@@ -596,7 +602,7 @@ void driver_test_isolation_psa_rot_heap_wr(psa_msg_t *msg)
     memset((uint8_t *)buffer, (uint8_t)DATA_VALUE, BUFFER_SIZE);
 
     /* Send PSA RoT heap address */
-    psa_write(msg->handle, 0, (void *) buffer, BUFFER_SIZE);
+    psa_write(msg->handle, 0, (void *) &buffer, BUFFER_SIZE);
     psa_reply(msg->handle, PSA_SUCCESS);
 
     /* Setting boot.state before test check */
@@ -607,7 +613,7 @@ void driver_test_isolation_psa_rot_heap_wr(psa_msg_t *msg)
     }
 
     /* Process second call request */
-    if (VAL_ERROR(process_call_request(DRIVER_TEST_SIG, msg)))
+    if (VAL_ERROR(process_call_request(DRIVER_TEST_SIGNAL, msg)))
     {
         psa_reply(msg->handle, -2);
         return;
@@ -662,8 +668,8 @@ void driver_test_isolation_psa_rot_mmio_wr(psa_msg_t *msg)
     }
 
     /* Send PSA RoT mmio address */
-    memset((uint8_t *)&psa_rot_mmio_addr, (uint8_t)DATA_VALUE, sizeof(uint32_t));
-    psa_write(msg->handle, 0, (void *) &psa_rot_mmio_addr, sizeof(uint32_t));
+    memset((uint8_t *)&psa_rot_mmio_addr, (uint8_t)DATA_VALUE, sizeof(addr_t));
+    psa_write(msg->handle, 0, (void *) &psa_rot_mmio_addr, sizeof(addr_t));
     psa_reply(msg->handle, PSA_SUCCESS);
 
     /* Setting boot.state before test check */
@@ -674,7 +680,7 @@ void driver_test_isolation_psa_rot_mmio_wr(psa_msg_t *msg)
     }
 
     /* Process second call request */
-    if (VAL_ERROR(process_call_request(DRIVER_TEST_SIG, msg)))
+    if (VAL_ERROR(process_call_request(DRIVER_TEST_SIGNAL, msg)))
     {
         psa_reply(msg->handle, -2);
         return;

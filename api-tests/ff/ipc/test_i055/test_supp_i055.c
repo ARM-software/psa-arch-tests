@@ -18,8 +18,8 @@
 #include "val_client_defs.h"
 #include "val_service_defs.h"
 
-#define val CONCAT(val,_server_sp)
-#define psa CONCAT(psa,_server_sp)
+#define val CONCAT(val, _server_sp)
+#define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
 
@@ -36,7 +36,6 @@ int32_t server_test_psa_read_with_invalid_buffer_addr(void)
     int32_t                 status = VAL_STATUS_SUCCESS;
     psa_msg_t               msg = {0};
     void                    *buffer = NULL;
-    miscellaneous_desc_t    *misc_desc;
     memory_desc_t           *memory_desc;
 
    /*
@@ -61,13 +60,12 @@ int32_t server_test_psa_read_with_invalid_buffer_addr(void)
     * VAL APIs to decide test status.
     */
 
-    status = val->process_connect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
         return status;
     }
-
 
     /*
      * Selection of invalid buffer addr:
@@ -78,23 +76,13 @@ int32_t server_test_psa_read_with_invalid_buffer_addr(void)
      *       buffer = NULL;
      */
 
-    status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MISCELLANEOUS,
-                                   MISCELLANEOUS_DUT, 0),
-                                  (uint8_t **)&misc_desc,
-                                  (uint32_t *)sizeof(miscellaneous_desc_t));
-    if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
-    {
-        psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
-        return status;
-    }
-
-    if (misc_desc->implemented_psa_firmware_isolation_level > LEVEL1)
+    if (PLATFORM_PSA_ISOLATION_LEVEL > LEVEL1)
     {
         status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
                                       MEMORY_DRIVER_PARTITION_MMIO, 0),
                                       (uint8_t **)&memory_desc,
                                       (uint32_t *)sizeof(memory_desc_t));
-        if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
+        if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
         {
             psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
             return status;
@@ -107,8 +95,8 @@ int32_t server_test_psa_read_with_invalid_buffer_addr(void)
     psa->reply(msg.handle, PSA_SUCCESS);
 
     /* Serve psa_call */
-    status = val->process_call_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
-    if (val->err_check_set(TEST_CHECKPOINT_NUM(204), status))
+    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
     {
         psa->reply(msg.handle, -2);
     }
@@ -116,7 +104,7 @@ int32_t server_test_psa_read_with_invalid_buffer_addr(void)
     {
         /* Setting boot.state before test check */
         status = val->set_boot_flag(BOOT_EXPECTED_NS);
-        if (val->err_check_set(TEST_CHECKPOINT_NUM(205), status))
+        if (val->err_check_set(TEST_CHECKPOINT_NUM(204), status))
         {
             val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
             psa->reply(msg.handle, -3);
@@ -141,8 +129,8 @@ int32_t server_test_psa_read_with_invalid_buffer_addr(void)
         }
     }
 
-    val->err_check_set(TEST_CHECKPOINT_NUM(206), status);
-    status = ((val->process_disconnect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg))
+    val->err_check_set(TEST_CHECKPOINT_NUM(205), status);
+    status = ((val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
                ? VAL_STATUS_ERROR : status);
     psa->reply(msg.handle, PSA_SUCCESS);
     return status;

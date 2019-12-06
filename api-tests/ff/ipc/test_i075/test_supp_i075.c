@@ -18,8 +18,8 @@
 #include "val_client_defs.h"
 #include "val_service_defs.h"
 
-#define val CONCAT(val,_server_sp)
-#define psa CONCAT(psa,_server_sp)
+#define val CONCAT(val, _server_sp)
+#define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
 
@@ -54,12 +54,12 @@ static int32_t get_mmio_addr(addr_t *addr)
    return VAL_STATUS_SUCCESS;
 }
 
-static int32_t send_secure_partition_address(addr_t *stack)
+static int32_t send_secure_partition_address(addr_t *addr)
 {
     int32_t         status = VAL_STATUS_SUCCESS;
     psa_msg_t       msg = {0};
 
-    status = val->process_connect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
@@ -68,18 +68,20 @@ static int32_t send_secure_partition_address(addr_t *stack)
 
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_call_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
     {
         psa->reply(msg.handle, -2);
         return status;
     }
 
-    /* Send Application RoT stack address */
-    psa->write(msg.handle, 0, (void *)stack, sizeof(uint32_t));
+    val->print(PRINT_DEBUG, "\tAPP-ROT: Passing 0x%x to NSPE\n", (int)*addr);
+
+    /* Send Application RoT mmio address */
+    psa->write(msg.handle, 0, (void *)addr, sizeof(uint32_t));
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_disconnect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    status = val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(204), status))
     {
         return status;
@@ -96,6 +98,9 @@ int32_t server_test_nspe_read_app_rot_mmio(void)
     status = get_mmio_addr(&app_rot_addr);
     if (VAL_ERROR(status))
         return status;
+
+    /* Initialise mmio address */
+    *(uint32_t *)app_rot_addr = (uint32_t)DATA_VALUE;
 
     return send_secure_partition_address(&app_rot_addr);
 }
@@ -117,7 +122,7 @@ int32_t server_test_nspe_write_app_rot_mmio(void)
         return status;
 
     /* Wait for write to get performed by client */
-    status = val->process_connect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(204), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);

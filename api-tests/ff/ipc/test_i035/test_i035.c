@@ -37,8 +37,8 @@ int32_t client_test_psa_skip_at_ipc_disconnect(caller_security_t caller)
 
    val->print(PRINT_TEST, "[Check 1] Test psa_skip at PSA_IPC_DISCONNECT\n", 0);
 
-   handle = psa->connect(SERVER_RELAX_MINOR_VERSION_SID, 1);
-   if (handle > 0)
+   handle = psa->connect(SERVER_RELAX_VERSION_SID, SERVER_RELAX_VERSION_VERSION);
+   if (PSA_HANDLE_IS_VALID(handle))
    {
        psa->close(handle);
    }

@@ -18,8 +18,8 @@
 #include "val_client_defs.h"
 #include "val_service_defs.h"
 
-#define val CONCAT(val,_server_sp)
-#define psa CONCAT(psa,_server_sp)
+#define val CONCAT(val, _server_sp)
+#define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
 
@@ -37,7 +37,6 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
    int32_t                 status = VAL_STATUS_SUCCESS;
    psa_signal_t            signals = 0;
    psa_msg_t               *invalid_msg = NULL;
-   miscellaneous_desc_t    *misc_desc;
    memory_desc_t           *memory_desc;
 
    /*
@@ -62,8 +61,8 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
     * VAL APIs to decide test status.
     */
 
-    signals = psa->wait(SERVER_UNSPECIFED_MINOR_V_SIG, PSA_BLOCK);
-    if ((signals & SERVER_UNSPECIFED_MINOR_V_SIG) == 0)
+    signals = psa->wait(SERVER_UNSPECIFED_VERSION_SIGNAL, PSA_BLOCK);
+    if ((signals & SERVER_UNSPECIFED_VERSION_SIGNAL) == 0)
     {
        val->print(PRINT_ERROR,
                 "psa_wait returned with invalid signal value = 0x%x\n", signals);
@@ -79,22 +78,13 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
      *       msg_pointer = NULL;
      */
 
-    status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MISCELLANEOUS,
-                                   MISCELLANEOUS_DUT, 0),
-                                  (uint8_t **)&misc_desc,
-                                  (uint32_t *)sizeof(miscellaneous_desc_t));
-    if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
-    {
-        return status;
-    }
-
-    if (misc_desc->implemented_psa_firmware_isolation_level > LEVEL1)
+    if (PLATFORM_PSA_ISOLATION_LEVEL > LEVEL1)
     {
         status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
                                       MEMORY_DRIVER_PARTITION_MMIO, 0),
                                       (uint8_t **)&memory_desc,
                                       (uint32_t *)sizeof(memory_desc_t));
-        if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
+        if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
         {
             return status;
         }
@@ -110,7 +100,7 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
     }
 
     /* psa_get with invalid msg pointer, call should panic */
-    psa->get(SERVER_UNSPECIFED_MINOR_V_SIG, invalid_msg);
+    psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, invalid_msg);
 
     /* shouldn't have reached here */
     val->print(PRINT_ERROR,

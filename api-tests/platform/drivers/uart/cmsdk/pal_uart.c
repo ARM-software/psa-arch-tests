@@ -68,7 +68,7 @@ static void pal_uart_cmsdk_putc(uint8_t c)
 void pal_cmsdk_print(char *str, int32_t data)
 {
     int8_t  j, buffer[16];
-    int8_t  i = 0, is_neg = 0, k = sizeof(data);
+    int8_t  i = 0, is_neg = 0, k = 2 * sizeof(data);
 
     for (; *str != '\0'; ++str)
     {

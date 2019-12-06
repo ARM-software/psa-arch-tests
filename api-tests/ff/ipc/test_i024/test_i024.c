@@ -70,7 +70,7 @@ int32_t client_test_psa_call_with_invalid_handle(caller_security_t caller)
    }
 
    /* Test check- psa_call with INVALID_HANDLE */
-   status_of_call =  psa->call(INVALID_HANDLE, NULL, 0, NULL, 0);
+   status_of_call =  psa->call(INVALID_HANDLE, PSA_IPC_CALL, NULL, 0, NULL, 0);
 
    /*
     * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether

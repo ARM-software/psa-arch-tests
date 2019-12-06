@@ -32,9 +32,9 @@ void client_main(void)
         status = VAL_STATUS_SUCCESS;
         signals = psa_wait(PSA_WAIT_ANY, PSA_BLOCK);
 
-        if (signals & CLIENT_TEST_DISPATCHER_SIG)
+        if (signals & CLIENT_TEST_DISPATCHER_SIGNAL)
         {
-            psa_get(CLIENT_TEST_DISPATCHER_SIG, &msg);
+            psa_get(CLIENT_TEST_DISPATCHER_SIGNAL, &msg);
             switch (msg.type)
             {
                 case PSA_IPC_CONNECT:
@@ -97,7 +97,8 @@ void client_main(void)
         /* Server_partition requests client to connect to SERVER_SECURE_CONNECT_ONLY_SID */
         else if (signals & PSA_DOORBELL)
         {
-            if (psa_connect(SERVER_SECURE_CONNECT_ONLY_SID, 2) != PSA_ERROR_CONNECTION_REFUSED)
+            if (psa_connect(SERVER_SECURE_CONNECT_ONLY_SID, SERVER_SECURE_CONNECT_ONLY_VERSION)
+                != PSA_ERROR_CONNECTION_REFUSED)
             {
                val_print(PRINT_ERROR, "psa_connect failed \n", 0);
             }

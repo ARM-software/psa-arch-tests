@@ -91,7 +91,7 @@ int32_t client_test_sid_does_not_exists(caller_security_t caller)
        return VAL_STATUS_ERROR;
    }
 
-   if (handle > 0)
+   if (PSA_HANDLE_IS_VALID(handle))
    {
       psa->close(handle);
    }

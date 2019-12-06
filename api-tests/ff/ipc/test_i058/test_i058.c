@@ -42,8 +42,8 @@ int32_t client_test_psa_doorbell_signal(caller_security_t caller)
    val->print(PRINT_TEST,
             "[Check 1] Test PSA_DOORBELL signal\n", 0);
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
-   if (handle < 0)
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   if (!PSA_HANDLE_IS_VALID(handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;

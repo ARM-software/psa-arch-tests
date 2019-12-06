@@ -18,8 +18,8 @@
 #include "val_client_defs.h"
 #include "val_service_defs.h"
 
-#define val CONCAT(val,_server_sp)
-#define psa CONCAT(psa,_server_sp)
+#define val CONCAT(val, _server_sp)
+#define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
 
@@ -37,7 +37,7 @@ int32_t server_test_partition_calling_its_own_rot_service(void)
     int32_t           status = VAL_STATUS_SUCCESS;
     psa_handle_t      handle = 0;
 
-    status = val->process_connect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
@@ -75,7 +75,7 @@ int32_t server_test_partition_calling_its_own_rot_service(void)
     }
 
     /* Calling server partition RoT service using IPC and call should panic */
-    handle = psa->connect(SERVER_RELAX_MINOR_VERSION_SID, 1);
+    handle = psa->connect(SERVER_RELAX_VERSION_SID, SERVER_RELAX_VERSION_VERSION);
 
     /* shouldn't have reached here */
     val->print(PRINT_ERROR, "\tConnection should failed but succeed\n", 0);

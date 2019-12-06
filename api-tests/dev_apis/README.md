@@ -82,10 +82,13 @@ The following steps describe the execution flow before the test execution: <br /
 
 For details on test suite integration, refer to the **Integrating the test suite with the SUT** section of [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf).
 
+## Security implication
+
+PSA API test suite may run at higher privilege level. An attacker can utilize these tests as a means to elevate privilege which can potentially reveal the platform secure attests. To prevent such security vulnerabilities into the production system, it is strongly recommended that PSA API test suite is run on development platforms. If it is run on production system, make sure system is scrubbed after running the test suite.
+
 ## License
 
 Arm PSA test suite is distributed under Apache v2.0 License.
-
 
 ## Feedback, contributions, and support
 

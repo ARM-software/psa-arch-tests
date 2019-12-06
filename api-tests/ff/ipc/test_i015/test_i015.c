@@ -37,7 +37,7 @@ int32_t client_test_psa_get_with_non_rot_signal(caller_security_t caller)
 
    val->print(PRINT_TEST, "[Check 1] Test psa_get with non-RoT signal\n", 0);
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
 
    /* Expectation is server test should hang and control shouldn't have come here */
    val->print(PRINT_ERROR, "\tConnection should failed but succeed\n", 0);

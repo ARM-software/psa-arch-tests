@@ -61,8 +61,8 @@ int32_t client_test_psa_call_with_not_writable_outvec_base(caller_security_t cal
     * VAL APIs to decide test status.
     */
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
-   if (handle < 0)
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   if (!PSA_HANDLE_IS_VALID(handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
@@ -79,7 +79,7 @@ int32_t client_test_psa_call_with_not_writable_outvec_base(caller_security_t cal
    psa_outvec outvec[1] = {{&client_test_psa_call_with_not_writable_outvec_base, sizeof(char)}};
 
    /* Test check- psa_call with not writable psa_outvec.base, call should panic */
-   psa->call(handle, NULL, 0, outvec, 1);
+   psa->call(handle, PSA_IPC_CALL, NULL, 0, outvec, 1);
 
    /* If PROGRAMMER ERROR results into panic then control shouldn't have reached here */
    val->print(PRINT_ERROR, "\tpsa_call should failed but succeed\n", 0);

@@ -34,9 +34,9 @@ void server_main(void)
         status = VAL_STATUS_SUCCESS;
         signals = psa_wait(PSA_WAIT_ANY, PSA_BLOCK);
 
-        if (signals & SERVER_TEST_DISPATCHER_SIG)
+        if (signals & SERVER_TEST_DISPATCHER_SIGNAL)
         {
-            psa_get(SERVER_TEST_DISPATCHER_SIG, &msg);
+            psa_get(SERVER_TEST_DISPATCHER_SIGNAL, &msg);
             switch (msg.type)
             {
                 case PSA_IPC_CONNECT:

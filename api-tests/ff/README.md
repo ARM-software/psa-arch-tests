@@ -58,7 +58,7 @@ To build the test suite for your target platform, perform the following steps.
 <br />Options information:<br />
 
 -   -G"<generator_name>" : "Unix Makefiles" to generate Makefiles for Linux and Cygwin. "MinGW Makefiles" to generate Makefiles for cmd.exe on Windows  <br />
--   -DTARGET=<platform_name> is the same as the name of the target-specific directory created in the **platform/targets/** directory. The current release has been tested on **tgt_dev_apis_tfm_an521**, **tgt_dev_apis_tfm_musca_b1** and **tgt_dev_apis_tfm_musca_a** platforms.<br />
+-   -DTARGET=<platform_name> is the same as the name of the target-specific directory created in the **platform/targets/** directory. The current release has been tested on **tgt_dev_apis_tfm_an521** and **tgt_dev_apis_tfm_musca_a** platforms.<br />
 -   -DTOOLCHAIN=<tool_chain> Compiler toolchain to be used for test suite compilation. Supported values are GNUARM (GNU Arm Embedded), ARMCLANG (ARM Compiler 6.x) and HOST_GCC. Default is GNUARM.<br />
 -   -DCPU_ARCH=<cpu_architecture_version> is the Arm Architecture version name for which the tests should be compiled. Supported CPU arch are armv8m_ml, armv8m_bl and armv7m. Default is empty. This option is unused when TOOLCHAIN type is HOST_GCC.<br />
 -   -DSUITE=<suite_name> is the suite name which is the same as the suite name available in **ff/** directory. <br >
@@ -112,6 +112,10 @@ The following steps describe the execution flow before the test execution: <br /
 4. The tests are executed sequentially in a loop in the test_dispatcher function. <br />
 
 For details on test suite integration, refer to the **Integrating the test suite with the SUT** section of [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf).
+
+## Security implication
+
+PSA FF test suite may run at higher privilege level. An attacker can utilize these tests as a means to elevate privilege which can potentially reveal the platform secure attests. To prevent such security vulnerabilities into the production system, it is strongly recommended that PSA FF test suite is run on development platforms. If it is run on production system, make sure system is scrubbed after running the test suite.
 
 ## License
 
