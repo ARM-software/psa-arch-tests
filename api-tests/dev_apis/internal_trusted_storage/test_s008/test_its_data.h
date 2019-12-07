@@ -64,7 +64,7 @@ static const test_data s008_data[] = {
  0, 0 /* This is dummy for index11 */
 },
 {
- VAL_ITS_GET, PSA_ERROR_INVALID_ARGUMENT /* Call get API with offset = MAX_UINT32 */
+ VAL_ITS_GET, PSA_SUCCESS /* Call get API with offset = MAX_UINT32 */
 },
 {
  VAL_ITS_REMOVE, PSA_SUCCESS /* Remove the storage entity */
