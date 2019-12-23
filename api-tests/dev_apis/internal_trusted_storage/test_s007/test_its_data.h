@@ -49,10 +49,10 @@ static const test_data s007_data[] = {
  VAL_ITS_SET, PSA_SUCCESS /* Decrease the length of storage */
 },
 {
- VAL_ITS_GET, PSA_ERROR_INVALID_ARGUMENT /* Try to access old length */
+ VAL_ITS_GET, PSA_SUCCESS /* Try to access old length */
 },
 {
- VAL_ITS_GET, PSA_ERROR_INVALID_ARGUMENT /* Try to access old length */
+ VAL_ITS_GET, PSA_SUCCESS /* Try to access old length */
 },
 {
  VAL_ITS_GET, PSA_SUCCESS /* Try to access data with correct length */

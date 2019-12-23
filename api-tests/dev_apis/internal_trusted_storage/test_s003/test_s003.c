@@ -24,7 +24,7 @@
 #include "test_ps_data.h"
 #endif
 
-#define TEST_BUFF_SIZE 1024
+#define TEST_BUFF_SIZE 512
 #define NUM_ITERATIONS 2
 #define TEST_BASE_UID_VALUE UID_BASE_VALUE + 5
 

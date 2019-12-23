@@ -75,13 +75,13 @@ int32_t psa_sst_get_incorrect_size(caller_security_t caller)
     /* Access data using get API and old length */
     status = SST_FUNCTION(s007_data[7].api, uid, 0, TEST_BUFF_SIZE/2, read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s007_data[7].status, TEST_CHECKPOINT_NUM(9));
-    TEST_ASSERT_EQUAL(p_data_length, 0, TEST_CHECKPOINT_NUM(10));
+    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE/4, TEST_CHECKPOINT_NUM(10));
 
     /* Access data using get API and old length */
     val->print(PRINT_TEST, "[Check 2] Call get API with old length\n", 0);
     status = SST_FUNCTION(s007_data[8].api, uid, 0, TEST_BUFF_SIZE, read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s007_data[8].status, TEST_CHECKPOINT_NUM(11));
-    TEST_ASSERT_EQUAL(p_data_length, 0, TEST_CHECKPOINT_NUM(12));
+    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE/4, TEST_CHECKPOINT_NUM(12));
 
     /* Access data using correct length */
     val->print(PRINT_TEST, "[Check 3] Call get API with valid length\n", 0);
