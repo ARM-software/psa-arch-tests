@@ -18,8 +18,8 @@
 #include "val_client_defs.h"
 #include "val_service_defs.h"
 
-#define val CONCAT(val,_server_sp)
-#define psa CONCAT(psa,_server_sp)
+#define val CONCAT(val, _server_sp)
+#define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
 
@@ -58,7 +58,7 @@ int32_t server_test_psa_skip_at_ipc_disconnect()
     * VAL APIs to decide test status.
     */
 
-    status = val->process_connect_request(SERVER_RELAX_MINOR_VERSION_SIG, &msg);
+    status = val->process_connect_request(SERVER_RELAX_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
@@ -66,7 +66,7 @@ int32_t server_test_psa_skip_at_ipc_disconnect()
     }
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_disconnect_request(SERVER_RELAX_MINOR_VERSION_SIG, &msg);
+    status = val->process_disconnect_request(SERVER_RELAX_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
         psa->reply(msg.handle, PSA_SUCCESS);

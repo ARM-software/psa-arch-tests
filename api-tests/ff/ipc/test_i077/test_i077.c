@@ -38,8 +38,8 @@ static int32_t get_secure_partition_address(psa_handle_t *handle,
                                             addr_t *addr,
                                             driver_test_fn_id_t test_fn_id)
 {
-   *handle = psa->connect(DRIVER_TEST_SID, 1);
-   if (*handle < 0)
+   *handle = psa->connect(DRIVER_TEST_SID, DRIVER_TEST_VERSION);
+   if (!PSA_HANDLE_IS_VALID(*handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
@@ -48,7 +48,7 @@ static int32_t get_secure_partition_address(psa_handle_t *handle,
    /* Execute driver function related to TEST_ISOLATION_PSA_ROT_DATA_RD */
    psa_invec invec[1] = {{&test_fn_id, sizeof(test_fn_id)}};
    psa_outvec outvec[1] = {{addr, sizeof(addr_t)}};
-   if (psa->call(*handle, invec, 1, outvec, 1) != PSA_SUCCESS)
+   if (psa->call(*handle, PSA_IPC_CALL, invec, 1, outvec, 1) != PSA_SUCCESS)
    {
        val->print(PRINT_ERROR, "\tmsg request failed\n", 0);
        return VAL_STATUS_CALL_FAILED;
@@ -59,7 +59,7 @@ static int32_t get_secure_partition_address(psa_handle_t *handle,
 
 static int32_t get_driver_status(psa_handle_t *handle)
 {
-   if (psa->call(*handle, NULL, 0, NULL, 0) != PSA_SUCCESS)
+   if (psa->call(*handle, PSA_IPC_CALL, NULL, 0, NULL, 0) != PSA_SUCCESS)
    {
        return VAL_STATUS_CALL_FAILED;
    }

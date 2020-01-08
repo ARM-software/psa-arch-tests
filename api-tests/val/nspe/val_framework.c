@@ -31,20 +31,18 @@ test_status_buffer_t    g_status_buffer;
 /**
  * @brief Connect to given sid
    @param  -sid : RoT service id
-   @param  -minor_version : minor_version of RoT service
+   @param  -version : version of RoT service
    @param  -handle - return connection handle
  * @return val_status_t
  */
-val_status_t val_ipc_connect(uint32_t sid, uint32_t minor_version, psa_handle_t *handle )
+val_status_t val_ipc_connect(uint32_t sid, uint32_t version, psa_handle_t *handle )
 {
-    *handle = pal_ipc_connect(sid, minor_version);
+    *handle = pal_ipc_connect(sid, version);
 
-    if (*handle < 0)
-    {
-        return VAL_STATUS_CONNECTION_FAILED;
-    }
+    if (*handle > 0)
+        return VAL_STATUS_SUCCESS;
 
-    return VAL_STATUS_SUCCESS;
+    return VAL_STATUS_CONNECTION_FAILED;
 }
 
 /**
@@ -52,18 +50,23 @@ val_status_t val_ipc_connect(uint32_t sid, uint32_t minor_version, psa_handle_t 
  * The caller must provide an array of ::psa_invec_t structures as the input payload.
  *
  * @param  handle   Handle for the connection.
+ * @param  type     Request type
  * @param  in_vec   Array of psa_invec structures.
  * @param  in_len   Number of psa_invec structures in in_vec.
  * @param out_vec  Array of psa_outvec structures for optional Root of Trust Service response.
  * @param  out_len  Number of psa_outvec structures in out_vec.
  * @return val_status_t
  */
-val_status_t val_ipc_call(psa_handle_t handle, psa_invec *in_vec, size_t in_len,
-                          psa_outvec *out_vec, size_t out_len)
+val_status_t val_ipc_call(psa_handle_t handle,
+                          int32_t type,
+                          const psa_invec *in_vec,
+                          size_t in_len,
+                          psa_outvec *out_vec,
+                          size_t out_len)
 {
     psa_status_t call_status = PSA_SUCCESS;
 
-    call_status = pal_ipc_call(handle, in_vec, in_len, out_vec, out_len);
+    call_status = pal_ipc_call(handle, type, in_vec, in_len, out_vec, out_len);
 
     if (call_status != PSA_SUCCESS)
     {
@@ -123,7 +126,7 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
              */
             if ((boot.state ==  BOOT_EXPECTED_REENTER_TEST) && (i == 1))
             {
-                val_print(PRINT_DEBUG, "[Check1] PASSED\n", 0);
+                val_print(PRINT_DEBUG, "[Check 1] PASSED\n", 0);
                 i++;
                 continue;
             }
@@ -149,12 +152,12 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
                 if (VAL_ERROR(status))
                 {
                     val_set_status(RESULT_FAIL(status));
-                    val_print(PRINT_DEBUG,"[Check%d] START\n", i);
+                    val_print(PRINT_DEBUG, "[Check %d] START\n", i);
                     return status;
                 }
                 else
                 {
-                    val_print(PRINT_DEBUG,"[Check%d] START\n", i);
+                    val_print(PRINT_DEBUG, "[Check %d] START\n", i);
                 }
             }
 
@@ -172,21 +175,21 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
             {
                 val_set_status(status);
                 if (server_hs == TRUE)
-                    val_print(PRINT_DEBUG, "[Check%d] SKIPPED\n", i);
+                    val_print(PRINT_DEBUG, "[Check %d] SKIPPED\n", i);
                 return status;
             }
             else if (VAL_ERROR(status))
             {
                 val_set_status(RESULT_FAIL(status));
                 if (server_hs == TRUE)
-                    val_print(PRINT_DEBUG, "[Check%d] FAILED\n", i);
+                    val_print(PRINT_DEBUG, "[Check %d] FAILED\n", i);
 
                 return status;
             }
             else
             {
                 if (server_hs == TRUE)
-                    val_print(PRINT_DEBUG, "[Check%d] PASSED\n", i);
+                    val_print(PRINT_DEBUG, "[Check %d] PASSED\n", i);
             }
 
             i++;
@@ -198,7 +201,7 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
        status = VAL_STATUS_SUCCESS;
        if (boot.state != BOOT_EXPECTED_S)
        {
-            val_print(PRINT_DEBUG, "[Check1] PASSED\n", 0);
+            val_print(PRINT_DEBUG, "[Check 1] PASSED\n", 0);
        }
    }
    return status;
@@ -236,7 +239,7 @@ val_status_t val_switch_to_secure_client(uint32_t test_num)
        if (boot.state ==  BOOT_EXPECTED_REENTER_TEST)
        {
             test_info.block_num++;
-            val_print(PRINT_DEBUG, "[Check1] PASSED\n", 0);
+            val_print(PRINT_DEBUG, "[Check 1] PASSED\n", 0);
        }
 
        status = val_set_boot_flag(BOOT_NOT_EXPECTED);
@@ -268,7 +271,7 @@ val_status_t val_switch_to_secure_client(uint32_t test_num)
    else
    {
        /* If we are here means, we are in third run of this test */
-       val_print(PRINT_DEBUG, "[Check1] PASSED\n", 0);
+       val_print(PRINT_DEBUG, "[Check 1] PASSED\n", 0);
        return VAL_STATUS_SUCCESS;
    }
 
@@ -293,23 +296,25 @@ val_status_t val_execute_secure_test_func(psa_handle_t *handle, test_info_t test
     val_status_t    status = VAL_STATUS_SUCCESS;
     psa_status_t    status_of_call = PSA_SUCCESS;
 
-    *handle = pal_ipc_connect(sid, 0);
-    if (*handle < 0)
+    *handle = pal_ipc_connect(sid, 1);
+    if (*handle > 0)
+    {
+        test_data = ((uint32_t)(test_info.test_num) |((uint32_t)(test_info.block_num) << BLOCK_NUM_POS)
+                    | ((uint32_t)(TEST_EXECUTE_FUNC) << ACTION_POS));
+        psa_invec data[1] = {{&test_data, sizeof(test_data)}};
+
+        status_of_call = pal_ipc_call(*handle, 0, data, 1, NULL, 0);
+        if (status_of_call != PSA_SUCCESS)
+        {
+            status = VAL_STATUS_CALL_FAILED;
+            val_print(PRINT_ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
+            pal_ipc_close(*handle);
+        }
+    }
+    else
     {
         val_print(PRINT_ERROR, "Could not connect SID. Handle=%x\n", *handle);
-        return VAL_STATUS_CONNECTION_FAILED;
-    }
-
-    test_data = ((uint32_t)(test_info.test_num) |((uint32_t)(test_info.block_num) << BLOCK_NUM_POS)
-                | ((uint32_t)(TEST_EXECUTE_FUNC) << ACTION_POS));
-    psa_invec data[1] = {{&test_data, sizeof(test_data)}};
-
-    status_of_call = pal_ipc_call(*handle, data, 1, NULL, 0);
-    if (status_of_call != PSA_SUCCESS)
-    {
-        status = VAL_STATUS_CALL_FAILED;
-        val_print(PRINT_ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
-        pal_ipc_close(*handle);
+        status = VAL_STATUS_CONNECTION_FAILED;
     }
 
     return status;
@@ -332,7 +337,7 @@ val_status_t val_get_secure_test_result(psa_handle_t *handle)
     psa_outvec resp = {&status, sizeof(status)};
     psa_invec data[1] = {{&test_data, sizeof(test_data)}};
 
-    status_of_call = pal_ipc_call(*handle, data, 1, &resp, 1);
+    status_of_call = pal_ipc_call(*handle, 0, data, 1, &resp, 1);
     if (status_of_call != PSA_SUCCESS)
     {
         status = VAL_STATUS_CALL_FAILED;
@@ -462,7 +467,6 @@ val_status_t val_err_check_set(uint32_t checkpoint, val_status_t status)
 void val_test_init(uint32_t test_num, char8_t *desc, uint32_t test_bitfield)
 {
    val_status_t         status = VAL_STATUS_SUCCESS;
-   miscellaneous_desc_t *misc_desc;
 
    /*global init*/
    g_status_buffer.state   = TEST_FAIL;
@@ -472,18 +476,7 @@ void val_test_init(uint32_t test_num, char8_t *desc, uint32_t test_bitfield)
    val_print(PRINT_ALWAYS, desc, 0);
 
    /* common skip logic */
-   status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MISCELLANEOUS,
-                                   MISCELLANEOUS_DUT, 0),
-                                  (uint8_t **)&misc_desc,
-                                  (uint32_t *)sizeof(miscellaneous_desc_t));
-   if (VAL_ERROR(status))
-   {
-       val_print(PRINT_ERROR, "val_target_get_config failed Error=0x%x\n", status);
-       return;
-   }
-
-   if (misc_desc->implemented_psa_firmware_isolation_level <
-       GET_TEST_ISOLATION_LEVEL(test_bitfield))
+   if (PLATFORM_PSA_ISOLATION_LEVEL < GET_TEST_ISOLATION_LEVEL(test_bitfield))
    {
        val_set_status(RESULT_SKIP(VAL_STATUS_ISOLATION_LEVEL_NOT_SUPP));
        val_print(PRINT_ALWAYS, "\tSkipping test. Required isolation level is not supported\n", 0);
@@ -508,7 +501,7 @@ void val_test_init(uint32_t test_num, char8_t *desc, uint32_t test_bitfield)
    }
 #endif
 
-   val_set_status(RESULT_START(VAL_STATUS_SUCCESS));
+   val_set_status(RESULT_START(status));
    return;
 }
 

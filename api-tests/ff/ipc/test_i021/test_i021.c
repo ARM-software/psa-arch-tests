@@ -38,7 +38,7 @@ int32_t client_test_irq_routing(caller_security_t caller)
 
    /*
     * The interrupt related test check is captured in driver_partition.c as this is the
-    * only partition in test suite that holds the interrupt line. The interrupt test check
+    * only partition in test suite that holds the interrupt source. The interrupt test check
     * is invoked by client by calling to DRIVER_TEST_SID RoT service of driver partition that
     * hold the test check.
     */
@@ -46,8 +46,8 @@ int32_t client_test_irq_routing(caller_security_t caller)
    val->print(PRINT_TEST, "[Check 1] Test irq routing\n", 0);
 
    /* Connect to DRIVER_TEST_SID */
-   handle = psa->connect(DRIVER_TEST_SID, 1);
-   if (handle < 0)
+   handle = psa->connect(DRIVER_TEST_SID, DRIVER_TEST_VERSION);
+   if (!PSA_HANDLE_IS_VALID(handle))
    {
        val->print(PRINT_ERROR, "\t psa_connect failed. handle=0x%x\n", handle);
        return VAL_STATUS_SPM_FAILED;
@@ -56,7 +56,7 @@ int32_t client_test_irq_routing(caller_security_t caller)
    /* Execute driver function related to TEST_INTR_SERVICE */
    psa_invec invec = {&driver_test_fn_id, sizeof(driver_test_fn_id)};
 
-   if (psa->call(handle, &invec, 1, NULL, 0) != PSA_SUCCESS)
+   if (psa->call(handle, PSA_IPC_CALL, &invec, 1, NULL, 0) != PSA_SUCCESS)
    {
         psa->close(handle);
         return VAL_STATUS_SPM_FAILED;

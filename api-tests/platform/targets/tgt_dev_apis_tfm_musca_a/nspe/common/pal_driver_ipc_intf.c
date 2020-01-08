@@ -33,20 +33,20 @@ int pal_uart_init_ns(uint32_t uart_base_addr)
                          {&uart_base_addr, sizeof(uart_base_addr)},
                          {NULL, 0}};
 
-    print_handle = pal_ipc_connect(DRIVER_UART_SID, 0);
-    if (print_handle < 0)
+    print_handle = pal_ipc_connect(DRIVER_UART_SID, DRIVER_UART_VERSION);
+    if (PSA_HANDLE_IS_VALID(print_handle))
     {
-        return(PAL_STATUS_ERROR);
-    }
+        status_of_call = pal_ipc_call(print_handle, 0, data, 3, NULL, 0);
+        pal_ipc_close(print_handle);
+        if (status_of_call != PSA_SUCCESS)
+            return PAL_STATUS_ERROR;
 
-    status_of_call = pal_ipc_call(print_handle, data, 3, NULL, 0);
-    if (status_of_call != PSA_SUCCESS)
+        return PAL_STATUS_SUCCESS;
+    }
+    else
     {
-        return(PAL_STATUS_ERROR);
+        return PAL_STATUS_ERROR;
     }
-
-    pal_ipc_close(print_handle);
-    return PAL_STATUS_SUCCESS;
 }
 
 /**
@@ -62,7 +62,6 @@ int pal_print_ns(char *str, int32_t data)
     char            *p = str;
     psa_handle_t    print_handle = 0;
     psa_status_t    status_of_call = PSA_SUCCESS;
-    pal_status_t    status = PAL_STATUS_SUCCESS;
     uart_fn_type_t  uart_fn = UART_PRINT;
 
     while (*p != '\0')
@@ -74,22 +73,21 @@ int pal_print_ns(char *str, int32_t data)
     psa_invec data1[3] = {{&uart_fn, sizeof(uart_fn)},
                           {str, string_len+1},
                           {&data, sizeof(data)}};
-    print_handle = pal_ipc_connect(DRIVER_UART_SID, 0);
 
-    if (print_handle < 0)
+    print_handle = pal_ipc_connect(DRIVER_UART_SID, DRIVER_UART_VERSION);
+    if (PSA_HANDLE_IS_VALID(print_handle))
     {
-        return PAL_STATUS_ERROR;
+        status_of_call = pal_ipc_call(print_handle, 0, data1, 3, NULL, 0);
+        pal_ipc_close(print_handle);
+        if (status_of_call != PSA_SUCCESS)
+            return PAL_STATUS_ERROR;
+
+        return PAL_STATUS_SUCCESS;
     }
     else
     {
-        status_of_call = pal_ipc_call(print_handle, data1, 3, NULL, 0);
-        if (status_of_call != PSA_SUCCESS)
-        {
-            status = PAL_STATUS_ERROR;
-        }
+        return PAL_STATUS_ERROR;
     }
-    pal_ipc_close(print_handle);
-    return status;
 }
 
 /**
@@ -111,22 +109,20 @@ int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick
     wd_param.wd_timer_tick_us = timer_tick_us;
     psa_invec invec[1] = {{&wd_param, sizeof(wd_param)}};
 
-    handle = pal_ipc_connect(DRIVER_WATCHDOG_SID, 0);
-    if (handle < 0)
+    handle = pal_ipc_connect(DRIVER_WATCHDOG_SID, DRIVER_WATCHDOG_VERSION);
+    if (PSA_HANDLE_IS_VALID(handle))
     {
-        return PAL_STATUS_ERROR;
+        status_of_call = pal_ipc_call(handle, 0, invec, 1, NULL, 0);
+        pal_ipc_close(handle);
+        if (status_of_call != PSA_SUCCESS)
+            return PAL_STATUS_ERROR;
+
+        return PAL_STATUS_SUCCESS;
     }
     else
     {
-        status_of_call = pal_ipc_call(handle, invec, 1, NULL, 0);
-        if (status_of_call != PSA_SUCCESS)
-        {
-            pal_ipc_close(handle);
-            return PAL_STATUS_ERROR;
-        }
+        return PAL_STATUS_ERROR;
     }
-   pal_ipc_close(handle);
-   return PAL_STATUS_SUCCESS;
 }
 
 /**
@@ -146,22 +142,20 @@ int pal_wd_timer_enable_ns(addr_t base_addr)
     wd_param.wd_timer_tick_us = 0;
     psa_invec invec[1] = {{&wd_param, sizeof(wd_param)}};
 
-    handle = pal_ipc_connect(DRIVER_WATCHDOG_SID, 0);
-    if (handle < 0)
+    handle = pal_ipc_connect(DRIVER_WATCHDOG_SID, DRIVER_WATCHDOG_VERSION);
+    if (PSA_HANDLE_IS_VALID(handle))
     {
-        return PAL_STATUS_ERROR;
+        status_of_call = pal_ipc_call(handle, 0, invec, 1, NULL, 0);
+        pal_ipc_close(handle);
+        if (status_of_call != PSA_SUCCESS)
+            return PAL_STATUS_ERROR;
+
+        return PAL_STATUS_SUCCESS;
     }
     else
     {
-        status_of_call = pal_ipc_call(handle, invec, 1, NULL, 0);
-        if (status_of_call != PSA_SUCCESS)
-        {
-            pal_ipc_close(handle);
-            return PAL_STATUS_ERROR;
-        }
+        return PAL_STATUS_ERROR;
     }
-   pal_ipc_close(handle);
-   return PAL_STATUS_SUCCESS;
 }
 
 /**
@@ -181,22 +175,20 @@ int pal_wd_timer_disable_ns(addr_t base_addr)
     wd_param.wd_timer_tick_us = 0;
     psa_invec invec[1] = {{&wd_param, sizeof(wd_param)}};
 
-    handle = pal_ipc_connect(DRIVER_WATCHDOG_SID, 0);
-    if (handle < 0)
+    handle = pal_ipc_connect(DRIVER_WATCHDOG_SID, DRIVER_WATCHDOG_VERSION);
+    if (PSA_HANDLE_IS_VALID(handle))
     {
-        return PAL_STATUS_ERROR;
+        status_of_call = pal_ipc_call(handle, 0, invec, 1, NULL, 0);
+        pal_ipc_close(handle);
+        if (status_of_call != PSA_SUCCESS)
+            return PAL_STATUS_ERROR;
+
+        return PAL_STATUS_SUCCESS;
     }
     else
     {
-        status_of_call = pal_ipc_call(handle, invec, 1, NULL, 0);
-        if (status_of_call != PSA_SUCCESS)
-        {
-            pal_ipc_close(handle);
-            return PAL_STATUS_ERROR;
-        }
+        return PAL_STATUS_ERROR;
     }
-   pal_ipc_close(handle);
-   return PAL_STATUS_SUCCESS;
 }
 
 /**
@@ -220,22 +212,20 @@ int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size)
     psa_invec invec[1] = {{&nvmem_param, sizeof(nvmem_param)}};
     psa_outvec outvec[1] = {{buffer, size}};
 
-    handle = pal_ipc_connect(DRIVER_NVMEM_SID, 0);
-    if (handle < 0)
+    handle = pal_ipc_connect(DRIVER_NVMEM_SID, DRIVER_NVMEM_VERSION);
+    if (PSA_HANDLE_IS_VALID(handle))
     {
-        return PAL_STATUS_ERROR;
+        status_of_call = pal_ipc_call(handle, 0, invec, 1, outvec, 1);
+        pal_ipc_close(handle);
+        if (status_of_call != PSA_SUCCESS)
+            return PAL_STATUS_ERROR;
+
+        return PAL_STATUS_SUCCESS;
     }
     else
     {
-        status_of_call = pal_ipc_call(handle, invec, 1, outvec, 1);
-        if (status_of_call != PSA_SUCCESS)
-        {
-            pal_ipc_close(handle);
-            return PAL_STATUS_ERROR;
-        }
+        return PAL_STATUS_ERROR;
     }
-   psa_close(handle);
-   return PAL_STATUS_SUCCESS;
 }
 
 /**
@@ -258,22 +248,20 @@ int pal_nvmem_write_ns(addr_t base, uint32_t offset, void *buffer, int size)
     nvmem_param.size = size;
     psa_invec invec[2] = {{&nvmem_param, sizeof(nvmem_param)}, {buffer, size}};
 
-    handle = pal_ipc_connect(DRIVER_NVMEM_SID, 0);
-    if (handle < 0)
+    handle = pal_ipc_connect(DRIVER_NVMEM_SID, DRIVER_NVMEM_VERSION);
+    if (PSA_HANDLE_IS_VALID(handle))
     {
-        return PAL_STATUS_ERROR;
+        status_of_call = pal_ipc_call(handle, 0, invec, 2, NULL, 0);
+        pal_ipc_close(handle);
+        if (status_of_call != PSA_SUCCESS)
+            return PAL_STATUS_ERROR;
+
+        return PAL_STATUS_SUCCESS;
     }
     else
     {
-        status_of_call = pal_ipc_call(handle, invec, 2, NULL, 0);
-        if (status_of_call != PSA_SUCCESS)
-        {
-            pal_ipc_close(handle);
-            return PAL_STATUS_ERROR;
-        }
+        return PAL_STATUS_ERROR;
     }
-   pal_ipc_close(handle);
-   return PAL_STATUS_SUCCESS;
 }
 
 /**

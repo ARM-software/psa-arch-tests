@@ -75,7 +75,7 @@ int32_t client_test_secure_access_only_connection(caller_security_t caller)
     * It is PROGRAMMER ERROR to connect to secure only access service from nspe.
     * Whereas call should succeed if called from spe.
     */
-   handle = psa->connect(SERVER_SECURE_CONNECT_ONLY_SID, 1);
+   handle = psa->connect(SERVER_SECURE_CONNECT_ONLY_SID, SERVER_SECURE_CONNECT_ONLY_VERSION);
 
    if (caller == CALLER_NONSECURE)
    {
@@ -101,7 +101,7 @@ int32_t client_test_secure_access_only_connection(caller_security_t caller)
    }
 
    /* Should return positive handle for SPE connection */
-   if (handle > 0)
+   if (PSA_HANDLE_IS_VALID(handle))
    {
       psa->close(handle);
    }

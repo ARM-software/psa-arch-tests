@@ -178,6 +178,12 @@ typedef enum {
 } test_isolation_level_t;
 
 typedef enum {
+    LEVEL1 = 0x1,
+    LEVEL2,
+    LEVEL3,
+} isolation_level_t;
+
+typedef enum {
     /* VAL uses this boot flag to mark first time boot of the system  */
     BOOT_UNKNOWN                       = 0x1,
     /* VAL/Test uses this boot flag to catch any unwanted system reboot - SIM ERROR Cases*/

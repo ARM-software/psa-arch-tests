@@ -69,7 +69,7 @@ void pal_uart_putc(uint8_t c)
 void pal_uart_pl011_print(char *str, int32_t data)
 {
     uint8_t j, buffer[16];
-    int8_t  i = 0, is_neg = 0, k = sizeof(data);
+    int8_t  i = 0, is_neg = 0, k = 2 * sizeof(data);
 
     for (; *str != '\0'; ++str)
     {

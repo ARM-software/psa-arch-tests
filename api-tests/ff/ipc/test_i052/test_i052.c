@@ -67,9 +67,8 @@ int32_t client_test_psa_call_with_invalid_invec_end_addr(caller_security_t calle
     * VAL APIs to decide test status.
     */
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
-
-   if (handle < 0)
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   if (!PSA_HANDLE_IS_VALID(handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
@@ -126,7 +125,7 @@ int32_t client_test_psa_call_with_invalid_invec_end_addr(caller_security_t calle
    psa_invec invec[1] = {{valid_base, invalid_size}};
 
    /* Test check- psa_call with invalid end_addr for psa_invec */
-   status_of_call =  psa->call(handle, invec, 1, NULL, 0);
+   status_of_call =  psa->call(handle, PSA_IPC_CALL, invec, 1, NULL, 0);
 
    /*
     * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether

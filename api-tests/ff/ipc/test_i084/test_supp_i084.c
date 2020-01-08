@@ -18,8 +18,8 @@
 #include "val_client_defs.h"
 #include "val_service_defs.h"
 
-#define val CONCAT(val,_server_sp)
-#define psa CONCAT(psa,_server_sp)
+#define val CONCAT(val, _server_sp)
+#define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
 
@@ -40,10 +40,11 @@ server_test_t test_i084_server_tests_list[] = {
 
 static int32_t send_secure_partition_address(void)
 {
-    int32_t         status = VAL_STATUS_SUCCESS;
-    psa_msg_t       msg = {0};
+    int32_t           status = VAL_STATUS_SUCCESS;
+    volatile uint32_t *addr = &g_test_i084;
+    psa_msg_t         msg = {0};
 
-    status = val->process_connect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
@@ -52,18 +53,20 @@ static int32_t send_secure_partition_address(void)
 
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_call_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
         psa->reply(msg.handle, -2);
         return status;
     }
 
+    val->print(PRINT_DEBUG, "\tServer SP: Passing 0x%x to Client SP\n", (int)&g_test_i084);
+
     /* Send Application RoT data address - global variable */
-    psa->write(msg.handle, 0, (void *)&g_test_i084, sizeof(g_test_i084));
+    psa->write(msg.handle, 0, (void *)&addr, sizeof(addr));
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_disconnect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    status = val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
     {
         return status;
@@ -87,7 +90,7 @@ int32_t server_test_sp_write_other_sp_variable(void)
         return status;
 
     /* Wait for write to get performed by client */
-    status = val->process_connect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(204), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);

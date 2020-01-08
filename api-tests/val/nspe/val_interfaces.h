@@ -38,10 +38,13 @@ typedef struct {
     val_status_t     (*switch_to_secure_client)   (uint32_t test_num);
     val_status_t     (*execute_secure_test_func)  (psa_handle_t *handle, test_info_t test_info,
                                                    uint32_t sid);
-    val_status_t     (*ipc_connect)               (uint32_t sid, uint32_t minor_version,
+    val_status_t     (*ipc_connect)               (uint32_t sid, uint32_t version,
                                                    psa_handle_t *handle );
-    val_status_t     (*ipc_call)                  (psa_handle_t handle, psa_invec *in_vec,
-                                                   size_t in_len,  psa_outvec *out_vec,
+    val_status_t     (*ipc_call)                  (psa_handle_t handle,
+                                                   int32_t type,
+                                                   const psa_invec *in_vec,
+                                                   size_t in_len,
+                                                   psa_outvec *out_vec,
                                                    size_t out_len);
     void             (*ipc_close)                 (psa_handle_t handle);
     val_status_t     (*get_secure_test_result)    (psa_handle_t *handle);
@@ -62,13 +65,13 @@ typedef struct {
 typedef struct {
     uint32_t         (*framework_version)     (void);
     uint32_t         (*version)               (uint32_t sid);
-    psa_handle_t     (*connect)               (uint32_t sid, uint32_t minor_version);
+    psa_handle_t     (*connect)               (uint32_t sid, uint32_t version);
     psa_status_t     (*call)                  (psa_handle_t handle,
-                                              const psa_invec *in_vec,
-                                              size_t in_len,
-                                              psa_outvec *out_vec,
-                                              size_t out_len
-                                              );
+                                               int32_t type,
+                                               const psa_invec *in_vec,
+                                               size_t in_len,
+                                               psa_outvec *out_vec,
+                                               size_t out_len);
     void             (*close)                 (psa_handle_t handle);
 } psa_api_t;
 

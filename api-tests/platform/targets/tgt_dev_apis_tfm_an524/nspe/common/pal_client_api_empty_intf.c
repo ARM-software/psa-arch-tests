@@ -31,10 +31,10 @@ uint32_t pal_ipc_framework_version(void)
 }
 
 /**
- * @brief - Retrieve the minor version of a Root of Trust Service by its SID.
+ * @brief - Retrieve the version of a Root of Trust Service by its SID.
  * This is a wrapper API for the psa_version API.
  * @param - sid The Root of Trust Service ID
- * @return - Minor version of Root of Trust Service or PSA_VERSION_NONE if Root of Trust
+ * @return - version of Root of Trust Service or PSA_VERSION_NONE if Root of Trust
  *           Service not present on the system.
  */
 
@@ -47,11 +47,11 @@ uint32_t pal_ipc_version(uint32_t sid)
  * @brief   - Connect to given sid.
  *            This is a wrapper API for the psa_connect API.
  * @param   - sid : RoT service id
- * @param   - minor_version : minor_version of RoT service
+ * @param   - version : version of RoT service
  * @return  - psa_handle_t : return connection handle
  */
 
-psa_handle_t pal_ipc_connect(uint32_t sid, uint32_t minor_version)
+psa_handle_t pal_ipc_connect(uint32_t sid, uint32_t version)
 {
     return PSA_NULL_HANDLE;
 }
@@ -62,6 +62,7 @@ psa_handle_t pal_ipc_connect(uint32_t sid, uint32_t minor_version)
  * The caller must provide an array of ::psa_invec_t structures as the input payload.
  *
  * @param  -handle   Handle for the connection.
+ * @param  -type     Request type.
  * @param  -in_vec   Array of psa_invec structures.
  * @param  -in_len   Number of psa_invec structures in in_vec.
  * @param  -out_vec  Array of psa_outvec structures for optional Root of Trust Service response.
@@ -70,10 +71,11 @@ psa_handle_t pal_ipc_connect(uint32_t sid, uint32_t minor_version)
  */
 
 psa_status_t pal_ipc_call(psa_handle_t handle,
-                         const psa_invec *in_vec,
-                         size_t in_len,
-                         psa_outvec *out_vec,
-                         size_t out_len)
+                          int32_t type,
+                          const psa_invec *in_vec,
+                          size_t in_len,
+                          psa_outvec *out_vec,
+                          size_t out_len)
 {
     return (PSA_SUCCESS - 1);
 }

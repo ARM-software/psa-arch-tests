@@ -29,8 +29,9 @@ client_test_t test_i002_client_tests_list[] = {
     NULL,
     client_test_connection_busy_and_reject,
     client_test_accept_and_close_connect,
-    client_test_connect_with_allowed_minor_version_policy,
+    client_test_connect_with_allowed_version_policy,
     client_test_psa_call_with_allowed_status_code,
+    client_test_psa_call_with_allowed_type_values,
     client_test_identity,
     client_test_spm_concurrent_connect_limit,
     client_test_psa_block_behave,
@@ -45,7 +46,7 @@ int32_t client_test_connection_busy_and_reject(caller_security_t caller)
 
     val->print(PRINT_TEST, "[Check 1] Test busy and reject connect type\n", 0);
 
-    handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
+    handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
 
     /*
      * The RoT Service can't make connection at this moment. It sends
@@ -58,7 +59,7 @@ int32_t client_test_connection_busy_and_reject(caller_security_t caller)
         return VAL_STATUS_INVALID_HANDLE;
     }
 
-    handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
+    handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
 
     /* The RoT Service rejected the client because of an application-specific case
      * Expect PSA_ERROR_CONNECTION_REFUSED as return
@@ -79,9 +80,9 @@ int32_t client_test_accept_and_close_connect(caller_security_t caller)
 
    val->print(PRINT_TEST, "[Check 2] Accept and close connection\n", 0);
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
    /* RoT service accepts the connection. Expecting positive handle */
-   if (handle < 0)
+   if (!PSA_HANDLE_IS_VALID(handle))
    {
        return VAL_STATUS_INVALID_HANDLE;
    }
@@ -94,19 +95,22 @@ int32_t client_test_accept_and_close_connect(caller_security_t caller)
    return VAL_STATUS_SUCCESS;
 }
 
-int32_t client_test_connect_with_allowed_minor_version_policy(caller_security_t caller)
+int32_t client_test_connect_with_allowed_version_policy(caller_security_t caller)
 {
    psa_handle_t     handle = 0;
    uint32_t         i = 0;
-   uint32_t         sid[] = {SERVER_UNSPECIFED_MINOR_V_SID,
-                             SERVER_STRICT_MINOR_VERSION_SID,
-                             SERVER_RELAX_MINOR_VERSION_SID,
-                             SERVER_RELAX_MINOR_VERSION_SID};
-   uint32_t         minor_v[] = {1, 2, 1, 2};
+   uint32_t         sid[] = {SERVER_UNSPECIFED_VERSION_SID,
+                             SERVER_STRICT_VERSION_SID,
+                             SERVER_RELAX_VERSION_SID,
+                             SERVER_RELAX_VERSION_SID};
+   uint32_t         version[] = {SERVER_UNSPECIFED_VERSION_VERSION,
+                                 SERVER_STRICT_VERSION_VERSION,
+                                 SERVER_RELAX_VERSION_VERSION - 1,
+                                 SERVER_RELAX_VERSION_VERSION};
 
-   val->print(PRINT_TEST, "[Check 3] Test psa_connect with allowed minor version policy\n", 0);
+   val->print(PRINT_TEST, "[Check 3] Test psa_connect with allowed version policy\n", 0);
 
-   /* Connect RoT service with following minor version numbers and expect positive handle for
+   /* Connect RoT service with following version numbers and expect positive handle for
     * each connection:
     * Case 1. Version policy is not mentioned and requested version is 1 (default minimum version)
     * Case 2. Version policy is STRICT and requested version equals minimum version
@@ -116,11 +120,11 @@ int32_t client_test_connect_with_allowed_minor_version_policy(caller_security_t 
 
    for (i = 0; i < (sizeof(sid)/sizeof(sid[0])); i++)
    {
-        handle = psa->connect(sid[i], minor_v[i]);
-        if (handle < 0)
+        handle = psa->connect(sid[i], version[i]);
+        if (!PSA_HANDLE_IS_VALID(handle))
         {
             val->print(PRINT_ERROR,
-                        "\tpsa_connect failed for minor_v policy. Iteration No=%d\n", i);
+                        "\tpsa_connect failed for version policy. Iteration No=%d\n", i);
             return VAL_STATUS_INVALID_HANDLE;
         }
 
@@ -136,13 +140,13 @@ int32_t psa_call_with_null_msg(int32_t expected_status)
    psa_handle_t       handle = 0;
    psa_status_t       status_of_call;
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
-   if (handle < 0)
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   if (!PSA_HANDLE_IS_VALID(handle))
    {
        return VAL_STATUS_INVALID_HANDLE;
    }
 
-   status_of_call =  psa->call(handle, NULL, 0, NULL, 0);
+   status_of_call =  psa->call(handle, PSA_IPC_CALL, NULL, 0, NULL, 0);
    /* Compare status code returned with expected status code */
    if (status_of_call != expected_status)
    {
@@ -175,6 +179,35 @@ int32_t client_test_psa_call_with_allowed_status_code(caller_security_t caller)
    return status;
 }
 
+int32_t client_test_psa_call_with_allowed_type_values(caller_security_t caller)
+{
+   int32_t            status = VAL_STATUS_SUCCESS;
+   psa_handle_t       handle = 0;
+   int32_t            type[] = {PSA_IPC_CALL, 1, 2, INT32_MAX};
+   uint32_t           i = 0;
+
+   val->print(PRINT_TEST, "[Check 5] Test psa_call with different type values\n", 0);
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   if (!PSA_HANDLE_IS_VALID(handle))
+   {
+       return VAL_STATUS_INVALID_HANDLE;
+   }
+
+   for (i = 0; i < (sizeof(type)/sizeof(type[0])); i++)
+   {
+       /* Send type = type[i] */
+       if (psa->call(handle, type[i], NULL, 0, NULL, 0) != PSA_SUCCESS)
+       {
+           val->print(PRINT_ERROR, "\tCheck failed for type=%d\n", type[i]);
+           status = VAL_STATUS_CALL_FAILED;
+           break;
+       }
+   }
+
+   psa->close(handle);
+   return status;
+}
+
 int32_t client_test_identity(caller_security_t caller)
 {
    int32_t         status = VAL_STATUS_SUCCESS;
@@ -182,10 +215,10 @@ int32_t client_test_identity(caller_security_t caller)
    psa_status_t    status_of_call;
    int             id_at_connect = 0, id_at_call = 0;
 
-   val->print(PRINT_TEST, "[Check 5] Test client_id\n", 0);
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
+   val->print(PRINT_TEST, "[Check 6] Test client_id\n", 0);
 
-   if (handle < 0)
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   if (!PSA_HANDLE_IS_VALID(handle))
    {
        return(VAL_STATUS_INVALID_HANDLE);
    }
@@ -193,7 +226,7 @@ int32_t client_test_identity(caller_security_t caller)
    psa_outvec resp[2] = {{&id_at_connect, sizeof(id_at_call)},
                          {&id_at_call, sizeof(id_at_call)}};
 
-   status_of_call =  psa->call(handle, NULL, 0, resp, 2);
+   status_of_call =  psa->call(handle, PSA_IPC_CALL, NULL, 0, resp, 2);
 
 
    if (status_of_call != PSA_SUCCESS)
@@ -223,14 +256,14 @@ int32_t client_test_spm_concurrent_connect_limit(caller_security_t caller)
    psa_handle_t    handle[CONNECT_LIMIT] = {0};
    int             i= 0, signture = 0;
 
-   val->print(PRINT_TEST, "[Check 6] Test connect limit\n", 0);
+   val->print(PRINT_TEST, "[Check 7] Test connect limit\n", 0);
 
    /* Execute psa_connect in a loop until it returns
     * PSA_ERROR_CONNECTION_REFUSED OR PSA_ERROR_CONNECTION_BUSY
     */
    while (i < CONNECT_LIMIT)
    {
-       handle[i] = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
+       handle[i] = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
        /* Compare handle value */
        if ((handle[i] == PSA_ERROR_CONNECTION_REFUSED) || (handle[i] == PSA_ERROR_CONNECTION_BUSY))
        {
@@ -266,7 +299,7 @@ int32_t client_test_psa_wait(void)
 
    for (i = 0; i < CONNECT_NUM; i++)
    {
-       handle[i] = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
+       handle[i] = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
        if (handle[i] != PSA_ERROR_CONNECTION_REFUSED)
        {
            return VAL_STATUS_INVALID_HANDLE;
@@ -278,12 +311,12 @@ int32_t client_test_psa_wait(void)
 
 int32_t client_test_psa_block_behave(caller_security_t caller)
 {
-   val->print(PRINT_TEST, "[Check 7] Test PSA_BLOCK\n", 0);
+   val->print(PRINT_TEST, "[Check 8] Test PSA_BLOCK\n", 0);
    return (client_test_psa_wait());
 }
 
 int32_t client_test_psa_poll_behave(caller_security_t caller)
 {
-   val->print(PRINT_TEST, "[Check 8] Test PSA_POLL\n", 0);
+   val->print(PRINT_TEST, "[Check 9] Test PSA_POLL\n", 0);
    return (client_test_psa_wait());
 }

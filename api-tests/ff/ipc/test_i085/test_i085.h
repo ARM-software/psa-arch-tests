@@ -20,12 +20,12 @@
 #include "val_client_defs.h"
 
 #ifdef NONSECURE_TEST_BUILD
-#define test_entry CONCAT(test_entry_,i085)
-#define val CONCAT(val,test_entry)
-#define psa CONCAT(psa,test_entry)
+#define test_entry CONCAT(test_entry_, i085)
+#define val CONCAT(val, test_entry)
+#define psa CONCAT(psa, test_entry)
 #else
-#define val CONCAT(val,_client_sp)
-#define psa CONCAT(psa,_client_sp)
+#define val CONCAT(val, _client_sp)
+#define psa CONCAT(psa, _client_sp)
 #endif
 
 extern val_api_t *val;

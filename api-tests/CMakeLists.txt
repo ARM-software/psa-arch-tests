@@ -91,6 +91,9 @@ list(APPEND PSA_CPU_ARCH_SUPPORT
 # list of VERBOSE options
 list(APPEND PSA_VERBOSE_OPTIONS 1 2 3 4 5)
 
+# list of PLATFORM_PSA_ISOLATION_LEVEL options
+list(APPEND PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS 1 2 3)
+
 message(STATUS "[PSA] : ----------Process input arguments- start-------------")
 
 # Check for TARGET command line argument
@@ -206,16 +209,26 @@ endif()
 # Check for VERBOSE
 if(NOT DEFINED VERBOSE)
 	set(VERBOSE 3 CACHE INTERNAL "Default VERBOSE value" FORCE)
-        message(STATUS "[PSA] : Defaulting to VERBOSE=3")
+        message(STATUS "[PSA] : Defaulting to VERBOSE=${VERBOSE}")
 else()
 	if(NOT ${VERBOSE} IN_LIST PSA_VERBOSE_OPTIONS)
 		message(FATAL_ERROR "[PSA] : Error: Unspported value for -DVERBOSE=, supported values are : ${PSA_VERBOSE_OPTIONS}")
 	endif()
 endif()
 
+# Check for PLATFORM_PSA_ISOLATION_LEVEL
+if(NOT DEFINED PLATFORM_PSA_ISOLATION_LEVEL)
+	set(PLATFORM_PSA_ISOLATION_LEVEL 3 CACHE INTERNAL "Default PLATFORM_PSA_ISOLATION_LEVEL value" FORCE)
+        message(STATUS "[PSA] : Defaulting to PLATFORM_PSA_ISOLATION_LEVEL=${PLATFORM_PSA_ISOLATION_LEVEL}")
+else()
+	if(NOT ${PLATFORM_PSA_ISOLATION_LEVEL} IN_LIST PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS)
+		message(FATAL_ERROR "[PSA] : Error: Unspported value for -DPLATFORM_PSA_ISOLATION_LEVEL=, supported values are : ${PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS}")
+	endif()
+endif()
+
 if(NOT DEFINED INCLUDE_PANIC_TESTS)
 	set(INCLUDE_PANIC_TESTS 0 CACHE INTERNAL "By default panic tests are disabled" FORCE)
-        message(STATUS "[PSA] : Defaulting to INCLUDE_PANIC_TESTS=0")
+        message(STATUS "[PSA] : Defaulting to INCLUDE_PANIC_TESTS=${INCLUDE_PANIC_TESTS}")
 else()
 	if(INCLUDE_PANIC_TESTS EQUAL 1)
 		message(STATUS "[PSA] : Ensure you set watchdog.num to 1 in ${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cfg")
@@ -273,6 +286,7 @@ execute_process(COMMAND ${PYTHON_EXECUTABLE} ${PSA_TESTLIST_GENERATOR}
 					${PSA_CLIENT_TEST_LIST_INC}
 					${PSA_SERVER_TEST_LIST_DECLARE_INC}
 					${PSA_SERVER_TEST_LIST})
+
 # Creating CMake list variable from file
 file(READ ${PSA_TESTLIST_FILE} PSA_TEST_LIST)
 string(REGEX REPLACE "\n" ";" PSA_TEST_LIST "${PSA_TEST_LIST}")
@@ -343,6 +357,7 @@ endif()
 add_definitions(-DPSA_CMAKE_BUILD)
 add_definitions(-D${SUITE})
 add_definitions(-DVERBOSE=${VERBOSE})
+add_definitions(-DPLATFORM_PSA_ISOLATION_LEVEL=${PLATFORM_PSA_ISOLATION_LEVEL})
 
 if(${SP_HEAP_MEM_SUPP} EQUAL 1)
 	add_definitions(-DSP_HEAP_MEM_SUPP)

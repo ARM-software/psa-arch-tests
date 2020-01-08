@@ -43,13 +43,13 @@
 typedef struct {
     uint32_t         (*framework_version)     (void);
     uint32_t         (*version)               (uint32_t sid);
-    psa_handle_t     (*connect)               (uint32_t sid, uint32_t minor_version);
+    psa_handle_t     (*connect)               (uint32_t sid, uint32_t version);
     psa_status_t     (*call)                  (psa_handle_t handle,
-                                              const psa_invec *in_vec,
-                                              size_t in_len,
-                                              psa_outvec *out_vec,
-                                              size_t out_len
-                                              );
+                                               int32_t type,
+                                               const psa_invec *in_vec,
+                                               size_t in_len,
+                                               psa_outvec *out_vec,
+                                               size_t out_len);
     void             (*close)                 (psa_handle_t handle);
     psa_signal_t     (*wait)                  (psa_signal_t signal_mask, uint32_t timeout);
     void             (*set_rhandle)           (psa_handle_t msg_handle, void *rhandle);
@@ -65,6 +65,7 @@ typedef struct {
     void             (*clear)                 (void);
     void             (*eoi)                   (psa_signal_t irq_signal);
     uint32_t         (*rot_lifecycle_state)   (void);
+    void             (*panic)                 (void);
 } psa_api_t;
 
 typedef struct {
@@ -74,10 +75,14 @@ typedef struct {
   val_status_t (*execute_secure_test_func)   (psa_handle_t *handle, test_info_t test_info,
                                               uint32_t sid);
   val_status_t (*get_secure_test_result)     (psa_handle_t *handle);
-  val_status_t (*ipc_connect)                (uint32_t sid, uint32_t minor_version,
+  val_status_t (*ipc_connect)                (uint32_t sid, uint32_t version,
                                               psa_handle_t *handle );
-  val_status_t (*ipc_call)                   (psa_handle_t handle, psa_invec *in_vec,
-                                              size_t in_len,  psa_outvec *out_vec, size_t out_len);
+  val_status_t (*ipc_call)                   (psa_handle_t handle,
+                                              int32_t type,
+                                              const psa_invec *in_vec,
+                                              size_t in_len,
+                                              psa_outvec *out_vec,
+                                              size_t out_len);
   void         (*ipc_close)                  (psa_handle_t handle);
   val_status_t (*set_boot_flag)              (boot_state_t state);
   val_status_t (*target_get_config)          (cfg_id_t cfg_id, uint8_t **data, uint32_t *size);

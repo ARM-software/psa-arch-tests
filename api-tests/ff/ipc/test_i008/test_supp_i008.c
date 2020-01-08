@@ -18,8 +18,8 @@
 #include "val_client_defs.h"
 #include "val_service_defs.h"
 
-#define val CONCAT(val,_server_sp)
-#define psa CONCAT(psa,_server_sp)
+#define val CONCAT(val, _server_sp)
+#define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
 
@@ -37,7 +37,7 @@ int32_t server_test_secure_access_only_connection(void)
     psa_msg_t       msg = {0};
 
     val->err_check_set(TEST_CHECKPOINT_NUM(201), status);
-    status = val->process_connect_request(SERVER_SECURE_CONNECT_ONLY_SIG, &msg);
+    status = val->process_connect_request(SERVER_SECURE_CONNECT_ONLY_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
@@ -63,7 +63,7 @@ int32_t server_test_secure_access_only_connection(void)
         psa->reply(msg.handle, PSA_SUCCESS);
     }
 
-    status = val->process_disconnect_request(SERVER_SECURE_CONNECT_ONLY_SIG, &msg);
+    status = val->process_disconnect_request(SERVER_SECURE_CONNECT_ONLY_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
     {
         return status;

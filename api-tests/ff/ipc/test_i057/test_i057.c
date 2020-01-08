@@ -41,15 +41,15 @@ int32_t client_test_psa_write_with_invalid_buffer_addr(caller_security_t caller)
    val->print(PRINT_TEST,
             "[Check 1] Test psa_write with invalid buffer addr\n", 0);
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
-   if (handle < 0)
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   if (!PSA_HANDLE_IS_VALID(handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
    }
 
    psa_outvec outvec[1] = {{&data, sizeof(data)}};
-   status_of_call =  psa->call(handle, NULL, 0, outvec, 1);
+   status_of_call =  psa->call(handle, PSA_IPC_CALL, NULL, 0, outvec, 1);
 
    /* Expectation is server test should hang and control shouldn't have come here */
    val->print(PRINT_ERROR, "\tCall should failed but succeed\n", 0);
