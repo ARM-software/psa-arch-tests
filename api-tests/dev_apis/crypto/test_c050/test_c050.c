@@ -27,12 +27,12 @@ client_test_t test_c050_crypto_list[] = {
     NULL,
 };
 
-static int g_test_count = 1;
+static int      g_test_count = 1;
+static uint8_t  data[BUFFER_SIZE];
 
 int32_t psa_open_key_test(caller_security_t caller)
 {
     int32_t               status, i = 0;
-    uint8_t               data[BUFFER_SIZE];
     size_t                length, get_key_bits;
     const uint8_t        *key_data;
     psa_key_type_t        get_key_type;

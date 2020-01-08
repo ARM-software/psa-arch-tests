@@ -38,10 +38,16 @@
 
 /* Are Dynamic memory APIs available to secure partition? */
 #define SP_HEAP_MEM_SUPP
+
+/* PSA Isolation level supported by platform */
+#define PLATFORM_PSA_ISOLATION_LEVEL 3
 #endif /* PSA_CMAKE_BUILD */
 
 /* Version of crypto spec used in attestation */
 #define CRYPTO_VERSION_BETA2
+
+/* Use hardcoded public key */
+//#define PLATFORM_OVERRIDE_ATTEST_PK
 
 /*
  * Include of PSA defined Header files

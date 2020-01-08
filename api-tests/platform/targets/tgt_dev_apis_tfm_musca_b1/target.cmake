@@ -71,7 +71,6 @@ endif()
 if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
 	list(APPEND PAL_SRC_C_NSPE
 		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/initial_attestation/pal_attestation_intf.c
-		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/initial_attestation/pal_attestation_eat.c
 		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/initial_attestation/pal_attestation_crypto.c
 	)
 endif()

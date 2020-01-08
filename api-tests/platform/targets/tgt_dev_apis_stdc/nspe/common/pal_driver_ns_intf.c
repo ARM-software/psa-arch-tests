@@ -31,7 +31,7 @@
 
 /* Using zero as NVMEM_BASE is a bit arbitrary - we don't actually need callers
  * to specify a base address but the nvmem function signatures have "base" params.
- * Zero is the value used in our target.cfg file so that's what we should recieve.
+ * Zero is the value used in our target.cfg file so that's what we should receive.
  */
 #define NVMEM_BASE 0
 

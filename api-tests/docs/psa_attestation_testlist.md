@@ -12,7 +12,9 @@
 
 1. In verifying the token, only the data type of claims and presence of the mandatory claims are checked and the values of the claims are not checked. <br />
 2. Specify the version of underlying PSA crypto in  <psa-arch-tests>/api-tests/platform/targets/<target_name>/nspe/common/pal_config.h <br />
-3. Supported crypto versions are CRYPTO_VERSION_BETA1, CRYPTO_VERSION_BETA2 and CRYPTO_VERSION_BETA3
+3. Supported crypto versions are CRYPTO_VERSION_BETA1, CRYPTO_VERSION_BETA2 and CRYPTO_VERSION_BETA3 <br />
+4. Signer ID and Version fields of the software component must be present to be compliant with the PSA-SM <br />
+5. Define the macro PLATFORM_OVERRIDE_ATTEST_PK in <psa-arch-tests>/api-tests/platform/targets/<target_name>/nspe/common/pal_config.h to use hardcoded public key <br />
 
 # License
 Arm PSA test suite is distributed under Apache v2.0 License.

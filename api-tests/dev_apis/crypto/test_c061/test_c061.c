@@ -26,12 +26,12 @@ client_test_t test_c061_crypto_list[] = {
     NULL,
 };
 
-static int g_test_count = 1;
+static int      g_test_count = 1;
+static uint8_t  output[BUFFER_SIZE], tag[SIZE_128B];
 
 int32_t psa_aead_verify_test(caller_security_t caller)
 {
     int32_t               i, status;
-    uint8_t               output[BUFFER_SIZE], tag[SIZE_128B];
     size_t                length;
     int                   num_checks = sizeof(check1)/sizeof(check1[0]);
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;

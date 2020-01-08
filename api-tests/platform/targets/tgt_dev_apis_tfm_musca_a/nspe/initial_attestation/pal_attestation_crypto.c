@@ -19,27 +19,11 @@
 
 static uint32_t         public_key_registered;
 static psa_key_handle_t public_key_handle;
+
 static inline struct q_useful_buf_c useful_buf_head(struct q_useful_buf_c buf,
                                                   size_t amount)
 {
     return UsefulBuf_Head(buf, amount);
-}
-
-static psa_ecc_curve_t attest_map_elliptic_curve_type(int32_t cose_curve)
-{
-    psa_ecc_curve_t psa_curve;
-
-    /*FixMe: Mapping is not complete, missing ones: P384, P521, ED25519, ED448 */
-    switch (cose_curve)
-    {
-    case P_256:
-        psa_curve = PSA_ECC_CURVE_SECP256R1;
-        break;
-    default:
-        psa_curve = USHRT_MAX;
-    }
-
-    return psa_curve;
 }
 
 static psa_algorithm_t cose_hash_alg_id_to_psa(int32_t cose_hash_alg_id)
@@ -137,6 +121,15 @@ Done:
     return status;
 }
 
+/**
+    @brief           - Computes hash for the requested data
+    @param           - cose_alg_id       : Algorithm ID
+                     - buffer_for_hash   : Temp buffer for calculating hash
+                     - hash              : Pointer to store the hash
+                     - protected_headers : Buffer containing protected data
+                     - payload           : payload data
+    @return          - SUCCESS/ERROR CODE
+**/
 uint32_t pal_compute_hash(int32_t cose_alg_id, struct q_useful_buf buffer_for_hash,
                           struct q_useful_buf_c *hash, struct q_useful_buf_c protected_headers,
                           struct q_useful_buf_c payload)
@@ -203,21 +196,55 @@ Done:
     return status;
 }
 
+static int32_t pal_attest_get_public_key(uint8_t *public_key_buff, size_t public_key_buf_size,
+                                       size_t *public_key_len, psa_ecc_curve_t *elliptic_curve_type)
+{
+    int32_t     status = PAL_ATTEST_ERROR;
+
+#ifdef PLATFORM_OVERRIDE_ATTEST_PK
+    if (public_key_buf_size < (attest_key.pubx_key_size + attest_key.puby_key_size + 1))
+        return PAL_ATTEST_ERR_SMALL_BUFFER;
+
+    *public_key_len = (attest_key.pubx_key_size + attest_key.puby_key_size + 1);
+    *elliptic_curve_type = PSA_ECC_CURVE_SECP256R1;
+    memcpy(public_key_buff, (void *)&attest_public_key, *public_key_len);
+    status = PSA_SUCCESS;
+#else
+    status = tfm_initial_attest_get_public_key(public_key_buff,
+                                               public_key_buf_size,
+                                               public_key_len,
+                                               elliptic_curve_type);
+#endif
+
+    return status;
+}
+
 static uint32_t pal_import_attest_key(psa_algorithm_t key_alg)
 {
     psa_status_t     status             = PAL_ATTEST_ERROR;
     psa_key_usage_t  usage              = PSA_KEY_USAGE_VERIFY;
-    psa_ecc_curve_t  psa_curve          = attest_map_elliptic_curve_type(P_256);
-    psa_key_type_t   attest_key_type    = PSA_KEY_TYPE_ECC_PUBLIC_KEY(psa_curve);
-    size_t           public_key_size    = attest_key.pubx_key_size + attest_key.puby_key_size;
+    psa_ecc_curve_t  ecc_curve;
+    psa_key_type_t   attest_key_type;
+    size_t           public_key_size;
+    uint8_t          public_key_buff[ECC_CURVE_SECP256R1_PULBIC_KEY_LENGTH] = {0};
 
 #if defined(CRYPTO_VERSION_BETA1) || defined(CRYPTO_VERSION_BETA2)
     psa_key_policy_t policy;
 
     if (!public_key_registered)
     {
-        if (psa_curve == USHRT_MAX)
+        status = pal_attest_get_public_key(public_key_buff,
+                                           sizeof(public_key_buff),
+                                           &public_key_size,
+                                           &ecc_curve);
+        if (status != PSA_SUCCESS)
+            return PAL_ATTEST_ERR_KEY_FAIL;
+
+        if (ecc_curve == USHRT_MAX)
             return PAL_ATTEST_ERROR;
+
+        /* Set key type for public key */
+        attest_key_type = PSA_KEY_TYPE_ECC_PUBLIC_KEY(ecc_curve);
 
         /* Setup the key policy for public key */
         policy = psa_key_policy_init();
@@ -234,8 +261,8 @@ static uint32_t pal_import_attest_key(psa_algorithm_t key_alg)
         /* Import the public key */
         status = psa_import_key(public_key_handle,
                                 attest_key_type,
-                               (const uint8_t *)&attest_public_key,
-                                public_key_size + 1);
+                                public_key_buff,
+                                public_key_size);
         if (status != PSA_SUCCESS)
             return PAL_ATTEST_ERR_KEY_FAIL;
 
@@ -247,21 +274,30 @@ static uint32_t pal_import_attest_key(psa_algorithm_t key_alg)
 
     if (!public_key_registered)
     {
-        if (psa_curve == USHRT_MAX)
+        status = pal_attest_get_public_key(public_key_buff,
+                                           sizeof(public_key_buff),
+                                           &public_key_size,
+                                           &ecc_curve);
+        if (status != PSA_SUCCESS)
+            return PAL_ATTEST_ERR_KEY_FAIL;
+
+        if (ecc_curve == USHRT_MAX)
             return PAL_ATTEST_ERROR;
+
+        /* Set key type for public key */
+        attest_key_type = PSA_KEY_TYPE_ECC_PUBLIC_KEY(ecc_curve);
 
         /* Set the attributes for the public key */
         psa_set_key_type(&attributes, attest_key_type);
-        psa_set_key_bits(&attributes, public_key_size + 1);
+        psa_set_key_bits(&attributes, public_key_size);
         psa_set_key_usage_flags(&attributes, usage);
         psa_set_key_algorithm(&attributes, key_alg);
 
         /* Import the public key */
         status = psa_import_key(&attributes,
-                               (const uint8_t *)&attest_public_key,
-                                public_key_size + 1,
+                                public_key_buff,
+                                public_key_size,
                                 &public_key_handle);
-
         if (status != PSA_SUCCESS)
             return PAL_ATTEST_ERR_KEY_FAIL;
 
@@ -288,6 +324,13 @@ static uint32_t pal_destroy_attest_key(void)
     return PAL_ATTEST_SUCCESS;
 }
 
+/**
+    @brief           - Verify the signature using the public key
+    @param           - cose_algorithm_id : Algorithm ID
+                     - token_hash        : Data that needs to be verified
+                     - signature         : Signature to be verified against
+    @return          - SUCCESS/ERROR CODE
+**/
 uint32_t pal_crypto_pub_key_verify(int32_t cose_algorithm_id,
                                    struct q_useful_buf_c token_hash,
                                    struct q_useful_buf_c signature)
