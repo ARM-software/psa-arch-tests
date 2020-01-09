@@ -38,27 +38,19 @@
   ],
   "mmio_regions" : [
     {
-      "name": "UART_REGION",
-      "base": "0x40102000",
-      "size": "0x1000",
+      "name": "TEST_UART_REGION",
       "permission": "READ-WRITE"
     },
     {
-      "name": "WATCHDOG_REGION",
-      "base": "0x50081000",
-      "size": "0x1000",
+      "name": "TEST_WATCHDOG_REGION",
       "permission": "READ-WRITE"
     },
     {
-      "name": "NVMEM_REGION",
-      "base": "0x30017C00",
-      "size": "0x400",
+      "name": "TEST_NVMEM_REGION",
       "permission": "READ-WRITE"
     },
     {
-      "name": "DRIVER_PARTITION_MMIO",
-      "base": "0x10200F20",
-      "size": "0x20",
+      "name": "TEST_DRIVER_PARTITION_MMIO",
       "permission": "READ-WRITE"
     }
   ],

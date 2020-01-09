@@ -55,16 +55,14 @@
       "version_policy": "RELAXED"
     }
   ],
-  "mmio_regions" : [
-    {
-      "name": "SERVER_PARTITION_MMIO",
-      "base": "0x10200F00",
-      "size": "0x20",
-      "permission": "READ-WRITE"
-    }
-   ],
   "dependencies": [
     "DRIVER_UART",
     "DRIVER_NVMEM"
-  ]
+  ],
+  "mmio_regions" : [
+    {
+      "name": "TEST_SERVER_PARTITION_MMIO",
+      "permission": "READ-WRITE"
+    }
+   ]
 }
