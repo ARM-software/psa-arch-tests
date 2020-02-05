@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -107,6 +107,7 @@ int32_t server_test_accept_and_close_connect(void)
 
     /* Sanity check - if the message type is PSA_IPC_DISCONNECT then the status code is ignored.*/
     psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
+
     /* Debug print for sanity check */
     val->err_check_set(TEST_CHECKPOINT_NUM(205), status);
     return status;
@@ -295,7 +296,7 @@ int32_t server_test_spm_concurrent_connect_limit(void)
        if ((signals & SERVER_UNSPECIFED_VERSION_SIGNAL) == 0)
        {
           val->print(PRINT_ERROR,
-                    "psa_wait returned with invalid signal value = 0x%x\n", signals);
+                    "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
           return VAL_STATUS_ERROR;
        }
 
@@ -341,13 +342,13 @@ int32_t server_test_psa_block_behave(void)
     {
 wait:
          /* PSA_BLOCK ored with 0xFF to check timeout[30:0]=RES is ignored by implementation */
-         signals = psa->wait(PSA_WAIT_ANY, PSA_BLOCK);
+         signals = psa->wait(PSA_WAIT_ANY, PSA_BLOCK | 0xff);
 
-         /* When MODE is one(PSA_BLOCK), the psa_wait must return non-zero signal value */
+         /* When MODE is PSA_BLOCK, the psa_wait must return non-zero signal value */
          if ((signals & SERVER_UNSPECIFED_VERSION_SIGNAL) == 0)
          {
              val->print(PRINT_ERROR,
-                     "psa_wait returned with invalid signal value = 0x%x\n", signals);
+                     "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
              return VAL_STATUS_ERROR;
          }
          else
@@ -369,7 +370,7 @@ wait:
 
 int32_t server_test_psa_poll_behave(void)
 {
-    psa_signal_t    signals = 0, signals_temp = 0;
+    psa_signal_t    signals_block = 0, signals_poll = 0;
     psa_msg_t       msg = {0};
     int             count = 0;
 
@@ -378,29 +379,30 @@ int32_t server_test_psa_poll_behave(void)
         /* Debug print */
         val->err_check_set(TEST_CHECKPOINT_NUM(219), VAL_STATUS_SUCCESS);
 
-        /* Loop to receive client request */
-        while (signals == 0)
-        {
-            signals = psa->wait(PSA_WAIT_ANY, PSA_POLL);
-        }
+        /* Wait for client request */
+        signals_block = psa->wait(PSA_WAIT_ANY, PSA_BLOCK);
+
+        /* Debug print */
+        val->err_check_set(TEST_CHECKPOINT_NUM(220), VAL_STATUS_SUCCESS);
 
         /*
-         * When MODE is zero(PSA_POLL), the psa_wait will return immediately with the current
-         * signal state, which can be zero if no signals are active. Exepecting following call to
-         * return immediately as none of client is making request.
+         * When MODE is PSA_POLL, the psa_wait will return immediately with
+         * the current signal state. Expecting following call to return immediately
+         * with signal_poll = signal_block.
          */
-        signals_temp = psa->wait(PSA_WAIT_ANY, PSA_POLL);
+        signals_poll = psa->wait(PSA_WAIT_ANY, PSA_POLL);
 
-        if (signals_temp == 0)
+        if (signals_poll != signals_block)
         {
-            val->print(PRINT_ERROR,
-                    "psa_wait returned with invalid signals_temp = 0x%x\n", signals_temp);
+            val->print(PRINT_ERROR, "\tSignal value mismatch\n", 0);
+            val->print(PRINT_ERROR, "\tsignals_poll = 0x%x\n", signals_poll);
+            val->print(PRINT_ERROR, "\tsignals_block = 0x%x\n", signals_block);
             return VAL_STATUS_ERROR;
         }
-        else if ((signals & SERVER_UNSPECIFED_VERSION_SIGNAL) == 0)
+        else if ((signals_block & SERVER_UNSPECIFED_VERSION_SIGNAL) == 0)
         {
             val->print(PRINT_ERROR,
-                    "psa_wait returned with invalid signal value = 0x%x\n", signals);
+                    "\tpsa_wait returned with invalid signal_block = 0x%x\n", signals_block);
             return VAL_STATUS_ERROR;
         }
         else
@@ -409,7 +411,7 @@ int32_t server_test_psa_poll_behave(void)
                 continue;
             psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
             count++;
-            signals = 0;
+            signals_block = 0;
         }
 
         /* Come out of loop as we reached required connect limit*/

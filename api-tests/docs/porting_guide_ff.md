@@ -36,7 +36,7 @@ An example input configuration file is as shown.
   1. Create a new directory in **platform/targets/<platform_name>**. For reference, see the existing platform tgt_ff_tfm_an521 directory.
   2. Execute `cp -rf platform/targets/tgt_ff_tfm_an521/ platform/targets/<platform_name>/`.
   3. Update **platform/targets/<platform_name>/target.cfg** with your target platform details. Refer to **val/common/val_target.h** for structure details.
-  4. Update the platform information available in manifest files located in  **platform/targets/<platform_name>/manifests/** directory with your platform information. The platform details must match the device details provided in the target.cfg file.
+  4. Update the platform information available in manifest files located in  **platform/manifests/** directory with your platform information. The platform details must match the device details provided in the target.cfg file.
   5. Update **platform/targets/<platform_name>/target.cmake** appropriately to select the correct instances of PAL files for compilation.
   6. Refer to the **List of PAL APIs** section to view the list of PAL APIs that must be ported for your target platform. These API definitions are available in **nspe/<suite_name>/pal_\*\_intf.c** and **spe/pal_\*\_intf.c** files. These APIs are written for **tgt_ff_tfm_an521** platform. You can reuse the code if it works for your platform. Otherwise, you must port them for your platform-specific peripherals.
 
@@ -71,4 +71,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2019, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2020, Arm Limited and Contributors. All rights reserved.*

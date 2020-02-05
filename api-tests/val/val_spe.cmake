@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,16 +22,16 @@ list(APPEND VAL_SRC_C_SPE
 
 # Listing common sources from partition
 list(APPEND PARTITION_COMMON_SRC_C_SPE
-	${PSA_ROOT_DIR}/ff/partition/common/driver_partition.c
+	${PSA_ROOT_DIR}/ff/partition/driver_partition.c
 )
 
 # Listing sources from partition for client
 list(APPEND PARTITION_IPC_CLIENT_SRC_C_SPE
-	${PSA_ROOT_DIR}/ff/partition/ipc/client_partition.c
+	${PSA_ROOT_DIR}/ff/partition/client_partition.c
 )
 # Listing sources from partition for server
 list(APPEND PARTITION_IPC_SERVER_SRC_C_SPE
-	${PSA_ROOT_DIR}/ff/partition/ipc/server_partition.c
+	${PSA_ROOT_DIR}/ff/partition/server_partition.c
 )
 
 foreach(src_file ${SUITE_CC_SOURCE_SPE})
@@ -57,7 +57,7 @@ target_include_directories(${PSA_TARGET_DRIVER_PARTITION_LIB} PRIVATE
 	${CMAKE_CURRENT_BINARY_DIR}
 	${PSA_ROOT_DIR}/val/common
 	${PSA_ROOT_DIR}/val/spe
-	${PSA_ROOT_DIR}/ff/partition/common
+	${PSA_ROOT_DIR}/ff/partition
 	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common
 	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto
 )
@@ -74,7 +74,7 @@ target_include_directories(${PSA_TARGET_CLIENT_PARTITION_LIB} PRIVATE
 	${PSA_ROOT_DIR}/val/spe
 	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common
 	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto
-	${PSA_ROOT_DIR}/ff/partition/ipc
+	${PSA_ROOT_DIR}/ff/partition
 )
 target_include_directories(${PSA_TARGET_SERVER_PARTITION_LIB} PRIVATE
 	${CMAKE_CURRENT_BINARY_DIR}
@@ -82,7 +82,7 @@ target_include_directories(${PSA_TARGET_SERVER_PARTITION_LIB} PRIVATE
 	${PSA_ROOT_DIR}/val/spe
 	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common
 	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto
-	${PSA_ROOT_DIR}/ff/partition/ipc
+	${PSA_ROOT_DIR}/ff/partition
 )
 
 # PSA Include directories

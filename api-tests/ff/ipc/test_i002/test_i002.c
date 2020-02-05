@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -147,6 +147,7 @@ int32_t psa_call_with_null_msg(int32_t expected_status)
    }
 
    status_of_call =  psa->call(handle, PSA_IPC_CALL, NULL, 0, NULL, 0);
+
    /* Compare status code returned with expected status code */
    if (status_of_call != expected_status)
    {
@@ -172,7 +173,7 @@ int32_t client_test_psa_call_with_allowed_status_code(caller_security_t caller)
         if (VAL_ERROR(status))
         {
             val->print(PRINT_ERROR,
-                       "psa_call failed for status code=0x%x\n", expected_status_code[i]);
+                       "\tpsa_call failed for status code=0x%x\n", expected_status_code[i]);
             return status;
         }
    }

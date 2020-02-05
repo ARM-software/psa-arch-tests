@@ -41,13 +41,15 @@ To build the test suite for your target platform, perform the following steps.
 
 1. Execute `cd api-tests`.
 
-2. Using your Secure partition build tool, parse the following test suite partition manifest files and generate manifest output files. The manifest parsing tool must be compliant with the manifest rules defined in the PSA FF specification.<br />
-   <br />The test suite manifests to be parsed are:<br />
-   - **platform/targets/<platform_name>/manifests/common/driver_partition_psa.json**
-   - **platform/targets/<platform_name>/manifests/ipc/client_partition_psa.json**
-   - **platform/targets/<platform_name>/manifests/ipc/server_partition_psa.json**
+2. Execute `python tools/scripts/manifest_update.py` to remove heap_size field from PSA test suite manifest files if your platform doesn't support the dynamic memory functions for the secure partition. Otherwise, skip this step.
 
-3. Compile the tests as shown below. <br />
+3. Using your Secure partition build tool, parse the following test suite partition manifest files and generate manifest output files. The manifest parsing tool must be compliant with the manifest rules defined in the PSA FF specification.<br />
+   <br />The test suite manifests to be parsed are:<br />
+   - **platform/manifests/driver_partition_psa.json**
+   - **platform/manifests/client_partition_psa.json**
+   - **platform/manifests/server_partition_psa.json**
+
+4. Compile the tests as shown below. <br />
 ```
     cd api-tests
     mkdir <build_dir>
@@ -131,4 +133,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2019, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2020, Arm Limited and Contributors. All rights reserved.*
