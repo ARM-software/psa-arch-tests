@@ -256,7 +256,7 @@ static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
         }
     }
 
-    if (status == QCBOR_ERR_HIT_END)
+    if (status == QCBOR_ERR_HIT_END || status == QCBOR_ERR_NO_MORE_ITEMS)
         return VAL_ATTEST_SUCCESS;
     else
         return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;

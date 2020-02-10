@@ -73,6 +73,7 @@ if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
 		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/initial_attestation/pal_attestation_intf.c
 		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/initial_attestation/pal_attestation_crypto.c
 	)
+	set(PSA_QCBOR_GIT_REPO_TAG		42272e466a8472948bf8fca076d113b81b99f0e0)
 endif()
 
 # Create NSPE library
