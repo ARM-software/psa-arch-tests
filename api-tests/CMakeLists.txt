@@ -160,7 +160,6 @@ set(TARGET_HEADER_GEN_INCLUDE_PATHS     "${PSA_ROOT_DIR}/val/nspe|${PSA_ROOT_DIR
 set(TESTSUITE_DB			${PSA_SUITE_DIR}/testsuite.db)
 if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
 set(PSA_QCBOR_GIT_REPO_LINK		https://github.com/laurencelundblade/QCBOR.git)
-set(PSA_QCBOR_GIT_REPO_TAG		da53227db1488dde0952bdff66c3d904dce270b3)
 set(PSA_QCBOR_INCLUDE_PATH		${CMAKE_CURRENT_BINARY_DIR}/src/psa_qcbor/inc)
 endif()
 set(PSA_TESTLIST_FILE			${CMAKE_CURRENT_BINARY_DIR}/testlist.txt)
@@ -260,6 +259,9 @@ if(NOT DEFINED TEST_COMBINE_ARCHIVE)
 endif()
 
 message(STATUS "[PSA] : ----------Process input arguments- complete-------------")
+
+# Build PAL NSPE LIB
+include(${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cmake)
 
 # Create PSA clean list
 list(APPEND PSA_CLEAN_LIST
@@ -363,8 +365,6 @@ if(${SP_HEAP_MEM_SUPP} EQUAL 1)
 	add_definitions(-DSP_HEAP_MEM_SUPP)
 endif()
 
-# Build PAL NSPE LIB
-include(${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cmake)
 # Build VAL NSPE LIB
 #add_definitions(-DVAL_NSPE_BUILD)
 include(${PSA_ROOT_DIR}/val/val_nspe.cmake)

@@ -37,7 +37,7 @@ git repository. The cloning is automated as part of the test suite cmake build:
 
 **Repo** <br />
 Name      : https://github.com/laurencelundblade/QCBOR.git <br />
-Commit id : da53227db1488dde0952bdff66c3d904dce270b3
+Commit id : 42272e466a8472948bf8fca076d113b81b99f0e0
 
 ## License
 Arm PSA test suite is distributed under Apache v2.0 License.
