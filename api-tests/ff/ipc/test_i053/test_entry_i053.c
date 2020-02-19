@@ -28,7 +28,6 @@ psa_api_t *psa = NULL;
 void test_entry(val_api_t *val_api, psa_api_t *psa_api)
 {
     int32_t                status = VAL_STATUS_SUCCESS;
-   miscellaneous_desc_t    *misc_desc;
 
     val = val_api;
     psa = psa_api;
@@ -47,16 +46,7 @@ void test_entry(val_api_t *val_api, psa_api_t *psa_api)
         goto test_exit;
     }
 
-    status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MISCELLANEOUS,
-                            MISCELLANEOUS_DUT, 0),
-                           (uint8_t **)&misc_desc,
-                           (uint32_t *)sizeof(miscellaneous_desc_t));
-    if (VAL_ERROR(status))
-    {
-        goto test_exit;
-    }
-
-    if (misc_desc->implemented_psa_firmware_isolation_level > LEVEL1)
+    if (PLATFORM_PSA_ISOLATION_LEVEL > LEVEL1)
     {
         /* Switch to secure side (client_partition.c) and execute list of tests available in
         test[num]_client_tests_list from Secure side */

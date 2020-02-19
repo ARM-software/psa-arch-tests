@@ -484,7 +484,7 @@ int32_t val_dispatcher(test_id_t test_id_prev)
    val_print(PRINT_ALWAYS, "TOTAL SKIPPED   : %d\n", test_count.skip_cnt);
    val_print(PRINT_ALWAYS, "******************************************\n", 0);
 
-   return (test_count.fail_cnt > 0) ? VAL_STATUS_TEST_FAILED : VAL_STATUS_SUCCESS ;
+   return (test_count.fail_cnt > 0) ? VAL_STATUS_TEST_FAILED : VAL_STATUS_SUCCESS;
 }
 
 

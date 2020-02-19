@@ -66,16 +66,13 @@ int32_t psa_sst_invalid_offset_failure(caller_security_t caller)
     /* Case where offset = 0  , data_len > data_size  Also check nothing is returned in read buff*/
     status = SST_FUNCTION(s008_data[10].api, uid, 0, TEST_BUFF_SIZE+1, read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s008_data[10].status, TEST_CHECKPOINT_NUM(14));
-    TEST_ASSERT_EQUAL(p_data_length, 0, TEST_CHECKPOINT_NUM(15));
-    for (j = 0; j < TEST_BUFF_SIZE; j++)
-    {
-        TEST_ASSERT_EQUAL(read_buff[j], 0x00, TEST_CHECKPOINT_NUM(16));
-    }
+    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(15));
+    TEST_ASSERT_MEMCMP(read_buff, write_buff, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(16));
 
     /* Try to access data with offset as MAX_UINT32 and length less than buffer size */
     status = SST_FUNCTION(s008_data[12].api, uid, TEST_MAX_UINT32, TEST_BUFF_SIZE/2, read_buff,
                           &p_data_length);
-    TEST_ASSERT_NOT_EQUAL(status, s008_data[12].status, TEST_CHECKPOINT_NUM(17));
+    TEST_ASSERT_EQUAL(status, s008_data[12].status, TEST_CHECKPOINT_NUM(17));
 
     /* Remove the UID */
     status = SST_FUNCTION(s008_data[13].api, uid);

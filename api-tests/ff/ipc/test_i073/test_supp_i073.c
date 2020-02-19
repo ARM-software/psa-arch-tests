@@ -18,8 +18,8 @@
 #include "val_client_defs.h"
 #include "val_service_defs.h"
 
-#define val CONCAT(val,_server_sp)
-#define psa CONCAT(psa,_server_sp)
+#define val CONCAT(val, _server_sp)
+#define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
 
@@ -40,7 +40,7 @@ static int32_t send_secure_partition_address(addr_t *stack)
     int32_t         status = VAL_STATUS_SUCCESS;
     psa_msg_t       msg = {0};
 
-    status = val->process_connect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
@@ -49,18 +49,20 @@ static int32_t send_secure_partition_address(addr_t *stack)
 
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_call_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
         psa->reply(msg.handle, -2);
         return status;
     }
 
+    val->print(PRINT_DEBUG, "\tAPP-ROT: Passing 0x%x to NSPE\n", (int)stack);
+
     /* Send Application RoT stack address */
-    psa->write(msg.handle, 0, (void *)stack, sizeof(uint32_t));
+    psa->write(msg.handle, 0, (void *)&stack, sizeof(uint32_t));
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_disconnect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    status = val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
     {
         return status;
@@ -78,7 +80,7 @@ int32_t server_test_nspe_read_app_rot_stack(void)
     status = send_secure_partition_address(&l_test_i073);
 
     /* Dummy print to avoid compiler optimisation on local variable */
-    val->print(PRINT_INFO, "\tData value 0x%x\n", l_test_i073);
+    val->print(PRINT_INFO, "\tStack data 0x%x\n", l_test_i073);
     return status;
 }
 
@@ -94,7 +96,7 @@ int32_t server_test_nspe_write_app_rot_stack(void)
         return status;
 
     /* Wait for write to get performed by client */
-    status = val->process_connect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(204), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);

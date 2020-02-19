@@ -61,12 +61,9 @@ int32_t psa_sst_get_data_check(caller_security_t caller)
     memset(read_buff, 0, TEST_BUFF_SIZE);
     status = SST_FUNCTION(s004_data[5].api, uid, 0, TEST_BUFF_SIZE, read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s004_data[5].status, TEST_CHECKPOINT_NUM(6));
-    for (j = 0; j < TEST_BUFF_SIZE; j++)
-    {
-        TEST_ASSERT_EQUAL(read_buff[j], 0, TEST_CHECKPOINT_NUM(7));
-    }
-    /* Expect p_data_length = 0,  when psa get function is not unsuccessful as in previous case */
-    TEST_ASSERT_EQUAL(p_data_length, 0, TEST_CHECKPOINT_NUM(8));
+    TEST_ASSERT_MEMCMP(read_buff, write_buff, TEST_BUFF_SIZE/2, TEST_CHECKPOINT_NUM(7));
+    /* Expect p_data_length = TEST_BUFF_SIZE/2, when psa get function is successful as in previous case */
+    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE/2, TEST_CHECKPOINT_NUM(8));
 
     /* Call get function with CORRECT buffer length  */
     status = SST_FUNCTION(s004_data[7].api, uid, 0, TEST_BUFF_SIZE/2, read_buff, &p_data_length);

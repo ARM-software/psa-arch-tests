@@ -20,7 +20,7 @@
 #include "test_s006.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_STORAGE_BASE, 6)
-#define TEST_DESC "Flags not supported check\n"
+#define TEST_DESC "Check for storage create flags\n"
 
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;

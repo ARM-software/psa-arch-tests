@@ -18,8 +18,8 @@
 #include "val_client_defs.h"
 #include "val_service_defs.h"
 
-#define val CONCAT(val,_server_sp)
-#define psa CONCAT(psa,_server_sp)
+#define val CONCAT(val, _server_sp)
+#define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
 
@@ -61,7 +61,7 @@ int32_t server_test_psa_write_with_size_overflow(void)
     * VAL APIs to decide test status.
     */
 
-    status = val->process_connect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
@@ -70,7 +70,7 @@ int32_t server_test_psa_write_with_size_overflow(void)
 
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_call_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
         psa->reply(msg.handle, -2);
@@ -106,7 +106,7 @@ int32_t server_test_psa_write_with_size_overflow(void)
     }
 
     val->err_check_set(TEST_CHECKPOINT_NUM(204), status);
-    status = ((val->process_disconnect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg))
+    status = ((val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
                ? VAL_STATUS_ERROR : status);
     psa->reply(msg.handle, PSA_SUCCESS);
     return status;

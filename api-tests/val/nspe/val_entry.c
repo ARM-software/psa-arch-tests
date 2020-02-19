@@ -23,7 +23,7 @@
 /**
     @brief    - PSA C main function, does VAL init and calls test dispatcher
     @param    - None
-    @return   - status - error code 
+    @return   - status - error code
 **/
 int32_t val_entry(void)
 {

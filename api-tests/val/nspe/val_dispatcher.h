@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,5 +66,5 @@ typedef struct {
     uint32_t  elf_size;
 } test_header_t;
 
-int32_t val_dispatcher(test_id_t);
+int32_t val_dispatcher(test_id_t test_id_prev);
 #endif

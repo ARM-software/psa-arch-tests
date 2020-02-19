@@ -37,7 +37,7 @@ int32_t client_test_psa_write_at_ipc_connect(caller_security_t caller)
 
    val->print(PRINT_TEST, "[Check 1] Test psa_write at PSA_IPC_CONNECT\n", 0);
 
-   handle = psa->connect(SERVER_RELAX_MINOR_VERSION_SID, 1);
+   handle = psa->connect(SERVER_RELAX_VERSION_SID, SERVER_RELAX_VERSION_VERSION);
 
    /* Shouldn't have reached here */
    val->print(PRINT_ERROR, "\tConnection should have failed but succeeded\n", 0);

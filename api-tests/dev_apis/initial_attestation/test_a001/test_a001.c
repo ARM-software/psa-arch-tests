@@ -36,7 +36,7 @@ int32_t psa_initial_attestation_get_token_test(caller_security_t caller)
     int32_t     status;
     size_t      token_buffer_size, token_size;
     uint8_t     challenge[PSA_INITIAL_ATTEST_CHALLENGE_SIZE_64+1];
-    uint8_t     token_buffer[TOKEN_SIZE];
+    uint8_t     token_buffer[PSA_INITIAL_ATTEST_MAX_TOKEN_SIZE];
 
     for (i = 0; i < num_checks; i++)
     {
@@ -59,6 +59,12 @@ int32_t psa_initial_attestation_get_token_test(caller_security_t caller)
             }
             else
                 return status;
+        }
+
+        if (token_buffer_size > PSA_INITIAL_ATTEST_MAX_TOKEN_SIZE)
+        {
+            val->print(PRINT_ERROR, "Insufficient token buffer size\n", 0);
+            return VAL_STATUS_INSUFFICIENT_SIZE;
         }
 
         status = val->attestation_function(VAL_INITIAL_ATTEST_GET_TOKEN, challenge,

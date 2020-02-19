@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 #include "test_i005.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_FF_BASE, 5)
-#define TEST_DESC "Testing STRICT policy with higher minor version\n"
+#define TEST_DESC "Testing STRICT policy with higher version\n"
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;
 psa_api_t *psa = NULL;

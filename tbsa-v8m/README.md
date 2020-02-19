@@ -81,32 +81,34 @@ Refer to the [User Guide](docs/Arm_TBSA-v8M_Arch_Test_Validation_Methodology_and
 ## Build steps
 
 To build TBSA-v8M test suite for a given platform, execute the following commands: <br/>
-	cd psa-arch-tests/tbsa-v8m <br />
-	mkdir cmake_build <br />
-	cd cmake_build <br />
-	cmake ../ -G<generator-name> -DTARGET=<target-name> -DCOMPILER=<compiler-selection> -DSUITE=<suite-selection> -DCMSIS_REPO_PATH=<CMSIS-repo-path> -DCMAKE_VERBOSE_MAKEFILE=OFF -DCMSIS_DRIVER=OFF <br />
-	    where: <br />
-	        <generator-name>         : "Unix Makefiles"  - to generate Makefiles for Linux and Cygwin <br />
-				           "MinGW Makefiles" - to generate Makefiles for cmd.exe on Windows <br />
-		<target-name>            : target to build, as created in the platform/board directory <br />
-		<compiler-selection>     : GNUARM <br />
-				           Defaults to GNUARM if not specified <br />
-		<suite-selection>        : ALL                           - builds all test_pool components <br />
-				           "<comp1>:<comp2>:..:<compn>"  - for selective component build or <br />
-				           <comp1>\:<comp2>\:..\:<compn> - for selective component build or <br />
-				           Defaults to ALL if not specified <br />
-		<CMSIS-repo-path>        : Absolute CMSIS repo path <br />
-				           If not specified CMake clones the CMSIS for itself <br />
-		<CMAKE_VERBOSE_MAKEFILE> : ON  - To get detailed build log on console <br />
-					   OFF - To get minimalistic log on console <br />
-					   Defaults to OFF <br />
-		<CMAKE_DRIVER>           : ON  - Build takes CMSIS drivers as specified in target specific target.cmake <br />
-					   OFF - Build takes non CMSIS drivers as specified in target specific target.cmake <br />
-					   Defaults to OFF <br />
-	To build project <br />
-	   cmake --build . <br />
-	To clean <br />
-	   cmake --build . -- clean <br />
+~~~
+	cd psa-arch-tests/tbsa-v8m
+	mkdir cmake_build
+	cd cmake_build
+	cmake ../ -G<generator-name> -DTARGET=<target-name> -DCOMPILER=<compiler-selection> -DSUITE=<suite-selection> -DCMSIS_REPO_PATH=<CMSIS-repo-path> -DCMAKE_VERBOSE_MAKEFILE=OFF -DCMSIS_DRIVER=OFF
+	    where:
+	        - <generator-name>          "Unix Makefiles"  - to generate Makefiles for Linux and Cygwin
+                                            "MinGW Makefiles" - to generate Makefiles for cmd.exe on Windows
+		- <target-name>             target to build, as created in the platform/board directory
+		- <compiler-selection>      GNUARM
+                                            Defaults to GNUARM if not specified
+		- <suite-selection>         ALL                           - builds all test_pool components
+                                            "<comp1>:<comp2>:..:<compn>"  - for selective component build or
+                                            <comp1>\:<comp2>\:..\:<compn> - for selective component build
+                                            Defaults to ALL if not specified
+		- <CMSIS-repo-path>         Absolute CMSIS repo path
+                                            If not specified CMake clones the CMSIS for itself
+		- <CMAKE_VERBOSE_MAKEFILE>  ON  - To get detailed build log on console
+                                            OFF - To get minimalistic log on console
+                                            Defaults to OFF
+		- <CMAKE_DRIVER>            ON  - Build takes CMSIS drivers as specified in target specific target.cmake
+                                            OFF - Build takes non CMSIS drivers as specified in target specific target.cmake
+                                            Defaults to OFF
+	To build project
+	   cmake --build .
+	To clean
+	   cmake --build . -- clean
+~~~
 
 ~~~
 Note:
@@ -127,6 +129,9 @@ The following steps describe the execution flow prior to the start of test execu
 2. The suite execution begins from the tbsa_entry.
 3. The tests are executed sequentially in a loop in the tbsa_dispatcher function.
 
+## Security implication
+
+TBSA test suite may run at higher privilege level. An attacker can utilize these tests as a means to elevate privilege which can potentially reveal the platform secure attests. To prevent such security vulnerabilities into the production system, it is strongly recommended that TBSA test suite is run on development platforms. If it is run on production system, make sure system is scrubbed after running the test suite.
 
 ## License
 

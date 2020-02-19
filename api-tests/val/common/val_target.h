@@ -103,12 +103,6 @@ typedef struct _TARGET_CFG_HDR_ {
 }target_cfg_hdr_t;
 
 typedef enum {
-    LEVEL1 = 0x1,
-    LEVEL2,
-    LEVEL3,
-} firmware_level_t;
-
-typedef enum {
     NOT_AVAILABLE   = 0x0,
     AVAILABLE       = 0x1,
 } is_available_t;
@@ -191,11 +185,9 @@ typedef struct _MISCELLANEOUS_INFO_HDR_ {
 
 typedef struct _MISCELLANEOUS_INFO_DESC_ {
     cfg_type_t              cfg_type;
-    firmware_level_t        implemented_psa_firmware_isolation_level;
     addr_t                  ns_start_addr_of_combine_test_binary;
     is_available_t          combine_test_binary_in_ram;
     addr_t                  ns_test_addr;
-    is_available_t          sp_heap_mem_supp;
 } miscellaneous_desc_t;
 
 /*val target config read apis */
@@ -204,6 +196,5 @@ STATIC_DECLARE val_status_t val_target_get_config(cfg_id_t cfg_id, uint8_t **dat
 STATIC_DECLARE val_status_t val_target_cfg_get_next(void **blob);
 STATIC_DECLARE val_status_t val_target_get_cfg_blob(cfg_id_t cfg_id, uint8_t **data,
                                                     uint32_t *size);
-STATIC_DECLARE val_status_t val_target_get_config(cfg_id_t cfg_id, uint8_t **data, uint32_t *size);
 #endif
 #endif

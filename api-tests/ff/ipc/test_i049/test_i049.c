@@ -37,7 +37,6 @@ int32_t client_test_psa_call_with_invalid_outvec_pointer(caller_security_t calle
    psa_handle_t            handle = 0;
    psa_status_t            status_of_call;
    boot_state_t            boot_state;
-   miscellaneous_desc_t    *misc_desc;
    memory_desc_t           *memory_desc;
    psa_outvec               *invalid_outvec = NULL;
 
@@ -66,9 +65,8 @@ int32_t client_test_psa_call_with_invalid_outvec_pointer(caller_security_t calle
     * VAL APIs to decide test status.
     */
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
-
-   if (handle < 0)
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   if (!PSA_HANDLE_IS_VALID(handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
@@ -102,18 +100,7 @@ int32_t client_test_psa_call_with_invalid_outvec_pointer(caller_security_t calle
        invalid_outvec = (psa_outvec *) memory_desc->start;
    else
    {
-       status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MISCELLANEOUS,
-                                   MISCELLANEOUS_DUT, 0),
-                                  (uint8_t **)&misc_desc,
-                                  (uint32_t *)sizeof(miscellaneous_desc_t));
-
-       if (val->err_check_set(TEST_CHECKPOINT_NUM(102), status))
-       {
-           psa->close(handle);
-           return status;
-       }
-
-       if (misc_desc->implemented_psa_firmware_isolation_level > LEVEL1)
+       if (PLATFORM_PSA_ISOLATION_LEVEL > LEVEL1)
            invalid_outvec = (psa_outvec *) memory_desc->start;
    }
 
@@ -126,7 +113,7 @@ int32_t client_test_psa_call_with_invalid_outvec_pointer(caller_security_t calle
    }
 
    /* Test check- psa_call with invalid address for outvec */
-   status_of_call =  psa->call(handle, NULL, 0, invalid_outvec, 1);
+   status_of_call =  psa->call(handle, PSA_IPC_CALL, NULL, 0, invalid_outvec, 1);
 
    /*
     * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether

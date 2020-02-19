@@ -61,9 +61,10 @@ int32_t client_test_instr_exec_from_writable_mem(caller_security_t caller)
 
   /*
    * Copy test_i068_dummy_func function code into data memory
-   * Assuming function size to be 32 bytes max
+   * Assuming function size to be 16 bytes max.
+   * Remove thumb bit from address if exists.
    */
-  copy_mem(&opcode, &test_i068_dummy_func, NO_OF_BYTES);
+  copy_mem(&opcode, (void *) ((uintptr_t)&test_i068_dummy_func & ~(uintptr_t)0x1), NO_OF_BYTES);
 
   /* Point function pointer to data memory */
   fptr = (fptr_t) opcode;

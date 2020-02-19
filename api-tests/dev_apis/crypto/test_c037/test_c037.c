@@ -56,6 +56,7 @@ int32_t psa_cipher_finish_test(caller_security_t caller)
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
         memset(&operation, 0, sizeof(operation));
+        memset(&invalid_operation, 0, sizeof(invalid_operation));
 
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);

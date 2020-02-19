@@ -15,8 +15,8 @@
  * limitations under the License.
 **/
 
-#ifndef _PAL_CRYPTO_H_
-#define _PAL_CRYPTO_H_
+#ifndef _PAL_CRYPTO_INTF_H_
+#define _PAL_CRYPTO_INTF_H_
 
 #include "pal_common.h"
 
@@ -100,4 +100,4 @@ enum crypto_function_code {
 };
 
 int32_t pal_crypto_function(int type, va_list valist);
-#endif /* _PAL_CRYPTO_H_ */
+#endif /* _PAL_CRYPTO_INTF_H_ */

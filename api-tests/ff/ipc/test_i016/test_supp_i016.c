@@ -18,8 +18,8 @@
 #include "val_client_defs.h"
 #include "val_service_defs.h"
 
-#define val CONCAT(val,_server_sp)
-#define psa CONCAT(psa,_server_sp)
+#define val CONCAT(val, _server_sp)
+#define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
 
@@ -58,20 +58,20 @@ int32_t server_test_psa_get_with_unasserted_signal(void)
     * VAL APIs to decide test status.
     */
 
-    if ((psa->wait(PSA_WAIT_ANY, PSA_BLOCK)) & SERVER_UNSPECIFED_MINOR_V_SIG)
+    if ((psa->wait(PSA_WAIT_ANY, PSA_BLOCK)) & SERVER_UNSPECIFED_VERSION_SIGNAL)
     {
         /* Setting boot.state before test check */
         status = val->set_boot_flag(BOOT_EXPECTED_NS);
         if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
         {
             val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
-            psa->get(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+            psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
             psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
             return status;
         }
 
         /* Unasserted signal check, call to psa_get should panic */
-        psa->get(SERVER_RELAX_MINOR_VERSION_SIG, &msg);
+        psa->get(SERVER_RELAX_VERSION_SIGNAL, &msg);
 
         /* shouldn't have reached here */
         /* Resetting boot.state to catch unwanted reboot */

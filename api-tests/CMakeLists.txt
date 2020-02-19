@@ -45,9 +45,12 @@ list(APPEND PSA_SUITES
 list(APPEND PSA_IPC_FILES
 	"psa/client.h"
 	"psa/service.h"
+	"psa/lifecycle.h"
 	"psa_manifest/sid.h"
 	"psa_manifest/pid.h"
-	"psa/lifecycle.h"
+	"psa_manifest/driver_partition_psa.h"
+	"psa_manifest/client_partition_psa.h"
+	"psa_manifest/server_partition_psa.h"
 )
 
 # list of crypto files required
@@ -87,6 +90,9 @@ list(APPEND PSA_CPU_ARCH_SUPPORT
 
 # list of VERBOSE options
 list(APPEND PSA_VERBOSE_OPTIONS 1 2 3 4 5)
+
+# list of PLATFORM_PSA_ISOLATION_LEVEL options
+list(APPEND PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS 1 2 3)
 
 message(STATUS "[PSA] : ----------Process input arguments- start-------------")
 
@@ -154,7 +160,6 @@ set(TARGET_HEADER_GEN_INCLUDE_PATHS     "${PSA_ROOT_DIR}/val/nspe|${PSA_ROOT_DIR
 set(TESTSUITE_DB			${PSA_SUITE_DIR}/testsuite.db)
 if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
 set(PSA_QCBOR_GIT_REPO_LINK		https://github.com/laurencelundblade/QCBOR.git)
-set(PSA_QCBOR_GIT_REPO_TAG		da53227db1488dde0952bdff66c3d904dce270b3)
 set(PSA_QCBOR_INCLUDE_PATH		${CMAKE_CURRENT_BINARY_DIR}/src/psa_qcbor/inc)
 endif()
 set(PSA_TESTLIST_FILE			${CMAKE_CURRENT_BINARY_DIR}/testlist.txt)
@@ -203,16 +208,26 @@ endif()
 # Check for VERBOSE
 if(NOT DEFINED VERBOSE)
 	set(VERBOSE 3 CACHE INTERNAL "Default VERBOSE value" FORCE)
-        message(STATUS "[PSA] : Defaulting to VERBOSE=3")
+        message(STATUS "[PSA] : Defaulting to VERBOSE=${VERBOSE}")
 else()
 	if(NOT ${VERBOSE} IN_LIST PSA_VERBOSE_OPTIONS)
 		message(FATAL_ERROR "[PSA] : Error: Unspported value for -DVERBOSE=, supported values are : ${PSA_VERBOSE_OPTIONS}")
 	endif()
 endif()
 
+# Check for PLATFORM_PSA_ISOLATION_LEVEL
+if(NOT DEFINED PLATFORM_PSA_ISOLATION_LEVEL)
+	set(PLATFORM_PSA_ISOLATION_LEVEL 3 CACHE INTERNAL "Default PLATFORM_PSA_ISOLATION_LEVEL value" FORCE)
+        message(STATUS "[PSA] : Defaulting to PLATFORM_PSA_ISOLATION_LEVEL=${PLATFORM_PSA_ISOLATION_LEVEL}")
+else()
+	if(NOT ${PLATFORM_PSA_ISOLATION_LEVEL} IN_LIST PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS)
+		message(FATAL_ERROR "[PSA] : Error: Unspported value for -DPLATFORM_PSA_ISOLATION_LEVEL=, supported values are : ${PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS}")
+	endif()
+endif()
+
 if(NOT DEFINED INCLUDE_PANIC_TESTS)
 	set(INCLUDE_PANIC_TESTS 0 CACHE INTERNAL "By default panic tests are disabled" FORCE)
-        message(STATUS "[PSA] : Defaulting to INCLUDE_PANIC_TESTS=0")
+        message(STATUS "[PSA] : Defaulting to INCLUDE_PANIC_TESTS=${INCLUDE_PANIC_TESTS}")
 else()
 	if(INCLUDE_PANIC_TESTS EQUAL 1)
 		message(STATUS "[PSA] : Ensure you set watchdog.num to 1 in ${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cfg")
@@ -224,13 +239,13 @@ else()
 endif()
 
 if(NOT DEFINED WATCHDOG_AVAILABLE)
-	set(WATCHDOG_AVAILABLE	1 CACHE INTERNAL "By default watchdog is enabled" FORCE)
-        message(STATUS "[PSA] : Watchdog is enabled by default")
+	set(WATCHDOG_AVAILABLE	1 CACHE INTERNAL "Assuming watchdog is available to program by test suite" FORCE)
+        message(STATUS "[PSA] : Watchdog is available by default")
 endif()
 
 if((INCLUDE_PANIC_TESTS EQUAL 1) AND
    (WATCHDOG_AVAILABLE EQUAL 0))
-	message(FATAL_ERROR "[PSA]: Panic test execution needs watchdog to be enabled! set -DWATCHDOG_AVAILABLE=1")
+	message(FATAL_ERROR "[PSA]: Panic test execution needs watchdog access. set -DWATCHDOG_AVAILABLE=1")
 endif()
 
 if(NOT DEFINED SP_HEAP_MEM_SUPP)
@@ -244,6 +259,9 @@ if(NOT DEFINED TEST_COMBINE_ARCHIVE)
 endif()
 
 message(STATUS "[PSA] : ----------Process input arguments- complete-------------")
+
+# Build PAL NSPE LIB
+include(${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cmake)
 
 # Create PSA clean list
 list(APPEND PSA_CLEAN_LIST
@@ -270,6 +288,7 @@ execute_process(COMMAND ${PYTHON_EXECUTABLE} ${PSA_TESTLIST_GENERATOR}
 					${PSA_CLIENT_TEST_LIST_INC}
 					${PSA_SERVER_TEST_LIST_DECLARE_INC}
 					${PSA_SERVER_TEST_LIST})
+
 # Creating CMake list variable from file
 file(READ ${PSA_TESTLIST_FILE} PSA_TEST_LIST)
 string(REGEX REPLACE "\n" ";" PSA_TEST_LIST "${PSA_TEST_LIST}")
@@ -340,13 +359,12 @@ endif()
 add_definitions(-DPSA_CMAKE_BUILD)
 add_definitions(-D${SUITE})
 add_definitions(-DVERBOSE=${VERBOSE})
+add_definitions(-DPLATFORM_PSA_ISOLATION_LEVEL=${PLATFORM_PSA_ISOLATION_LEVEL})
 
 if(${SP_HEAP_MEM_SUPP} EQUAL 1)
 	add_definitions(-DSP_HEAP_MEM_SUPP)
 endif()
 
-# Build PAL NSPE LIB
-include(${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cmake)
 # Build VAL NSPE LIB
 #add_definitions(-DVAL_NSPE_BUILD)
 include(${PSA_ROOT_DIR}/val/val_nspe.cmake)
@@ -362,6 +380,7 @@ add_dependencies(${PSA_TARGET_GENERATE_DATABASE_POST}	${PSA_TARGET_GENERATE_DATA
 if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
 add_dependencies(${PSA_TARGET_QCBOR}			${PSA_TARGET_GENERATE_DATABASE_POST})
 add_dependencies(${PSA_TARGET_PAL_NSPE_LIB}		${PSA_TARGET_QCBOR})
+add_dependencies(${PSA_TARGET_VAL_NSPE_LIB}		${PSA_TARGET_QCBOR})
 else()
 add_dependencies(${PSA_TARGET_PAL_NSPE_LIB} 		${PSA_TARGET_GENERATE_DATABASE_POST})
 endif()

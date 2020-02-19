@@ -34,17 +34,23 @@ To build the test suite for your target platform, execute the following commands
     cd api-tests
     mkdir <build_dir>
     cd <build_dir>
-    cmake ../ -G"<generator-name> -DTARGET=<platform_name> -DCPU_ARCH=<cpu_architecture_version> -DSUITE=<suite_name> -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>"
+    cmake ../ -G"<generator_name>" -DTARGET=<platform_name> -DCPU_ARCH=<cpu_architecture_version> -DSUITE=<suite_name> -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>"
     cmake --build .
 ```
-<br />  where:
+<br />Options information:<br />
 
--   <generator-name> "Unix Makefiles" to generate Makefiles for Linux and Cygwin <br />
-                     "MinGW Makefiles" to generate Makefiles for cmd.exe on Windows  <br />
--   <platform_name> is the same as the name of the target-specific directory created in the **platform/targets/** directory. The current release has been tested on **tgt_dev_apis_tfm_an521**, **tgt_dev_apis_tfm_musca_b1** and **tgt_dev_apis_tfm_musca_a** platforms.<br />
--   <cpu_architecture_version> is the Arm Architecture version name for which the tests should be compiled. For example, Armv7M, Armv8M-Baseline and Armv8M-Mainline Architecture.  <br />
--   <suite_name> is the suite name that is the same as the suite name available in **dev_apis/** directory. <br />
--   <include_path1>;<include_path2>;...;<include_pathn> is an additional directory to be included into the compiler search path.You must provide Developer APIs header file implementation to the test suite build system using this option. For example, to compile Crypto tests, the include path must point to the path where **psa/crypto.h** is located in your build system.<br />
+-   -G"<generator_name>" : "Unix Makefiles" to generate Makefiles for Linux and Cygwin. "MinGW Makefiles" to generate Makefiles for cmd.exe on Windows  <br />
+-   -DTARGET=<platform_name> is the same as the name of the target-specific directory created in the **platform/targets/** directory. The current release has been tested on **tgt_dev_apis_tfm_an521**, **tgt_dev_apis_tfm_musca_b1** and **tgt_dev_apis_tfm_musca_a** platforms.<br />
+-   -DTOOLCHAIN=<tool_chain> Compiler toolchain to be used for test suite compilation. Supported values are GNUARM (GNU Arm Embedded), ARMCLANG (ARM Compiler 6.x) and HOST_GCC. Default is GNUARM.<br />
+-   -DCPU_ARCH=<cpu_architecture_version> is the Arm Architecture version name for which the tests should be compiled. Supported CPU arch are armv8m_ml, armv8m_bl and armv7m. Default is empty. This option is unused when TOOLCHAIN type is HOST_GCC.<br />
+-   -DSUITE=<suite_name> is the suite name that is the same as the suite name available in **dev_apis/** directory.<br />
+-   -DVERBOSE=<verbose_level>. Print verbosity level. Default is 3. Supported print levels are 1(INFO & above), 2(DEBUG & above), 3(TEST & above), 4(WARN & ERROR) and 5(ERROR).
+-   -DBUILD=<BUILD_DIR> : To select the build directory to keep output files. Default is BUILD/ inside current directory.
+-   -DWATCHDOG_AVAILABLE=<0|1>: Test harness may require to access watchdog timer to recover system hang. 0 means skip watchdog programming in the test suite and 1 means program the watchdog. Default is 1. Note, watchdog must be available for the tests which depend on the system reset conditions.
+-   -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>" is an additional directory to be included into the compiler search path.You must provide Developer APIs header files implementation to the test suite build system using this option. For example, to compile Crypto tests, the include path must point to the path where **psa/crypto.h** is located in your build system. Bydefault, PSA_INCLUDE_PATHS accepts absolute path. However, relative path can be provided using below format:<br />
+```
+    -DPSA_INCLUDE_PATHS=`readlink -f <relative_include_path>`
+```
 
 To compile Crypto tests for **tgt_dev_apis_tfm_an521** platform, execute the following commands:
 ```
@@ -76,10 +82,13 @@ The following steps describe the execution flow before the test execution: <br /
 
 For details on test suite integration, refer to the **Integrating the test suite with the SUT** section of [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf).
 
+## Security implication
+
+PSA API test suite may run at higher privilege level. An attacker can utilize these tests as a means to elevate privilege which can potentially reveal the platform secure attests. To prevent such security vulnerabilities into the production system, it is strongly recommended that PSA API test suite is run on development platforms. If it is run on production system, make sure system is scrubbed after running the test suite.
+
 ## License
 
 Arm PSA test suite is distributed under Apache v2.0 License.
-
 
 ## Feedback, contributions, and support
 

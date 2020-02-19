@@ -63,8 +63,8 @@ int32_t client_test_psa_drop_connection(caller_security_t caller)
     * VAL APIs to decide test status.
     */
 
-   handle = psa->connect(SERVER_CONNECTION_DROP_SID, 1);
-   if (handle < 0)
+   handle = psa->connect(SERVER_CONNECTION_DROP_SID, SERVER_CONNECTION_DROP_VERSION);
+   if (!PSA_HANDLE_IS_VALID(handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
@@ -78,7 +78,7 @@ int32_t client_test_psa_drop_connection(caller_security_t caller)
        return VAL_STATUS_ERROR;
    }
 
-   status_of_call =  psa->call(handle, NULL, 0, NULL, 0);
+   status_of_call =  psa->call(handle, PSA_IPC_CALL, NULL, 0, NULL, 0);
 
    /*
     * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether
@@ -94,14 +94,14 @@ int32_t client_test_psa_drop_connection(caller_security_t caller)
            return VAL_STATUS_ERROR;
        }
 
-       val->print(PRINT_DEBUG, "\tRecieved PSA_ERROR_PROGRAMMER_ERROR\n", 0);
+       val->print(PRINT_DEBUG, "\tReceived PSA_ERROR_PROGRAMMER_ERROR\n", 0);
 
        /* If this call returns PSA_ERROR_PROGRAMMER_ERROR,
         * when a valid connection handle was provided, then
         * all subsequent calls to psa_call() with the same connection
         * handle will immediately return PSA_ERROR_PROGRAMMER_ERROR.
         */
-       status_of_call =  psa->call(handle, NULL, 0, NULL, 0);
+       status_of_call =  psa->call(handle, PSA_IPC_CALL, NULL, 0, NULL, 0);
        if (status_of_call != PSA_ERROR_PROGRAMMER_ERROR)
        {
            status = VAL_STATUS_SPM_FAILED;

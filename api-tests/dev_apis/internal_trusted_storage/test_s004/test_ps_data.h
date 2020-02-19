@@ -43,7 +43,7 @@ static const test_data s004_data[] = {
  VAL_PS_SET, PSA_SUCCESS /* For same UID set the length as half of previous */
 },
 {
- VAL_PS_GET, PSA_ERROR_INVALID_ARGUMENT /* Call get with incorrect length */
+ VAL_PS_GET, PSA_SUCCESS /* Call get with incorrect length */
 },
 {
  0, 0 /* No data should be returned */

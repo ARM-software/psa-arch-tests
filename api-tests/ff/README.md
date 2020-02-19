@@ -41,28 +41,39 @@ To build the test suite for your target platform, perform the following steps.
 
 1. Execute `cd api-tests`.
 
-2. Using your Secure partition build tool, parse the following test suite partition manifest files and generate manifest output files. The manifest parsing tool must be compliant with the manifest rules defined in the PSA FF specification.<br />
-   <br />The test suite manifests to be parsed are:<br />
-   - **platform/targets/<platform_name>/manifests/common/driver_partition_psa.json**
-   - **platform/targets/<platform_name>/manifests/ipc/client_partition_psa.json**
-   - **platform/targets/<platform_name>/manifests/ipc/server_partition_psa.json**
+2. Execute `python tools/scripts/manifest_update.py` to remove heap_size field from PSA test suite manifest files if your platform doesn't support the dynamic memory functions for the secure partition. Otherwise, skip this step.
 
-3. Compile the tests as shown below. <br />
+3. Using your Secure partition build tool, parse the following test suite partition manifest files and generate manifest output files. The manifest parsing tool must be compliant with the manifest rules defined in the PSA FF specification.<br />
+   <br />The test suite manifests to be parsed are:<br />
+   - **platform/manifests/driver_partition_psa.json**
+   - **platform/manifests/client_partition_psa.json**
+   - **platform/manifests/server_partition_psa.json**
+
+4. Compile the tests as shown below. <br />
 ```
     cd api-tests
     mkdir <build_dir>
     cd <build_dir>
-    cmake ../ -G"<generator-name> -DTARGET=<platform_name> -DCPU_ARCH=<cpu_architecture_version> -DSUITE=<suite_name> -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>"
+    cmake ../ -G"<generator_name>" -DTARGET=<platform_name> -DCPU_ARCH=<cpu_architecture_version> -DSUITE=<suite_name> -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>"
     cmake --build .
 ```
-<br />  where:
+<br />Options information:<br />
 
--   <generator-name> "Unix Makefiles" to generate Makefiles for Linux and Cygwin <br />
-                     "MinGW Makefiles" to generate Makefiles for cmd.exe on Windows  <br />
--   <platform_name> is the same as the name of the target specific directory created in the **platform/targets/** directory.  <br />
--   <cpu_architecture_version> is the Arm Architecture version name for which the tests should be compiled. For example, Armv7M, Armv8M-Baseline and Armv8M-Mainline Architecture.  <br />
--   <suite_name> is the suite name which is the same as the suite name available in **ff/** directory. <br >
--   <include_path1>;<include_path2>;...;<include_pathn> is an additional directory to be included into the compiler search path. To compile IPC tests, the include path must point to the path where **psa/client.h**, **psa/service.h**,  **psa/lifecycle.h** and test partition manifest output files(**psa_manifest/sid.h**, **psa_manifest/pid.h** and **psa_manifest/<manifestfilename>.h**) are located in your build system.<br />
+-   -G"<generator_name>" : "Unix Makefiles" to generate Makefiles for Linux and Cygwin. "MinGW Makefiles" to generate Makefiles for cmd.exe on Windows  <br />
+-   -DTARGET=<platform_name> is the same as the name of the target-specific directory created in the **platform/targets/** directory. The current release has been tested on **tgt_dev_apis_tfm_an521** and **tgt_dev_apis_tfm_musca_a** platforms.<br />
+-   -DTOOLCHAIN=<tool_chain> Compiler toolchain to be used for test suite compilation. Supported values are GNUARM (GNU Arm Embedded), ARMCLANG (ARM Compiler 6.x) and HOST_GCC. Default is GNUARM.<br />
+-   -DCPU_ARCH=<cpu_architecture_version> is the Arm Architecture version name for which the tests should be compiled. Supported CPU arch are armv8m_ml, armv8m_bl and armv7m. Default is empty. This option is unused when TOOLCHAIN type is HOST_GCC.<br />
+-   -DSUITE=<suite_name> is the suite name which is the same as the suite name available in **ff/** directory. <br >
+-   -DVERBOSE=<verbose_level>. Print verbosity level. Default is 3. Supported print levels are 1(INFO & above), 2(DEBUG & above), 3(TEST & above), 4(WARN & ERROR) and 5(ERROR).
+-   -DBUILD=<BUILD_DIR> : To select the build directory to keep output files. Default is BUILD/ inside current directory.
+-   -DINCLUDE_PANIC_TESTS=<0|1> : The default compilation flow includes the functional API tests to build the test suite. It does not include panic tests that check for the API's PROGRAMMER ERROR conditions as defined in the PSA-FF specification. You can include the panic tests for building the test suite by setting this option to 1.
+-   -DPLATFORM_PSA_ISOLATION_LEVEL=<1|2|3> : PSA Firmware Framwork isolation level supported by the platform. Default is highest level of isolation which is three.
+-   -DSP_HEAP_MEM_SUPP=<0|1> : Are dynamic memory functions available to secure partition? 0 means no and 1 means yes.
+-   -DWATCHDOG_AVAILABLE=<0|1>: Test harness may require to access watchdog timer to recover system hang. 0 means skip watchdog programming in the test suite and 1 means program the watchdog. Default is 1. Note, watchdog must be available for the tests which test the panic conditions.
+-   -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>" is an additional directory to be included into the compiler search path. To compile IPC tests, the include path must point to the path where **psa/client.h**, **psa/service.h**,  **psa/lifecycle.h** and test partition manifest output files(**psa_manifest/sid.h**, **psa_manifest/pid.h** and **psa_manifest/<manifestfilename>.h**) are located in your build system. Bydefault, PSA_INCLUDE_PATHS accepts absolute path. However, relative path can be provided using below format:<br />
+```
+    -DPSA_INCLUDE_PATHS=`readlink -f <relative_include_path>`
+```
 
 To compile IPC tests for **tgt_ff_tfm_an521** platform, execute the following commands:
 ```
@@ -104,6 +115,10 @@ The following steps describe the execution flow before the test execution: <br /
 
 For details on test suite integration, refer to the **Integrating the test suite with the SUT** section of [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf).
 
+## Security implication
+
+PSA FF test suite may run at higher privilege level. An attacker can utilize these tests as a means to elevate privilege which can potentially reveal the platform secure attests. To prevent such security vulnerabilities into the production system, it is strongly recommended that PSA FF test suite is run on development platforms. If it is run on production system, make sure system is scrubbed after running the test suite.
+
 ## License
 
 Arm PSA test suite is distributed under Apache v2.0 License.
@@ -118,4 +133,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2019, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2020, Arm Limited and Contributors. All rights reserved.*
