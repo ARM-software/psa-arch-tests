@@ -23,8 +23,8 @@
 #  where the symbol is defined as the full path to the external PSA storage
 #  library to test. e.g.
 #    cmake ... -DPSA_STORAGE_LIB_FILENAME=/wdir/usr/lib/libpsastorage.so
-#  If the function is being used to generate a test binary for testing 
-#  the mbed-crypto library then the function requires 
+#  If the function is being used to generate a test binary for testing
+#  the mbed-crypto library then the function requires
 #  PSA_CRYPTO_LIB_FILENAME to be specificed on the cmake command line,
 #  where the symbol is defined as the full path to the external PSA crypto
 #  library to test. e.g.
@@ -32,7 +32,7 @@
 #                                                               libmbedcrypto.a
 # ARGUMENTS:
 #   _exe_name     Name of the test binary to generate.
-#   _api_dir      PSA API directory name e.g. crypto, 
+#   _api_dir      PSA API directory name e.g. crypto,
 #                 internal_trusted_storage or protected_storage.
 ###############################################################################
 function(_create_psa_stdc_exe _exe_name _api_dir)
@@ -52,6 +52,7 @@ function(_create_psa_stdc_exe _exe_name _api_dir)
 
 	add_executable(${EXE_NAME} ${EXE_SRC})
 	target_link_libraries(${EXE_NAME} ${EXE_LIBS} ${PSA_CRYPTO_LIB_FILENAME} ${PSA_STORAGE_LIB_FILENAME})
+	add_dependencies(${EXE_NAME} ${PSA_TARGET_TEST_COMBINE_LIB})
 endfunction(_create_psa_stdc_exe)
 
 # PAL C source files part of NSPE library
