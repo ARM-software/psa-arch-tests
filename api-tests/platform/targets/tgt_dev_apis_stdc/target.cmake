@@ -15,6 +15,63 @@
 # * limitations under the License.
 #**/
 
+###############################################################################
+# FUNCTION: _create_psa_stdc_exe()
+#  Function for generating PSA stdc test binaries linking with libraries
+#  external to the psa-arch-tests project. This function requires
+#  PSA_STORAGE_LIB_FILENAME to be specificed on the cmake command line,
+#  where the symbol is defined as the full path to the external PSA storage
+#  library to test. e.g.
+#    cmake ... -DPSA_STORAGE_LIB_FILENAME=/wdir/usr/lib/libpsastorage.so
+#  If the function is being used to generate a test binary for testing 
+#  the mbed-crypto library then the function requires 
+#  PSA_CRYPTO_LIB_FILENAME to be specificed on the cmake command line,
+#  where the symbol is defined as the full path to the external PSA crypto
+#  library to test. e.g.
+#    cmake ... -DPSA_CRYPTO_LIB_FILENAME=/wdir/mbed-crypto/library/    \
+#                                                               libmbedcrypto.a
+# ARGUMENTS:
+#   _exe_name     Name of the test binary to generate.
+#   _api_dir      PSA API directory name e.g. crypto, 
+#                 internal_trusted_storage or protected_storage.
+###############################################################################
+function(_create_psa_stdc_exe _exe_name _api_dir)
+
+	# Create the PSA test binary.
+	set(EXE_NAME ${_exe_name})
+
+	if(DEFINED PSA_STORAGE_LIB_FILENAME)
+		# Define PSA_STORAGE_LIB_NAME to be the name of the PSA Storage library to be tested.
+		get_filename_component(PSA_STORAGE_LIB_NAME ${PSA_STORAGE_LIB_FILENAME} NAME)
+
+		get_filename_component(PSA_STORAGE_LIB_DIR ${PSA_STORAGE_LIB_FILENAME} DIRECTORY)
+		link_directories(${PSA_STORAGE_LIB_DIR})
+	endif()
+
+	if(DEFINED PSA_CRYPTO_LIB_FILENAME)
+		# Define PSA_CRYPTO_LIB_NAME to be the name of the PSA Crypto library to be tested.
+		get_filename_component(PSA_CRYPTO_LIB_NAME ${PSA_CRYPTO_LIB_FILENAME} NAME)
+
+		get_filename_component(PSA_CRYPTO_LIB_DIR ${PSA_CRYPTO_LIB_FILENAME} DIRECTORY)
+		link_directories(${PSA_CRYPTO_LIB_DIR})
+	endif()
+
+	# Create list of test binary source files.
+	list(APPEND EXE_SRC ${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common/main.c)
+
+	# Create list of libraries to link to test binary
+	list(APPEND EXE_LIBS
+		${PROJECT_BINARY_DIR}/val/val_nspe.a
+		${PROJECT_BINARY_DIR}/platform/pal_nspe.a
+		${PROJECT_BINARY_DIR}/dev_apis/${_api_dir}/test_combine.a
+		${PSA_CRYPTO_LIB_NAME}
+		${PSA_STORAGE_LIB_NAME}
+	)
+
+	add_executable(${EXE_NAME} ${EXE_SRC})
+	target_link_libraries(${EXE_NAME} ${EXE_LIBS})
+endfunction(_create_psa_stdc_exe)
+
 # PAL C source files part of NSPE library
 list(APPEND PAL_SRC_C_NSPE )
 
@@ -26,7 +83,6 @@ list(APPEND PAL_SRC_C_DRIVER_SP )
 
 # PAL ASM source files part of SPE library - driver partition
 list(APPEND PAL_SRC_ASM_DRIVER_SP )
-
 
 # Listing all the sources required for given target
 if(${SUITE} STREQUAL "IPC")
@@ -42,16 +98,28 @@ if(${SUITE} STREQUAL "CRYPTO")
 	list(APPEND PAL_SRC_C_NSPE
 		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto/pal_crypto_intf.c
 	)
+	if(NOT DEFINED PSA_CRYPTO_LIB_FILENAME)
+		message(FATAL_ERROR "ERROR: PSA_CRYPTO_LIB_FILENAME undefined.")
+	endif()
+	_create_psa_stdc_exe(psa-arch-tests-crypto crypto)
 endif()
 if(${SUITE} STREQUAL "PROTECTED_STORAGE")
 	list(APPEND PAL_SRC_C_NSPE
-    ${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/protected_storage/pal_protected_storage_intf.c
-    )
+		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/protected_storage/pal_protected_storage_intf.c
+	)
+	if(NOT DEFINED PSA_STORAGE_LIB_FILENAME)
+		message(FATAL_ERROR "ERROR: PSA_STORAGE_LIB_FILENAME undefined.")
+	endif()
+	_create_psa_stdc_exe(psa-arch-tests-ps protected_storage)
 endif()
 if(${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE")
 	list(APPEND PAL_SRC_C_NSPE
-    ${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/internal_trusted_storage/pal_internal_trusted_storage_intf.c
-    )
+		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/internal_trusted_storage/pal_internal_trusted_storage_intf.c
+	)
+	if(NOT DEFINED PSA_STORAGE_LIB_FILENAME)
+		message(FATAL_ERROR "ERROR: PSA_STORAGE_LIB_FILENAME undefined.")
+	endif()
+	_create_psa_stdc_exe(psa-arch-tests-its internal_trusted_storage)
 endif()
 if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
 	message(FATAL_ERROR "Initial attestation not supported")
