@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,3 +22,4 @@ set (CMAKE_C_COMPILER_FORCED true)
 
 set(CMAKE_STATIC_LIBRARY_PREFIX "")
 set(CMAKE_STATIC_LIBRARY_SUFFIX ".a")
+set(CMAKE_SHARED_LIBRARY_SUFFIX "")
