@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,7 @@ int32_t val_entry(void);
                 argv    : array containing command line arguments.
     @return   - error status
 **/
-int main(int argc, char**argv)
+int main(int argc, char **argv)
 {
     return val_entry();
 }
