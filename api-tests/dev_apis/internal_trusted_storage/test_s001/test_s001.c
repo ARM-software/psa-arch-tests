@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -112,18 +112,18 @@ static int32_t sst_calls_with_different_uid(psa_storage_uid_t p_uid)
     TEST_ASSERT_EQUAL(status, s001_data[10].status, TEST_CHECKPOINT_NUM(10));
 
     /* get() for different UID then set UID */
-    val->print(PRINT_TEST, "[Check 7] Call get API for different UID %d\n", p_uid);
+    val->print(PRINT_TEST, "[Check 7] Call get API for different UID %d\n", p_uid-1);
     status = SST_FUNCTION(s001_data[11].api, p_uid-1, 0, TEST_BUFF_SIZE - 1, read_buff,
                           &p_data_length);
     TEST_ASSERT_EQUAL(status, s001_data[11].status, TEST_CHECKPOINT_NUM(11));
 
     /* get_info() for different UID then set UID */
-    val->print(PRINT_TEST, "[Check 8] Call get_info API for different UID %d\n", p_uid);
+    val->print(PRINT_TEST, "[Check 8] Call get_info API for different UID %d\n", p_uid-1);
     status = SST_FUNCTION(s001_data[12].api, p_uid-1, &info);
     TEST_ASSERT_EQUAL(status, s001_data[12].status, TEST_CHECKPOINT_NUM(12));
 
     /* remove() for different UID then set UID */
-    val->print(PRINT_TEST, "[Check 9] Call remove API for different UID %d\n", p_uid);
+    val->print(PRINT_TEST, "[Check 9] Call remove API for different UID %d\n", p_uid-1);
     status = SST_FUNCTION(s001_data[13].api, p_uid-1);
     TEST_ASSERT_EQUAL(status, s001_data[13].status, TEST_CHECKPOINT_NUM(13));
 

@@ -42,9 +42,9 @@ An example input configuration file is as shown.
 
 **Note**:
 - The test suite requires access to the peripherals mentioned below. For IPC suite, driver functionalities are implemented as RoT-services in driver partition. Other Secure partitions and Non-secure code calls to these RoT-services to get appropriate driver services.
-  - One UART to print NSPE or SPE messages and to cover secure partition interrupt handling scenarios
+  - One UART to print Test NSPE or SPE messages and to cover secure partition interrupt handling scenarios
   - One Watchdog timer to help recover from any fatal error conditions
-  - Non-volatile memory support to preserve test status over watchdog timer reset
+  - Non-volatile memory support to preserve test status over watchdog timer reset. Each byte of this region must be initialised to FF at power on reset.
 
 
 ## List of PAL APIs

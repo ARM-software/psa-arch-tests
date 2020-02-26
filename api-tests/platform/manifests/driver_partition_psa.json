@@ -38,19 +38,19 @@
   ],
   "mmio_regions" : [
     {
-      "name": "TEST_UART_REGION",
+      "name": "FF_TEST_UART_REGION",
       "permission": "READ-WRITE"
     },
     {
-      "name": "TEST_WATCHDOG_REGION",
+      "name": "FF_TEST_WATCHDOG_REGION",
       "permission": "READ-WRITE"
     },
     {
-      "name": "TEST_NVMEM_REGION",
+      "name": "FF_TEST_NVMEM_REGION",
       "permission": "READ-WRITE"
     },
     {
-      "name": "TEST_DRIVER_PARTITION_MMIO",
+      "name": "FF_TEST_DRIVER_PARTITION_MMIO",
       "permission": "READ-WRITE"
     }
   ],
@@ -58,7 +58,7 @@
     {
        "description": "Using UART TX interrupt to test psa_wait and psa_eoi for irq_signal",
        "signal": "DRIVER_UART_INTR_SIG",
-       "source": "UARTTX_IRQ"
+       "source": "FF_TEST_UART_IRQ"
     }
   ]
 }

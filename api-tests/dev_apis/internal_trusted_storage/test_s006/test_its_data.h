@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,22 +29,22 @@ typedef struct {
 static struct psa_storage_info_t info;
 static const test_data s006_data[] = {
 {
- 0, PSA_ERROR_NOT_SUPPORTED /* This is dummy for index0 */
+ 0, 0 /* This is dummy for Index0 */
 },
 {
- VAL_ITS_SET, PSA_SUCCESS /* Create a valid storage entity with different flag values */
+ VAL_ITS_SET, PSA_SUCCESS /* Index1 - Create a valid storage entity with different flag values */
 },
 {
- VAL_ITS_GET_INFO, PSA_SUCCESS /* Validate the flag value get_info API */
+ VAL_ITS_GET_INFO, PSA_SUCCESS /* Index2 - Validate the flag value get_info API */
 },
 {
- 0, 0 /* Index not used */
+ 0, 0 /* This is dummy for Index3 */
 },
 {
- VAL_ITS_REMOVE, PSA_SUCCESS /* Remove the storage entity */
+ VAL_ITS_REMOVE, PSA_SUCCESS /* Index4 - Remove the storage entity */
 },
 {
- VAL_ITS_REMOVE, PSA_ERROR_DOES_NOT_EXIST /* Storage entity remove fails */
+ VAL_ITS_REMOVE, PSA_ERROR_DOES_NOT_EXIST /* Index5 - Storage entity remove fails */
 },
 };
 #endif /* _TEST_S006_ITS_DATA_TESTS_H_ */

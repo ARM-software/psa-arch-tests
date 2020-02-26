@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,8 +34,10 @@ int32_t pal_crypto_function(int type, va_list valist)
     const uint8_t                   *nonce, *additional_data, *salt, *peer;
     size_t                          *length, size, ciphertext_size, nonce_length;
     size_t                           salt_length, peer_length, additional_data_length;
+#ifdef NOT_SUPPORTED
     size_t                          *tag_length, plaintext_size;
     psa_aead_operation_t            *aead_operation;
+#endif
     psa_key_attributes_t            *attributes;
     psa_key_handle_t                *handle, key_handle;
     psa_key_type_t                  *key_type_out, key_type;
@@ -48,6 +50,7 @@ int32_t pal_crypto_function(int type, va_list valist)
     psa_cipher_operation_t          *cipher_operation;
     psa_key_derivation_operation_t  *derive_operation;
     psa_key_derivation_step_t        step;
+
     switch (type)
     {
         case PAL_CRYPTO_INIT:
@@ -169,6 +172,7 @@ int32_t pal_crypto_function(int type, va_list valist)
         case PAL_CRYPTO_HASH_ABORT:
             hash_operation = va_arg(valist, psa_hash_operation_t*);
             return psa_hash_abort(hash_operation);
+#ifdef NOT_SUPPORTED
         case PAL_CRYPTO_HASH_COMPUTE:
             alg = va_arg(valist, psa_algorithm_t);
             plaintext = va_arg(valist, uint8_t*);
@@ -184,6 +188,7 @@ int32_t pal_crypto_function(int type, va_list valist)
             buffer = va_arg(valist, uint8_t*);
             size = va_arg(valist, size_t);
             return psa_hash_compare(alg, plaintext, plaintext_size, buffer, size);
+#endif
         case PAL_CRYPTO_HASH_CLONE:
             hash_operation = va_arg(valist, psa_hash_operation_t*);
             target_operation = va_arg(valist, psa_hash_operation_t*);
@@ -220,6 +225,7 @@ int32_t pal_crypto_function(int type, va_list valist)
             length = va_arg(valist, size_t*);
             return psa_aead_decrypt(key_handle, alg, nonce, nonce_length, additional_data,
             additional_data_length, ciphertext, ciphertext_size, plaintext, size, length);
+#ifdef NO_SUPPORT
         case PAL_CRYPTO_AEAD_ENCRYPT_SETUP:
             aead_operation = va_arg(valist, psa_aead_operation_t *);
             key_handle = (psa_key_handle_t)va_arg(valist, int);
@@ -281,6 +287,7 @@ int32_t pal_crypto_function(int type, va_list valist)
         case PAL_CRYPTO_AEAD_ABORT:
             aead_operation = va_arg(valist, psa_aead_operation_t *);
             return psa_aead_abort(aead_operation);
+#endif
         case PAL_CRYPTO_MAC_SIGN_SETUP:
             mac_operation = va_arg(valist, psa_mac_operation_t*);
             key_handle = (psa_key_handle_t)va_arg(valist, int);
@@ -310,6 +317,7 @@ int32_t pal_crypto_function(int type, va_list valist)
         case PAL_CRYPTO_MAC_ABORT:
             mac_operation = va_arg(valist, psa_mac_operation_t*);
             return psa_mac_abort(mac_operation);
+#ifdef NO_SUPPORT
         case PAL_CRYPTO_MAC_COMPUTE:
             key_handle = (psa_key_handle_t)va_arg(valist, int);
             alg = va_arg(valist, psa_algorithm_t);
@@ -392,6 +400,7 @@ int32_t pal_crypto_function(int type, va_list valist)
         case PAL_CRYPTO_CIPHER_ABORT:
             cipher_operation =  va_arg(valist, psa_cipher_operation_t *);
             return psa_cipher_abort(cipher_operation);
+#ifdef NO_SUPPORT
         case PAL_CRYPTO_CIPHER_ENCRYPT:
             key_handle = (psa_key_handle_t)va_arg(valist, int);
             alg = va_arg(valist, psa_algorithm_t);
@@ -412,6 +421,7 @@ int32_t pal_crypto_function(int type, va_list valist)
             length = va_arg(valist, size_t*);
             return psa_cipher_decrypt(key_handle, alg, plaintext, size, ciphertext, ciphertext_size,
             length);
+#endif
         case PAL_CRYPTO_ASYMMTERIC_SIGN:
             key_handle = (psa_key_handle_t)va_arg(valist, int);
             alg = va_arg(valist, psa_algorithm_t);

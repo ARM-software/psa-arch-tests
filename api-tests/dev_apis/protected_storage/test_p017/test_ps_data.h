@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or ps affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,31 +28,32 @@ typedef struct {
 
 static const test_data p017_data[] = {
 {
- VAL_PS_GET_SUPPORT, PSA_STORAGE_SUPPORT_SET_EXTENDED /* Check if Optional API supported */
+ VAL_PS_GET_SUPPORT, PSA_STORAGE_SUPPORT_SET_EXTENDED /* Index0 - Check if Optional API supported */
 },
 {
- VAL_PS_CREATE, PSA_SUCCESS /* Storage creation */
+ VAL_PS_CREATE, PSA_SUCCESS /* Index1 - Storage creation */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_SUCCESS /* Write data in created storage  */
+ VAL_PS_SET_EXTENDED, PSA_SUCCESS /* Index2 - Write data in created storage  */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_ERROR_STORAGE_FAILURE /* Try to set data in noncontinous manner */
+ VAL_PS_SET_EXTENDED, PSA_ERROR_STORAGE_FAILURE /* Index3 - Try to set data in noncontinous
+                                                                                    manner */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_SUCCESS /* Overwrite the existing data */
+ VAL_PS_SET_EXTENDED, PSA_SUCCESS /* Index4 - Overwrite the existing data */
 },
 {
- VAL_PS_GET_INFO, PSA_SUCCESS /* Check for valid storage attributes */
+ VAL_PS_GET_INFO, PSA_SUCCESS /* Index5 - Check for valid storage attributes */
 },
 {
- 0, 0 /* Unused index */
+ 0, 0 /* Unused Index6 */
 },
 {
- 0, 0 /* Unused index */
+ 0, 0 /* Unused Index7 */
 },
 {
- VAL_PS_REMOVE, PSA_SUCCESS /* Remove the UID */
+ VAL_PS_REMOVE, PSA_SUCCESS /* Index8 - Remove the UID */
 },
 };
 #endif /* _TEST_P017_PS_DATA_TESTS_H_ */

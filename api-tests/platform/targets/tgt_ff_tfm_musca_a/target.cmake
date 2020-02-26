@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -72,8 +72,11 @@ if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
 	list(APPEND PAL_SRC_C_NSPE
 		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/initial_attestation/pal_attestation_intf.c
 		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/initial_attestation/pal_attestation_crypto.c
+                ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/src/UsefulBuf.c
+                ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/src/ieee754.c
+                ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/src/qcbor_decode.c
+                ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/src/qcbor_encode.c
 	)
-	set(PSA_QCBOR_GIT_REPO_TAG		42272e466a8472948bf8fca076d113b81b99f0e0)
 endif()
 
 # Create NSPE library

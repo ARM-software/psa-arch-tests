@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,7 @@ void test_entry(val_api_t *val_api, psa_api_t *psa_api)
     psa = psa_api;
 
     /* test init */
-    val->test_init(TEST_NUM, TEST_DESC, TEST_FIELD(TEST_ISOLATION_L1, WD_LOW_TIMEOUT));
+    val->test_init(TEST_NUM, TEST_DESC, TEST_FIELD(TEST_ISOLATION_L1, WD_HIGH_TIMEOUT));
     if (!IS_TEST_START(val->get_status()))
     {
         goto test_exit;

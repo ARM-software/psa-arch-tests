@@ -60,16 +60,16 @@ To build the test suite for your target platform, perform the following steps.
 <br />Options information:<br />
 
 -   -G"<generator_name>" : "Unix Makefiles" to generate Makefiles for Linux and Cygwin. "MinGW Makefiles" to generate Makefiles for cmd.exe on Windows  <br />
--   -DTARGET=<platform_name> is the same as the name of the target-specific directory created in the **platform/targets/** directory. The current release has been tested on **tgt_dev_apis_tfm_an521** and **tgt_dev_apis_tfm_musca_a** platforms.<br />
+-   -DTARGET=<platform_name> is the same as the name of the target-specific directory created in the **platform/targets/** directory. The current release has been tested on **tgt_dev_apis_tfm_an521**, **tgt_dev_apis_tfm_musca_b1** and **tgt_dev_apis_tfm_musca_a** platforms except for the tests written for PSA isolation level-3 and secure partition dynamic memory APIs as these features are unsupported by the mentioned platforms. However, it can still be possible to run them if the platform supports these features.<br />
 -   -DTOOLCHAIN=<tool_chain> Compiler toolchain to be used for test suite compilation. Supported values are GNUARM (GNU Arm Embedded), ARMCLANG (ARM Compiler 6.x) and HOST_GCC. Default is GNUARM.<br />
 -   -DCPU_ARCH=<cpu_architecture_version> is the Arm Architecture version name for which the tests should be compiled. Supported CPU arch are armv8m_ml, armv8m_bl and armv7m. Default is empty. This option is unused when TOOLCHAIN type is HOST_GCC.<br />
 -   -DSUITE=<suite_name> is the suite name which is the same as the suite name available in **ff/** directory. <br >
 -   -DVERBOSE=<verbose_level>. Print verbosity level. Default is 3. Supported print levels are 1(INFO & above), 2(DEBUG & above), 3(TEST & above), 4(WARN & ERROR) and 5(ERROR).
 -   -DBUILD=<BUILD_DIR> : To select the build directory to keep output files. Default is BUILD/ inside current directory.
--   -DINCLUDE_PANIC_TESTS=<0|1> : The default compilation flow includes the functional API tests to build the test suite. It does not include panic tests that check for the API's PROGRAMMER ERROR conditions as defined in the PSA-FF specification. You can include the panic tests for building the test suite by setting this option to 1.
+-   -DINCLUDE_PANIC_TESTS=<0|1> : The default compilation flow includes the functional API tests to build the test suite. It does not include panic tests that check for the API's PROGRAMMER ERROR(Panic) conditions as defined in the PSA-FF specification. You can include the panic tests for building the test suite by setting this option to 1.
 -   -DPLATFORM_PSA_ISOLATION_LEVEL=<1|2|3> : PSA Firmware Framwork isolation level supported by the platform. Default is highest level of isolation which is three.
--   -DSP_HEAP_MEM_SUPP=<0|1> : Are dynamic memory functions available to secure partition? 0 means no and 1 means yes.
--   -DWATCHDOG_AVAILABLE=<0|1>: Test harness may require to access watchdog timer to recover system hang. 0 means skip watchdog programming in the test suite and 1 means program the watchdog. Default is 1. Note, watchdog must be available for the tests which test the panic conditions.
+-   -DSP_HEAP_MEM_SUPP=<0|1> : Are dynamic memory functions available to secure partition? 0 means no and 1 means yes. This skips the secure partition dynamic memory functions related tests if this is marked as zero.
+-   -DWATCHDOG_AVAILABLE=<0|1>: Test harness may require to access watchdog timer to recover system hang. 0 means skip watchdog programming in the test suite and 1 means program the watchdog. Default is 1. Note, If the system under test doesn't support the reboot of the system when it encounters the panic situation, a watchdog must be available to the tests if INCLUDE_PANIC_TESTS set to 1.
 -   -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>" is an additional directory to be included into the compiler search path. To compile IPC tests, the include path must point to the path where **psa/client.h**, **psa/service.h**,  **psa/lifecycle.h** and test partition manifest output files(**psa_manifest/sid.h**, **psa_manifest/pid.h** and **psa_manifest/<manifestfilename>.h**) are located in your build system. Bydefault, PSA_INCLUDE_PATHS accepts absolute path. However, relative path can be provided using below format:<br />
 ```
     -DPSA_INCLUDE_PATHS=`readlink -f <relative_include_path>`
@@ -80,7 +80,7 @@ To compile IPC tests for **tgt_ff_tfm_an521** platform, execute the following co
     cd api-tests
     mkdir BUILD
     cd  BUILD
-    cmake ../ -G"Unix Makefiles" -DTARGET=tgt_ff_tfm_an521 -DCPU_ARCH=armv8m_ml -DSUITE=IPC -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>"
+    cmake ../ -G"Unix Makefiles" -DTARGET=tgt_ff_tfm_an521 -DCPU_ARCH=armv8m_ml -DSUITE=IPC -DPLATFORM_PSA_ISOLATION_LEVEL=2 -DSP_HEAP_MEM_SUPP=0 -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>"
     cmake --build .
 ```
 **Note**: The default compilation flow includes the functional API tests to build the test suite. It does not include panic tests that check for the API's PROGRAMMER ERROR conditions as defined in the PSA-FF specification. You can include the panic tests for building the test suite just by passing **-DINCLUDE_PANIC_TESTS=1** to CMake.

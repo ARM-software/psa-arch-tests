@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,6 +48,9 @@
 
 /* Use hardcoded public key */
 //#define PLATFORM_OVERRIDE_ATTEST_PK
+
+/* Platform specific max UID's size */
+#define PLATFORM_MAX_UID_SIZE 512
 
 /*
  * Include of PSA defined Header files

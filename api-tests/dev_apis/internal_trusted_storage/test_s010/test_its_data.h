@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,13 +28,15 @@ typedef struct {
 
 static const test_data s010_data[] = {
 {
-  VAL_ITS_SET, PSA_ERROR_INVALID_ARGUMENT /* Create with UID value zero should fail */
+  VAL_ITS_SET, PSA_ERROR_INVALID_ARGUMENT /* Index0 - Create with UID value zero should fail */
 },
 {
-  VAL_ITS_GET_INFO, PSA_ERROR_INVALID_ARGUMENT /* Call to get_info API for UID 0 should fail */
+  VAL_ITS_GET_INFO, PSA_ERROR_INVALID_ARGUMENT /* Index1 - Call to get_info API for UID 0
+                                                  should fail */
 },
 {
-  VAL_ITS_REMOVE, PSA_ERROR_INVALID_ARGUMENT /* Call to remove API UID value zero should fail */
+  VAL_ITS_REMOVE, PSA_ERROR_INVALID_ARGUMENT /* Index2 - Call to remove API UID value zero
+                                                should fail */
 },
 };
 #endif /* _TEST_S010_ITS_DATA_TESTS_H_ */

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -283,6 +283,7 @@ static uint32_t pal_import_attest_key(psa_algorithm_t key_alg)
         psa_set_key_bits(&attributes, public_key_size);
         psa_set_key_usage_flags(&attributes, usage);
         psa_set_key_algorithm(&attributes, key_alg);
+        psa_set_key_bits(&attributes, 0);
 
         /* Import the public key */
         status = psa_import_key(&attributes,

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,29 +54,27 @@ int32_t psa_sst_invalid_offset_failure(caller_security_t caller)
         TEST_ASSERT_EQUAL(read_buff[j], 0x00, TEST_CHECKPOINT_NUM(10));
     }
 
-    /* Case where offset = data_size  , data_len= 1  Also check nothing is returned in read buff*/
+    /* Case where offset = data_size  , data_len= 1  Also check nothing is returned in read buff */
+    memset(read_buff, 0xCD, TEST_BUFF_SIZE);
+    p_data_length = 0xFF;
     status = SST_FUNCTION(s008_data[8].api, uid, TEST_BUFF_SIZE, 1, read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s008_data[8].status, TEST_CHECKPOINT_NUM(11));
     TEST_ASSERT_EQUAL(p_data_length, 0, TEST_CHECKPOINT_NUM(12));
-    for (j = 0; j < TEST_BUFF_SIZE; j++)
-    {
-        TEST_ASSERT_EQUAL(read_buff[j], 0x00, TEST_CHECKPOINT_NUM(13));
-    }
 
-    /* Case where offset = 0  , data_len > data_size  Also check nothing is returned in read buff*/
+    /* Case where offset = 0, data_len > data_size, check if just data_size is returned */
     status = SST_FUNCTION(s008_data[10].api, uid, 0, TEST_BUFF_SIZE+1, read_buff, &p_data_length);
-    TEST_ASSERT_EQUAL(status, s008_data[10].status, TEST_CHECKPOINT_NUM(14));
-    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(15));
-    TEST_ASSERT_MEMCMP(read_buff, write_buff, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(16));
+    TEST_ASSERT_EQUAL(status, s008_data[10].status, TEST_CHECKPOINT_NUM(13));
+    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(14));
+    TEST_ASSERT_MEMCMP(read_buff, write_buff, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(15));
 
     /* Try to access data with offset as MAX_UINT32 and length less than buffer size */
     status = SST_FUNCTION(s008_data[12].api, uid, TEST_MAX_UINT32, TEST_BUFF_SIZE/2, read_buff,
                           &p_data_length);
-    TEST_ASSERT_EQUAL(status, s008_data[12].status, TEST_CHECKPOINT_NUM(17));
+    TEST_ASSERT_EQUAL(status, s008_data[12].status, TEST_CHECKPOINT_NUM(16));
 
     /* Remove the UID */
     status = SST_FUNCTION(s008_data[13].api, uid);
-    TEST_ASSERT_EQUAL(status, s008_data[13].status, TEST_CHECKPOINT_NUM(18));
+    TEST_ASSERT_EQUAL(status, s008_data[13].status, TEST_CHECKPOINT_NUM(17));
 
     return VAL_STATUS_SUCCESS;
 }

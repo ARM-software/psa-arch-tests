@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,103 +30,106 @@ static struct psa_storage_info_t orig_info;
 static struct psa_storage_info_t new_info;
 static const test_data s002_data[] = {
 {
- 0, 0 /* This is dummy for index0 */
+ 0, 0 /* This is dummy for Index0 */
 },
 {
- VAL_ITS_SET, PSA_SUCCESS /* Create a valid storage with create flag value 0 */
+ VAL_ITS_SET, PSA_SUCCESS /* Index1 - Create a valid storage with create flag value 0 */
 },
 {
- VAL_ITS_GET_INFO, PSA_SUCCESS /* Call the get_info API to validate the attributes */
+ VAL_ITS_GET_INFO, PSA_SUCCESS /* Index2 - Call the get_info API to validate the attributes */
 },
 {
- 0, 0 /* Index not used as check for get info size */
+ 0, 0 /* This is dummy for Index3 */
 },
 {
- 0, 0 /* Index not used as check for get info flag */
+ 0, 0 /* This is dummy for Index4 */
 },
 {
- VAL_ITS_GET, PSA_SUCCESS /* Validate the data using get API */
+ VAL_ITS_GET, PSA_SUCCESS /* Index5 - Validate the data using get API */
 },
 {
- 0, 0 /* Index not used */
+ 0, 0 /* This is dummy for Index6 */
 },
 {
- VAL_ITS_SET, PSA_SUCCESS /* Change the flag to WRITE_ONCE using set API */
+ VAL_ITS_SET, PSA_SUCCESS /* Index7 - Change the flag to WRITE_ONCE using set API */
 },
 {
- VAL_ITS_GET_INFO, PSA_SUCCESS /* Call the get_info API to validate the flag change */
+ VAL_ITS_GET_INFO, PSA_SUCCESS /* Index8 - Call the get_info API to validate the flag change */
 },
 {
- 0, 0 /* Index not used as check for get info size */
+ 0, 0 /* This is dummy for Index9 */
 },
 {
- 0, 0 /* Index not used as check for get info flag */
+ 0, 0 /* This is dummy for Index10 */
 },
 {
- VAL_ITS_GET, PSA_SUCCESS /* Validate the data using get API after flag change */
+ VAL_ITS_GET, PSA_SUCCESS /* Index11 - Validate the data using get API after flag change */
 },
 {
- 0, 0 /* Index not used */
+ 0, 0 /* This is dummy for Index12 */
 },
 {
- VAL_ITS_REMOVE, PSA_ERROR_NOT_PERMITTED /* Storage should not be removed after WRITE_ONCE flag */
+ VAL_ITS_REMOVE, PSA_ERROR_NOT_PERMITTED /* Index13 - Storage should not be removed after
+                                            WRITE_ONCE flag */
 },
 {
- VAL_ITS_SET, PSA_SUCCESS /* Create a storage with different UID and flag value WRITE_ONCE */
+ VAL_ITS_SET, PSA_SUCCESS /* Index14 - Create a storage with different UID and flag value
+                             WRITE_ONCE */
 },
 {
- VAL_ITS_REMOVE, PSA_ERROR_NOT_PERMITTED /* Storage should not be removed */
+ VAL_ITS_REMOVE, PSA_ERROR_NOT_PERMITTED /* Index15 - Storage should not be removed */
 },
 {
- VAL_ITS_GET, PSA_SUCCESS /* Validate the data using get API after flag change */
+ VAL_ITS_GET, PSA_SUCCESS /* Index16 - Validate the data using get API after flag change */
 },
 {
- 0, 0 /* Index not used */
+ 0, 0 /* This is dummy for Index17 */
 },
 {
- VAL_ITS_GET_INFO, PSA_SUCCESS /* Call the get_info API to validate the flag change */
+ VAL_ITS_GET_INFO, PSA_SUCCESS /* Index18 - Call the get_info API to validate the flag change */
 },
 {
- 0, 0 /* Index not used as check for get info size */
+ 0, 0 /* This is dummy for Index19 */
 },
 {
- 0, 0 /* Index not used as check for get info flag */
+ 0, 0 /* This is dummy for Index20 */
 },
 {
- VAL_ITS_SET, PSA_ERROR_NOT_PERMITTED /* Try to set different size for same UID and flag value */
+ VAL_ITS_SET, PSA_ERROR_NOT_PERMITTED /* Index21 - Try to set different size for same UID and
+                                         flag value */
 },
 {
- VAL_ITS_REMOVE, PSA_ERROR_NOT_PERMITTED /* Storage should not be removed */
+ VAL_ITS_REMOVE, PSA_ERROR_NOT_PERMITTED /* Index22 - Storage should not be removed */
 },
 {
- VAL_ITS_GET_INFO, PSA_SUCCESS /* Call the get_info API to validate the flag change */
+ VAL_ITS_GET_INFO, PSA_SUCCESS /* Index23 - Call the get_info API to validate the flag change */
 },
 {
- 0, 0 /* Index not used as check for get info size */
+ 0, 0 /* This is dummy for Index24 */
 },
 {
- 0, 0 /* Index not used as check for get info flag */
+ 0, 0 /* This is dummy for Index25 */
 },
 {
- VAL_ITS_GET, PSA_SUCCESS  /* Validate the data using get API after flag change */
+ VAL_ITS_GET, PSA_SUCCESS /* Index26 - Validate the data using get API after flag change */
 },
 {
- 0, 0 /* Index not used */
+ 0, 0 /* This is dummy for Index27 */
 },
 {
- VAL_ITS_SET, PSA_ERROR_NOT_PERMITTED  /* Setting flag to zero for UID should fail */
+ VAL_ITS_SET, PSA_ERROR_NOT_PERMITTED /* Index28 - Setting flag to zero for UID should fail */
 },
 {
- VAL_ITS_REMOVE, PSA_ERROR_NOT_PERMITTED /* Storage should not be removed */
+ VAL_ITS_REMOVE, PSA_ERROR_NOT_PERMITTED /* Index29 - Storage should not be removed */
 },
 {
- VAL_ITS_GET_INFO, PSA_SUCCESS  /* Check that the WRITE_ONCE flag is preserved */
+ VAL_ITS_GET_INFO, PSA_SUCCESS /* Index30 - Check that the WRITE_ONCE flag is preserved */
 },
 {
- 0, 0 /* Index not used as check for get info size */
+ 0, 0 /* This is dummy for Index31 */
 },
 {
- 0, 0 /* Index not used as check for get info flag */
+ 0, 0 /* This is dummy for Index32 */
 },
 };
 #endif /* _TEST_S002_ITS_DATA_TESTS_H_ */

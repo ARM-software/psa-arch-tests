@@ -61,7 +61,7 @@
   ],
   "mmio_regions" : [
     {
-      "name": "TEST_SERVER_PARTITION_MMIO",
+      "name": "FF_TEST_SERVER_PARTITION_MMIO",
       "permission": "READ-WRITE"
     }
    ]

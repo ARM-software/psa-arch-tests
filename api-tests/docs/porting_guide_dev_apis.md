@@ -42,9 +42,9 @@ An example input configuration file is as shown.
 
 **Note**:
 The test suite requires access to the following peripherals:
-  - One UART to print NSPE and SPE messages
+  - One UART to print Test NSPE messages
   - One Watchdog timer to help recover from any fatal error conditions
-  - Non-volatile memory support to preserve test status over watchdog timer reset
+  - Non-volatile memory support to preserve test status over watchdog timer reset. Each byte of this region must be initialised to FF at power on reset.
 
 
 ## List of PAL APIs
@@ -63,10 +63,12 @@ Since the test suite is agnostic to various system targets, you must port the fo
 | 09 | uint32_t pal_its_function(int type, va_list valist);                                                                     | Calls the requested Internal Trusted Storage  function                       | type    : Function code<br/>valist  : Variable argument list<br/>                             |
 | 10 | uint32_t pal_ps_function(int type, va_list valist);                                                                     | Calls the requested Protected Storage  function                       | type    : Function code<br/>valist  : Variable argument list<br/>                             |
 | 11 | int32_t pal_attestation_function(int type, va_list valist);                                                                | Calls the requested Initial Attestation  function                       | type    : Function code<br/>valist  : Variable argument list<br/>                             |
+| 12 | uint32_t pal_compute_hash(int32_t cose_alg_id, struct q_useful_buf buffer_for_hash, struct q_useful_buf_c *hash, struct q_useful_buf_c protected_headers, struct q_useful_buf_c payload);                                                                | Computes hash for the requested data                       | cose_alg_id    : Algorithm ID<br/>buffer_for_hash  : Temp buffer for calculating hash<br/><br/>hash  : Pointer to store the hash<br/> buffer_for_hash  : Temp buffer for calculating hash<br/>protected_headers : data to be hashed<br/>payload  : Payload data<br/>                             |
+| 13 | uint32_t pal_crypto_pub_key_verify(int32_t cose_algorithm_id, struct q_useful_buf_c token_hash, struct q_useful_buf_c signature);                                                                | Function call to verify the signature using the public key              | cose_algorithm_id    : Algorithm ID<br/>token_hash  : Data that needs to be verified<br/>signature  : Signature to be verified against<br/>                             |
 
 ## License
 Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2019, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2019-2020, Arm Limited and Contributors. All rights reserved.*
