@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or ps affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,10 +28,11 @@ typedef struct {
 
 static const test_data p015_data[] = {
 {
- VAL_PS_GET_SUPPORT, PSA_STORAGE_SUPPORT_SET_EXTENDED /* Check if optional PS API supported */
+ VAL_PS_GET_SUPPORT, PSA_STORAGE_SUPPORT_SET_EXTENDED /* Index0 - Check if optional PS API
+                                                                                 supported */
 },
 {
- VAL_PS_CREATE, PSA_ERROR_NOT_SUPPORTED /* Call create API with write_once flag */
+ VAL_PS_CREATE, PSA_ERROR_NOT_SUPPORTED /* Index1 - Call create API with write_once flag */
 },
 };
 #endif /* _TEST_P015_PS_DATA_TESTS_H_ */

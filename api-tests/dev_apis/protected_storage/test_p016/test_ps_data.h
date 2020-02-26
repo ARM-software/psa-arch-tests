@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or ps affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,16 +28,17 @@ typedef struct {
 
 static const test_data p016_data[] = {
 {
- VAL_PS_GET_SUPPORT, PSA_STORAGE_SUPPORT_SET_EXTENDED /* Check if Optional API supported */
+ VAL_PS_GET_SUPPORT, PSA_STORAGE_SUPPORT_SET_EXTENDED /* Index0 - Check if Optional API supported */
 },
 {
- VAL_PS_CREATE, PSA_SUCCESS /* Storage creation */
+ VAL_PS_CREATE, PSA_SUCCESS /* Index1 - Storage creation */
 },
 {
- VAL_PS_CREATE, PSA_ERROR_ALREADY_EXISTS /* Calling create API for existing UID should fail */
+ VAL_PS_CREATE, PSA_ERROR_ALREADY_EXISTS /* Index2 - Calling create API for existing UID should
+                                                                                           fail */
 },
 {
- VAL_PS_GET_INFO, PSA_SUCCESS /* Check the storage attributes are unchanged */
+ VAL_PS_GET_INFO, PSA_SUCCESS /* Index3 - Check the storage attributes are unchanged */
 },
 {
  0, 0 /* Unused Index4 */
@@ -46,10 +47,10 @@ static const test_data p016_data[] = {
  0, 0 /* Unused Index5 */
 },
 {
- VAL_PS_SET, PSA_SUCCESS /* Set API can change capacity of storage */
+ VAL_PS_SET, PSA_SUCCESS /* Index6 - Set API can change capacity of storage */
 },
 {
- VAL_PS_GET_INFO, PSA_SUCCESS /* Check the storage attributes are changed */
+ VAL_PS_GET_INFO, PSA_SUCCESS /* Index7 - Check the storage attributes are changed */
 },
 {
  0, 0 /* Unused Index8 */
@@ -58,19 +59,21 @@ static const test_data p016_data[] = {
  0, 0 /* Unused Index9 */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_ERROR_STORAGE_FAILURE /* Set_extended on old capacity should not work */
+ VAL_PS_SET_EXTENDED, PSA_ERROR_STORAGE_FAILURE /* Index10 - Set_extended on old capacity should
+                                                                                        not work */
 },
 {
- VAL_PS_REMOVE, PSA_SUCCESS /* Remove the UID */
+ VAL_PS_REMOVE, PSA_SUCCESS /* Index11 - Remove the UID */
 },
 {
- VAL_PS_SET, PSA_SUCCESS /* Storage creation */
+ VAL_PS_SET, PSA_SUCCESS /* Index12 - Storage creation */
 },
 {
- VAL_PS_CREATE, PSA_ERROR_ALREADY_EXISTS /* Calling create API for existing UID should fail */
+ VAL_PS_CREATE, PSA_ERROR_ALREADY_EXISTS /* Index13 - Calling create API for existing UID should
+                                                                                            fail */
 },
 {
- VAL_PS_REMOVE, PSA_SUCCESS /* Remove the UID */
+ VAL_PS_REMOVE, PSA_SUCCESS /* Index14 - Remove the UID */
 },
 };
 #endif /* _TEST_P016_PS_DATA_TESTS_H_ */

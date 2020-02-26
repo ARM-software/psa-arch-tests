@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -121,15 +121,6 @@ Done:
     return status;
 }
 
-/**
-    @brief           - Computes hash for the requested data
-    @param           - cose_alg_id       : Algorithm ID
-                     - buffer_for_hash   : Temp buffer for calculating hash
-                     - hash              : Pointer to store the hash
-                     - protected_headers : Buffer containing protected data
-                     - payload           : payload data
-    @return          - SUCCESS/ERROR CODE
-**/
 uint32_t pal_compute_hash(int32_t cose_alg_id, struct q_useful_buf buffer_for_hash,
                           struct q_useful_buf_c *hash, struct q_useful_buf_c protected_headers,
                           struct q_useful_buf_c payload)
@@ -292,6 +283,7 @@ static uint32_t pal_import_attest_key(psa_algorithm_t key_alg)
         psa_set_key_bits(&attributes, public_key_size);
         psa_set_key_usage_flags(&attributes, usage);
         psa_set_key_algorithm(&attributes, key_alg);
+        psa_set_key_bits(&attributes, 0);
 
         /* Import the public key */
         status = psa_import_key(&attributes,
@@ -307,7 +299,6 @@ static uint32_t pal_import_attest_key(psa_algorithm_t key_alg)
 
     return status;
 }
-
 
 static uint32_t pal_destroy_attest_key(void)
 {
@@ -325,13 +316,6 @@ static uint32_t pal_destroy_attest_key(void)
     return PAL_ATTEST_SUCCESS;
 }
 
-/**
-    @brief           - Verify the signature using the public key
-    @param           - cose_algorithm_id : Algorithm ID
-                     - token_hash        : Data that needs to be verified
-                     - signature         : Signature to be verified against
-    @return          - SUCCESS/ERROR CODE
-**/
 uint32_t pal_crypto_pub_key_verify(int32_t cose_algorithm_id,
                                    struct q_useful_buf_c token_hash,
                                    struct q_useful_buf_c signature)

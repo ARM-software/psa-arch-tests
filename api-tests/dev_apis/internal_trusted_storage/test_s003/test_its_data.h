@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,13 +29,13 @@ typedef struct {
 
 static const test_data s003_data[] = {
 {
- 0, 0 /* This is dummy for index0 */
+ 0, 0 /* This is dummy for Index0 */
 },
 {
- VAL_ITS_SET, PSA_ERROR_INSUFFICIENT_STORAGE /* Call set API till insufficent space */
+ VAL_ITS_SET, PSA_ERROR_INSUFFICIENT_STORAGE /* Index1 - Call set API till insufficent space */
 },
 {
- VAL_ITS_REMOVE, PSA_SUCCESS /* Remove the UID created */
+ VAL_ITS_REMOVE, PSA_SUCCESS /* Index2 - Remove the UID created */
 },
 };
 #endif /* _TEST_S003_ITS_DATA_TESTS_H_ */

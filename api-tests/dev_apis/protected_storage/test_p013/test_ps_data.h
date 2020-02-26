@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or ps affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,67 +28,70 @@ typedef struct {
 
 static const test_data p013_data[] = {
 {
- VAL_PS_GET_SUPPORT, PSA_STORAGE_SUPPORT_SET_EXTENDED /* Check if optional PS API supported */
+ VAL_PS_GET_SUPPORT, PSA_STORAGE_SUPPORT_SET_EXTENDED /* Index0 - Check if optional PS API
+                                                                                 supported */
 },
 {
- VAL_PS_CREATE, PSA_SUCCESS /* Create storage of zero length */
+ VAL_PS_CREATE, PSA_SUCCESS /* Index1 - Create storage of zero length */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_SUCCESS /* Call set_extended with zero length */
+ VAL_PS_SET_EXTENDED, PSA_SUCCESS /* Index2 - Call set_extended with zero length */
 },
 {
- VAL_PS_GET_INFO, PSA_SUCCESS /* Validate the storage attributes */
+ VAL_PS_GET_INFO, PSA_SUCCESS /* Index3 - Validate the storage attributes */
 },
 {
- 0, 0 /* This is dummy for index4 */
+ 0, 0 /* This is dummy for Index4 */
 },
 {
- 0, 0 /* This is dummy for index5 */
+ 0, 0 /* This is dummy for Index5 */
 },
 {
- VAL_PS_REMOVE, PSA_SUCCESS /* Remove the UID */
+ VAL_PS_REMOVE, PSA_SUCCESS /* Index6 - Remove the UID */
 },
 {
- VAL_PS_CREATE, PSA_SUCCESS /* Create storage of non-zero length */
+ VAL_PS_CREATE, PSA_SUCCESS /* Index7 - Create storage of non-zero length */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_SUCCESS /* Call set_extended to write data in first half of buffer */
+ VAL_PS_SET_EXTENDED, PSA_SUCCESS /* Index8 - Call set_extended to write data in first half of
+                                                                                        buffer */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_SUCCESS /* Call set_extended to write data in second half of buffer */
+ VAL_PS_SET_EXTENDED, PSA_SUCCESS /* Index9 - Call set_extended to write data in second half of
+                                                                                         buffer */
 },
 {
- VAL_PS_GET, PSA_SUCCESS /* Validate the data stored */
+ VAL_PS_GET, PSA_SUCCESS /* Index10 - Validate the data stored */
 },
 {
- 0, 0 /* This is dummy for index11 */
+ 0, 0 /* This is dummy for Index11 */
 },
 {
- 0, 0 /* This is dummy for index12 */
+ 0, 0 /* This is dummy for Index12 */
 },
 {
- VAL_PS_SET, PSA_SUCCESS /* Overwrite data with set API */
+ VAL_PS_SET, PSA_SUCCESS /* Index13 - Overwrite data with set API */
 },
 {
- VAL_PS_GET, PSA_SUCCESS /* Validate the data written */
+ VAL_PS_GET, PSA_SUCCESS /* Index14 - Validate the data written */
 },
 {
- 0, 0 /* This is dummy for index15 */
+ 0, 0 /* This is dummy for Index15 */
 },
 {
- VAL_PS_CREATE, PSA_SUCCESS /* Call Create API for existing UID with same parameters */
+ VAL_PS_CREATE, PSA_SUCCESS /* Index16 - Call Create API for existing UID with same parameters */
 },
 {
- VAL_PS_GET, PSA_SUCCESS /* Validate the data */
+ VAL_PS_GET, PSA_SUCCESS /* Index17 - Validate the data */
 },
 {
- 0, 0 /* This is dummy for index18 */
+ 0, 0 /* This is dummy for Index18 */
 },
 {
- VAL_PS_REMOVE, PSA_SUCCESS /* Remove the UID */
+ VAL_PS_REMOVE, PSA_SUCCESS /* Index19 - Remove the UID */
 },
 {
- VAL_PS_GET, PSA_ERROR_DOES_NOT_EXIST /* Check no duplicate entry of UID present */
+ VAL_PS_GET, PSA_ERROR_DOES_NOT_EXIST /* Index20 - Check no duplicate entry of UID present */
 }
 };
 #endif /* _TEST_P013_PS_DATA_TESTS_H_ */

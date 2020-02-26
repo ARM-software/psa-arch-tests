@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,37 +28,28 @@ typedef struct {
 
 static const test_data s004_data[] = {
 {
- 0, 0 /* This is dummy for index0 */
+ 0, 0 /* This is dummy for Index0 */
 },
 {
- VAL_ITS_SET, PSA_SUCCESS /* Create a valid storage entity */
+ VAL_ITS_SET, PSA_SUCCESS /* Index1 - Create a valid storage entity */
 },
 {
- VAL_ITS_GET, PSA_SUCCESS /* Validate the data using get API after set API failure */
+ VAL_ITS_GET, PSA_SUCCESS /* Index2 - Validate the data using get API after set API failure */
 },
 {
- 0, 0 /* Index not used */
+ 0, 0 /* This is dummy for Index3 */
 },
 {
- VAL_ITS_SET, PSA_SUCCESS /* For same UID set the length as half of previous */
+ VAL_ITS_SET, PSA_SUCCESS /* Index4 - For same UID set the length as half of previous */
 },
 {
- VAL_ITS_GET, PSA_SUCCESS /* Call get with incorrect length */
+ VAL_ITS_GET, PSA_SUCCESS /* Index5 - Call get with incorrect length */
 },
 {
- 0, 0 /* No data should be returned */
+ 0, 0 /* This is dummy for Index6 */
 },
 {
- VAL_ITS_GET, PSA_SUCCESS /* Call get API with correct length */
-},
-{
- 0, 0 /* No data should be returned */
-},
-{
- 0, 0 /* Check that we should not be able to access the old data */
-},
-{
- VAL_ITS_REMOVE, PSA_SUCCESS /* Remove the valid storage entity */
+ VAL_ITS_REMOVE, PSA_SUCCESS /* Index7 - Remove the valid storage entity */
 },
 };
 #endif /* _TEST_S004_ITS_DATA_TESTS_H_ */

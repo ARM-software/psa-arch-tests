@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or ps affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,49 +28,53 @@ typedef struct {
 
 static const test_data p012_data[] = {
 {
- VAL_PS_GET_SUPPORT, PSA_STORAGE_SUPPORT_SET_EXTENDED /* Check if optional PS API supported */
+ VAL_PS_GET_SUPPORT, PSA_STORAGE_SUPPORT_SET_EXTENDED /* Index0 -Check if optional PS API
+                                                                                supported */
 },
 {
- VAL_PS_CREATE, PSA_SUCCESS /* Create valid storage */
+ VAL_PS_CREATE, PSA_SUCCESS /* Index1 - Create valid storage */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_SUCCESS /* Set data using set_extended API */
+ VAL_PS_SET_EXTENDED, PSA_SUCCESS /* Index2 - Set data using set_extended API */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_ERROR_INVALID_ARGUMENT /* Set_extended with invalid offset + length */
+ VAL_PS_SET_EXTENDED, PSA_ERROR_INVALID_ARGUMENT /* Index3 - Set_extended with invalid offset +
+                                                                                         length */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_ERROR_INVALID_ARGUMENT /* Set_extended call with invalid offset */
+ VAL_PS_SET_EXTENDED, PSA_ERROR_INVALID_ARGUMENT /* Index4 - Set_extended call with invalid
+                                                                                     offset */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_SUCCESS /* Set_extended call with valid offset and zero length */
+ VAL_PS_SET_EXTENDED, PSA_SUCCESS /* Index5 - Set_extended call with valid offset and zero length */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_ERROR_INVALID_ARGUMENT /* Set_extended with invalid offset + length */
+ VAL_PS_SET_EXTENDED, PSA_ERROR_INVALID_ARGUMENT /* Index6 - Set_extended with invalid offset +
+                                                                                         length */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_ERROR_INVALID_ARGUMENT /* Set_extended with invalid length */
+ VAL_PS_SET_EXTENDED, PSA_ERROR_INVALID_ARGUMENT /* Index7 - Set_extended with invalid length */
 },
 {
- VAL_PS_SET, PSA_SUCCESS /* Write data using set API */
+ VAL_PS_SET, PSA_SUCCESS /* Index8 - Write data using set API */
 },
 {
- VAL_PS_GET, PSA_SUCCESS /* Check data validity using get API */
+ VAL_PS_GET, PSA_SUCCESS /* Index9 - Check data validity using get API */
 },
 {
- 0, 0 /* This is dummy for index10 */
+ 0, 0 /* This is dummy for Index10 */
 },
 {
- VAL_PS_CREATE, PSA_ERROR_INVALID_ARGUMENT /* Create call with UID 0 */
+ VAL_PS_CREATE, PSA_ERROR_INVALID_ARGUMENT /* Index11 - Create call with UID 0 */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_ERROR_INVALID_ARGUMENT /* Call set_extended with UID 0 */
+ VAL_PS_SET_EXTENDED, PSA_ERROR_INVALID_ARGUMENT /* Index12 - Call set_extended with UID 0 */
 },
 {
- VAL_PS_REMOVE, PSA_ERROR_INVALID_ARGUMENT /* Call remove with UID 0 */
+ VAL_PS_REMOVE, PSA_ERROR_INVALID_ARGUMENT /* Index13 - Call remove with UID 0 */
 },
 {
- VAL_PS_REMOVE, PSA_SUCCESS /* Remove with UID */
+ VAL_PS_REMOVE, PSA_SUCCESS /* Index14 - Remove with UID */
 },
 };
 #endif /* _TEST_P012_PS_DATA_TESTS_H_ */

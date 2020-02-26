@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,6 +31,7 @@ get_filename_component(PSA_ROOT_DIR . ABSOLUTE)
 list(APPEND CMAKE_MODULE_PATH ${PSA_ROOT_DIR}/tools/cmake)
 include("common/Utils")
 include(${PSA_ROOT_DIR}/tools/cmake/common/CMakeSettings.cmake)
+include(${PSA_ROOT_DIR}/tools/cmake/common/CMakeExternal.cmake)
 
 # list of supported suites
 list(APPEND PSA_SUITES
@@ -109,6 +110,8 @@ string(TOLOWER ${SUITE} SUITE_LOWER)
 _get_sub_dir_list(PSA_TARGET_LIST ${PSA_ROOT_DIR}/platform/targets)
 if(NOT ${TARGET} IN_LIST PSA_TARGET_LIST)
 	message(FATAL_ERROR "[PSA] : Error: Unspported value for -DTARGET=, supported targets are : ${PSA_TARGET_LIST}")
+else()
+    message(STATUS "[PSA] : TARGET is set to ${TARGET}")
 endif()
 
 # Check for the presence of required test suite directories
@@ -128,6 +131,8 @@ endif()
 # Check for valid suite cmake argument passed
 if(NOT ${SUITE} IN_LIST PSA_SUITES)
 	message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DSUITE=, select one from supported suites which are : ${PSA_SUITES}")
+else()
+    message(STATUS "[PSA] : SUITE is set to ${SUITE}")
 endif()
 
 # Project variables
@@ -135,7 +140,9 @@ set(PSA_TARGET_PRE_BUILD		psa_pre_build)
 set(PSA_TARGET_GENERATE_DATABASE_PRE	psa_generate_database_prerequisite)
 set(PSA_TARGET_GENERATE_DATABASE	psa_generate_database)
 set(PSA_TARGET_GENERATE_DATABASE_POST	psa_generate_database_cleanup)
-set(PSA_TARGET_QCBOR			psa_qcbor)
+if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
+	set(PSA_TARGET_QCBOR		psa_qcbor)
+endif()
 set(PSA_TARGET_PAL_NSPE_LIB		pal_nspe)
 set(PSA_TARGET_VAL_NSPE_LIB		val_nspe)
 set(PSA_TARGET_TEST_COMBINE_LIB		test_combine)
@@ -158,10 +165,6 @@ set(DATABASE_TABLE_NAME			target_database)
 set(DATABASE_TABLE_SECTION_NAME		"NOSECTION")
 set(TARGET_HEADER_GEN_INCLUDE_PATHS     "${PSA_ROOT_DIR}/val/nspe|${PSA_ROOT_DIR}/val/common|${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common|${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto")
 set(TESTSUITE_DB			${PSA_SUITE_DIR}/testsuite.db)
-if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
-set(PSA_QCBOR_GIT_REPO_LINK		https://github.com/laurencelundblade/QCBOR.git)
-set(PSA_QCBOR_INCLUDE_PATH		${CMAKE_CURRENT_BINARY_DIR}/src/psa_qcbor/inc)
-endif()
 set(PSA_TESTLIST_FILE			${CMAKE_CURRENT_BINARY_DIR}/testlist.txt)
 set(PSA_TEST_ENTRY_LIST_INC		${CMAKE_CURRENT_BINARY_DIR}/test_entry_list.inc)
 set(PSA_TEST_ENTRY_FUN_DECLARE_INC	${CMAKE_CURRENT_BINARY_DIR}/test_entry_fn_declare_list.inc)
@@ -169,6 +172,9 @@ set(PSA_CLIENT_TEST_LIST_DELCARE_INC	${CMAKE_CURRENT_BINARY_DIR}/client_tests_li
 set(PSA_CLIENT_TEST_LIST_INC		${CMAKE_CURRENT_BINARY_DIR}/client_tests_list.inc)
 set(PSA_SERVER_TEST_LIST_DECLARE_INC	${CMAKE_CURRENT_BINARY_DIR}/server_tests_list_declare.inc)
 set(PSA_SERVER_TEST_LIST		${CMAKE_CURRENT_BINARY_DIR}/server_tests_list.inc)
+if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
+	set(PSA_QCBOR_INCLUDE_PATH      ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/inc)
+endif()
 
 # Validity check for required files for a given suite
 if(NOT DEFINED PSA_${SUITE}_FILES)
@@ -192,6 +198,8 @@ endforeach()
 if(NOT DEFINED TOOLCHAIN)
         set(TOOLCHAIN "GNUARM" CACHE INTERNAL "Compiler used" FORCE)
         message(STATUS "[PSA] : Defaulting compiler to ${TOOLCHAIN}")
+else()
+        message(STATUS "[PSA] : TOOLCHAIN is set to ${TOOLCHAIN}")
 endif()
 
 if(${TOOLCHAIN} STREQUAL "ARMCLANG" OR ${TOOLCHAIN} STREQUAL "GNUARM")
@@ -203,65 +211,99 @@ if(${TOOLCHAIN} STREQUAL "ARMCLANG" OR ${TOOLCHAIN} STREQUAL "GNUARM")
 	        message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DCPU_ARCH=, supported CPU arch are : ${PSA_CPU_ARCH_SUPPORT}")
         endif()
     endif()
+    message(STATUS "[PSA] : CPU_ARCH is set to ${CPU_ARCH}")
 endif()
 
 # Check for VERBOSE
 if(NOT DEFINED VERBOSE)
 	set(VERBOSE 3 CACHE INTERNAL "Default VERBOSE value" FORCE)
-        message(STATUS "[PSA] : Defaulting to VERBOSE=${VERBOSE}")
+        message(STATUS "[PSA] : Defaulting VERBOSE to ${VERBOSE}")
 else()
 	if(NOT ${VERBOSE} IN_LIST PSA_VERBOSE_OPTIONS)
 		message(FATAL_ERROR "[PSA] : Error: Unspported value for -DVERBOSE=, supported values are : ${PSA_VERBOSE_OPTIONS}")
 	endif()
+    message(STATUS "[PSA] : VERBOSE is set to ${VERBOSE}")
 endif()
 
 # Check for PLATFORM_PSA_ISOLATION_LEVEL
 if(NOT DEFINED PLATFORM_PSA_ISOLATION_LEVEL)
 	set(PLATFORM_PSA_ISOLATION_LEVEL 3 CACHE INTERNAL "Default PLATFORM_PSA_ISOLATION_LEVEL value" FORCE)
-        message(STATUS "[PSA] : Defaulting to PLATFORM_PSA_ISOLATION_LEVEL=${PLATFORM_PSA_ISOLATION_LEVEL}")
+	if(${SUITE} STREQUAL "IPC")
+        message(STATUS "[PSA] : Defaulting PLATFORM_PSA_ISOLATION_LEVEL to ${PLATFORM_PSA_ISOLATION_LEVEL}")
+	endif()
 else()
 	if(NOT ${PLATFORM_PSA_ISOLATION_LEVEL} IN_LIST PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS)
 		message(FATAL_ERROR "[PSA] : Error: Unspported value for -DPLATFORM_PSA_ISOLATION_LEVEL=, supported values are : ${PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS}")
 	endif()
+	if(${SUITE} STREQUAL "IPC")
+		message(STATUS "[PSA] : PLATFORM_PSA_ISOLATION_LEVEL is set to ${PLATFORM_PSA_ISOLATION_LEVEL}")
+	endif()
 endif()
 
 if(NOT DEFINED INCLUDE_PANIC_TESTS)
-	set(INCLUDE_PANIC_TESTS 0 CACHE INTERNAL "By default panic tests are disabled" FORCE)
-        message(STATUS "[PSA] : Defaulting to INCLUDE_PANIC_TESTS=${INCLUDE_PANIC_TESTS}")
+	#By default panic tests are disabled
+	set(INCLUDE_PANIC_TESTS 0 CACHE INTERNAL "Default INCLUDE_PANIC_TESTS value" FORCE)
+        message(STATUS "[PSA] : Defaulting INCLUDE_PANIC_TESTS to ${INCLUDE_PANIC_TESTS}")
 else()
 	if(INCLUDE_PANIC_TESTS EQUAL 1)
-		message(STATUS "[PSA] : Ensure you set watchdog.num to 1 in ${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cfg")
-		message(STATUS "[PSA] : To test PSA APIs panic conditions, test harness may require to access watchdog timer "
-                	                "to recover from panic and to be able to continue with next test. "
-                        	        "Ignore this warning if system under test has capability to reset the system "
-                                	"when it encounters panic condition.")
+		message(STATUS "[PSA] : "
+		"INCLUDE_PANIC_TESTS set to 1, therefore including PSA APIs panic tests into the regression,\n"
+		"\tensure that watchdog.num is set to 1 in ${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cfg")
 	endif()
 endif()
 
 if(NOT DEFINED WATCHDOG_AVAILABLE)
-	set(WATCHDOG_AVAILABLE	1 CACHE INTERNAL "Assuming watchdog is available to program by test suite" FORCE)
-        message(STATUS "[PSA] : Watchdog is available by default")
+	#Assuming watchdog is available to program by test suite
+	set(WATCHDOG_AVAILABLE	1 CACHE INTERNAL "Default WATCHDOG_AVAILABLE value" FORCE)
+        message(STATUS "[PSA] : Defaulting WATCHDOG_AVAILABLE to ${WATCHDOG_AVAILABLE}")
+else()
+    message(STATUS "[PSA] : WATCHDOG_AVAILABLE is set to ${WATCHDOG_AVAILABLE}")
 endif()
 
 if((INCLUDE_PANIC_TESTS EQUAL 1) AND
    (WATCHDOG_AVAILABLE EQUAL 0))
-	message(FATAL_ERROR "[PSA]: Panic test execution needs watchdog access. set -DWATCHDOG_AVAILABLE=1")
+	message(WARNING "[PSA]: "
+	     "Note that to test PSA APIs panic conditions, test harness may require to access"
+		 "the watchdog timer in oder to recover from panic and to be able to continue with"
+		 "next test. Ignore this warning if system under test has capability to reset the"
+		 "system when it encounters panic condition.")
 endif()
 
 if(NOT DEFINED SP_HEAP_MEM_SUPP)
-	set(SP_HEAP_MEM_SUPP 1 CACHE INTERNAL "Are dynamic memory functions available to secure partition?" FORCE)
-        message(STATUS "[PSA] : Default value for SP_HEAP_MEM_SUPP is ${SP_HEAP_MEM_SUPP}")
+	#Are dynamic memory functions available to secure partition?
+	set(SP_HEAP_MEM_SUPP 1 CACHE INTERNAL "Default SP_HEAP_MEM_SUPP value" FORCE)
+        message(STATUS "[PSA] : Defaulting SP_HEAP_MEM_SUPP to ${SP_HEAP_MEM_SUPP}")
 endif()
 
 if(NOT DEFINED TEST_COMBINE_ARCHIVE)
-	set(TEST_COMBINE_ARCHIVE 1 CACHE INTERNAL "Default option is to create archive" FORCE)
-        message(STATUS "[PSA] : Default value for TEST_COMBINE_ARCHIVE is ${TEST_COMBINE_ARCHIVE}")
+	#Default option is to create archive
+	set(TEST_COMBINE_ARCHIVE 1 CACHE INTERNAL "Default TEST_COMBINE_ARCHIVE value" FORCE)
+        message(STATUS "[PSA] : Defaulting TEST_COMBINE_ARCHIVE to ${TEST_COMBINE_ARCHIVE}")
+else()
+    message(STATUS "[PSA] : TEST_COMBINE_ARCHIVE is set to ${TEST_COMBINE_ARCHIVE}")
 endif()
 
 message(STATUS "[PSA] : ----------Process input arguments- complete-------------")
 
-# Build PAL NSPE LIB
-include(${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cmake)
+
+if((${SUITE} STREQUAL "INITIAL_ATTESTATION") AND (NOT EXISTS ${PSA_TARGET_QCBOR}))
+# Clone QCBOR and move to specified tag
+execute_process(COMMAND ${GIT_EXECUTABLE} clone ${PSA_QCBOR_GIT_REPO_LINK} ${PSA_TARGET_QCBOR}
+	RESULT_VARIABLE ${PSA_TARGET_QCBOR}_clone_result
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+if(${PSA_TARGET_QCBOR}_clone_result)
+	message(FATAL_ERROR "git clone failed for ${PSA_QCBOR_GIT_REPO_LINK}")
+endif()
+
+if(NOT ${PSA_TARGET_QCBOR}_clone_result)
+execute_process(COMMAND ${GIT_EXECUTABLE} checkout -q "${PSA_QCBOR_GIT_REPO_TAG}"
+	RESULT_VARIABLE ${PSA_TARGET_QCBOR}_checkout_result
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR})
+if(${PSA_TARGET_QCBOR}_checkout_result)
+	message(FATAL_ERROR "git checkout failed for Repo : ${PSA_QCBOR_GIT_REPO_LINK}, Tag : ${PSA_QCBOR_GIT_REPO_TAG}")
+endif()
+endif()
+endif()
 
 # Create PSA clean list
 list(APPEND PSA_CLEAN_LIST
@@ -332,22 +374,6 @@ add_custom_target(
         COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/src/${PSA_TARGET_GENERATE_DATABASE}-build/ -- clean
 )
 
-if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
-# Cloning CMSIS_5 repo
-ExternalProject_Add(
-        ${PSA_TARGET_QCBOR}
-        PREFIX ${CMAKE_CURRENT_BINARY_DIR}
-        GIT_REPOSITORY ${PSA_QCBOR_GIT_REPO_LINK}
-        GIT_TAG ${PSA_QCBOR_GIT_REPO_TAG}
-        CONFIGURE_COMMAND ""
-        UPDATE_COMMAND ""
-        PATCH_COMMAND ""
-        BUILD_COMMAND ""
-        TEST_COMMAND ""
-        INSTALL_COMMAND ""
-)
-endif()
-
 # Check for supported toolchain/s
 if(${TOOLCHAIN} IN_LIST PSA_TOOLCHAIN_SUPPORT)
         include(${PSA_ROOT_DIR}/tools/cmake/compiler/${TOOLCHAIN}.cmake)
@@ -365,6 +391,8 @@ if(${SP_HEAP_MEM_SUPP} EQUAL 1)
 	add_definitions(-DSP_HEAP_MEM_SUPP)
 endif()
 
+# Build PAL NSPE LIB
+include(${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cmake)
 # Build VAL NSPE LIB
 #add_definitions(-DVAL_NSPE_BUILD)
 include(${PSA_ROOT_DIR}/val/val_nspe.cmake)
@@ -377,13 +405,7 @@ endif()
 
 add_dependencies(${PSA_TARGET_GENERATE_DATABASE}	${PSA_TARGET_GENERATE_DATABASE_PRE})
 add_dependencies(${PSA_TARGET_GENERATE_DATABASE_POST}	${PSA_TARGET_GENERATE_DATABASE})
-if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
-add_dependencies(${PSA_TARGET_QCBOR}			${PSA_TARGET_GENERATE_DATABASE_POST})
-add_dependencies(${PSA_TARGET_PAL_NSPE_LIB}		${PSA_TARGET_QCBOR})
-add_dependencies(${PSA_TARGET_VAL_NSPE_LIB}		${PSA_TARGET_QCBOR})
-else()
 add_dependencies(${PSA_TARGET_PAL_NSPE_LIB} 		${PSA_TARGET_GENERATE_DATABASE_POST})
-endif()
 add_dependencies(${PSA_TARGET_VAL_NSPE_LIB}		${PSA_TARGET_PAL_NSPE_LIB})
 add_dependencies(${PSA_TARGET_TEST_COMBINE_LIB}		${PSA_TARGET_VAL_NSPE_LIB})
 if(${SUITE} STREQUAL "IPC")

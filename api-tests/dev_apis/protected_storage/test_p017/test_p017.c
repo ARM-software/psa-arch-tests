@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -81,7 +81,7 @@ int32_t psa_sst_optional_api_partial_write_check(caller_security_t caller)
 
     if (status != p017_data[0].status)
     {
-       val->print(PRINT_INFO, "Test Case skipped as Optional PS APIs not are supported.\n", 0);
+       val->print(PRINT_TEST, "Test Case skipped as Optional PS APIs not are supported.\n", 0);
        return RESULT_SKIP(VAL_STATUS_UNSUPPORTED);
     } else {
         val->print(PRINT_TEST, "Optional PS APIs are supported.\n", 0);

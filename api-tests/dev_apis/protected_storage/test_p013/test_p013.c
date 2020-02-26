@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,7 +53,7 @@ static int32_t psa_sst_set_extended_create_success()
     /* Call the get_info function to match attributes */
     status = SST_FUNCTION(p013_data[3].api, p_uid, &info);
     TEST_ASSERT_EQUAL(status, p013_data[3].status, TEST_CHECKPOINT_NUM(3));
-    TEST_ASSERT_EQUAL(info.flags, 0, TEST_CHECKPOINT_NUM(4));
+    TEST_ASSERT_EQUAL(info.flags, PSA_STORAGE_FLAG_NONE, TEST_CHECKPOINT_NUM(4));
     TEST_ASSERT_EQUAL(info.size, 0, TEST_CHECKPOINT_NUM(5));
 
     /* Remove the storage */

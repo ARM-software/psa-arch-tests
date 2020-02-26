@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +39,7 @@ static uint8_t write_buff[TEST_BUFF_SIZE] = {0x99, 0x01, 0x30, 0x50, 0x04, 0x23,
 
 int32_t psa_sst_get_data_check(caller_security_t caller)
 {
-    uint32_t status, j, p_data_length = 0;
+    uint32_t status, p_data_length = 0;
 
     /* Set data for UID */
     status = SST_FUNCTION(s004_data[1].api, uid, TEST_BUFF_SIZE, write_buff, PSA_STORAGE_FLAG_NONE);
@@ -52,35 +52,22 @@ int32_t psa_sst_get_data_check(caller_security_t caller)
     TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(4));
 
     /* Call the set again for same uid and set the length as half */
+    val->print(PRINT_TEST, "[Check 1] Call set API with reduced length - TEST_BUFF_SIZE/2\n", 0);
     status = SST_FUNCTION(s004_data[4].api, uid, TEST_BUFF_SIZE/2, write_buff,
                           PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s004_data[4].status, TEST_CHECKPOINT_NUM(5));
 
     /* Call get function with incorrect buffer length  */
-    val->print(PRINT_TEST, "[Check 1] Call get API with incorrect length\n", 0);
-    memset(read_buff, 0, TEST_BUFF_SIZE);
+    val->print(PRINT_TEST, "[Check 2] Call get API with default length - TEST_BUFF_SIZE\n", 0);
     status = SST_FUNCTION(s004_data[5].api, uid, 0, TEST_BUFF_SIZE, read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s004_data[5].status, TEST_CHECKPOINT_NUM(6));
     TEST_ASSERT_MEMCMP(read_buff, write_buff, TEST_BUFF_SIZE/2, TEST_CHECKPOINT_NUM(7));
-    /* Expect p_data_length = TEST_BUFF_SIZE/2, when psa get function is successful as in previous case */
-    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE/2, TEST_CHECKPOINT_NUM(8));
-
-    /* Call get function with CORRECT buffer length  */
-    status = SST_FUNCTION(s004_data[7].api, uid, 0, TEST_BUFF_SIZE/2, read_buff, &p_data_length);
-    TEST_ASSERT_EQUAL(status, s004_data[7].status, TEST_CHECKPOINT_NUM(9));
-    TEST_ASSERT_MEMCMP(read_buff, write_buff, TEST_BUFF_SIZE/2, TEST_CHECKPOINT_NUM(10));
-    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE/2, TEST_CHECKPOINT_NUM(11));
-
-    /* Check we should not be able to access old set data */
-    val->print(PRINT_TEST, "[Check 2] Old buffer invalid after length change\n", 0);
-    for (j = TEST_BUFF_SIZE/2; j < TEST_BUFF_SIZE; j++)
-    {
-        TEST_ASSERT_EQUAL(read_buff[j], 0, TEST_CHECKPOINT_NUM(12));
-    }
+    /* Expect p_data_length = TEST_BUFF_SIZE/2 */
+    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE/2,  TEST_CHECKPOINT_NUM(8));
 
     /* Remove the UID */
-    status = SST_FUNCTION(s004_data[10].api, uid);
-    TEST_ASSERT_EQUAL(status, s004_data[10].status, TEST_CHECKPOINT_NUM(13));
+    status = SST_FUNCTION(s004_data[7].api, uid);
+    TEST_ASSERT_EQUAL(status, s004_data[7].status, TEST_CHECKPOINT_NUM(9));
 
     return VAL_STATUS_SUCCESS;
 }

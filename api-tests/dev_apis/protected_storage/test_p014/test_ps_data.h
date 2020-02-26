@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or ps affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,28 +28,28 @@ typedef struct {
 
 static const test_data p014_data[] = {
 {
- VAL_PS_GET_SUPPORT, PSA_STORAGE_SUPPORT_SET_EXTENDED /* Check if Optional API supported */
+ VAL_PS_GET_SUPPORT, PSA_STORAGE_SUPPORT_SET_EXTENDED /* Index0 -Check if Optional API supported */
 },
 {
- VAL_PS_CREATE, PSA_ERROR_NOT_SUPPORTED /* Create API call should fail */
+ VAL_PS_CREATE, PSA_ERROR_NOT_SUPPORTED /* Index1 - Create API call should fail */
 },
 {
- VAL_PS_GET_INFO, PSA_ERROR_DOES_NOT_EXIST /* UID should not exist */
+ VAL_PS_GET_INFO, PSA_ERROR_DOES_NOT_EXIST /* Index2 - UID should not exist */
 },
 {
- VAL_PS_SET, PSA_SUCCESS /* Create storage of non-zero length */
+ VAL_PS_SET, PSA_SUCCESS /* Index3 - Create storage of non-zero length */
 },
 {
- VAL_PS_SET_EXTENDED, PSA_ERROR_NOT_SUPPORTED /* Set_extended API call should fail */
+ VAL_PS_SET_EXTENDED, PSA_ERROR_NOT_SUPPORTED /* Index4 - Set_extended API call should fail */
 },
 {
- VAL_PS_GET, PSA_SUCCESS /* Validate the data should not changed */
+ VAL_PS_GET, PSA_SUCCESS /* Index5 - Validate the data should not changed */
 },
 {
- 0, 0 /* Unused Index */
+ 0, 0 /* Unused Index6 */
 },
 {
- VAL_PS_REMOVE, PSA_SUCCESS /* Remove the UID */
+ VAL_PS_REMOVE, PSA_SUCCESS /* Index7 - Remove the UID */
 },
 };
 #endif /* _TEST_P014_PS_DATA_TESTS_H_ */

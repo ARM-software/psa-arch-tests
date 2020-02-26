@@ -18,8 +18,7 @@ The test suite for this specification is located in the **ff** directory of this
 The test suite for this specification is located in the **dev_apis** directory of this repository. See the [PSA Developer APIs README](dev_apis/README.md) file for more details.
 
 ## Release Update
- - Release Version: 0.9
- - Code quality: Arm welcomes suggestions for enhancements and error corrections.
+ - Code Quality : REL v1.0
  - This release contains following tests: <br />
 
 1. Developer APIs test list:
@@ -31,7 +30,7 @@ The test suite for this specification is located in the **dev_apis** directory o
 | Internal Trusted Storage | [PSA Internal Trusted Storage API 1.0.0](../api-specs/storage/v1.0/doc/) |
 | Initial Attestation      | [PSA Initial Attestation API 1.0.0](../api-specs/attestation/v1.0/doc/)  |
 
-2. PSA-FF tests that are written for version 1.0-Beta1 of the PSA FF specification.
+2. PSA-FF tests that are written for the PSA FF 1.0 specification.
 
 ## License
 
@@ -46,4 +45,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2019, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2020, Arm Limited and Contributors. All rights reserved.*

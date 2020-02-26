@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -159,7 +159,7 @@ int32_t client_test_call_read_and_skip(caller_security_t caller)
    uint64_t             data3 = 0x1020304050607080;
    psa_handle_t         handle = 0;
 
-   val->print(PRINT_TEST, "[Check 3] Test psa_write, psa_read and psa_skip\n", 0);
+   val->print(PRINT_TEST, "[Check 3] Test psa_call, psa_read and psa_skip\n", 0);
 
    if (val->ipc_connect(SERVER_UNSPECIFED_VERSION_SID,
                         SERVER_UNSPECIFED_VERSION_VERSION,
