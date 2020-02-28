@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,7 +52,7 @@
     sizeof(COSE_SIG_CONTEXT_STRING_SIGNATURE1) + /* "Signature1" */ \
     2 + /* Overhead for encoding string */ \
     T_COSE_SIGN1_MAX_PROT_HEADER + /* entire protected headers */ \
-    3 * ( /* 3 NULL bstrs for fields not used */ \
+    3 * (/* 3 NULL bstrs for fields not used */ \
         1 /* size of a NULL bstr */  \
     )
 #define NULL_USEFUL_BUF_C  NULLUsefulBufC
