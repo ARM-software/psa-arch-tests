@@ -262,7 +262,7 @@
  * Comment macros to disable the types
  */
 #define ARCH_TEST_CMAC
-#define ARCH_TEST_GMAC
+//#define ARCH_TEST_GMAC
 #define ARCH_TEST_HMAC
 
 /**

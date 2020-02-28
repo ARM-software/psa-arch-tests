@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -337,6 +337,7 @@ int32_t pal_crypto_function(int type, va_list valist)
             ciphertext_size = va_arg(valist, size_t);
             return psa_mac_verify(key_handle, alg, plaintext, plaintext_size, ciphertext,
             ciphertext_size);
+#endif
         case PAL_CRYPTO_ASYMMTERIC_ENCRYPT:
             key_handle = (psa_key_handle_t)va_arg(valist, int);
             alg = va_arg(valist, psa_algorithm_t);
