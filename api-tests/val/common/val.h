@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -161,6 +161,18 @@
         {                                                                           \
             val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d : ", checkpoint);   \
             val->print(PRINT_ERROR, "Unequal data in compared buffers\n", 0);       \
+            return 1;                                                               \
+        }                                                                           \
+    } while (0)
+
+#define TEST_ASSERT_RANGE(arg1, range1, range2, checkpoint)                         \
+    do {                                                                            \
+        if ((arg1) < range1 || (arg1) > range2)                                     \
+        {                                                                           \
+            val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
+            val->print(PRINT_ERROR, "\tActual: %d\n", arg1);                        \
+            val->print(PRINT_ERROR, "\tExpected range: %d to ", range1);            \
+            val->print(PRINT_ERROR, "%d", range2);                                  \
             return 1;                                                               \
         }                                                                           \
     } while (0)

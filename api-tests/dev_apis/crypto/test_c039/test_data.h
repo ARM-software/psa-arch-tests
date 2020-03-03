@@ -216,6 +216,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_ECDSA
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
+#ifdef ARCH_TEST_ECC_ASYMMETRIC_API_SUPPORT
 {"Test psa_asymmetric_encrypt - ECC public key\n", 9,
  PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
 {0}, 65, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
@@ -235,6 +236,7 @@ static test_data check1[] = {
  0xff, 0x61, 0xf2, 0x00, 0x15, 0xad}, 22, 128,
  128, 256, PSA_SUCCESS
 }
+#endif
 #endif
 #endif
 };
