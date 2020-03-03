@@ -318,6 +318,12 @@
 */
 #define ARCH_TEST_DETERMINISTIC_ECDSA
 
+/**
+ * \def ARCH_TEST_ECC_ASYMMETRIC_API_SUPPORT
+ *
+ * Enable ECC support for asymmetric API.
+*/
+//#define ARCH_TEST_ECC_ASYMMETRIC_API_SUPPORT
 #include "pal_crypto_config_check.h"
 
 #endif /* _PAL_CRYPTO_CONFIG_H_ */

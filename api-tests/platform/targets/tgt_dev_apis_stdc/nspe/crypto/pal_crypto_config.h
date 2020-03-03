@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -317,6 +317,12 @@
 */
 #define ARCH_TEST_DETERMINISTIC_ECDSA
 
+/**
+ * \def ARCH_TEST_ECC_ASYMMETRIC_API_SUPPORT
+ *
+ * Enable ECC support for asymmetric API.
+*/
+//#define ARCH_TEST_ECC_ASYMMETRIC_API_SUPPORT
 #include "pal_crypto_config_check.h"
 
 #endif /* _PAL_CRYPTO_CONFIG_H_ */
