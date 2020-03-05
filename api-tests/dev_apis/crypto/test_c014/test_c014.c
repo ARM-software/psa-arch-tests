@@ -31,7 +31,7 @@ client_test_t test_c014_crypto_list[] = {
 
 static int g_test_count = 1;
 
-int32_t psa_hash_finish_test(security_t caller)
+int32_t psa_hash_finish_test(caller_security_t caller)
 {
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
@@ -39,6 +39,12 @@ int32_t psa_hash_finish_test(security_t caller)
     const char              *expected_hash;
     char                    hash[HASH_64B];
     size_t                  hash_length, hash_size = sizeof(hash);
+
+    if (num_checks == 0)
+    {
+        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+    }
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -80,18 +86,18 @@ int32_t psa_hash_finish_test(security_t caller)
             continue;
         }
 
-        TEST_ASSERT_EQUAL(hash_length, PSA_HASH_SIZE(check1[i].alg), TEST_CHECKPOINT_NUM(7));
-        TEST_ASSERT_MEMCMP(hash, expected_hash, hash_length, TEST_CHECKPOINT_NUM(8));
+        TEST_ASSERT_EQUAL(hash_length, PSA_HASH_SIZE(check1[i].alg), TEST_CHECKPOINT_NUM(6));
+        TEST_ASSERT_MEMCMP(hash, expected_hash, hash_length, TEST_CHECKPOINT_NUM(7));
 
         /*Abort the hash operation */
         status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
     }
 
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_hash_finish_inactive_operation_handle(security_t caller)
+int32_t psa_hash_finish_inactive_operation_handle(caller_security_t caller)
 {
     psa_hash_operation_t    operation;
     char                    input = 0xbd;
@@ -139,7 +145,7 @@ int32_t psa_hash_finish_inactive_operation_handle(security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_hash_finish_invalid_hash_buffer_size(security_t caller)
+int32_t psa_hash_finish_invalid_hash_buffer_size(caller_security_t caller)
 {
     psa_hash_operation_t    operation;
     char                    input = 0xbd;

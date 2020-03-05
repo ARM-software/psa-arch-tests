@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -111,8 +111,8 @@ void entry_hook(tbsa_val_api_t *val)
 void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
-    uint32_t      data, dpm_instance, s_addr=0, ns_addr=0;
-    uint32_t      region_num = 0, instance = 0, minor_id = 1, region_num_inst;
+    uint32_t      data, dpm_instance;
+    uint32_t      region_num = 0, instance = 0, minor_id = MEMORY_SRAM;
     memory_hdr_t  *memory_hdr;
     memory_desc_t *memory_desc;
 
@@ -124,7 +124,7 @@ void test_payload(tbsa_val_api_t *val)
 
     /* Check if DPM is present.*/
     if (!dpm_hdr->num) {
-        val->print(PRINT_ERROR, "\nNo DPM present in the platform", 0);
+        val->print(PRINT_ERROR, "\n\r\tNo DPM present in the platform", 0);
         val->err_check_set(TEST_CHECKPOINT_2, TBSA_STATUS_NOT_FOUND);
         return;
     }
@@ -145,7 +145,7 @@ void test_payload(tbsa_val_api_t *val)
         }
 
         /* Set the DPM state to Open.*/
-        status = val->dpm_set_state(dpm_desc->index, DPM_OPEN_STATE, dpm_desc->unlock_token);
+        status = val->dpm_set_state(dpm_desc, DPM_OPEN_STATE);
         if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
             return;
         }
@@ -162,23 +162,16 @@ void test_payload(tbsa_val_api_t *val)
             goto clean_up;
         }
         /*Check for R/W address controlled by DPM under check, and access*/
-        for (region_num = 0; region_num < memory_hdr->num; region_num++) {
+        for (region_num = 0; region_num < memory_hdr->num;) {
             instance = 0;
             do {
                 status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, minor_id, instance),
                                       (uint8_t **)&memory_desc, (uint32_t *)sizeof(memory_desc_t));
-                if (status == TBSA_STATUS_NOT_FOUND) {
-                    break;
-                } else if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
+                if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
                     goto clean_up;
                 }
-                region_num_inst = GET_NUM_INSTANCE(memory_desc);
 
                 if ((memory_desc->dpm_index == dpm_desc->index) && (memory_desc->mem_type == TYPE_NORMAL_READ_WRITE)) {
-                    if (memory_desc->attribute == MEM_NONSECURE)
-                        ns_addr++;
-                    else
-                        s_addr++;
 
                     /*Initialize the memory with known data*/
                     val->mem_write((uint32_t *)memory_desc->start, WORD, TEST_DATA);
@@ -193,47 +186,45 @@ void test_payload(tbsa_val_api_t *val)
                     if (memory_desc->attribute == MEM_NONSECURE) {
                         if (data != TEST_DATA) {
                             val->err_check_set(TEST_CHECKPOINT_9, TBSA_STATUS_ERROR);
-                            val->print(PRINT_ERROR, "\nIncorrect data returned by debugger, actual = 0x%x", data);
+                            val->print(PRINT_ERROR, "\n\r\tIncorrect data returned by debugger, actual = 0x%x", data);
                             val->print(PRINT_ERROR, " expected = 0x%x", TEST_DATA);
                             goto clean_up;
                         }
                     } else {
                         if (data == TEST_DATA) {
                             val->err_check_set(TEST_CHECKPOINT_A, TBSA_STATUS_ERROR);
-                            val->print(PRINT_ERROR, "\nDPM could not restrict access to Trusted assets", 0);
-                            val->print(PRINT_ERROR, "\nDebugger read the actual data = 0x%x", TEST_DATA);
+                            val->print(PRINT_ERROR, "\n\r\tDPM could not restrict access to Trusted assets", 0);
+                            val->print(PRINT_ERROR, "\n\r\tDebugger read the actual data = 0x%x", TEST_DATA);
                             val->print(PRINT_ERROR, " at address = 0x%x", (uint32_t)(memory_desc->start));
                             goto clean_up;
                         }
                     }
 
-                    /*Initialize the memory with known data*/
+                    /* Initialize the memory with known data */
                     val->mem_write((uint32_t *)memory_desc->start, WORD, ~TEST_DATA);
 
-                    if (test_dbg_seq_write((uint32_t)(memory_desc->start), SEQ_OPEN_STATE_WRITE))
+                    if (test_dbg_seq_write((uint32_t)(memory_desc->start), SEQ_OPEN_STATE_WRITE)) {
                         goto clean_up;
+                    }
 
-                    if (test_dbg_seq_write(TEST_DATA, SEQ_OPEN_STATE_WRITE))
+                    if (test_dbg_seq_write(TEST_DATA, SEQ_OPEN_STATE_WRITE)) {
                         goto clean_up;
-
-                    /* Read the data returned by debugger and compare to get the results.*/
-                    if(test_dbg_seq_read(&data, SEQ_OPEN_STATE_WRITE))
-                        goto clean_up;
+                    }
 
                     val->mem_read((uint32_t *)memory_desc->start, WORD, &data);
 
                     if (memory_desc->attribute == MEM_NONSECURE) {
                         if (data != TEST_DATA) {
                             val->err_check_set(TEST_CHECKPOINT_B, TBSA_STATUS_ERROR);
-                            val->print(PRINT_ERROR, "\nIncorrect data returned by debugger, actual = 0x%x", data);
+                            val->print(PRINT_ERROR, "\n\r\tIncorrect data returned by debugger, actual = 0x%x", data);
                             val->print(PRINT_ERROR, " expected = 0x%x", TEST_DATA);
                             goto clean_up;
                         }
                     } else {
                         if (data != ~TEST_DATA) {
                             val->err_check_set(TEST_CHECKPOINT_C, TBSA_STATUS_ERROR);
-                            val->print(PRINT_ERROR, "\nDPM could not restrict access to Trusted assets", 0);
-                            val->print(PRINT_ERROR, "\nDebugger read the actual data = 0x%x", TEST_DATA);
+                            val->print(PRINT_ERROR, "\n\r\tDPM could not restrict access to Trusted assets", 0);
+                            val->print(PRINT_ERROR, "\n\r\tDebugger read the actual data = 0x%x", TEST_DATA);
                             val->print(PRINT_ERROR, " at address = 0x%x", (uint32_t)(memory_desc->start));
                             goto clean_up;
                         }
@@ -241,20 +232,10 @@ void test_payload(tbsa_val_api_t *val)
 
                 }
                 instance++;
-            } while (instance < region_num_inst);
+            } while (instance < GET_NUM_INSTANCE(memory_desc));
             minor_id++;
-            if (status == TBSA_STATUS_NOT_FOUND)
-                region_num -= 1;
-            else
-                region_num += region_num_inst - 1;
+            region_num += GET_NUM_INSTANCE(memory_desc);;
         }
-    }
-
-    if (!ns_addr) {
-        val->print(PRINT_WARN, "\n        No non-secure address were accessed", 0);
-    }
-    if (!s_addr) {
-        val->print(PRINT_WARN, "\n        No secure address were accessed", 0);
     }
 
     if (test_env_reset())
@@ -271,5 +252,10 @@ clean_up:
 
 void exit_hook(tbsa_val_api_t *val)
 {
-}
+    tbsa_status_t status;
 
+    status = val->debug_set_status(DBG_INIT, SEQ_NEXT_TEST);
+    if (val->err_check_set(TEST_CHECKPOINT_14, status)) {
+        return;
+    }
+}

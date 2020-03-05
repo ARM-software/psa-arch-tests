@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,26 +24,35 @@
 client_test_t test_c016_crypto_list[] = {
     NULL,
     psa_generate_key_test,
-    psa_generate_key_negative_test,
     NULL,
 };
 
 static int       g_test_count = 1;
 static uint8_t   data[BUFFER_SIZE];
 
-int32_t psa_generate_key_test(security_t caller)
+int32_t psa_generate_key_test(caller_security_t caller)
 {
-    int                     num_checks = sizeof(check1)/sizeof(check1[0]);
-    uint32_t                i, length;
-    psa_key_policy_t        policy;
-    psa_key_type_t          key_type;
-    size_t                  bits;
-    int32_t                 status;
+    int32_t               i, status;
+    size_t                length;
+    psa_key_type_t        get_key_type;
+    psa_key_usage_t       get_key_usage;
+    psa_algorithm_t       get_key_alg;
+    size_t                get_key_bits;
+    int                   num_checks = sizeof(check1)/sizeof(check1[0]);
+    psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
+    psa_key_attributes_t  get_attributes = PSA_KEY_ATTRIBUTES_INIT;
+
+    if (num_checks == 0)
+    {
+        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+    }
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
 
+    /* Set the key data buffer to the input base on algorithm */
     for (i = 0; i < num_checks; i++)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
@@ -53,132 +62,52 @@ int32_t psa_generate_key_test(security_t caller)
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-        /* Initialize a key policy structure to a default that forbids all
-        * usage of the key
-        */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
+       /* Setup the attributes for the key */
+        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE, &attributes, check1[i].key_type);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_BITS, &attributes, check1[i].attr_bits);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM, &attributes, check1[i].key_alg);
 
-        /* Set the standard fields of a policy structure */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check1[i].usage,
-                                                                          check1[i].key_alg);
-
-        /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
-
-        /* Set the usage policy on a key slot */
-        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_handle, &policy);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
-
-        /* Generate a key or key pair */
-        status = val->crypto_function(VAL_CRYPTO_GENERATE_KEY, check1[i].key_handle,
-                    check1[i].key_type, check1[i].bits, check1[i].extra, check1[i].extra_size);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(5));
+        /* Generate the key */
+        status = val->crypto_function(VAL_CRYPTO_GENERATE_KEY, &attributes, &check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(3));
 
         if (check1[i].expected_status != PSA_SUCCESS)
-        {
-            /* Destroy the key */
-            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
-
             continue;
-        }
 
-        /* Get basic metadata about a key */
-        status = val->crypto_function(VAL_CRYPTO_GET_KEY_INFORMATION, check1[i].key_handle,
-                    &key_type, &bits);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+        /* Get the attributes of the imported key and check if it matches the given value */
+        status = val->crypto_function(VAL_CRYPTO_GET_KEY_ATTRIBUTES, check1[i].key_handle,
+                 &get_attributes);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
-        TEST_ASSERT_EQUAL(key_type, check1[i].key_type, TEST_CHECKPOINT_NUM(8));
+        val->crypto_function(VAL_CRYPTO_GET_KEY_TYPE, &get_attributes, &get_key_type);
+        TEST_ASSERT_EQUAL(get_key_type, check1[i].key_type, TEST_CHECKPOINT_NUM(5));
 
-        TEST_ASSERT_EQUAL(bits, check1[i].expected_bit_length, TEST_CHECKPOINT_NUM(9));
+        val->crypto_function(VAL_CRYPTO_GET_KEY_BITS, &get_attributes, &get_key_bits);
+        TEST_ASSERT_EQUAL(get_key_bits, check1[i].expected_bit_length, TEST_CHECKPOINT_NUM(6));
+
+        val->crypto_function(VAL_CRYPTO_GET_KEY_USAGE_FLAGS, &get_attributes, &get_key_usage);
+        TEST_ASSERT_EQUAL(get_key_usage, check1[i].usage, TEST_CHECKPOINT_NUM(7));
+
+        val->crypto_function(VAL_CRYPTO_GET_KEY_ALGORITHM, &get_attributes, &get_key_alg);
+        TEST_ASSERT_EQUAL(get_key_alg, check1[i].key_alg, TEST_CHECKPOINT_NUM(8));
 
         /* Export a key in binary format */
         status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, check1[i].key_handle, data,
                                       BUFFER_SIZE, &length);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
-        TEST_ASSERT_EQUAL(length, check1[i].expected_key_length, TEST_CHECKPOINT_NUM(11));
+        /* Check the attributes of the exported key */
+        TEST_ASSERT_RANGE(length, check1[i].expected_range[0], check1[i].expected_range[1], TEST_CHECKPOINT_NUM(10));
+
+        /* Reset the attributes */
+        val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
+        val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &get_attributes);
 
         /* Destroy the key */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
     }
 
     return VAL_STATUS_SUCCESS;
 }
-
-int32_t psa_generate_key_negative_test(security_t caller)
-{
-    int                     num_checks = sizeof(check2)/sizeof(check2[0]);
-    uint32_t                i;
-    psa_key_policy_t        policy;
-    int32_t                 status;
-
-    /* Initialize the PSA crypto library*/
-    status = val->crypto_function(VAL_CRYPTO_INIT);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
-
-    for (i = 0; i < num_checks; i++)
-    {
-        /* Setting up the watchdog timer for each check */
-        status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
-        TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
-
-        val->print(PRINT_TEST, "[Check %d] Test psa_generate_key with unallocated key handle\n",
-                                                                                 g_test_count++);
-        /* Generate a key or key pair */
-        status = val->crypto_function(VAL_CRYPTO_GENERATE_KEY, check2[i].key_handle,
-                    check2[i].key_type, check2[i].bits, check2[i].extra, check2[i].extra_size);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));
-
-        val->print(PRINT_TEST, "[Check %d] Test psa_generate_key with zero as key handle\n",
-                                                                                 g_test_count++);
-        /* Generate a key or key pair */
-        status = val->crypto_function(VAL_CRYPTO_GENERATE_KEY, 0, check2[i].key_type,
-                                          check2[i].bits, check2[i].extra, check2[i].extra_size);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
-
-        val->print(PRINT_TEST, "[Check %d] Test psa_generate_key with pre-occupied key handle\n",
-                                                                                 g_test_count++);
-        /* Initialize a key policy structure to a default that forbids all
-        * usage of the key
-        */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
-
-        /* Set the standard fields of a policy structure */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check2[i].usage,
-                                                                          check2[i].key_alg);
-
-        /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check2[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
-
-        /* Set the usage policy on a key slot */
-        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check2[i].key_handle, &policy);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
-
-        /* Generate a key or key pair */
-        status = val->crypto_function(VAL_CRYPTO_GENERATE_KEY, check2[i].key_handle,
-                    check2[i].key_type, check2[i].bits, check2[i].extra, check2[i].extra_size);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
-
-        /* Generate a key or key pair */
-        status = val->crypto_function(VAL_CRYPTO_GENERATE_KEY, check2[i].key_handle,
-                    check2[i].key_type, check2[i].bits, check2[i].extra, check2[i].extra_size);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_ALREADY_EXISTS, TEST_CHECKPOINT_NUM(8));
-
-        val->print(PRINT_TEST, "[Check %d] Test psa_generate_key with destroyed key handle\n",
-                                                                                 g_test_count++);
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check2[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
-
-        /* Generate a key or key pair */
-        status = val->crypto_function(VAL_CRYPTO_GENERATE_KEY, check2[i].key_handle,
-                    check2[i].key_type, check2[i].bits, check2[i].extra, check2[i].extra_size);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(10));
-    }
-
-    return VAL_STATUS_SUCCESS;
-}
-

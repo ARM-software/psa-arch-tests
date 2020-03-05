@@ -31,7 +31,7 @@ client_test_t test_i039_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_skip_with_invec_greater_than_max_iovec(security_t caller)
+int32_t client_test_psa_skip_with_invec_greater_than_max_iovec(caller_security_t caller)
 {
    int32_t            status = VAL_STATUS_SUCCESS;
    psa_handle_t       handle = 0;
@@ -40,14 +40,14 @@ int32_t client_test_psa_skip_with_invec_greater_than_max_iovec(security_t caller
    val->print(PRINT_TEST,
             "[Check 1] Test psa_skip with invec_idx > PSA_MAX_IOVEC\n", 0);
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
-   if (handle < 0)
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   if (!PSA_HANDLE_IS_VALID(handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
    }
 
-   status_of_call =  psa->call(handle, NULL, 0, NULL, 0);
+   status_of_call =  psa->call(handle, PSA_IPC_CALL, NULL, 0, NULL, 0);
 
    /* Expectation is server test should hang and control shouldn't have come here */
    val->print(PRINT_ERROR, "\tCall should failed but succeed\n", 0);

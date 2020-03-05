@@ -36,13 +36,13 @@ client_test_t test_i082_client_tests_list[] = {
     NULL,
 };
 
-#if (SP_HEAP_MEM_SUPP == 1)
+#ifdef SP_HEAP_MEM_SUPP
 static int32_t get_secure_partition_address(psa_handle_t *handle,
                                             addr_t *addr,
                                             driver_test_fn_id_t test_fn_id)
 {
-   *handle = psa->connect(DRIVER_TEST_SID, 1);
-   if (*handle < 0)
+   *handle = psa->connect(DRIVER_TEST_SID, DRIVER_TEST_VERSION);
+   if (!PSA_HANDLE_IS_VALID(*handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
@@ -51,7 +51,7 @@ static int32_t get_secure_partition_address(psa_handle_t *handle,
    /* Execute driver function related to TEST_ISOLATION_PSA_ROT_DATA_RD */
    psa_invec invec[1] = {{&test_fn_id, sizeof(test_fn_id)}};
    psa_outvec outvec[1] = {{addr, sizeof(addr_t)}};
-   if (psa->call(*handle, invec, 1, outvec, 1) != PSA_SUCCESS)
+   if (psa->call(*handle, PSA_IPC_CALL, invec, 1, outvec, 1) != PSA_SUCCESS)
    {
        val->print(PRINT_ERROR, "\tmsg request failed\n", 0);
        return VAL_STATUS_CALL_FAILED;
@@ -62,7 +62,7 @@ static int32_t get_secure_partition_address(psa_handle_t *handle,
 
 static int32_t get_driver_status(psa_handle_t *handle)
 {
-   if (psa->call(*handle, NULL, 0, NULL, 0) != PSA_SUCCESS)
+   if (psa->call(*handle, PSA_IPC_CALL, NULL, 0, NULL, 0) != PSA_SUCCESS)
    {
        return VAL_STATUS_CALL_FAILED;
    }
@@ -74,7 +74,7 @@ static void close_driver_fn(psa_handle_t *handle)
    psa->close(*handle);
 }
 
-int32_t client_test_app_rot_read_psa_rot_heap(security_t caller)
+int32_t client_test_app_rot_read_psa_rot_heap(caller_security_t caller)
 {
    addr_t       psa_rot_addr;
    uint8_t      data = DATA_VALUE;
@@ -117,7 +117,7 @@ int32_t client_test_app_rot_read_psa_rot_heap(security_t caller)
    return VAL_STATUS_SPM_FAILED;
 }
 
-int32_t client_test_app_rot_write_psa_rot_heap(security_t caller)
+int32_t client_test_app_rot_write_psa_rot_heap(caller_security_t caller)
 {
    addr_t       psa_rot_addr;
    uint8_t      data = DATA_VALUE;
@@ -146,14 +146,14 @@ int32_t client_test_app_rot_write_psa_rot_heap(security_t caller)
    return VAL_STATUS_SUCCESS;
 }
 #else
-int32_t client_test_app_rot_read_psa_rot_heap(security_t caller)
+int32_t client_test_app_rot_read_psa_rot_heap(caller_security_t caller)
 {
    val->print(PRINT_TEST, "[Check 1] Test APP-RoT reading PSA-RoT heap\n", 0);
    val->print(PRINT_ERROR, "\tSkipping test as heap memory not supported\n", 0);
    return RESULT_SKIP(VAL_STATUS_HEAP_NOT_AVAILABLE);
 }
 
-int32_t client_test_app_rot_write_psa_rot_heap(security_t caller)
+int32_t client_test_app_rot_write_psa_rot_heap(caller_security_t caller)
 {
    val->print(PRINT_TEST, "[Check 2] Test APP-RoT writing PSA-RoT heap\n", 0);
    val->print(PRINT_ERROR, "\tSkipping test as heap memory not supported\n", 0);

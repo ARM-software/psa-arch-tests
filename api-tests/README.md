@@ -18,20 +18,19 @@ The test suite for this specification is located in the **ff** directory of this
 The test suite for this specification is located in the **dev_apis** directory of this repository. See the [PSA Developer APIs README](dev_apis/README.md) file for more details.
 
 ## Release Update
- - Release Version: 0.9
- - Code quality: Arm welcomes suggestions for enhancements and error corrections.
+ - Code Quality : REL v1.0
  - This release contains following tests: <br />
 
 1. Developer APIs test list:
 
-| Test Category            | Specification Version                | Header File                                                                       |
-|--------------------------|--------------------------------------|-----------------------------------------------------------------------------------|
-| Crypto                   | PSA Crypto API 1.0-Beta([mbedcrypto-1.0.0](https://github.com/ARMmbed/mbed-crypto/tree/mbedcrypto-1.0.0))                  | [crypto.h](../api-specs/include/psa/crypto.h)                                     |
-| Protected Storage        | PSA Protected Storage API 1.0-Beta2       | [protected_storage.h](../api-specs/include/psa/protected_storage.h)               |
-| Internal Trusted Storage | PSA Internal Trusted Storage API 1.0-Beta2 | [internal_trusted_storage.h](../api-specs/include/psa/internal_trusted_storage.h) |
-| Initial Attestation      | PSA Initial Attestation API 1.0-Beta0     | [initial_attestation.h](../api-specs/include/psa/initial_attestation.h)           |
+| Test Category            | Specification Version                |
+|--------------------------|--------------------------------------|
+| Crypto                   | [PSA Crypto API 1.0-Beta3](../api-specs/crypto/v1.0-beta3/doc/)     |
+| Protected Storage        | [PSA Protected Storage API 1.0.0](../api-specs/storage/v1.0/doc/) |
+| Internal Trusted Storage | [PSA Internal Trusted Storage API 1.0.0](../api-specs/storage/v1.0/doc/) |
+| Initial Attestation      | [PSA Initial Attestation API 1.0.0](../api-specs/attestation/v1.0/doc/)  |
 
-2. PSA-FF tests that are written for version 1.0-Beta1 of the PSA FF specification.
+2. PSA-FF tests that are written for the PSA FF 1.0 specification.
 
 ## License
 
@@ -46,4 +45,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2019, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2020, Arm Limited and Contributors. All rights reserved.*

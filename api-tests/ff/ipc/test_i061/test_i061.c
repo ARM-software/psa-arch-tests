@@ -31,7 +31,7 @@ client_test_t test_i061_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_clear_at_unasserted_doorbell_sig(security_t caller)
+int32_t client_test_psa_clear_at_unasserted_doorbell_sig(caller_security_t caller)
 {
    return VAL_STATUS_SUCCESS;
 }

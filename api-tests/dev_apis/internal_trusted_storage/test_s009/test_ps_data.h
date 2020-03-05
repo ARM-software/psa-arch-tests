@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or ps affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,50 +20,49 @@
 #include "val_protected_storage.h"
 
 #define SST_FUNCTION val->ps_function
-#define psa_sst_uid_t psa_ps_uid_t
 
 typedef struct {
     enum ps_function_code  api;
-    psa_ps_status_t        status;
+    psa_status_t        status;
 } test_data;
 
-static struct psa_ps_info_t info;
+static struct psa_storage_info_t info;
 static const test_data s009_data[] = {
 {
- 0, 0 /* This is dummy for index0 */
+ 0, 0 /* This is dummy for Index0 */
 },
 {
- VAL_PS_SET, PSA_PS_SUCCESS /* Call set API with NULL write buffer and 0 length */
+ VAL_PS_SET, PSA_SUCCESS /* Index1 - Call set API with NULL write buffer and 0 length */
 },
 {
- VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Verify UID is created */
+ VAL_PS_GET_INFO, PSA_SUCCESS /* Index2 - Verify UID is created */
 },
 {
- VAL_PS_GET, PSA_PS_SUCCESS /* Call get API with NULL write buffer and 0 length */
+ VAL_PS_GET, PSA_SUCCESS /* Index3 - Call get API with NULL write buffer and 0 length */
 },
 {
- VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the storage entity */
+ VAL_PS_REMOVE, PSA_SUCCESS /* Index4 - Remove the storage entity */
 },
 {
- VAL_PS_GET_INFO, PSA_PS_ERROR_UID_NOT_FOUND /* Verify UID is removed */
+ VAL_PS_GET_INFO, PSA_ERROR_DOES_NOT_EXIST /* Index5 - Verify UID is removed */
 },
 {
- VAL_PS_SET, PSA_PS_SUCCESS /* Create storage of zero size and valid write buffer */
+ VAL_PS_SET, PSA_SUCCESS /* Index6 - Create storage of zero size and valid write buffer */
 },
 {
- VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Call get_info API to check data size */
+ VAL_PS_GET_INFO, PSA_SUCCESS /* Index7 - Call get_info API to check data size */
 },
 {
- 0, 0 /* This is dummy for index8 */
+ 0, 0 /* This is dummy for Index8 */
 },
 {
- VAL_PS_GET, PSA_PS_SUCCESS /* Call get API with 0 length and NULL read buffer */
+ VAL_PS_GET, PSA_SUCCESS /* Index9 - Call get API with 0 length and NULL read buffer */
 },
 {
- VAL_PS_SET, PSA_PS_SUCCESS /* Increase the asset size */
+ VAL_PS_SET, PSA_SUCCESS /* Index10 - Increase the asset size */
 },
 {
- VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the storage entity */
+ VAL_PS_REMOVE, PSA_SUCCESS /* Index11 - Remove the storage entity */
 },
 };
 #endif /* _TEST_S009_PS_DATA_TESTS_H_ */

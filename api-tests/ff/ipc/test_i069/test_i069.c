@@ -19,8 +19,8 @@
 #include "val_interfaces.h"
 #include "val_target.h"
 #else
-#include "val/common/val_client_defs.h"
-#include "val/spe/val_partition_common.h"
+#include "val_client_defs.h"
+#include "val_service_defs.h"
 #endif
 
 #include "test_i069.h"
@@ -31,7 +31,7 @@ client_test_t test_i069_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_write_to_code_space(security_t caller)
+int32_t client_test_write_to_code_space(caller_security_t caller)
 {
   int32_t *p;
 

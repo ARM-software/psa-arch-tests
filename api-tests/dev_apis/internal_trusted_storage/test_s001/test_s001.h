@@ -19,17 +19,17 @@
 
 #ifdef ITS_TEST
 #define VAL_STORAGE_BASE VAL_INTERNAL_TRUSTED_STORAGE_BASE
-#define test_entry CONCAT(test_entry_, s001)
+#define test_entry CONCAT(test_entry_,  s001)
 #elif PS_TEST
 #define VAL_STORAGE_BASE VAL_PROTECTED_STORAGE_BASE
-#define test_entry CONCAT(test_entry_, p001)
+#define test_entry CONCAT(test_entry_,  p001)
 #endif
-#define val CONCAT(val,test_entry)
-#define psa CONCAT(psa,test_entry)
+#define val CONCAT(val, test_entry)
+#define psa CONCAT(psa, test_entry)
 
 extern val_api_t *val;
 extern psa_api_t *psa;
 extern client_test_t test_s001_sst_list[];
 
-int32_t psa_sst_uid_not_found(security_t caller);
+int32_t psa_sst_uid_not_found(caller_security_t caller);
 #endif /* _TEST_S001_CLIENT_TESTS_H_ */

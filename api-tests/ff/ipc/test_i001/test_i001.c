@@ -32,7 +32,7 @@ client_test_t test_i001_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_framework_version(security_t caller)
+int32_t client_test_psa_framework_version(caller_security_t caller)
 {
    int32_t         status = VAL_STATUS_SUCCESS;
 
@@ -49,15 +49,19 @@ int32_t client_test_psa_framework_version(security_t caller)
    return status;
 }
 
-int32_t client_test_psa_version(security_t caller)
+int32_t client_test_psa_version(caller_security_t caller)
 {
    int32_t         status = VAL_STATUS_SUCCESS;
    uint32_t        version;
 
    val->print(PRINT_TEST, "[Check 2] psa_version\n", 0);
 
-   /*Return PSA_VERSION_NONE when the RoT Service is not implemented, or the caller is not permitted
-   to access the service. Return minor version of the implemented and allowed RoT Service */
+   /*
+    * Return PSA_VERSION_NONE when the RoT Service is not implemented,
+    * or the caller is not permitted to access the service.
+    * Return version of the implemented and allowed RoT Service
+    */
+
    /* psa_version() check for un-implemented SID */
    if (psa->version(INVALID_SID) != PSA_VERSION_NONE)
    {
@@ -71,8 +75,8 @@ int32_t client_test_psa_version(security_t caller)
 
    /* psa_version() check for implemented SID but allows only secure connection */
    version = psa->version(SERVER_SECURE_CONNECT_ONLY_SID);
-   if (((caller == NONSECURE) && (version != PSA_VERSION_NONE))
-       || ((caller == SECURE) && (version != 2)))
+   if (((caller == CALLER_NONSECURE) && (version != PSA_VERSION_NONE))
+       || ((caller == CALLER_SECURE) && (version != SERVER_SECURE_CONNECT_ONLY_VERSION)))
    {
        status = VAL_STATUS_VERSION_API_FAILED;
        val->print(PRINT_ERROR,
@@ -84,8 +88,8 @@ int32_t client_test_psa_version(security_t caller)
        return status;
    }
 
-   /* psa_version() returns minor version of the implemented and allowed RoT Service */
-   if (psa->version(SERVER_TEST_DISPATCHER_SID) != 1)
+   /* psa_version() returns version of the implemented and allowed RoT Service */
+   if (psa->version(SERVER_TEST_DISPATCHER_SID) != SERVER_TEST_DISPATCHER_VERSION)
    {
        status = VAL_STATUS_VERSION_API_FAILED;
    }

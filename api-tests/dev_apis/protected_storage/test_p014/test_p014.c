@@ -28,18 +28,18 @@ client_test_t test_p014_sst_list[] = {
     NULL,
 };
 
-static psa_ps_uid_t p_uid = UID_BASE_VALUE + 5;
+static psa_storage_uid_t p_uid = UID_BASE_VALUE + 5;
 static uint8_t write_buff[TEST_BUFF_SIZE/4] = { 0x03, 0x04, 0x05, 0x07};
 static uint8_t read_buff[TEST_BUFF_SIZE/4]  = {0};
 
 static int32_t psa_sst_optional_api_not_supported()
 {
-    uint32_t status;
-    struct psa_ps_info_t info;
+    uint32_t status, p_data_length = 0;
+    struct psa_storage_info_t info;
 
     /* Try to create storage using create API */
     val->print(PRINT_TEST, "[Check 1] Call to create API should fail as API not supported\n", 0);
-    status = SST_FUNCTION(p014_data[1].api, p_uid, TEST_BUFF_SIZE, 0);
+    status = SST_FUNCTION(p014_data[1].api, p_uid, TEST_BUFF_SIZE, PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, p014_data[1].status, TEST_CHECKPOINT_NUM(1));
 
     /* Verify that UID doesn't exist */
@@ -48,7 +48,8 @@ static int32_t psa_sst_optional_api_not_supported()
 
     /* Create a valid storage using set API */
     val->print(PRINT_TEST, "[Check 2] Create valid storage with set API\n", 0);
-    status = SST_FUNCTION(p014_data[3].api, p_uid, TEST_BUFF_SIZE/4, write_buff, 0);
+    status = SST_FUNCTION(p014_data[3].api, p_uid, TEST_BUFF_SIZE/4, write_buff,
+                          PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, p014_data[3].status, TEST_CHECKPOINT_NUM(3));
 
     /* Partial data write with set_extended API should fail */
@@ -58,18 +59,19 @@ static int32_t psa_sst_optional_api_not_supported()
 
     /* Call the get function to match the data */
     val->print(PRINT_TEST, "[Check 4] Verify data is unchanged\n", 0);
-    status = SST_FUNCTION(p014_data[5].api, p_uid, 0, TEST_BUFF_SIZE/4, read_buff);
+    status = SST_FUNCTION(p014_data[5].api, p_uid, 0, TEST_BUFF_SIZE/4, read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, p014_data[5].status, TEST_CHECKPOINT_NUM(5));
     TEST_ASSERT_MEMCMP(read_buff, write_buff, TEST_BUFF_SIZE/4, TEST_CHECKPOINT_NUM(6));
+    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE/4, TEST_CHECKPOINT_NUM(7));
 
     /* Remove the storage */
     status = SST_FUNCTION(p014_data[7].api, p_uid);
-    TEST_ASSERT_EQUAL(status, p014_data[7].status, TEST_CHECKPOINT_NUM(7));
+    TEST_ASSERT_EQUAL(status, p014_data[7].status, TEST_CHECKPOINT_NUM(8));
 
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_sst_optional_api_not_supported_check(security_t caller)
+int32_t psa_sst_optional_api_not_supported_check(caller_security_t caller)
 {
     uint32_t status;
     int32_t test_status;

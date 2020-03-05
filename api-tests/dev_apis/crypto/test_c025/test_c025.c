@@ -23,7 +23,6 @@
 client_test_t test_c025_crypto_list[] = {
     NULL,
     psa_aead_decrypt_test,
-    psa_aead_decrypt_negative_test,
     NULL,
 };
 
@@ -42,14 +41,20 @@ static bool_t is_buffer_empty(uint8_t *buffer, size_t size)
     return TRUE;
 }
 
-int32_t psa_aead_decrypt_test(security_t caller)
+int32_t psa_aead_decrypt_test(caller_security_t caller)
 {
     int32_t          i, status;
     uint8_t          plaintext[BUFFER_SIZE];
-    psa_key_policy_t policy;
     size_t           plaintext_length;
     int              num_checks = sizeof(check1)/sizeof(check1[0]);
     uint8_t          *nonce, *additional_data;
+    psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
+
+    if (num_checks == 0)
+    {
+        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+    }
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -60,33 +65,19 @@ int32_t psa_aead_decrypt_test(security_t caller)
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
 
-        /* Initialize a key policy structure to a default that forbids all
-         * usage of the key
-         */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
-
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-        /* Set the standard fields of a policy structure */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check1[i].usage,
-                                                                          check1[i].key_alg);
-
-        memset(plaintext, 0, sizeof(plaintext));
-        /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
-
-        /* Set the usage policy on a key slot */
-        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_handle,
-                                      &policy);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
+        /* Setup the attributes for the key */
+        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE, &attributes, check1[i].key_type);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM, &attributes, check1[i].key_alg);
 
         /* Import the key data into the key slot */
-        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, check1[i].key_handle,
-                    check1[i].key_type, check1[i].key_data, check1[i].key_length);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].key_data,
+                 check1[i].key_length, &check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         if (is_buffer_empty(check1[i].nonce, check1[i].nonce_length) == TRUE)
         {
@@ -109,113 +100,39 @@ int32_t psa_aead_decrypt_test(security_t caller)
                   check1[i].key_alg, nonce, check1[i].nonce_length, additional_data,
                   check1[i].additional_data_length, check1[i].ciphertext, check1[i].ciphertext_size,
                   plaintext, check1[i].plaintext_size, &plaintext_length);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
         if (check1[i].expected_status != PSA_SUCCESS)
         {
             /* Destroy the key */
             status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
             continue;
         }
 
         /* Check if the length matches */
         TEST_ASSERT_EQUAL(plaintext_length, check1[i].expected_plaintext_length,
-                          TEST_CHECKPOINT_NUM(8));
+                          TEST_CHECKPOINT_NUM(6));
 
         /* Check if the data matches */
         TEST_ASSERT_MEMCMP(plaintext, check1[i].expected_plaintext, plaintext_length,
-                           TEST_CHECKPOINT_NUM(9));
+                           TEST_CHECKPOINT_NUM(7));
 
         /* Destroy the key */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+
+        /* Reset the key attributes and check if psa_import_key fails */
+        val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
+
+        /* Process an authenticated decryption operation on a destroyed key handle */
+        status = val->crypto_function(VAL_CRYPTO_AEAD_DECRYPT, check1[i].key_handle,
+                  check1[i].key_alg, nonce, check1[i].nonce_length, additional_data,
+                  check1[i].additional_data_length, check1[i].ciphertext, check1[i].ciphertext_size,
+                  plaintext, check1[i].plaintext_size, &plaintext_length);
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(9));
     }
 
     return VAL_STATUS_SUCCESS;
-}
-
-int32_t psa_aead_decrypt_negative_test(security_t caller)
-{
-    int32_t          i, status;
-    uint8_t          plaintext[BUFFER_SIZE];
-    psa_key_policy_t policy;
-    size_t           plaintext_length;
-    int              num_checks = sizeof(check2)/sizeof(check2[0]);
-    uint8_t          *nonce, *additional_data;
-
-    /* Initialize the PSA crypto library*/
-    status = val->crypto_function(VAL_CRYPTO_INIT);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
-
-    for (i = 0; i < num_checks; i++)
-    {
-        /* Initialize a key policy structure to a default that forbids all
-         * usage of the key
-         */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
-
-        /* Setting up the watchdog timer for each check */
-        status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
-        TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
-
-        /* Set the standard fields of a policy structure */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check2[i].usage,
-                                                                          check2[i].key_alg);
-
-        if (is_buffer_empty(check2[i].nonce, check2[i].nonce_length) == TRUE)
-        {
-            nonce = NULL;
-            check2[i].nonce_length = 0;
-        }
-        else
-            nonce = check2[i].nonce;
-
-        if (is_buffer_empty(check2[i].additional_data, check2[i].additional_data_length) == TRUE)
-        {
-            additional_data = NULL;
-            check2[i].additional_data_length = 0;
-        }
-        else
-            additional_data = check2[i].additional_data;
-
-        val->print(PRINT_TEST, "[Check %d] Test psa_aead_decrypt - Invalid key handle\n",
-                                                                             g_test_count++);
-        /* Process an authenticated decryption operation */
-        status = val->crypto_function(VAL_CRYPTO_AEAD_DECRYPT, check2[i].key_handle,
-                  check2[i].key_alg, nonce, check2[i].nonce_length, additional_data,
-                  check2[i].additional_data_length, check2[i].ciphertext, check2[i].ciphertext_size,
-                  plaintext, check2[i].plaintext_size, &plaintext_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));
-
-        val->print(PRINT_TEST, "[Check %d] Test psa_aead_decrypt - Zero as key handle\n",
-                                                                             g_test_count++);
-        /* Process an authenticated decryption operation */
-        status = val->crypto_function(VAL_CRYPTO_AEAD_DECRYPT, 0,
-                  check2[i].key_alg, nonce, check2[i].nonce_length, additional_data,
-                  check2[i].additional_data_length, check2[i].ciphertext, check2[i].ciphertext_size,
-                  plaintext, check2[i].plaintext_size, &plaintext_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
-
-        val->print(PRINT_TEST, "[Check %d] Test psa_aead_decrypt - Empty key handle\n",
-                                                                             g_test_count++);
-        /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check2[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
-
-        /* Set the usage policy on a key slot */
-        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check2[i].key_handle,
-                        &policy);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
-
-        /* Process an authenticated decryption operation */
-        status = val->crypto_function(VAL_CRYPTO_AEAD_DECRYPT, check2[i].key_handle,
-                  check2[i].key_alg, nonce, check2[i].nonce_length, additional_data,
-                  check2[i].additional_data_length, check2[i].ciphertext, check2[i].ciphertext_size,
-                  plaintext, check2[i].plaintext_size, &plaintext_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_DOES_NOT_EXIST, TEST_CHECKPOINT_NUM(7));
-     }
-
-     return VAL_STATUS_SUCCESS;
 }

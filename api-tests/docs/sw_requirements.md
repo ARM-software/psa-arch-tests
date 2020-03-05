@@ -1,11 +1,13 @@
 
 # Architecture Test Suite Software Requirements
 
-Before starting the test suite build, ensure that the following requirements are met: <br />
+Current release has been tested againt the below tools versions: <br />
 
-- Host Operating System     : Ubuntu 16.04
-- Scripting tools           : Perl 5.12.3, Python 3.1.7
-- Compiler toolchain        : GNU Arm Embedded Toolchain 6.3.1, Arm Compiler v6.7
+- Host Operating System     : Ubuntu 16.04, Windows 10
+- Scripting tools           : Python 3.7.1
+- Host Compiler toolchain   : GCC 5.4.0 32-Bit (Linux Host) or MinGW 6.3.0 32-Bit (Windows Host)
+- Cross Compiler toolchain  : GNU Arm Embedded Toolchain 6.3.1, 7.3.1 or Arm Compiler 6.11
+- Build tools               : CMake 3.10
 
 **Note**: To compile the test suite code, at least one of the above supported compiler toolchains
         must be available in the build environment.
@@ -32,30 +34,15 @@ git clone https://github.com/ARM-software/psa-arch-tests.git
 ## Cloning the external repository
 
 To build Initial Attestation tests, the PSA APIs test suite clones the following
-git repository. The cloning is automated as part of the test suite
-build script **./setup.sh**:
+git repository. The cloning is automated as part of the test suite cmake build:
 
-~~~
-git clone https://github.com/laurencelundblade/QCBOR.git ./platform/targets/<platform_name>/nspe/initial_attestation/ext
-cd ./platform/targets/<platform_name>/nspe/initial_attestation/ext; git checkout da53227db1488dde0952bdff66c3d904dce270b3
-~~~
-
-## To build on Cygwin(32-bit)
-
-To build test suite on Cygwin ensure all the above prerequisite in place.
-
-**Note**: Downloading the test suite in Window platform can have extra
-newline chars than Unix. Therefore, it is recommended to execute the
-following command to change the newline char format before running
-any test suite command.<br />
-
-~~~
-dos2unix ./tools/scripts/setup.sh
-~~~
+**Repo** <br />
+Name      : https://github.com/laurencelundblade/QCBOR.git <br />
+Commit id : 42272e466a8472948bf8fca076d113b81b99f0e0
 
 ## License
 Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2019, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2020, Arm Limited and Contributors. All rights reserved.*

@@ -29,6 +29,7 @@
 **/
 int32_t val_crypto_function(int type, ...)
 {
+#ifdef CRYPTO
     va_list      valist;
     int32_t      status;
 
@@ -36,4 +37,7 @@ int32_t val_crypto_function(int type, ...)
     status = pal_crypto_function(type, valist);
     va_end(valist);
     return status;
+#else
+    return VAL_STATUS_ERROR;
+#endif
 }

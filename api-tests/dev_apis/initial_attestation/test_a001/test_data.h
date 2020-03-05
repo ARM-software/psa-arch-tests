@@ -19,9 +19,9 @@
 
 typedef struct {
     char                    test_desc[100];
-    uint32_t                challenge_size;
-    uint32_t                actual_challenge_size;
-    uint32_t                token_size;
+    size_t                  challenge_size;
+    size_t                  actual_challenge_size;
+    size_t                  token_size;
     psa_status_t            expected_status;
 } test_data;
 
@@ -40,31 +40,31 @@ static test_data check1[] = {
 },
 
 {"Test psa_initial_attestation_get_token with zero challenge size\n",
- 0, 0, TOKEN_SIZE, PSA_ATTEST_ERR_INVALID_INPUT
+ 0, 0, TOKEN_SIZE, PSA_ERROR_INVALID_ARGUMENT
 },
 
 {"Test psa_initial_attestation_get_token with small challenge size\n",
  PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32-1, PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32-1,
- TOKEN_SIZE, PSA_ATTEST_ERR_INVALID_INPUT
+ TOKEN_SIZE, PSA_ERROR_INVALID_ARGUMENT
 },
 
 {"Test psa_initial_attestation_get_token with invalid challenge size\n",
  PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32+1, PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32+1,
- TOKEN_SIZE, PSA_ATTEST_ERR_INVALID_INPUT
+ TOKEN_SIZE, PSA_ERROR_INVALID_ARGUMENT
 },
 
 {"Test psa_initial_attestation_get_token with large challenge size\n",
- MAX_CHALLENGE_SIZE+1,  MAX_CHALLENGE_SIZE+1, TOKEN_SIZE, PSA_ATTEST_ERR_INVALID_INPUT
+ MAX_CHALLENGE_SIZE+1,  MAX_CHALLENGE_SIZE+1, TOKEN_SIZE, PSA_ERROR_INVALID_ARGUMENT
 },
 
 {"Test psa_initial_attestation_get_token with zero as token size\n",
  PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32-1, PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32,
- 0, PSA_ATTEST_ERR_INVALID_INPUT
+ 0, PSA_ERROR_INVALID_ARGUMENT
 },
 
 {"Test psa_initial_attestation_get_token with small token size\n",
  PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32-1, PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32,
- PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32-1, PSA_ATTEST_ERR_TOKEN_BUFFER_OVERFLOW
+ PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32-1, PSA_ERROR_BUFFER_TOO_SMALL
 },
 };
 
@@ -83,21 +83,21 @@ static test_data check2[] = {
 
 {"Test psa_initial_attestation_get_token_size with zero challenge size\n",
  0, 0,
- TOKEN_SIZE, PSA_ATTEST_ERR_INVALID_INPUT
+ TOKEN_SIZE, PSA_ERROR_INVALID_ARGUMENT
 },
 
 {"Test psa_initial_attestation_get_token_size with small challenge size\n",
  PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32-1, PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32-1,
- TOKEN_SIZE, PSA_ATTEST_ERR_INVALID_INPUT
+ TOKEN_SIZE, PSA_ERROR_INVALID_ARGUMENT
 },
 
 {"Test psa_initial_attestation_get_token_size with invalid challenge size\n",
  PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32+1, PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32+1,
- TOKEN_SIZE, PSA_ATTEST_ERR_INVALID_INPUT
+ TOKEN_SIZE, PSA_ERROR_INVALID_ARGUMENT
 },
 
 {"Test psa_initial_attestation_get_token_size with large challenge size\n",
  MAX_CHALLENGE_SIZE+1,  MAX_CHALLENGE_SIZE+1,
- TOKEN_SIZE, PSA_ATTEST_ERR_INVALID_INPUT
+ TOKEN_SIZE, PSA_ERROR_INVALID_ARGUMENT
 },
 };

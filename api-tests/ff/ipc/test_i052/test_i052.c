@@ -31,7 +31,7 @@ client_test_t test_i052_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_call_with_invalid_invec_end_addr(security_t caller)
+int32_t client_test_psa_call_with_invalid_invec_end_addr(caller_security_t caller)
 {
    int32_t                 status = VAL_STATUS_SUCCESS;
    psa_handle_t            handle = 0;
@@ -67,9 +67,8 @@ int32_t client_test_psa_call_with_invalid_invec_end_addr(security_t caller)
     * VAL APIs to decide test status.
     */
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
-
-   if (handle < 0)
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   if (!PSA_HANDLE_IS_VALID(handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
@@ -78,7 +77,7 @@ int32_t client_test_psa_call_with_invalid_invec_end_addr(security_t caller)
    /*
     * Selection of invalid size for psa_invec:
     *
-    * if caller == NONSECURE
+    * if caller == CALLER_NONSECURE
     *    valid_base = nspe_mmio_region_base;
     *    invalid_size = (driver_mmio_region_base - nspe_mmio_region_base + 1);
     * else
@@ -97,7 +96,7 @@ int32_t client_test_psa_call_with_invalid_invec_end_addr(security_t caller)
        return status;
    }
 
-   if (caller == NONSECURE)
+   if (caller == CALLER_NONSECURE)
        memory_cfg_id = MEMORY_NSPE_MMIO;
    else
        memory_cfg_id = MEMORY_SERVER_PARTITION_MMIO;
@@ -116,7 +115,7 @@ int32_t client_test_psa_call_with_invalid_invec_end_addr(security_t caller)
    invalid_size = (memory_desc_driver->start - memory_desc->start + 1);
 
    /* Setting boot.state before test check */
-   boot_state = (caller == NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
+   boot_state = (caller == CALLER_NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
    if (val->set_boot_flag(boot_state))
    {
        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
@@ -126,14 +125,14 @@ int32_t client_test_psa_call_with_invalid_invec_end_addr(security_t caller)
    psa_invec invec[1] = {{valid_base, invalid_size}};
 
    /* Test check- psa_call with invalid end_addr for psa_invec */
-   status_of_call =  psa->call(handle, invec, 1, NULL, 0);
+   status_of_call =  psa->call(handle, PSA_IPC_CALL, invec, 1, NULL, 0);
 
    /*
     * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether
     * a PROGRAMMER ERROR will panic or return PSA_ERROR_PROGRAMMER_ERROR.
     * For SPE caller, it must panic.
     */
-   if (caller == NONSECURE && status_of_call == PSA_ERROR_PROGRAMMER_ERROR)
+   if (caller == CALLER_NONSECURE && status_of_call == PSA_ERROR_PROGRAMMER_ERROR)
    {
        psa->close(handle);
        return VAL_STATUS_SUCCESS;

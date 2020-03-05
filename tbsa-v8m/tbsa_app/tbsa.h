@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@
 #include "val_infra.h"
 
 #define TBSA_ACS_MAJOR_VER    0
-#define TBSA_ACS_MINOR_VER    7
+#define TBSA_ACS_MINOR_VER    9
 
 uint32_t __tbsa_text_start__;
 uint32_t __tbsa_text_end__;

@@ -29,6 +29,7 @@
 **/
 uint32_t val_its_function(int type, ...)
 {
+#ifdef INTERNAL_TRUSTED_STORAGE
     va_list      valist;
     uint32_t status;
 
@@ -36,4 +37,7 @@ uint32_t val_its_function(int type, ...)
     status = pal_its_function(type, valist);
     va_end(valist);
     return status;
+#else
+    return VAL_STATUS_ERROR;
+#endif
 }

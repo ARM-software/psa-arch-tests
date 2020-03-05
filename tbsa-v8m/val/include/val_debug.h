@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,36 +33,39 @@
 #define DBG_FLAG_RESERVED_BITS  0xFFFFFFFC
 
 typedef enum {
-    DBG_READ=1,
-    DBG_WRITE,
-    DBG_INIT,
+    DBG_READ  = 1,
+    DBG_WRITE = 2,
+    DBG_INIT  = 3,
+    DBG_MAX   = 0xFFFF
 } dbg_access_t;
 
 typedef enum {
-    DPM_OPEN_STATE = 0x1,
-    DPM_CLOSED_STATE,
-    DPM_LOCKED_STATE,
+    DPM_OPEN_STATE   = 0x1,
+    DPM_CLOSED_STATE = 0x2,
+    DPM_LOCKED_STATE = 0x3,
+    DPM_MAX          = 0xFFFF
 } dpm_status_t;
 
-#define DPM_EN_VALUE          0x01
+#define DPM_EN_STATE          0x01
 #define DPM_EN_IMPLEMENTED    0x02
-#define DPM_LOCK_VALUE        0x10
-#define DPM_LOCK_IMPLEMENTED  0x20
+#define DPM_LOCK_STATE        0x04
+#define DPM_LOCK_IMPLEMENTED  0x08
 
 typedef enum {
-    SEQ_OPEN_STATE_READ = 0x10,
-    SEQ_OPEN_STATE_WRITE = 0x20,
-    SEQ_CLOSED_STATE_READ = 0x30,
+    SEQ_OPEN_STATE_READ    = 0x10,
+    SEQ_OPEN_STATE_WRITE   = 0x20,
+    SEQ_CLOSED_STATE_READ  = 0x30,
     SEQ_CLOSED_STATE_WRITE = 0x40,
-    SEQ_LOCKED_STATE_READ = 0x50,
+    SEQ_LOCKED_STATE_READ  = 0x50,
     SEQ_LOCKED_STATE_WRITE = 0x60,
-    SEQ_NEXT_TEST = 0xE0,
-    SEQ_TEST_END = 0xF0,
+    SEQ_NEXT_TEST          = 0xE0,
+    SEQ_TEST_END           = 0xF0,
+    SEQ_MAX                = 0xFFFF
 } dbg_seq_status_t;
 
 tbsa_status_t val_debug_set_status(dbg_access_t dbg_access, dbg_seq_status_t dbg_status);
 tbsa_status_t val_debug_get_status(dbg_access_t dbg_access);
-tbsa_status_t val_dpm_set_state(uint32_t index, dpm_status_t dpm_status, unlock_token_t unlock_token);
+tbsa_status_t val_dpm_set_state(dpm_desc_t *dpm_desc, dpm_status_t dpm_status);
 tbsa_status_t val_dpm_get_state(uint32_t index, uint32_t *dpm_status);
 tbsa_status_t val_dpm_set_access_ns_only(uint32_t index, bool_t access_ns);
 

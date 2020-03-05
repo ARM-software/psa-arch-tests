@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -165,17 +165,35 @@
         }                                                                           \
     } while (0)
 
+#define TEST_ASSERT_RANGE(arg1, range1, range2, checkpoint)                         \
+    do {                                                                            \
+        if ((arg1) < range1 || (arg1) > range2)                                     \
+        {                                                                           \
+            val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
+            val->print(PRINT_ERROR, "\tActual: %d\n", arg1);                        \
+            val->print(PRINT_ERROR, "\tExpected range: %d to ", range1);            \
+            val->print(PRINT_ERROR, "%d", range2);                                  \
+            return 1;                                                               \
+        }                                                                           \
+    } while (0)
+
 /* enums */
 typedef enum {
-    NONSECURE = 0x0,
-    SECURE    = 0x1,
-} security_t;
+    CALLER_NONSECURE = 0x0,
+    CALLER_SECURE    = 0x1,
+} caller_security_t;
 
 typedef enum {
     TEST_ISOLATION_L1      = 0x1,
     TEST_ISOLATION_L2      = 0x2,
     TEST_ISOLATION_L3      = 0x3,
 } test_isolation_level_t;
+
+typedef enum {
+    LEVEL1 = 0x1,
+    LEVEL2,
+    LEVEL3,
+} isolation_level_t;
 
 typedef enum {
     /* VAL uses this boot flag to mark first time boot of the system  */
@@ -186,10 +204,16 @@ typedef enum {
     BOOT_EXPECTED_NS                   = 0x3,
     /* Test performs panic check for secure test run and expect reboot */
     BOOT_EXPECTED_S                    = 0x4,
-    /* Test expected reboot but it didn't happen */
+    /* Test expects reboot but it didn't happen */
     BOOT_EXPECTED_BUT_FAILED           = 0x5,
-    /* Test expect reboot for secure/non-secure test run. If reboot happens, re-enter same test */
+    /* Test expects reboot for secure/non-secure test run. If reboot happens,
+     * re-enter the same test and execute the next check function
+     */
     BOOT_EXPECTED_REENTER_TEST         = 0x6,
+    /* Test expect reboot for the test run. If reboot happens,
+     * re-enter the same test and continue executing the same check function
+     */
+    BOOT_EXPECTED_CONT_TEST_EXEC       = 0x7,
 } boot_state_t;
 
 typedef enum {
@@ -197,6 +221,9 @@ typedef enum {
     NV_TEST_ID_PREVIOUS = 0x1,
     NV_TEST_ID_CURRENT  = 0x2,
     NV_TEST_CNT         = 0x3,
+    NV_TEST_DATA1       = 0x4,
+    NV_TEST_DATA2       = 0x5,
+    NV_TEST_DATA3       = 0x6,
 } nvmem_index_t;
 
 /* enums to report test sub-state */
@@ -231,6 +258,8 @@ typedef enum {
   VAL_STATUS_HEAP_NOT_AVAILABLE          = 0x2A,
   VAL_STATUS_UNSUPPORTED                 = 0x2B,
   VAL_STATUS_DRIVER_FN_FAILED            = 0x2C,
+  VAL_STATUS_NO_TESTS                    = 0X2D,
+  VAL_STATUS_TEST_FAILED                 = 0x2E,
   VAL_STATUS_ERROR_MAX                   = INT_MAX,
 } val_status_t;
 
@@ -285,6 +314,6 @@ typedef struct {
     uint8_t  status;
 } test_status_buffer_t;
 
-typedef int32_t (*client_test_t)(security_t caller);
+typedef int32_t (*client_test_t)(caller_security_t caller);
 typedef int32_t (*server_test_t)(void);
 #endif /* VAL_COMMON_H */

@@ -19,8 +19,8 @@
 #include "val_interfaces.h"
 #include "val_target.h"
 #else
-#include "val/common/val_client_defs.h"
-#include "val/spe/val_partition_common.h"
+#include "val_client_defs.h"
+#include "val_service_defs.h"
 #endif
 
 #include "test_i068.h"
@@ -55,15 +55,16 @@ void test_i068_dummy_func(void)
 {
 }
 
-int32_t client_test_instr_exec_from_writable_mem(security_t caller)
+int32_t client_test_instr_exec_from_writable_mem(caller_security_t caller)
 {
   val->print(PRINT_TEST, "[Check 1] Test Instr execution from writable memory\n", 0);
 
   /*
    * Copy test_i068_dummy_func function code into data memory
-   * Assuming function size to be 32 bytes max
+   * Assuming function size to be 16 bytes max.
+   * Remove thumb bit from address if exists.
    */
-  copy_mem(&opcode, &test_i068_dummy_func, NO_OF_BYTES);
+  copy_mem(&opcode, (void *) ((uintptr_t)&test_i068_dummy_func & ~(uintptr_t)0x1), NO_OF_BYTES);
 
   /* Point function pointer to data memory */
   fptr = (fptr_t) opcode;

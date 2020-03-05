@@ -23,10 +23,12 @@ typedef struct {
     psa_key_type_t          key_type;
     uint8_t                 key_data[34];
     uint32_t                key_length;
+    size_t                  attr_bits;
     psa_key_usage_t         usage;
     psa_algorithm_t         key_alg;
+    psa_key_id_t            key_id;
+    psa_key_lifetime_t      key_lifetime;
     uint32_t                expected_bit_length;
-    uint32_t                expected_key_length;
     psa_status_t            expected_status;
 } test_data;
 
@@ -166,8 +168,9 @@ static test_data check1[] = {
 {"Test psa_destroy_key 16 Byte AES\n", 1, PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9},
- AES_16B_KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
- BYTES_TO_BITS(AES_16B_KEY_SIZE), AES_16B_KEY_SIZE, PSA_SUCCESS
+ AES_16B_KEY_SIZE, 0, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
+ 0x12, PSA_KEY_LIFETIME_VOLATILE,
+ BYTES_TO_BITS(AES_16B_KEY_SIZE), PSA_SUCCESS
 },
 #endif
 
@@ -175,8 +178,9 @@ static test_data check1[] = {
 {"Test psa_destroy_key 24 Byte AES\n", 2, PSA_KEY_TYPE_AES,
 {0x24, 0x13, 0x61, 0x47, 0x61, 0xB8, 0xC8, 0xF0, 0xDF, 0xAB, 0x5A, 0x0E, 0x87,
  0x40, 0xAC, 0xA3, 0x90, 0x77, 0x83, 0x52, 0x31, 0x74, 0xF9},
- AES_24B_KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
- BYTES_TO_BITS(AES_24B_KEY_SIZE), AES_24B_KEY_SIZE, PSA_SUCCESS
+ AES_24B_KEY_SIZE, BYTES_TO_BITS(AES_24B_KEY_SIZE), PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
+ 0x34, PSA_KEY_LIFETIME_VOLATILE,
+ BYTES_TO_BITS(AES_24B_KEY_SIZE), PSA_SUCCESS
 },
 #endif
 
@@ -185,8 +189,9 @@ static test_data check1[] = {
 {0xEA, 0xD5, 0xE6, 0xC8, 0x51, 0xF9, 0xEC, 0xBB, 0x9B, 0x57, 0x7C, 0xED, 0xD2,
  0x4B, 0x82, 0x84, 0x9F, 0x9F, 0xE6, 0x73, 0x21, 0x3D, 0x1A, 0x05, 0xC9, 0xED,
  0xDF, 0x25, 0x17, 0x68, 0x86, 0xAE},
- AES_32B_KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
- BYTES_TO_BITS(AES_32B_KEY_SIZE), AES_32B_KEY_SIZE, PSA_SUCCESS
+ AES_32B_KEY_SIZE, BYTES_TO_BITS(AES_32B_KEY_SIZE), PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
+ 0x56, PSA_KEY_LIFETIME_VOLATILE,
+ BYTES_TO_BITS(AES_32B_KEY_SIZE), PSA_SUCCESS
 },
 #endif
 #endif
@@ -195,14 +200,16 @@ static test_data check1[] = {
 #ifdef ARCH_TEST_RSA_2048
 {"Test psa_destroy_key 2048 RSA public key\n", 4, PSA_KEY_TYPE_RSA_PUBLIC_KEY,
  {0},
- 270, PSA_KEY_USAGE_EXPORT, PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
- 2048, 270, PSA_SUCCESS
+ 270, 2048, PSA_KEY_USAGE_EXPORT, PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
+ 0x78, PSA_KEY_LIFETIME_VOLATILE,
+ 2048, PSA_SUCCESS
 },
 
-{"Test psa_destroy_key with RSA 2048 keypair\n", 5, PSA_KEY_TYPE_RSA_KEYPAIR,
+{"Test psa_destroy_key with RSA 2048 keypair\n", 5, PSA_KEY_TYPE_RSA_KEY_PAIR,
  {0},
- 1193, PSA_KEY_USAGE_EXPORT, PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
- 2048, 1193, PSA_SUCCESS
+ 1193, 2048, PSA_KEY_USAGE_EXPORT, PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
+ 0x89, PSA_KEY_LIFETIME_VOLATILE,
+ 2048, PSA_SUCCESS
 },
 #endif
 #endif
@@ -211,8 +218,9 @@ static test_data check1[] = {
 #ifdef ARCH_TEST_DES_1KEY
 {"Test psa_destroy_key with DES 64 bit key\n", 6, PSA_KEY_TYPE_DES,
  {0x70, 0x24, 0x55, 0x0C, 0x14, 0x9D, 0xED, 0x29},
- DES_8B_KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
- BYTES_TO_BITS(DES_8B_KEY_SIZE), DES_8B_KEY_SIZE, PSA_SUCCESS
+ DES_8B_KEY_SIZE, BYTES_TO_BITS(DES_8B_KEY_SIZE), PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
+ 0xAB, PSA_KEY_LIFETIME_VOLATILE,
+ BYTES_TO_BITS(DES_8B_KEY_SIZE), PSA_SUCCESS
 },
 #endif
 
@@ -220,8 +228,9 @@ static test_data check1[] = {
 {"Test psa_destroy_key with Triple DES 2-Key\n", 7, PSA_KEY_TYPE_DES,
 {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
- DES3_2KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
- BYTES_TO_BITS(DES3_2KEY_SIZE), DES3_2KEY_SIZE, PSA_SUCCESS
+ DES3_2KEY_SIZE, BYTES_TO_BITS(DES3_2KEY_SIZE), PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
+ 0xBC, PSA_KEY_LIFETIME_VOLATILE,
+ BYTES_TO_BITS(DES3_2KEY_SIZE), PSA_SUCCESS
 },
 #endif
 
@@ -230,8 +239,9 @@ static test_data check1[] = {
 {0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
  0xF1, 0xE0, 0xD3, 0xC2, 0xB5, 0xA4, 0x97, 0x86,
  0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10},
- DES3_3KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
- BYTES_TO_BITS(DES3_3KEY_SIZE), DES3_3KEY_SIZE, PSA_SUCCESS
+ DES3_3KEY_SIZE, BYTES_TO_BITS(DES3_3KEY_SIZE), PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
+ 0xCD, PSA_KEY_LIFETIME_VOLATILE,
+ BYTES_TO_BITS(DES3_3KEY_SIZE), PSA_SUCCESS
 },
 #endif
 #endif
@@ -241,8 +251,9 @@ static test_data check1[] = {
 {"Test psa_destroy_key with EC Public key\n", 9,
  PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
  {0},
- 65, PSA_KEY_USAGE_EXPORT, PSA_ALG_ECDSA_ANY,
- 256, 65, PSA_SUCCESS
+ 65, 256, PSA_KEY_USAGE_EXPORT, PSA_ALG_ECDSA_ANY,
+ 0xEF, PSA_KEY_LIFETIME_VOLATILE,
+ 256, PSA_SUCCESS
 },
 #endif
 #endif
@@ -250,24 +261,11 @@ static test_data check1[] = {
 #ifdef ARCH_TEST_ASYMMETRIC_ENCRYPTION
 #ifdef ARCH_TEST_ECC_CURVE_SECP224R1
 {"Test psa_destroy_key with EC keypair\n", 10,
- PSA_KEY_TYPE_ECC_KEYPAIR(PSA_ECC_CURVE_SECP224R1),
+ PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1),
  {0},
- 28, PSA_KEY_USAGE_EXPORT, PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
- 224, 28, PSA_SUCCESS
-},
-#endif
-#endif
-};
-
-
-static test_data check2[] = {
-#ifdef ARCH_TEST_CIPER_MODE_CTR
-#ifdef ARCH_TEST_AES_128
-{"Test psa_destroy_key negative case\n", 11, PSA_KEY_TYPE_AES,
-{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
- 0x5F, 0xC9},
- AES_16B_KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
- BYTES_TO_BITS(AES_16B_KEY_SIZE), AES_16B_KEY_SIZE, PSA_SUCCESS
+ 28, 224, PSA_KEY_USAGE_EXPORT, PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
+ 0x123, PSA_KEY_LIFETIME_VOLATILE,
+ 224, PSA_SUCCESS
 },
 #endif
 #endif

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -73,7 +73,7 @@ typedef enum {
     TBSA_STATUS_WRITE_ERROR        = 0x91,
     TBSA_STATUS_UART_INIT_ERROR    = 0x92,
     TBSA_STATUS_UNKNOWN            = 0x93,
-    TBSA_STATUS_INVALID            = 0xFF,
+    TBSA_STATUS_INVALID            = 0xFFFF,
 }tbsa_status_t;
 
 typedef enum {

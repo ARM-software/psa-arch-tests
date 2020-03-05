@@ -31,13 +31,13 @@ client_test_t test_i017_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_partition_calling_its_own_rot_service(security_t caller)
+int32_t client_test_partition_calling_its_own_rot_service(caller_security_t caller)
 {
    psa_handle_t       handle = 0;
 
    val->print(PRINT_TEST, "[Check 1] Test partition calling its own RoT service\n", 0);
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
 
    /* Expectation is server test should hang and control shouldn't have come here */
    val->print(PRINT_ERROR, "\tConnection should failed but succeed\n", 0);

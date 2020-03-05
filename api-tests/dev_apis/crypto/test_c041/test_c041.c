@@ -31,13 +31,19 @@ client_test_t test_c041_crypto_list[] = {
 static int         g_test_count = 1;
 static uint8_t     signature[SIZE_128B];
 
-int32_t psa_asymmetric_sign_test(security_t caller)
+int32_t psa_asymmetric_sign_test(caller_security_t caller)
 {
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
     const uint8_t           *key_data;
     size_t                  length;
-    psa_key_policy_t        policy;
+    psa_key_attributes_t    attributes = PSA_KEY_ATTRIBUTES_INIT;
+
+    if (num_checks == 0)
+    {
+        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+    }
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -48,25 +54,15 @@ int32_t psa_asymmetric_sign_test(security_t caller)
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
 
-        /* Initialize a key policy structure to a default that forbids all
-         * usage of the key
-         */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
-
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
-
-        /* Set the standard fields of a policy structure */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check1[i].usage,
-                                                                          check1[i].key_alg);
-
         memset(signature, 0, sizeof(signature));
 
         /* Set the key data based on key type */
         if (PSA_KEY_TYPE_IS_RSA(check1[i].key_type))
         {
-            if (check1[i].key_type == PSA_KEY_TYPE_RSA_KEYPAIR)
+            if (check1[i].key_type == PSA_KEY_TYPE_RSA_KEY_PAIR)
             {
                 if (check1[i].expected_bit_length == BYTES_TO_BITS(384))
                     key_data = rsa_384_keypair;
@@ -91,7 +87,7 @@ int32_t psa_asymmetric_sign_test(security_t caller)
         }
         else if (PSA_KEY_TYPE_IS_ECC(check1[i].key_type))
         {
-            if (PSA_KEY_TYPE_IS_ECC_KEYPAIR(check1[i].key_type))
+            if (PSA_KEY_TYPE_IS_ECC_KEY_PAIR(check1[i].key_type))
                 key_data = ec_keypair;
             else
                 key_data = ec_keydata;
@@ -99,55 +95,50 @@ int32_t psa_asymmetric_sign_test(security_t caller)
         else
             key_data = check1[i].key_data;
 
-        /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
-
-        /* Set the usage policy on a key slot */
-        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_handle,
-                    &policy);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
+        /* Setup the attributes for the key */
+        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE, &attributes, check1[i].key_type);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM, &attributes, check1[i].key_alg);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage);
 
         /* Import the key data into the key slot */
-        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, check1[i].key_handle,
-                    check1[i].key_type, key_data, check1[i].key_length);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, key_data,
+                 check1[i].key_length, &check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Sign a hash or short message with a private key */
         status = val->crypto_function(VAL_CRYPTO_ASYMMTERIC_SIGN, check1[i].key_handle,
                     check1[i].key_alg, check1[i].input, check1[i].input_length,
                     signature, check1[i].signature_size, &length);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
         if (check1[i].expected_status != PSA_SUCCESS)
         {
             /* Destroy the key */
             status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
             continue;
         }
 
         /* Check if the output length matches with the expected length */
-        TEST_ASSERT_EQUAL(length, check1[i].expected_signature_length, TEST_CHECKPOINT_NUM(8));
+        TEST_ASSERT_EQUAL(length, check1[i].expected_signature_length, TEST_CHECKPOINT_NUM(6));
 
         /* Check if the output matches with the expected data */
-        TEST_ASSERT_MEMCMP(signature, check1[i].expected_signature, length, TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_MEMCMP(signature, check1[i].expected_signature, length, TEST_CHECKPOINT_NUM(7));
 
         /* Destroy the key */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
     }
 
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_asymmetric_sign_negative_test(security_t caller)
+int32_t psa_asymmetric_sign_negative_test(caller_security_t caller)
 {
     int                     num_checks = sizeof(check2)/sizeof(check2[0]);
     int32_t                 i, status;
     size_t                  length;
-    psa_key_policy_t        policy;
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -155,18 +146,9 @@ int32_t psa_asymmetric_sign_negative_test(security_t caller)
 
     for (i = 0; i < num_checks; i++)
     {
-        /* Initialize a key policy structure to a default that forbids all
-         * usage of the key
-         */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
-
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
-
-        /* Set the standard fields of a policy structure */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check2[i].usage,
-                                                                          check2[i].key_alg);
 
         val->print(PRINT_TEST, "[Check %d] Test psa_asymmetric_sign - Invalid key handle\n",
                                                                                 g_test_count++);
@@ -183,23 +165,6 @@ int32_t psa_asymmetric_sign_negative_test(security_t caller)
                     check2[i].key_alg, check2[i].input, check2[i].input_length,
                     signature, check2[i].signature_size, &length);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
-
-        val->print(PRINT_TEST, "[Check %d] Test psa_asymmetric_sign - Empty key handle\n",
-                                                                                g_test_count++);
-        /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check2[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
-
-        /* Set the usage policy on a key slot */
-        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check2[i].key_handle,
-                    &policy);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
-
-        /* Sign a hash or short message with a private key */
-        status = val->crypto_function(VAL_CRYPTO_ASYMMTERIC_SIGN, check2[i].key_handle,
-                    check2[i].key_alg, check2[i].input, check2[i].input_length,
-                    signature, check2[i].signature_size, &length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_DOES_NOT_EXIST, TEST_CHECKPOINT_NUM(7));
     }
 
     return VAL_STATUS_SUCCESS;

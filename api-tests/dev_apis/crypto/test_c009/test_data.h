@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,55 +18,54 @@
 #include "val_crypto.h"
 
 typedef struct {
-    char                    test_desc[75];
-    psa_key_handle_t        key_handle;
-    psa_status_t            expected_status;
+    char                        test_desc[75];
+    psa_algorithm_t             alg;
+    uint8_t                     data[32];
+    size_t                      data_length;
+    psa_key_derivation_step_t   step;
+    psa_status_t                expected_status;
 } test_data;
 
 static test_data check1[] = {
-#ifdef ARCH_TEST_AES_128
-{"Test psa_allocate_key 16 Byte AES\n", 1, PSA_SUCCESS
-},
-#endif
-
-#ifdef ARCH_TEST_AES_192
-{"Test psa_allocate_key 24 Byte AES\n", 2, PSA_SUCCESS
-},
-#endif
-
-#ifdef ARCH_TEST_AES_256
-{"Test psa_allocate_key 32 Byte AES\n", 3, PSA_SUCCESS
-},
-#endif
-
-#ifdef ARCH_TEST_RSA_2048
-{"Test psa_allocate_key 2048 RSA public key\n", 4, PSA_SUCCESS
+{"Test psa_key_derivation_input_bytes - Step as Info\n",
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ "abcdefghijklmnop", 16,
+ PSA_KEY_DERIVATION_INPUT_INFO,
+ PSA_SUCCESS,
 },
 
-{"Test psa_allocate_key with RSA 2048 keypair\n", 5, PSA_SUCCESS,
-},
-#endif
-
-#ifdef ARCH_TEST_DES_1KEY
-{"Test psa_allocate_key with DES 64 bit key\n", 6, PSA_SUCCESS,
-},
-#endif
-
-#ifdef ARCH_TEST_DES_2KEY
-{"Test psa_allocate_key with Triple DES 2-Key\n", 7, PSA_SUCCESS,
-},
-#endif
-
-#ifdef ARCH_TEST_DES_3KEY
-{"Test psa_allocate_key with Triple DES 3-Key\n", 8, PSA_SUCCESS,
-},
-#endif
-
-#ifdef ARCH_TEST_ECC_CURVE_SECP192R1
-{"Test psa_allocate_key with EC Public key\n", 9, PSA_SUCCESS,
+{"Test psa_key_derivation_input_bytes - Step as secret\n",
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ "abcdefghijklmnop", 16,
+ PSA_KEY_DERIVATION_INPUT_SECRET,
+ PSA_ERROR_INVALID_ARGUMENT,
 },
 
-{"Test psa_allocate_key with EC keypair\n", 10, PSA_SUCCESS
+{"Test psa_key_derivation_input_bytes - Step as salt\n",
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ "abcdefghijklmnop", 16,
+ PSA_KEY_DERIVATION_INPUT_SALT,
+ PSA_SUCCESS,
 },
-#endif
+
+{"Test psa_key_derivation_input_bytes - Step as label\n",
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ "abcdefghijklmnop", 16,
+ PSA_KEY_DERIVATION_INPUT_LABEL,
+ PSA_ERROR_INVALID_ARGUMENT,
+},
+
+{"Test psa_key_derivation_input_bytes - Step as seed\n",
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ "abcdefghijklmnop", 16,
+ PSA_KEY_DERIVATION_INPUT_SEED,
+ PSA_ERROR_INVALID_ARGUMENT,
+},
+
+{"Test psa_key_derivation_input_bytes - Invalid step\n",
+ PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+ "abcdefghijklmnop", 16,
+ PSA_KEY_DERIVATION_STEP_INVALID,
+ PSA_ERROR_INVALID_ARGUMENT,
+},
 };

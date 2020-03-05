@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or ps affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,19 +20,19 @@
 #include "val_protected_storage.h"
 
 #define SST_FUNCTION val->ps_function
-#define PSA_SST_FLAG_WRITE_ONCE PSA_PS_FLAG_WRITE_ONCE
 
 typedef struct {
     enum ps_function_code  api;
-    psa_ps_status_t        status;
+    psa_status_t        status;
 } test_data;
 
 static const test_data p015_data[] = {
 {
- VAL_PS_GET_SUPPORT, PSA_PS_SUPPORT_SET_EXTENDED /* Check if optional PS API supported */
+ VAL_PS_GET_SUPPORT, PSA_STORAGE_SUPPORT_SET_EXTENDED /* Index0 - Check if optional PS API
+                                                                                 supported */
 },
 {
- VAL_PS_CREATE, PSA_PS_ERROR_FLAGS_NOT_SUPPORTED /* Call create API with write_once flag */
+ VAL_PS_CREATE, PSA_ERROR_NOT_SUPPORTED /* Index1 - Call create API with write_once flag */
 },
 };
 #endif /* _TEST_P015_PS_DATA_TESTS_H_ */

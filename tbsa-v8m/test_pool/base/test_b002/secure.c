@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,19 +22,17 @@
 **/
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_BASE_BASE, 2),
                   CREATE_TEST_TITLE("Check Arm v8M security extensions and  MPU implemented"),
-                  CREATE_REF_TAG("R030_TBSA_BASE"),
+                  CREATE_REF_TAG("R001/R002/R030_TBSA_BASE"),
                   entry_hook,
                   test_payload,
                   exit_hook);
 
-void
-entry_hook(tbsa_val_api_t *val)
+void entry_hook(tbsa_val_api_t *val)
 {
     val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
 }
 
-void
-test_payload(tbsa_val_api_t *val)
+void test_payload(tbsa_val_api_t *val)
 {
     uint32_t read_val;
     cpuid_t  cpuid;
@@ -91,7 +89,6 @@ test_payload(tbsa_val_api_t *val)
     }
 }
 
-void
-exit_hook(tbsa_val_api_t *val)
+void exit_hook(tbsa_val_api_t *val)
 {
 }

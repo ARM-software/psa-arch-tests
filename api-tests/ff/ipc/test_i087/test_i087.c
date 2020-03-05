@@ -38,8 +38,8 @@ static int32_t get_secure_partition_address(addr_t *addr)
 {
    psa_handle_t            handle = 0;
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
-   if (handle < 0)
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   if (!PSA_HANDLE_IS_VALID(handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
@@ -47,17 +47,19 @@ static int32_t get_secure_partition_address(addr_t *addr)
 
    /* Get App-RoT address */
    psa_outvec outvec[1] = {{addr, sizeof(addr_t)}};
-   if (psa->call(handle, NULL, 0, outvec, 1) != PSA_SUCCESS)
+   if (psa->call(handle, PSA_IPC_CALL, NULL, 0, outvec, 1) != PSA_SUCCESS)
    {
        val->print(PRINT_ERROR, "\tmsg request failed\n", 0);
        return VAL_STATUS_CALL_FAILED;
    }
 
+   val->print(PRINT_DEBUG, "\tClient SP: Accessing address 0x%x\n", *addr);
+
    psa->close(handle);
    return VAL_STATUS_SUCCESS;
 }
 
-int32_t client_test_sp_read_other_sp_mmio(security_t caller)
+int32_t client_test_sp_read_other_sp_mmio(caller_security_t caller)
 {
    addr_t   app_rot_addr;
    uint32_t data = DATA_VALUE;
@@ -95,7 +97,7 @@ int32_t client_test_sp_read_other_sp_mmio(security_t caller)
    return VAL_STATUS_SPM_FAILED;
 }
 
-int32_t client_test_sp_write_other_sp_mmio(security_t caller)
+int32_t client_test_sp_write_other_sp_mmio(caller_security_t caller)
 {
    addr_t   app_rot_addr;
    uint32_t data = DATA_VALUE;
@@ -118,7 +120,7 @@ int32_t client_test_sp_write_other_sp_mmio(security_t caller)
    *(uint32_t *)app_rot_addr = (uint32_t)data;
 
    /* Handshake with server to decide write status */
-   if ((psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1)) > 0)
+   if ((psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION)) > 0)
    {
        val->print(PRINT_ERROR, "\tExpected connection to fail but succeed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;

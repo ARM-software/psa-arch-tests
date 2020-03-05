@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@
 **/
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_TRUSTED_TIMERS_BASE, 1),
                   CREATE_TEST_TITLE("Trusted and Non-trusted world operation to trusted timer"),
-                  CREATE_REF_TAG("R030/R040/R050_TBSA_TIME-R120_TBSA_INFRA"),
+                  CREATE_REF_TAG("R030/R040/R050_TBSA_TIME"),
                   entry_hook,
                   test_payload,
                   exit_hook);
@@ -39,8 +39,6 @@ void timer_isr (void)
 {
     if (IS_TEST_PENDING(g_val->get_status())) {
         g_val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
-    } else {
-        g_val->set_status(RESULT_FAIL(TBSA_STATUS_INVALID));
     }
 
     /* Disable Timer */
@@ -51,8 +49,6 @@ void hard_fault_esr (unsigned long *sf_args)
 {
     if (IS_TEST_PENDING(g_val->get_status())) {
         g_val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
-    } else {
-        g_val->set_status(RESULT_FAIL(TBSA_STATUS_INVALID));
     }
 
     /* Updating the return address in the stack frame in order to avoid periodic fault */
@@ -126,7 +122,7 @@ void test_payload(tbsa_val_api_t *val)
 
             /* Initialise the timer */
             status = val->timer_init(timer_desc->base, TIMER_VALUE_US, ((clocks_desc->sys_freq)/1000000));
-            // Timeout value assignment - a better strategy needed?
+            /* Timeout value assignment */
             timeout = 4 * TIMER_VALUE_US * ((clocks_desc->sys_freq)/1000000);
 
             /* Enable Timer */
@@ -136,14 +132,15 @@ void test_payload(tbsa_val_api_t *val)
             /* stay here till timer isr entered or timeout occurs, whichever comes early */
             while (IS_TEST_PENDING(val->get_status()) && (--timeout));
 
-            if(!timeout) {
-                val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_TIMEOUT);
-                timeout_flag = TRUE;
-            }
-
             /* Restoring default Handler */
             status = val->interrupt_restore_handler(EXCP_NUM_EXT_INT(timer_desc->intr_id));
-            if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
+            if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
+                return;
+            }
+
+            if(!timeout) {
+                val->print(PRINT_ERROR, "\n\r\tInterrupt not reached target for Timer 0x%X!", (uint32_t)(timer_desc->base));
+                val->err_check_set(TEST_CHECKPOINT_6, TBSA_STATUS_TIMEOUT);
                 return;
             }
         }
@@ -151,17 +148,13 @@ void test_payload(tbsa_val_api_t *val)
     } while(instance < GET_NUM_INSTANCE(timer_desc));
 
     if (trusted_timer_found) {
-        if (timeout_flag) {
-            val->err_check_set(TEST_CHECKPOINT_7, TBSA_STATUS_TIMEOUT);
-            return;
-        }
         /* Installing Trusted Fault Handler for NS test */
         status = val->interrupt_setup_handler(EXCP_NUM_HF, 0, HF_Handler);
-        if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
+        if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
             return;
         }
     } else {
-        val->err_check_set(TEST_CHECKPOINT_9, TBSA_STATUS_NOT_FOUND);
+        val->err_check_set(TEST_CHECKPOINT_8, TBSA_STATUS_NOT_FOUND);
         return;
     }
 

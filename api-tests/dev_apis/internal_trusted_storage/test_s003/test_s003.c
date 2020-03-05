@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,6 @@
 #include "test_ps_data.h"
 #endif
 
-#define TEST_BUFF_SIZE 1024
 #define NUM_ITERATIONS 2
 #define TEST_BASE_UID_VALUE UID_BASE_VALUE + 5
 
@@ -34,15 +33,15 @@ client_test_t test_s003_sst_list[] = {
     NULL,
 };
 
-static uint8_t write_buff[TEST_BUFF_SIZE];
+static uint8_t write_buff[PLATFORM_MAX_UID_SIZE];
 static char test_desc[2][80] = {
                                 "Overload storage space\n",
                                 "Overload storage again to verify all previous UID removed\n"};
 
-int32_t psa_sst_insufficient_space(security_t caller)
+int32_t psa_sst_insufficient_space(caller_security_t caller)
 {
-    uint32_t status = PSA_SST_SUCCESS;
-    psa_sst_uid_t uid;
+    uint32_t status = PSA_SUCCESS;
+    psa_storage_uid_t uid;
     uint32_t count = 0, results[NUM_ITERATIONS] = {0};
     int i = 0;
 
@@ -51,14 +50,15 @@ int32_t psa_sst_insufficient_space(security_t caller)
     {
         val->print(PRINT_TEST, "[Check %d] ", i + 1);
         val->print(PRINT_TEST, &test_desc[i][0], 0);
-        for (uid = TEST_BASE_UID_VALUE; status == PSA_SST_SUCCESS; uid++)
+        for (uid = TEST_BASE_UID_VALUE; status == PSA_SUCCESS; uid++)
         {
-            val->print(PRINT_INFO, "Setting 0x%x bytes for ", TEST_BUFF_SIZE);
+            val->print(PRINT_INFO, "Setting 0x%x bytes for ", PLATFORM_MAX_UID_SIZE);
             val->print(PRINT_INFO, "UID %d\n", uid);
-            status = SST_FUNCTION(s003_data[1].api, uid, TEST_BUFF_SIZE, write_buff, 0);
-            if (status != PSA_SST_SUCCESS)
+            status = SST_FUNCTION(s003_data[1].api, uid, PLATFORM_MAX_UID_SIZE, write_buff,
+                                  PSA_STORAGE_FLAG_NONE);
+            if (status != PSA_SUCCESS)
             {
-                val->print(PRINT_INFO, "UID %d set failed due to insufficient space\n", uid);
+                val->print(PRINT_TEST, "UID %d set failed due to insufficient space\n", uid);
                 break;
             }
         }
@@ -74,7 +74,7 @@ int32_t psa_sst_insufficient_space(security_t caller)
         {
             val->print(PRINT_INFO, "Removing UID %d\n", uid);
             status = SST_FUNCTION(s003_data[2].api, uid);
-            if (status != PSA_SST_SUCCESS)
+            if (status != PSA_SUCCESS)
                 break;
         }
         if (count)

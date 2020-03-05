@@ -27,16 +27,16 @@
 
 client_test_t test_i005_client_tests_list[] = {
     NULL,
-    client_test_strict_policy_higher_minor_version,
+    client_test_strict_policy_higher_version,
     NULL,
 };
 
-int32_t client_test_strict_policy_higher_minor_version(security_t caller)
+int32_t client_test_strict_policy_higher_version(caller_security_t caller)
 {
    psa_handle_t       handle = 0;
    boot_state_t       boot_state;
 
-   val->print(PRINT_TEST, "[Check 1] Test STRICT policy with higher minor version\n", 0);
+   val->print(PRINT_TEST, "[Check 1] Test STRICT policy with higher version\n", 0);
 
    /*
     * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
@@ -61,7 +61,7 @@ int32_t client_test_strict_policy_higher_minor_version(security_t caller)
     */
 
    /* Setting boot.state before test check */
-   boot_state = (caller == NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
+   boot_state = (caller == CALLER_NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
    if (val->set_boot_flag(boot_state))
    {
        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
@@ -71,21 +71,21 @@ int32_t client_test_strict_policy_higher_minor_version(security_t caller)
    /* Test check- Version policy is strict and requested version is bigger than
     * the minimum version.
     */
-   handle = psa->connect(SERVER_STRICT_MINOR_VERSION_SID, 3);
+   handle = psa->connect(SERVER_STRICT_VERSION_SID, SERVER_STRICT_VERSION_VERSION + 1);
 
    /*
     * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether
     * a PROGRAMMER ERROR will panic or return PSA_ERROR_CONNECTION_REFUSED.
     * For SPE caller, it must panic.
     */
-   if (caller == NONSECURE && handle == PSA_ERROR_CONNECTION_REFUSED)
+   if (caller == CALLER_NONSECURE && handle == PSA_ERROR_CONNECTION_REFUSED)
    {
        return VAL_STATUS_SUCCESS;
    }
 
    /* If PROGRAMMER ERROR results into panic then control shouldn't have reached here */
    val->print(PRINT_ERROR,
-          "\tSTRICT policy with higher minor version should have failed but succeeded\n", 0);
+          "\tSTRICT policy with higher version should have failed but succeeded\n", 0);
 
    /* Resetting boot.state to catch unwanted reboot */
    if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))

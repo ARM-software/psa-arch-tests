@@ -23,157 +23,174 @@
 
 client_test_t test_c018_crypto_list[] = {
     NULL,
-    psa_generator_read_test,
-    psa_generator_read_negative_test,
+    psa_key_derivation_input_key_test,
+    psa_key_derivation_input_key_negative_test,
     NULL,
 };
 
-static int      g_test_count = 1;
-static uint8_t  data[BUFFER_SIZE_HIGH];
+static int g_test_count = 1;
 
-int32_t psa_generator_read_test(security_t caller)
+int32_t psa_key_derivation_input_key_test(caller_security_t caller)
 {
-    int                     num_checks = sizeof(check1)/sizeof(check1[0]);
-    uint32_t                i, j, data_sum, remaining_size;
-    psa_key_policy_t        policy;
-    psa_crypto_generator_t  generator, invalid_generator;
-    int32_t                 status;
+    int32_t                        i, status;
+    const uint8_t                 *key_data;
+    int                            num_checks = sizeof(check1)/sizeof(check1[0]);
+    psa_key_derivation_operation_t operation = PSA_KEY_DERIVATION_OPERATION_INIT;
+    psa_key_attributes_t           attributes = PSA_KEY_ATTRIBUTES_INIT;
+
+    if (num_checks == 0)
+    {
+        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+    }
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
 
+    /* Set the key data buffer to the input base on algorithm */
     for (i = 0; i < num_checks; i++)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
 
-        /* Initialize a key policy structure to a default that forbids all
-         * usage of the key
-         */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_INIT, &policy);
-
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-        memset(&generator, 0, sizeof(generator));
-        memset(&invalid_generator, 0xDEADEAD, sizeof(invalid_generator));
-        memset(data, 0, sizeof(data));
+        if (PSA_KEY_TYPE_IS_RSA(check1[i].key_type))
+        {
+            if (check1[i].key_type == PSA_KEY_TYPE_RSA_KEY_PAIR)
+            {
+                if (check1[i].expected_bit_length == BYTES_TO_BITS(384))
+                    key_data = rsa_384_keypair;
+                else if (check1[i].expected_bit_length == BYTES_TO_BITS(256))
+                    key_data = rsa_256_keypair;
+                else
+                    return VAL_STATUS_INVALID;
+            }
+            else
+            {
+                if (check1[i].expected_bit_length == BYTES_TO_BITS(384))
+                    key_data = rsa_384_keydata;
+                else if (check1[i].expected_bit_length == BYTES_TO_BITS(256))
+                    key_data = rsa_256_keydata;
+                else
+                    return VAL_STATUS_INVALID;
+            }
+        }
+        else if (PSA_KEY_TYPE_IS_ECC(check1[i].key_type))
+        {
+            if (PSA_KEY_TYPE_IS_ECC_KEY_PAIR(check1[i].key_type))
+                key_data = ec_keypair;
+            else
+                key_data = ec_keydata;
+        }
+        else
+            key_data = check1[i].key_data;
 
-        /* Set the standard fields of a policy structure */
-        val->crypto_function(VAL_CRYPTO_KEY_POLICY_SET_USAGE, &policy, check1[i].usage,
-                                                                          check1[i].key_alg);
-
-        /* Allocate a key slot for a transient key */
-        status = val->crypto_function(VAL_CRYPTO_ALLOCATE_KEY, &check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
-
-        /* Set the usage policy on a key slot */
-        status = val->crypto_function(VAL_CRYPTO_SET_KEY_POLICY, check1[i].key_handle, &policy);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
+        /* Setup the attributes for the key */
+        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE, &attributes, check1[i].key_type);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_BITS, &attributes, check1[i].attr_bits);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM, &attributes, check1[i].key_alg);
 
         /* Import the key data into the key slot */
-        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, check1[i].key_handle,
-                                      check1[i].key_type, check1[i].key_data, check1[i].key_length);
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, key_data,
+                 check1[i].key_length, &check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+
+        if (check1[i].expected_status == PSA_SUCCESS)
+        {
+            /* Provide an input for key derivation or key agreement without setup should be
+             * failure.
+             */
+            status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY, &operation,
+                     check1[i].step, check1[i].key_handle);
+            TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(4));
+        }
+
+        /* Set up a key derivation operation */
+        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_SETUP, &operation,
+                 check1[i].alg);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
-        /* Set up a key derivation operation. Using this function to initialize the generate as
-         * XOR or PRNG generator initialization is not implemented.
-         */
-        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION, &generator, check1[i].key_handle,
-                    check1[i].key_alg, &check1[i].salt, check1[i].salt_length, &check1[i].label,
-                    check1[i].label_length, check1[i].capacity);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
-
-        /* Read some data from a generator */
-        status = val->crypto_function(VAL_CRYPTO_GENERATOR_READ, &generator, data,
-                                      check1[i].size);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(7));
+        /* Provide an input for key derivation or key agreement */
+        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY, &operation,
+                 check1[i].step, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
 
         if (check1[i].expected_status != PSA_SUCCESS)
         {
-            /* Abort a generator */
-            status = val->crypto_function(VAL_CRYPTO_GENERATOR_ABORT, &generator);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
-
-            /* Destroy the key */
-            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+            /* Abort the key derivation operation */
+            status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &operation);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
             continue;
         }
 
-        data_sum = 0;
-        /* Check that if generated data are zero */
-        for (j = 0; j < check1[i].size; j++)
-        {
-            data_sum += data[j];
-        }
-
-        memset(data, 0, sizeof(data));
-        TEST_ASSERT_NOT_EQUAL(data_sum, 0, TEST_CHECKPOINT_NUM(10));
-
-        remaining_size = check1[i].capacity - check1[i].size;
-        if (remaining_size > 0)
-        {
-            /* Read some data from a generator */
-            status = val->crypto_function(VAL_CRYPTO_GENERATOR_READ, &generator,
-                                          data, remaining_size);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
-
-            data_sum = 0;
-            /* Check that if generated data are zero */
-            for (j = 0; j < remaining_size; j++)
-            {
-                data_sum += data[j];
-            }
-
-            memset(data, 0, sizeof(data));
-            TEST_ASSERT_NOT_EQUAL(data_sum, 0, TEST_CHECKPOINT_NUM(12));
-
-            /* Read some data from a generator */
-            status = val->crypto_function(VAL_CRYPTO_GENERATOR_READ, &generator,
-                                          data, check1[i].size);
-            TEST_ASSERT_EQUAL(status, PSA_ERROR_INSUFFICIENT_DATA, TEST_CHECKPOINT_NUM(13));
-        }
-
-        /* Abort a generator */
-        status = val->crypto_function(VAL_CRYPTO_GENERATOR_ABORT, &generator);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(14));
-
-        /* Destroy the key */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(15));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+
+        /* Provide an input for key derivation or key agreement */
+        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY, &operation,
+                 check1[i].step, check1[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(9));
+
+        /* Abort the key derivation operation */
+        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &operation);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
+
+        /* Reset the key attributes and check if psa_import_key fails */
+        val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
     }
 
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_generator_read_negative_test(security_t caller)
+int32_t psa_key_derivation_input_key_negative_test(caller_security_t caller)
 {
-    uint32_t                i;
-    psa_crypto_generator_t  generator[] = {psa_crypto_generator_init(),
-                                           PSA_CRYPTO_GENERATOR_INIT, {0} };
-    uint32_t                generator_count = sizeof(generator)/sizeof(generator[0]);
-    int32_t                 status;
-
-    val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
-    val->print(PRINT_TEST, "Test psa_generator_read without setup\n", 0);
+    int32_t                        i, status;
+    int                            num_checks = sizeof(check2)/sizeof(check2[0]);
+    psa_key_derivation_operation_t operation = PSA_KEY_DERIVATION_OPERATION_INIT;
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
 
-    memset(data, 0, sizeof(data));
-
-    for (i = 0; i < generator_count; i++)
+    /* Set the key data buffer to the input base on algorithm */
+    for (i = 0; i < num_checks; i++)
     {
-        status = val->crypto_function(VAL_CRYPTO_GENERATOR_READ, &generator[i], data, 1);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(2));
+        val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
+        val->print(PRINT_TEST, check2[i].test_desc, 0);
 
-        status = val->crypto_function(VAL_CRYPTO_GENERATOR_ABORT, &generator[i]);
+        /* Setting up the watchdog timer for each check */
+        status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
+        TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
+
+        /* Set up a key derivation operation */
+        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_SETUP, &operation,
+                 check2[i].alg);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+
+        /* Provide an input for key derivation or key agreement */
+        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY, &operation,
+                 check2[i].step, check2[i].key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
+
+        /* Abort the key derivation operation */
+        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &operation);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+
+        /* Set up a key derivation operation */
+        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_SETUP, &operation,
+                 check2[i].alg);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
+
+        /* Provide an input for key derivation or key agreement */
+        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY, &operation,
+                 check2[i].step, 0);
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(7));
     }
 
     return VAL_STATUS_SUCCESS;

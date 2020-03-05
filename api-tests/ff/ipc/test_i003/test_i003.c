@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +37,7 @@ client_test_t test_i003_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_zero_length_invec(security_t caller)
+int32_t client_test_zero_length_invec(caller_security_t caller)
 {
    int32_t              status = VAL_STATUS_SUCCESS;
    psa_handle_t         handle = 0;
@@ -45,7 +45,9 @@ int32_t client_test_zero_length_invec(security_t caller)
 
    val->print(PRINT_TEST, "[Check 1] Test zero length invec\n", 0);
 
-   if (val->ipc_connect(SERVER_UNSPECIFED_MINOR_V_SID, 1, &handle))
+   if (val->ipc_connect(SERVER_UNSPECIFED_VERSION_SID,
+                        SERVER_UNSPECIFED_VERSION_VERSION,
+                        &handle))
    {
        return VAL_STATUS_CONNECTION_FAILED;
    }
@@ -63,7 +65,7 @@ int32_t client_test_zero_length_invec(security_t caller)
     */
    psa_outvec resp[1] = {{&data[2], sizeof(data[2])}};
 
-   status = psa->call(handle, data1, 3, resp, 1);
+   status = psa->call(handle, PSA_IPC_CALL, data1, 3, resp, 1);
 
    if (status < 0)
    {
@@ -91,7 +93,7 @@ int32_t client_test_zero_length_invec(security_t caller)
    return status;
 }
 
-int32_t client_test_zero_length_outvec(security_t caller)
+int32_t client_test_zero_length_outvec(caller_security_t caller)
 {
    int32_t              status = VAL_STATUS_SUCCESS;
    psa_handle_t         handle = 0;
@@ -99,7 +101,9 @@ int32_t client_test_zero_length_outvec(security_t caller)
 
    val->print(PRINT_TEST, "[Check 2] Test zero length outvec\n", 0);
 
-   if (val->ipc_connect(SERVER_UNSPECIFED_MINOR_V_SID, 1, &handle))
+   if (val->ipc_connect(SERVER_UNSPECIFED_VERSION_SID,
+                        SERVER_UNSPECIFED_VERSION_VERSION,
+                        &handle))
    {
        return VAL_STATUS_CONNECTION_FAILED;
    }
@@ -118,7 +122,7 @@ int32_t client_test_zero_length_outvec(security_t caller)
                          {NULL, 0},
                          {&data[2], sizeof(data[2])}};
 
-   status = psa->call(handle, data1, 1, resp, 3);
+   status = psa->call(handle, PSA_IPC_CALL, data1, 1, resp, 3);
    if (status < 0)
    {
        status = VAL_STATUS_CALL_FAILED;
@@ -147,7 +151,7 @@ int32_t client_test_zero_length_outvec(security_t caller)
    return status;
 }
 
-int32_t client_test_call_read_and_skip(security_t caller)
+int32_t client_test_call_read_and_skip(caller_security_t caller)
 {
    int32_t              status = VAL_STATUS_SUCCESS;
    int                  data1[2] = {0xaa, 0xbb};
@@ -155,9 +159,11 @@ int32_t client_test_call_read_and_skip(security_t caller)
    uint64_t             data3 = 0x1020304050607080;
    psa_handle_t         handle = 0;
 
-   val->print(PRINT_TEST, "[Check 3] Test psa_write, psa_read and psa_skip\n", 0);
+   val->print(PRINT_TEST, "[Check 3] Test psa_call, psa_read and psa_skip\n", 0);
 
-   if (val->ipc_connect(SERVER_UNSPECIFED_MINOR_V_SID, 1, &handle))
+   if (val->ipc_connect(SERVER_UNSPECIFED_VERSION_SID,
+                        SERVER_UNSPECIFED_VERSION_VERSION,
+                        &handle))
    {
        return VAL_STATUS_CONNECTION_FAILED;
    }
@@ -171,7 +177,7 @@ int32_t client_test_call_read_and_skip(security_t caller)
                         {&data2, sizeof(data2)},
                         {&data3, sizeof(data3)}};
 
-   status = psa->call(handle, data, 4, NULL, 0);
+   status = psa->call(handle, PSA_IPC_CALL, data, 4, NULL, 0);
    if (status < 0)
    {
        val->print(PRINT_ERROR, "\tpsa_call failed. status=%x\n",status);
@@ -182,7 +188,7 @@ int32_t client_test_call_read_and_skip(security_t caller)
    return status;
 }
 
-int32_t client_test_call_and_write(security_t caller)
+int32_t client_test_call_and_write(caller_security_t caller)
 {
    int32_t              status = VAL_STATUS_SUCCESS;
    int                  data[4] = {0}, expected_data[4] = {0xaa, 0xbb, 0xcc, 0xeedd}, i;
@@ -194,7 +200,9 @@ int32_t client_test_call_and_write(security_t caller)
 
    val->print(PRINT_TEST, "[Check 4] Test psa_call and psa_write\n", 0);
 
-   if (val->ipc_connect(SERVER_UNSPECIFED_MINOR_V_SID, 1, &handle))
+   if (val->ipc_connect(SERVER_UNSPECIFED_VERSION_SID,
+                        SERVER_UNSPECIFED_VERSION_VERSION,
+                        &handle))
    {
        return VAL_STATUS_CONNECTION_FAILED;
    }
@@ -208,7 +216,7 @@ int32_t client_test_call_and_write(security_t caller)
                          {&data[2], sizeof(data[2])},
                          {&data[3], sizeof(data[3])}};
 
-   status = psa->call(handle, NULL, 0, resp, 4);
+   status = psa->call(handle, PSA_IPC_CALL, NULL, 0, resp, 4);
    if (status < 0)
    {
        status = VAL_STATUS_CALL_FAILED;
@@ -242,7 +250,7 @@ int32_t client_test_call_and_write(security_t caller)
    return status;
 }
 
-int32_t client_test_psa_set_rhandle(security_t caller)
+int32_t client_test_psa_set_rhandle(caller_security_t caller)
 {
    int32_t            status = VAL_STATUS_SUCCESS;
    psa_handle_t       handle = 0;
@@ -250,18 +258,21 @@ int32_t client_test_psa_set_rhandle(security_t caller)
 
    val->print(PRINT_TEST, "[Check 5] Test psa_set_rhandle API\n", 0);
 
-    /*rhandle value check when PSA_IPC_CONNECT */
-   if (val->ipc_connect(SERVER_UNSPECIFED_MINOR_V_SID, 1, &handle))
+   /* rhandle value check when PSA_IPC_CONNECT */
+   if (val->ipc_connect(SERVER_UNSPECIFED_VERSION_SID,
+                        SERVER_UNSPECIFED_VERSION_VERSION,
+                        &handle))
    {
        return VAL_STATUS_CONNECTION_FAILED;
    }
 
     for (i = 0; i < 3; i++)
     {
-        /*i=0: rhandle value check when PSA_IPC_CALL */
-        /*i=1: rhandle value check after calling psa_set_rhandle() */
-        /*i:2: rhandle value check after resetting rhandle to other value */
-        status = psa->call(handle, NULL, 0, NULL, 0);
+        /* i=0: rhandle value check when PSA_IPC_CALL
+         * i=1: rhandle value check after calling psa_set_rhandle()
+         * i:2: rhandle value check after resetting rhandle to other value
+         */
+        status = psa->call(handle, PSA_IPC_CALL, NULL, 0, NULL, 0);
         if (status < 0)
         {
             val->print(PRINT_ERROR, "psa_call failed. status=%x\n", status);
@@ -275,7 +286,7 @@ int32_t client_test_psa_set_rhandle(security_t caller)
    return status;
 }
 
-int32_t client_test_overlapping_vectors(security_t caller)
+int32_t client_test_overlapping_vectors(caller_security_t caller)
 {
    int32_t            status = VAL_STATUS_SUCCESS;
    psa_handle_t       handle = 0;
@@ -283,7 +294,9 @@ int32_t client_test_overlapping_vectors(security_t caller)
 
    val->print(PRINT_TEST, "[Check 6] Test overlapping vectors\n", 0);
 
-   if (val->ipc_connect(SERVER_UNSPECIFED_MINOR_V_SID, 1, &handle))
+   if (val->ipc_connect(SERVER_UNSPECIFED_VERSION_SID,
+                        SERVER_UNSPECIFED_VERSION_VERSION,
+                        &handle))
    {
        return VAL_STATUS_CONNECTION_FAILED;
    }
@@ -304,7 +317,7 @@ int32_t client_test_overlapping_vectors(security_t caller)
    psa_outvec outvec[2] = {{&data, sizeof(data)},
                            {&data, sizeof(data)}};
 
-   status = psa->call(handle, invec, 1, outvec, 2);
+   status = psa->call(handle, PSA_IPC_CALL, invec, 1, outvec, 2);
 
    if (status < 0)
    {

@@ -18,15 +18,15 @@
 #define _TEST_C014_CLIENT_TESTS_H_
 
 #include "val_crypto.h"
-#define test_entry CONCAT(test_entry_,c014)
-#define val CONCAT(val,test_entry)
-#define psa CONCAT(psa,test_entry)
+#define test_entry CONCAT(test_entry_, c014)
+#define val CONCAT(val, test_entry)
+#define psa CONCAT(psa, test_entry)
 
 extern val_api_t *val;
 extern psa_api_t *psa;
 extern client_test_t test_c014_crypto_list[];
 
-int32_t psa_hash_finish_test(security_t caller);
-int32_t psa_hash_finish_inactive_operation_handle(security_t caller);
-int32_t psa_hash_finish_invalid_hash_buffer_size(security_t caller);
+int32_t psa_hash_finish_test(caller_security_t caller);
+int32_t psa_hash_finish_inactive_operation_handle(caller_security_t caller);
+int32_t psa_hash_finish_invalid_hash_buffer_size(caller_security_t caller);
 #endif /* _TEST_C014_CLIENT_TESTS_H_ */

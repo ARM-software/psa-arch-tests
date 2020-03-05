@@ -31,7 +31,7 @@ client_test_t test_i027_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_drop_connection(security_t caller)
+int32_t client_test_psa_drop_connection(caller_security_t caller)
 {
    int32_t            status = VAL_STATUS_SUCCESS;
    psa_handle_t       handle = 0;
@@ -63,29 +63,29 @@ int32_t client_test_psa_drop_connection(security_t caller)
     * VAL APIs to decide test status.
     */
 
-   handle = psa->connect(SERVER_CONNECTION_DROP_SID, 1);
-   if (handle < 0)
+   handle = psa->connect(SERVER_CONNECTION_DROP_SID, SERVER_CONNECTION_DROP_VERSION);
+   if (!PSA_HANDLE_IS_VALID(handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
    }
 
    /* Setting boot.state before test check */
-   boot_state = (caller == NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
+   boot_state = (caller == CALLER_NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
    if (val->set_boot_flag(boot_state))
    {
        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
-   status_of_call =  psa->call(handle, NULL, 0, NULL, 0);
+   status_of_call =  psa->call(handle, PSA_IPC_CALL, NULL, 0, NULL, 0);
 
    /*
     * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether
     * a PROGRAMMER ERROR will panic or return PSA_ERROR_PROGRAMMER_ERROR.
     * For SPE caller, it must panic.
     */
-   if (caller == NONSECURE && status_of_call == PSA_ERROR_PROGRAMMER_ERROR)
+   if (caller == CALLER_NONSECURE && status_of_call == PSA_ERROR_PROGRAMMER_ERROR)
    {
        /* Resetting boot.state to catch unwanted reboot */
        if (val->set_boot_flag(BOOT_NOT_EXPECTED))
@@ -94,14 +94,14 @@ int32_t client_test_psa_drop_connection(security_t caller)
            return VAL_STATUS_ERROR;
        }
 
-       val->print(PRINT_DEBUG, "\tRecieved PSA_ERROR_PROGRAMMER_ERROR\n", 0);
+       val->print(PRINT_DEBUG, "\tReceived PSA_ERROR_PROGRAMMER_ERROR\n", 0);
 
        /* If this call returns PSA_ERROR_PROGRAMMER_ERROR,
         * when a valid connection handle was provided, then
         * all subsequent calls to psa_call() with the same connection
         * handle will immediately return PSA_ERROR_PROGRAMMER_ERROR.
         */
-       status_of_call =  psa->call(handle, NULL, 0, NULL, 0);
+       status_of_call =  psa->call(handle, PSA_IPC_CALL, NULL, 0, NULL, 0);
        if (status_of_call != PSA_ERROR_PROGRAMMER_ERROR)
        {
            status = VAL_STATUS_SPM_FAILED;

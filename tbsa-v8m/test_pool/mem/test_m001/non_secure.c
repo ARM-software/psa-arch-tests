@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@
 **/
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_SECURE_RAM_BASE, 1),
                   CREATE_TEST_TITLE("Secure RAM access from Trusted world only"),
-                  CREATE_REF_TAG("R160/R170/R180_TBSA_INFRA"),
+                  CREATE_REF_TAG("R160/R180_TBSA_INFRA"),
                   entry_hook,
                   test_payload,
                   exit_hook);
@@ -65,9 +65,8 @@ void test_payload(tbsa_val_api_t *val)
     uint32_t                instance     = 0;
     protection_units_desc_t *prot_unit_desc;
     tbsa_status_t           status;
-	uint32_t                timeout      = TIMEOUT_VALUE;
+    uint32_t                timeout      = TIMEOUT_VALUE;
     bool_t                  mpc_found    = FALSE;
-    bool_t                  timeout_flag = FALSE;
 
     do {
         status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_PROTECTION_UNITS, PROTECTION_UNITS_MPC, instance),
@@ -79,47 +78,45 @@ void test_payload(tbsa_val_api_t *val)
 
             mpc_found = TRUE;
 
-			val->set_status(RESULT_PENDING(status));
+            val->set_status(RESULT_PENDING(status));
 
-			/* Try to access MPC from Non-Secure */
-			val_mem_read_wide((uint32_t *)prot_unit_desc->device_base, &data);
+            /* Try to access MPC from Non-Secure */
+            val_mem_read_wide((uint32_t *)prot_unit_desc->device_base, &data);
 
             /* Wait here till pending status is cleared by secure fault or timeout occurs, whichever comes early */
             while (IS_TEST_PENDING(val->get_status()) && (--timeout));
 
             if(!timeout) {
+                val->print(PRINT_ERROR, "\n\r\tNo fault occurred when accessing MPC 0x%X from NT world!", (uint32_t)(prot_unit_desc->device_base));
                 val->err_check_set(TEST_CHECKPOINT_8, TBSA_STATUS_TIMEOUT);
-                timeout_flag = TRUE;
+                return;
             }
         }
         instance++;
+        timeout = TIMEOUT_VALUE;
     } while(instance < GET_NUM_INSTANCE(prot_unit_desc));
-
-    /* Restoring default Handler */
-    status = val->interrupt_restore_handler(EXCP_NUM_HF);
-    if (val->err_check_set(TEST_CHECKPOINT_9, status)) {
-        return;
-    }
-
-    /* Restoring faults */
-    status = val->mem_reg_write(SHCSR, shcsr);
-    if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
-        return;
-    }
-
-    if (timeout_flag == TRUE) {
-        val->err_check_set(TEST_CHECKPOINT_B, TBSA_STATUS_TIMEOUT);
-        return;
-    }
 
     if (mpc_found) {
         val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
     } else {
-        val->err_check_set(TEST_CHECKPOINT_C, TBSA_STATUS_NOT_FOUND);
+        val->err_check_set(TEST_CHECKPOINT_9, TBSA_STATUS_NOT_FOUND);
         return;
     }
 }
 
 void exit_hook(tbsa_val_api_t *val)
 {
+    tbsa_status_t status;
+
+    /* Restoring default Handler */
+    status = val->interrupt_restore_handler(EXCP_NUM_HF);
+    if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
+        return;
+    }
+
+    /* Restoring faults */
+    status = val->mem_reg_write(SHCSR, shcsr);
+    if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
+        return;
+    }
 }

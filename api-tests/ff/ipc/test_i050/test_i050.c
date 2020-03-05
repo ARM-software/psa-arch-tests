@@ -31,13 +31,12 @@ client_test_t test_i050_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_call_with_invalid_invec_base(security_t caller)
+int32_t client_test_psa_call_with_invalid_invec_base(caller_security_t caller)
 {
    int32_t                 status = VAL_STATUS_SUCCESS;
    psa_handle_t            handle = 0;
    psa_status_t            status_of_call;
    boot_state_t            boot_state;
-   miscellaneous_desc_t    *misc_desc;
    memory_desc_t           *memory_desc;
    addr_t                  *invalid_base = NULL;
 
@@ -66,9 +65,8 @@ int32_t client_test_psa_call_with_invalid_invec_base(security_t caller)
     * VAL APIs to decide test status.
     */
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
-
-   if (handle < 0)
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   if (!PSA_HANDLE_IS_VALID(handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
@@ -77,7 +75,7 @@ int32_t client_test_psa_call_with_invalid_invec_base(security_t caller)
    /*
     * Selection of invalid invec pointer:
     *
-    * if caller == NONSECURE
+    * if caller == CALLER_NONSECURE
     *    // PSA RoT pointer
     *    invalid_base = driver_mmio_region_base;
     * else
@@ -98,27 +96,16 @@ int32_t client_test_psa_call_with_invalid_invec_base(security_t caller)
        return status;
    }
 
-   if (caller == NONSECURE)
+   if (caller == CALLER_NONSECURE)
        invalid_base = (addr_t *) memory_desc->start;
    else
    {
-       status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MISCELLANEOUS,
-                                   MISCELLANEOUS_DUT, 0),
-                                  (uint8_t **)&misc_desc,
-                                  (uint32_t *)sizeof(miscellaneous_desc_t));
-
-       if (val->err_check_set(TEST_CHECKPOINT_NUM(102), status))
-       {
-           psa->close(handle);
-           return status;
-       }
-
-       if (misc_desc->implemented_psa_firmware_isolation_level > LEVEL1)
+       if (PLATFORM_PSA_ISOLATION_LEVEL > LEVEL1)
            invalid_base = (addr_t *) memory_desc->start;
    }
 
    /* Setting boot.state before test check */
-   boot_state = (caller == NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
+   boot_state = (caller == CALLER_NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
    if (val->set_boot_flag(boot_state))
    {
        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
@@ -128,14 +115,14 @@ int32_t client_test_psa_call_with_invalid_invec_base(security_t caller)
    psa_invec invec[1] = {{invalid_base, sizeof(addr_t)}};
 
    /* Test check- psa_call with invalid address for psa_invec.base */
-   status_of_call =  psa->call(handle, invec, 1, NULL, 0);
+   status_of_call =  psa->call(handle, PSA_IPC_CALL, invec, 1, NULL, 0);
 
    /*
     * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether
     * a PROGRAMMER ERROR will panic or return PSA_ERROR_PROGRAMMER_ERROR.
     * For SPE caller, it must panic.
     */
-   if (caller == NONSECURE && status_of_call == PSA_ERROR_PROGRAMMER_ERROR)
+   if (caller == CALLER_NONSECURE && status_of_call == PSA_ERROR_PROGRAMMER_ERROR)
    {
        psa->close(handle);
        return VAL_STATUS_SUCCESS;

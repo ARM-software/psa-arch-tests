@@ -33,10 +33,13 @@
 __UNUSED STATIC_DECLARE val_status_t val_print
                         (print_verbosity_t verbosity, char *string, int32_t data);
 __UNUSED STATIC_DECLARE val_status_t val_ipc_connect
-                        (uint32_t sid, uint32_t minor_version, psa_handle_t *handle );
-__UNUSED STATIC_DECLARE val_status_t val_ipc_call
-                        (psa_handle_t handle, psa_invec *in_vec, size_t in_len,
-                         psa_outvec *out_vec, size_t out_len);
+                        (uint32_t sid, uint32_t version, psa_handle_t *handle );
+__UNUSED STATIC_DECLARE val_status_t val_ipc_call(psa_handle_t handle,
+                                                  int32_t type,
+                                                  const psa_invec *in_vec,
+                                                  size_t in_len,
+                                                  psa_outvec *out_vec,
+                                                  size_t out_len);
 __UNUSED STATIC_DECLARE void val_ipc_close
                         (psa_handle_t handle);
 __UNUSED STATIC_DECLARE val_status_t val_process_connect_request(psa_signal_t sig, psa_msg_t *msg);
@@ -84,6 +87,7 @@ __UNUSED static psa_api_t psa_api = {
     .clear                 = psa_clear,
     .eoi                   = psa_eoi,
     .rot_lifecycle_state   = psa_rot_lifecycle_state,
+    .panic                 = psa_panic,
 };
 
 /**
@@ -115,19 +119,19 @@ STATIC_DECLARE val_status_t val_print(print_verbosity_t verbosity, char *string,
     }
 
     psa_invec data1[3] = {{&uart_fn, sizeof(uart_fn)}, {string, string_len+1}, {&data, sizeof(data)}};
-    print_handle = psa_connect(DRIVER_UART_SID, 0);
+    print_handle = psa_connect(DRIVER_UART_SID, DRIVER_UART_VERSION);
 
-    if (print_handle < 0)
+    if (PSA_HANDLE_IS_VALID(print_handle))
     {
-        return VAL_STATUS_CONNECTION_FAILED;
-    }
-    else
-    {
-        status_of_call = psa_call(print_handle, data1, 3, NULL, 0);
+        status_of_call = psa_call(print_handle, 0, data1, 3, NULL, 0);
         if (status_of_call != PSA_SUCCESS)
         {
             status = VAL_STATUS_CALL_FAILED;
         }
+    }
+    else
+    {
+        return VAL_STATUS_CONNECTION_FAILED;
     }
     psa_close(print_handle);
     return status;
@@ -136,39 +140,42 @@ STATIC_DECLARE val_status_t val_print(print_verbosity_t verbosity, char *string,
 /**
  * @brief Connect to given sid
    @param  -sid : RoT service id
-   @param  -minor_version : minor_version of RoT service
+   @param  -version : version of RoT service
    @param  -handle - return connection handle
  * @return val_status_t
  */
-STATIC_DECLARE val_status_t val_ipc_connect(uint32_t sid, uint32_t minor_version,
+STATIC_DECLARE val_status_t val_ipc_connect(uint32_t sid, uint32_t version,
                                             psa_handle_t *handle )
 {
-    *handle = psa_connect(sid, minor_version);
+    *handle = psa_connect(sid, version);
 
-    if (*handle < 0)
-    {
-        return(VAL_STATUS_CONNECTION_FAILED);
-    }
+    if (PSA_HANDLE_IS_VALID(*handle))
+        return VAL_STATUS_SUCCESS;
 
-    return VAL_STATUS_SUCCESS;
+    return VAL_STATUS_CONNECTION_FAILED;
 }
 
 /**
  * @brief Call a connected Root of Trust Service.@n
  *        The caller must provide an array of ::psa_invec_t structures as the input payload.
  * @param  handle:   Handle for the connection.
+ * @param  type:     Request type.
  * @param  in_vec:   Array of psa_invec structures.
  * @param  in_len:   Number of psa_invec structures in in_vec.
  * @param  out_vec:  Array of psa_outvec structures for optional Root of Trust Service response.
  * @param  out_len:  Number of psa_outvec structures in out_vec.
  * @return val_status_t
  */
-STATIC_DECLARE val_status_t val_ipc_call(psa_handle_t handle, psa_invec *in_vec, size_t in_len,
-                                         psa_outvec *out_vec, size_t out_len)
+STATIC_DECLARE val_status_t val_ipc_call(psa_handle_t handle,
+                                         int32_t type,
+                                         const psa_invec *in_vec,
+                                         size_t in_len,
+                                         psa_outvec *out_vec,
+                                         size_t out_len)
 {
     psa_status_t call_status = PSA_SUCCESS;
 
-    call_status = psa_call(handle, in_vec, in_len, out_vec, out_len);
+    call_status = psa_call(handle, type, in_vec, in_len, out_vec, out_len);
 
     if (call_status != PSA_SUCCESS)
     {
@@ -212,7 +219,7 @@ wait1:
 
         if ((msg->type != PSA_IPC_CONNECT) || (msg->handle <= 0))
         {
-            val_print(PRINT_ERROR, "\tpsa_get failed for PSA_IPC_CONNECT\n", 0);
+            val_print(PRINT_ERROR, "\tpsa_get failed for connect message\n", 0);
             res = VAL_STATUS_ERROR;
         }
         else
@@ -248,9 +255,9 @@ wait2:
             goto wait2;
         }
 
-        if ((msg->type != PSA_IPC_CALL) || (msg->handle <= 0))
+        if ((msg->type < PSA_IPC_CALL) || (msg->handle <= 0))
         {
-            val_print(PRINT_ERROR, "\tpsa_get failed for PSA_IPC_CALL\n", 0);
+            val_print(PRINT_ERROR, "\tpsa_get failed for request message\n", 0);
             res = VAL_STATUS_ERROR;
         }
         else
@@ -288,7 +295,7 @@ wait3:
 
         if ((msg->type != PSA_IPC_DISCONNECT) || (msg->handle <= 0))
         {
-            val_print(PRINT_ERROR, "\tpsa_get failed for PSA_IPC_DISCONNECT\n", 0);
+            val_print(PRINT_ERROR, "\tpsa_get failed for disconnect massage\n", 0);
             res = VAL_STATUS_ERROR;
         }
         else
@@ -328,16 +335,16 @@ STATIC_DECLARE val_status_t val_execute_secure_tests(test_info_t test_info, clie
         status = val_execute_secure_test_func(&handle, test_info, SERVER_TEST_DISPATCHER_SID);
         if (VAL_ERROR(status))
         {
-            val_print(PRINT_ERROR,"[Check%d] START\n", i);
+            val_print(PRINT_ERROR, "[Check %d] START\n", i);
             return status;
         }
         else
         {
-            val_print(PRINT_DEBUG,"[Check%d] START\n", i);
+            val_print(PRINT_DEBUG, "[Check %d] START\n", i);
         }
 
         /* Execute client tests */
-        test_status = tests_list[i](SECURE);
+        test_status = tests_list[i](CALLER_SECURE);
 
         /* Retrive Server test status */
         status = val_get_secure_test_result(&handle);
@@ -345,17 +352,17 @@ STATIC_DECLARE val_status_t val_execute_secure_tests(test_info_t test_info, clie
         status = test_status ? test_status:status;
         if (IS_TEST_SKIP(status))
         {
-            val_print(PRINT_DEBUG, "[Check%d] SKIPPED\n", i);
+            val_print(PRINT_DEBUG, "[Check %d] SKIPPED\n", i);
             return status;
         }
         if (VAL_ERROR(status))
         {
-            val_print(PRINT_DEBUG,"[Check%d] FAILED\n", i);
+            val_print(PRINT_DEBUG, "[Check %d] FAILED\n", i);
             return status;
         }
         else
         {
-            val_print(PRINT_DEBUG,"[Check%d] PASSED\n", i);
+            val_print(PRINT_DEBUG, "[Check %d] PASSED\n", i);
         }
         i++;
     }
@@ -380,7 +387,7 @@ STATIC_DECLARE val_status_t val_execute_secure_test_func(psa_handle_t *handle,
     val_status_t    status = VAL_STATUS_SUCCESS;
     psa_status_t    status_of_call = PSA_SUCCESS;
 
-    *handle = psa_connect(sid, 0);
+    *handle = psa_connect(sid, 1);
 
     if (*handle < 0)
     {
@@ -392,7 +399,7 @@ STATIC_DECLARE val_status_t val_execute_secure_test_func(psa_handle_t *handle,
                 | ((uint32_t)(TEST_EXECUTE_FUNC) << ACTION_POS));
     psa_invec data[1] = {{&test_data, sizeof(test_data)}};
 
-    status_of_call = psa_call(*handle, data, 1, NULL, 0);
+    status_of_call = psa_call(*handle, 0, data, 1, NULL, 0);
 
     if (status_of_call != PSA_SUCCESS)
     {
@@ -420,7 +427,7 @@ STATIC_DECLARE val_status_t val_get_secure_test_result(psa_handle_t *handle)
     psa_outvec resp = {&status, sizeof(status)};
     psa_invec data[1] = {{&test_data, sizeof(test_data)}};
 
-    status_of_call = psa_call(*handle, data, 1, &resp, 1);
+    status_of_call = psa_call(*handle, 0, data, 1, &resp, 1);
     if (status_of_call != PSA_SUCCESS)
     {
         status = VAL_STATUS_CALL_FAILED;
@@ -484,19 +491,19 @@ STATIC_DECLARE val_status_t val_nvmem_write(uint32_t offset, void *buffer, int s
    nvmem_param.size = size;
    psa_invec invec[2] = {{&nvmem_param, sizeof(nvmem_param)}, {buffer, size}};
 
-   handle = psa_connect(DRIVER_NVMEM_SID, 0);
-   if (handle < 0)
+   handle = psa_connect(DRIVER_NVMEM_SID, DRIVER_NVMEM_VERSION);
+   if (PSA_HANDLE_IS_VALID(handle))
    {
-       return VAL_STATUS_CONNECTION_FAILED;
-   }
-   else
-   {
-       status_of_call = psa_call(handle, invec, 2, NULL, 0);
+       status_of_call = psa_call(handle, 0, invec, 2, NULL, 0);
        if (status_of_call != PSA_SUCCESS)
        {
            psa_close(handle);
            return VAL_STATUS_CALL_FAILED;
        }
+   }
+   else
+   {
+       return VAL_STATUS_CONNECTION_FAILED;
    }
    psa_close(handle);
    return VAL_STATUS_SUCCESS;

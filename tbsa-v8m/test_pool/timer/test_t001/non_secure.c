@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@
 **/
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_TRUSTED_TIMERS_BASE, 1),
                   CREATE_TEST_TITLE("Trusted and Non-trusted world operation to trusted timer"),
-                  CREATE_REF_TAG("R030/R040/R050_TBSA_TIME-R120_TBSA_INFRA"),
+                  CREATE_REF_TAG("R030/R040/R050_TBSA_TIME"),
                   entry_hook,
                   test_payload,
                   exit_hook);

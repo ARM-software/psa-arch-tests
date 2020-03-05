@@ -31,13 +31,13 @@ client_test_t test_i063_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_wait_signal_mask(security_t caller)
+int32_t client_test_psa_wait_signal_mask(caller_security_t caller)
 {
    psa_handle_t     handle = 0;
 
    val->print(PRINT_TEST, "[Check 1] Test psa_wait signal mask\n", 0);
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
 
    if (handle != PSA_ERROR_CONNECTION_REFUSED)
    {
@@ -45,7 +45,7 @@ int32_t client_test_psa_wait_signal_mask(security_t caller)
        return VAL_STATUS_INVALID_HANDLE;
    }
 
-   handle = psa->connect(SERVER_RELAX_MINOR_VERSION_SID, 1);
+   handle = psa->connect(SERVER_RELAX_VERSION_SID, SERVER_RELAX_VERSION_VERSION);
 
    if (handle != PSA_ERROR_CONNECTION_REFUSED)
    {

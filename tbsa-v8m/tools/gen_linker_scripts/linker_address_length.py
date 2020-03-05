@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 # * limitations under the License.
 #**/
 
-TBSA_TEXT_LENGTH      = "60K"
+TBSA_TEXT_LENGTH      = "32K"
 TBSA_DATA_LENGTH      = "3K"
 TBSA_NS_DATA_LENGTH   = "6K"
 TBSA_NS_TEXT_LENGTH   = "2K"

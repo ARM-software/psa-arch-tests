@@ -18,8 +18,8 @@
 #include "val_client_defs.h"
 #include "val_service_defs.h"
 
-#define val CONCAT(val,_server_sp)
-#define psa CONCAT(psa,_server_sp)
+#define val CONCAT(val, _server_sp)
+#define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
 
@@ -57,23 +57,23 @@ int32_t server_test_psa_get_with_more_than_one_signal(void)
     * VAL APIs to decide test status.
     */
 
-    if ((psa->wait(PSA_WAIT_ANY, PSA_BLOCK)) & SERVER_UNSPECIFED_MINOR_V_SIG)
+    if ((psa->wait(PSA_WAIT_ANY, PSA_BLOCK)) & SERVER_UNSPECIFED_VERSION_SIGNAL)
     {
         /* Setting boot.state before test check */
         if (val->set_boot_flag(BOOT_EXPECTED_NS))
         {
             val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
             /* Unblock client */
-            if (psa->get(SERVER_UNSPECIFED_MINOR_V_SIG, &msg) != PSA_SUCCESS)
+            if (psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
             {
-                val->process_connect_request(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+                val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
             }
             psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
             return VAL_STATUS_ERROR;
         }
 
         /* multiple signals check */
-        psa->get((SERVER_UNSPECIFED_MINOR_V_SIG | SERVER_RELAX_MINOR_VERSION_SIG), &msg);
+        psa->get((SERVER_UNSPECIFED_VERSION_SIGNAL | SERVER_RELAX_VERSION_SIGNAL), &msg);
 
         /* If PROGRAMMER ERROR results into panic then control shouldn't have reached here */
         /* Resetting boot.state to catch unwanted reboot */

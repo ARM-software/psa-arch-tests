@@ -31,13 +31,13 @@ client_test_t test_i019_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_set_rhandle_with_null_handle(security_t caller)
+int32_t client_test_psa_set_rhandle_with_null_handle(caller_security_t caller)
 {
    psa_handle_t       handle = 0;
 
    val->print(PRINT_TEST, "[Check 1] Test psa_set_rhandle with null msg handle\n", 0);
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
 
    /* Expectation is server test should hang and control shouldn't have come here */
    val->print(PRINT_ERROR, "\tConnection should failed but succeed\n", 0);

@@ -28,7 +28,7 @@ client_test_t test_p012_sst_list[] = {
     NULL,
 };
 
-static psa_ps_uid_t p_uid = UID_BASE_VALUE + 6;
+static psa_storage_uid_t p_uid = UID_BASE_VALUE + 6;
 static uint8_t write_buff[TEST_BUFF_SIZE] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
                                              0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
 static uint8_t read_buff[TEST_BUFF_SIZE]  = {0};
@@ -37,10 +37,10 @@ static uint8_t write_buff_2[TEST_BUFF_SIZE] = {0xFF, 0xC1, 0xA2, 0xE3, 0x04, 0x0
 
 int32_t psa_sst_offset_invalid()
 {
-    uint32_t status;
+    uint32_t status, p_data_length = 0;
 
     /* Create valid storage using create API */
-    status = SST_FUNCTION(p012_data[1].api, p_uid, TEST_BUFF_SIZE, 0);
+    status = SST_FUNCTION(p012_data[1].api, p_uid, TEST_BUFF_SIZE, PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, p012_data[1].status, TEST_CHECKPOINT_NUM(1));
 
     /* Set some data in the storage created */
@@ -74,13 +74,15 @@ int32_t psa_sst_offset_invalid()
 
     /* Set data using set API */
     val->print(PRINT_TEST, "[Check 6] Overwrite the whole data with set API\n", 0);
-    status = SST_FUNCTION(p012_data[8].api, p_uid, TEST_BUFF_SIZE, write_buff, 0);
+    status = SST_FUNCTION(p012_data[8].api, p_uid, TEST_BUFF_SIZE, write_buff,
+                          PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, p012_data[8].status, TEST_CHECKPOINT_NUM(8));
 
     /* Call the get function to check data is correctly overwritten */
-    status = SST_FUNCTION(p012_data[9].api, p_uid, 0, TEST_BUFF_SIZE, read_buff);
+    status = SST_FUNCTION(p012_data[9].api, p_uid, 0, TEST_BUFF_SIZE, read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, p012_data[9].status, TEST_CHECKPOINT_NUM(9));
     TEST_ASSERT_MEMCMP(read_buff, write_buff, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(10));
+    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(11));
 
     return VAL_STATUS_SUCCESS;
 }
@@ -89,28 +91,29 @@ static int32_t psa_sst_bad_pointer()
 {
     uint32_t status;
 
-    /* Call set extended with NULL write_buff */
-    val->print(PRINT_TEST, "[Check 7] Call set_extended with NULL write buffer\n", 0);
-    status = SST_FUNCTION(p012_data[11].api, p_uid, 0, TEST_BUFF_SIZE, NULL);
-    TEST_ASSERT_EQUAL(status, p012_data[11].status, TEST_CHECKPOINT_NUM(11));
+    /* Call create API with UID value 0 */
+    val->print(PRINT_TEST, "[Check 7] Call create API with UID 0\n", 0);
+    status = SST_FUNCTION(p012_data[11].api, 0, 0, TEST_BUFF_SIZE, write_buff);
+    TEST_ASSERT_EQUAL(status, p012_data[11].status, TEST_CHECKPOINT_NUM(12));
 
-    /* Call set extended to overwrite data with new values */
-    status = SST_FUNCTION(p012_data[12].api, p_uid, 0, TEST_BUFF_SIZE, write_buff_2);
-    TEST_ASSERT_EQUAL(status, p012_data[12].status, TEST_CHECKPOINT_NUM(12));
+    /* Call set extended API with UID value 0 */
+    val->print(PRINT_TEST, "[Check 8] Call set_extended API with UID 0\n", 0);
+    status = SST_FUNCTION(p012_data[12].api, 0, 0, TEST_BUFF_SIZE, write_buff_2);
+    TEST_ASSERT_EQUAL(status, p012_data[12].status, TEST_CHECKPOINT_NUM(13));
 
-    /* Call the get function to get the data buffer and match the buffer */
-    status = SST_FUNCTION(p012_data[13].api, p_uid, 0, TEST_BUFF_SIZE, read_buff);
-    TEST_ASSERT_EQUAL(status, p012_data[13].status, TEST_CHECKPOINT_NUM(13));
-    TEST_ASSERT_MEMCMP(read_buff, write_buff_2, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(14));
+    /* Call remove API with UID value 0 */
+    val->print(PRINT_TEST, "[Check 9] Call remove API with UID 0\n", 0);
+    status = SST_FUNCTION(p012_data[13].api, 0);
+    TEST_ASSERT_EQUAL(status, p012_data[13].status, TEST_CHECKPOINT_NUM(14));
 
-    /* Remove the storage */
-    status = SST_FUNCTION(p012_data[15].api, p_uid);
-    TEST_ASSERT_EQUAL(status, p012_data[15].status, TEST_CHECKPOINT_NUM(15));
+    /* Remove the UID */
+    status = SST_FUNCTION(p012_data[14].api, p_uid);
+    TEST_ASSERT_EQUAL(status, p012_data[14].status, TEST_CHECKPOINT_NUM(15));
 
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_sst_optional_api_offset_invalid(security_t caller)
+int32_t psa_sst_optional_api_offset_invalid(caller_security_t caller)
 {
     uint32_t status;
     int32_t test_status;

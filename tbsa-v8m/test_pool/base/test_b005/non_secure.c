@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,8 @@
 
 #include "val_test_common.h"
 
+#define TIMEOUT (0xFFFFFFFFUL)
+
 /**
   Publish these functions to the external world as associated to this test ID
 **/
@@ -28,6 +30,7 @@ TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_BASE_BASE, 5),
                   exit_hook);
 
 protection_units_desc_t *prot_units_desc;
+uint32_t                 shcsr;
 
 void entry_hook(tbsa_val_api_t *val)
 {
@@ -40,9 +43,9 @@ void test_payload(tbsa_val_api_t *val)
     uint32_t      data;
     uint32_t      ppc_instance    = 0UL;
     uint32_t      mpc_instance    = 0UL;
+    uint32_t      timeout         = TIMEOUT;
     bool_t        ppc_block_found = FALSE;
     bool_t        mpc_block_found = FALSE;
-    uint32_t      shcsr           = 0UL;
 
     /* Disabling SecureFault, UsageFault, BusFault, MemFault temporarily */
     status = val->mem_reg_read(SHCSR, &shcsr);
@@ -73,8 +76,15 @@ void test_payload(tbsa_val_api_t *val)
         /* Trying to read the device base address of a given PPC, expect fault? */
         val_mem_read_wide((uint32_t *)prot_units_desc->device_base, &data);
 
-        while (IS_TEST_PENDING(val->get_status()));
+        while (IS_TEST_PENDING(val->get_status()) && --timeout);
 
+        if(!timeout) {
+            val->print(PRINT_ERROR, "\n\r\tNo fault occurred when accessing PPC 0x%X from NT world!", (uint32_t)(prot_units_desc->device_base));
+            val->err_check_set(TEST_CHECKPOINT_4, TBSA_STATUS_TIMEOUT);
+            return;
+        }
+
+        timeout = TIMEOUT;
     } while(TRUE);
 
     do {
@@ -95,15 +105,16 @@ void test_payload(tbsa_val_api_t *val)
         /* Trying to read the device base address of a given MPC, expect fault? */
         val_mem_read_wide((uint32_t *)prot_units_desc->device_base, &data);
 
-        while (IS_TEST_PENDING(val->get_status()));
+        while (IS_TEST_PENDING(val->get_status()) && --timeout);
 
+        if(!timeout) {
+            val->print(PRINT_ERROR, "\n\r\tNo fault occurred when accessing MPC 0x%X from NT world!", (uint32_t)(prot_units_desc->device_base));
+            val->err_check_set(TEST_CHECKPOINT_5, TBSA_STATUS_TIMEOUT);
+            return;
+        }
+
+        timeout = TIMEOUT;
     } while(TRUE);
-
-    /* Restoring faults */
-    status = val->mem_reg_write(SHCSR, shcsr);
-    if (val->err_check_set(TEST_CHECKPOINT_4, status)) {
-        return;
-    }
 
     if (!ppc_block_found && !mpc_block_found) {
         val->set_status(RESULT_SKIP(status));
@@ -116,9 +127,15 @@ void exit_hook(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
 
+    /* Restoring faults */
+    status = val->mem_reg_write(SHCSR, shcsr);
+    if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
+        return;
+    }
+
     /* Restoring default Handler */
     status = val->interrupt_restore_handler(EXCP_NUM_HF);
-    if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
+    if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
         return;
     }
 }

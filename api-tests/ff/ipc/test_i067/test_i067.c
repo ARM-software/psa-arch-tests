@@ -19,13 +19,13 @@
 #include "val_interfaces.h"
 #include "val_target.h"
 #else
-#include "val/common/val_client_defs.h"
-#include "val/spe/val_partition_common.h"
+#include "val_client_defs.h"
+#include "val_service_defs.h"
 #endif
 
 #include "test_i067.h"
 
-#if (SP_HEAP_MEM_SUPP == 1)
+#ifdef SP_HEAP_MEM_SUPP
 void *malloc(size_t size);
 void free(void *ptr);
 #endif
@@ -36,10 +36,10 @@ client_test_t test_i067_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_dynamic_mem_alloc_fn(security_t caller)
+int32_t client_test_dynamic_mem_alloc_fn(caller_security_t caller)
 {
   /* Check heap memory support available to secure partition */
-#if (SP_HEAP_MEM_SUPP == 1)
+#ifdef SP_HEAP_MEM_SUPP
   uint8_t              *buffer;
 
   val->print(PRINT_TEST, "[Check 1] Test dynamic memory allocation\n", 0);

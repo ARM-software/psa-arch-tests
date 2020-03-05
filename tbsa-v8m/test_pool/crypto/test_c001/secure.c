@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@
 tbsa_val_api_t        *g_val;
 uint8_t               g_key[KEY_SIZE] = {0}, g_key_save[KEY_SIZE] = {0};
 soc_peripheral_hdr_t  *soc_peripheral_hdr;
-soc_peripheral_desc_t *soc_peripheral_desc;
+soc_peripheral_desc_t *soc_peripheral_desc = NULL;
 bool_t                s_timer_present = 0;
 int                   g_exception_taken = 0, g_reinit_taken = 0;
 clocks_desc_t         *clocks_desc;
@@ -201,7 +201,7 @@ void test_payload(tbsa_val_api_t *val)
 
         } else {
             val->set_status(RESULT_SKIP(1));
-            val->print(PRINT_ERROR, "\nUnable to receive any interrupts", 0);
+            val->print(PRINT_ERROR, "\n\r\tUnable to receive any interrupts", 0);
             return;
         }
     }
@@ -211,7 +211,7 @@ void test_payload(tbsa_val_api_t *val)
     for(i=0; i<KEY_SIZE; i++) {
         if(g_key[i] != g_key_save[i]) {
             val->err_check_set(TEST_CHECKPOINT_E, TBSA_STATUS_ERROR);
-            val->print(PRINT_ERROR, "\nKey generation from secure state was interrupted", 0);
+            val->print(PRINT_ERROR, "\n\r\tKey generation from secure state was interrupted", 0);
             return;
         } else {
             val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
@@ -223,6 +223,8 @@ void test_payload(tbsa_val_api_t *val)
 
 void exit_hook(tbsa_val_api_t *val)
 {
-    val->interrupt_disable(EXCP_NUM_EXT_INT(soc_peripheral_desc->intr_id));
-    val->timer_disable(soc_peripheral_desc->base);
+    if (soc_peripheral_desc != NULL) {
+        val->interrupt_disable(EXCP_NUM_EXT_INT(soc_peripheral_desc->intr_id));
+        val->timer_disable(soc_peripheral_desc->base);
+    }
 }

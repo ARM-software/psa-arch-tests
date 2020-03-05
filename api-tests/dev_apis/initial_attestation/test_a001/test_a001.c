@@ -29,12 +29,14 @@ client_test_t test_a001_attestation_list[] = {
 
 static int         g_test_count = 1;
 
-int32_t psa_initial_attestation_get_token_test(security_t caller)
+int32_t psa_initial_attestation_get_token_test(caller_security_t caller)
 {
     int         num_checks = sizeof(check1)/sizeof(check1[0]);
-    uint32_t    i, status, token_size;
+    uint32_t    i;
+    int32_t     status;
+    size_t      token_buffer_size, token_size;
     uint8_t     challenge[PSA_INITIAL_ATTEST_CHALLENGE_SIZE_64+1];
-    uint8_t     token_buffer[TOKEN_SIZE];
+    uint8_t     token_buffer[PSA_INITIAL_ATTEST_MAX_TOKEN_SIZE];
 
     for (i = 0; i < num_checks; i++)
     {
@@ -45,22 +47,28 @@ int32_t psa_initial_attestation_get_token_test(security_t caller)
         memset(token_buffer, 0, sizeof(token_buffer));
 
         status = val->attestation_function(VAL_INITIAL_ATTEST_GET_TOKEN_SIZE,
-                     check1[i].challenge_size, &token_size);
+                     check1[i].challenge_size, &token_buffer_size);
         if (status != PSA_SUCCESS)
         {
             if (check1[i].challenge_size != PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32 ||
                 check1[i].challenge_size != PSA_INITIAL_ATTEST_CHALLENGE_SIZE_48 ||
                 check1[i].challenge_size != PSA_INITIAL_ATTEST_CHALLENGE_SIZE_64)
             {
-                token_size = check1[i].token_size;
+                token_buffer_size = check1[i].token_size;
                 check1[i].challenge_size = check1[i].actual_challenge_size;
             }
             else
                 return status;
         }
 
+        if (token_buffer_size > PSA_INITIAL_ATTEST_MAX_TOKEN_SIZE)
+        {
+            val->print(PRINT_ERROR, "Insufficient token buffer size\n", 0);
+            return VAL_STATUS_INSUFFICIENT_SIZE;
+        }
+
         status = val->attestation_function(VAL_INITIAL_ATTEST_GET_TOKEN, challenge,
-                     check1[i].challenge_size, token_buffer, &token_size);
+                     check1[i].challenge_size, token_buffer, token_buffer_size, &token_size);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(1));
 
         if (check1[i].expected_status != PSA_SUCCESS)
@@ -75,10 +83,12 @@ int32_t psa_initial_attestation_get_token_test(security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_initial_attestation_get_token_size_test(security_t caller)
+int32_t psa_initial_attestation_get_token_size_test(caller_security_t caller)
 {
     int         num_checks = sizeof(check2)/sizeof(check2[0]);
-    uint32_t    i, status, token_size;
+    uint32_t    i;
+    int32_t     status;
+    size_t      token_size;
 
     for (i = 0; i < num_checks; i++)
     {

@@ -18,8 +18,8 @@
 #include "val_client_defs.h"
 #include "val_service_defs.h"
 
-#define val CONCAT(val,_server_sp)
-#define psa CONCAT(psa,_server_sp)
+#define val CONCAT(val, _server_sp)
+#define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
 
@@ -59,10 +59,10 @@ int32_t server_test_psa_get_called_twice(void)
     */
 
 wait:
-    if ((psa->wait(PSA_WAIT_ANY, PSA_BLOCK)) & SERVER_UNSPECIFED_MINOR_V_SIG)
+    if ((psa->wait(PSA_WAIT_ANY, PSA_BLOCK)) & SERVER_UNSPECIFED_VERSION_SIGNAL)
     {
         /* First psa_get call */
-        if (psa->get(SERVER_UNSPECIFED_MINOR_V_SIG, &msg) != PSA_SUCCESS)
+        if (psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
         {
             goto wait;
         }
@@ -80,7 +80,7 @@ wait:
         }
 
         /* Second psa_get call. This should panic */
-        psa->get(SERVER_UNSPECIFED_MINOR_V_SIG, &msg);
+        psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
 
         /* If PROGRAMMER ERROR results into panic then control shouldn't have reached here */
         /* Resetting boot.state to catch unwanted reboot */

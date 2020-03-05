@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,7 +76,7 @@ void test_payload(tbsa_val_api_t *val)
                 return;
             }
             if (dpm_hdr->num == 1) {
-                val->print(PRINT_DEBUG, "\n\r\tUnique password unlock token since only one DPM is present", 0);
+                val->print(PRINT_ALWAYS, "\n\r\tUnique password unlock token since only one DPM is present", 0);
                 val->set_status(RESULT_PASS(TBSA_STATUS_SUCCESS));
                 return;
             }
@@ -95,8 +95,8 @@ void test_payload(tbsa_val_api_t *val)
                     if (val->err_check_set(TEST_CHECKPOINT_5, status)) {
                         return;
                     }
-                    dpm_enable = DPM_EN_IMPLEMENTED|DPM_EN_VALUE;
-                    dpm_lock = DPM_LOCK_IMPLEMENTED|DPM_LOCK_VALUE;
+                    dpm_enable = DPM_EN_IMPLEMENTED|DPM_EN_STATE;
+                    dpm_lock = DPM_LOCK_IMPLEMENTED|DPM_LOCK_STATE;
 
                     /* If the DPM state is locked then continue with other DPMs*/
                     if ((dpm_status & dpm_lock) == dpm_lock)
@@ -104,14 +104,14 @@ void test_payload(tbsa_val_api_t *val)
                     else if ((dpm_status & dpm_enable) != dpm_enable) {
                         /* Set the DPM state to Closed, to check if the unlocking can be done by using
                         other DPM's password.*/
-                        status = val->dpm_set_state(target_dpm_desc->index, DPM_CLOSED_STATE, 0);
+                        status = val->dpm_set_state(target_dpm_desc, DPM_CLOSED_STATE);
                         if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
                             return;
                         }
                     }
 
                     /* Try to unlock DPM using other DPM's password.*/
-                    status = val->dpm_set_state(target_dpm_desc->index, DPM_OPEN_STATE, dpm_desc->unlock_token);
+                    status = val->dpm_set_state(target_dpm_desc, DPM_OPEN_STATE);
                     if (val->err_check_set(TEST_CHECKPOINT_7, status)) {
                         return;
                     }

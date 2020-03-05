@@ -31,7 +31,7 @@ client_test_t test_i020_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_reply_with_invalid_connect_status_code(security_t caller)
+int32_t client_test_psa_reply_with_invalid_connect_status_code(caller_security_t caller)
 {
    int32_t            status = VAL_STATUS_SUCCESS;
    psa_handle_t       handle = 0;
@@ -39,7 +39,7 @@ int32_t client_test_psa_reply_with_invalid_connect_status_code(security_t caller
    val->print(PRINT_TEST,
             "[Check 1] Test psa_reply with invalid status code for PSA_IPC_CONNECT\n", 0);
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
 
    /* Expectation is server test should hang and control shouldn't have come here */
    val->print(PRINT_ERROR, "\tConnection should failed but succeed\n", 0);

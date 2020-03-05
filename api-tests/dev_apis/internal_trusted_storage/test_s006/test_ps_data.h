@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or ps affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,34 +20,31 @@
 #include "val_protected_storage.h"
 
 #define SST_FUNCTION            val->ps_function
-#define PSA_SST_FLAG_WRITE_ONCE PSA_PS_FLAG_WRITE_ONCE
-#define psa_sst_uid_t           psa_ps_uid_t
-#define psa_sst_create_flags_t  psa_ps_create_flags_t
 
 typedef struct {
     enum ps_function_code  api;
-    psa_ps_status_t        status;
+    psa_status_t        status;
 } test_data;
 
-static struct psa_ps_info_t info;
+static struct psa_storage_info_t info;
 static const test_data s006_data[] = {
 {
- 0, PSA_PS_ERROR_FLAGS_NOT_SUPPORTED /* This is dummy for index0 */
+ 0, 0 /* This is dummy for Index0 */
 },
 {
- VAL_PS_SET, PSA_PS_SUCCESS /* Create a valid storage entity with different flag values */
+ VAL_PS_SET, PSA_SUCCESS /* Index1 - Create a valid storage entity with different flag values */
 },
 {
- VAL_PS_GET_INFO, PSA_PS_SUCCESS /* Validate the flag value get_info API */
+ VAL_PS_GET_INFO, PSA_SUCCESS /* Index2 - Validate the flag value get_info API */
 },
 {
- 0, 0 /* Index not used */
+ 0, 0 /* This is dummy for Index3 */
 },
 {
- VAL_PS_REMOVE, PSA_PS_SUCCESS /* Remove the storage entity */
+ VAL_PS_REMOVE, PSA_SUCCESS /* Index4 - Remove the storage entity */
 },
 {
- VAL_PS_REMOVE, PSA_PS_ERROR_UID_NOT_FOUND /* Remove the storage entity */
+ VAL_PS_REMOVE, PSA_ERROR_DOES_NOT_EXIST /* Index5 - Storage entity remove fails */
 }
 };
 #endif /* _TEST_S006_PS_DATA_TESTS_H_ */

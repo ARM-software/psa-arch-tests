@@ -28,9 +28,9 @@ client_test_t test_p015_sst_list[] = {
     NULL,
 };
 
-static psa_ps_uid_t p_uid = UID_BASE_VALUE + 5;
+static psa_storage_uid_t p_uid = UID_BASE_VALUE + 5;
 
-int32_t psa_sst_create_api_write_once_flag_check(security_t caller)
+int32_t psa_sst_create_api_write_once_flag_check(caller_security_t caller)
 {
     uint32_t status;
 
@@ -41,7 +41,7 @@ int32_t psa_sst_create_api_write_once_flag_check(security_t caller)
     {
         /* Call create API with write_once flag */
         val->print(PRINT_TEST, "[Check 1] Call create API with write_once flag\n", 0);
-        status = SST_FUNCTION(p015_data[1].api, p_uid, TEST_BUFF_SIZE, PSA_SST_FLAG_WRITE_ONCE);
+        status = SST_FUNCTION(p015_data[1].api, p_uid, TEST_BUFF_SIZE, PSA_STORAGE_FLAG_WRITE_ONCE);
         TEST_ASSERT_EQUAL(status, p015_data[1].status, TEST_CHECKPOINT_NUM(1));
     }
     else

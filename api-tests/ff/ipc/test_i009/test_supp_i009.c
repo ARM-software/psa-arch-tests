@@ -18,26 +18,26 @@
 #include "val_client_defs.h"
 #include "val_service_defs.h"
 
-#define val CONCAT(val,_server_sp)
-#define psa CONCAT(psa,_server_sp)
+#define val CONCAT(val, _server_sp)
+#define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
 
-int32_t server_test_unextern_sid_connection(void);
+int32_t server_test_unspecified_dependent_sid(void);
 
 server_test_t test_i009_server_tests_list[] = {
     NULL,
-    server_test_unextern_sid_connection,
+    server_test_unspecified_dependent_sid,
     NULL,
 };
 
-int32_t server_test_unextern_sid_connection(void)
+int32_t server_test_unspecified_dependent_sid(void)
 {
     int32_t         status = VAL_STATUS_SUCCESS;
     psa_msg_t       msg = {0};
 
     val->err_check_set(TEST_CHECKPOINT_NUM(201), status);
-    status = val->process_connect_request(SERVER_UNEXTERN_SIG, &msg);
+    status = val->process_connect_request(SERVER_UNEXTERN_SIGNAL, &msg);
 
     /* Shouldn't have reached here */
     if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))

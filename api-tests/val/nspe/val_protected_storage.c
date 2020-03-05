@@ -29,6 +29,7 @@
 **/
 uint32_t val_ps_function(int type, ...)
 {
+#ifdef PROTECTED_STORAGE
     va_list      valist;
     uint32_t status;
 
@@ -36,4 +37,7 @@ uint32_t val_ps_function(int type, ...)
     status = pal_ps_function(type, valist);
     va_end(valist);
     return status;
+#else
+    return VAL_STATUS_ERROR;
+#endif
 }

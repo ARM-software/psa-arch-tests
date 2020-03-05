@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,8 @@
 tbsa_val_api_t        *g_val;
 dpm_desc_t            *dpm_desc;
 
-#define TEST_DATA   0x12DEED21
+#define TEST_DATA    0x12DEED21
+#define TEST_TIMEOUT 0xFFFFFF
 
 /*  Publish these functions to the external world as associated to this test ID */
 TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_DEBUG_BASE, 3),
@@ -33,6 +34,14 @@ TBSA_TEST_PUBLISH(CREATE_TEST_ID(TBSA_DEBUG_BASE, 3),
                   entry_hook,
                   test_payload,
                   exit_hook);
+
+void delay (uint32_t delay_cnt)
+{
+    while(delay_cnt--)
+    {
+        asm volatile("NOP");
+    }
+}
 
 void entry_hook(tbsa_val_api_t *val)
 {
@@ -56,7 +65,7 @@ tbsa_status_t test_env_reset(void)
     if (g_val->err_check_set(TEST_CHECKPOINT_F, status)) {
         return status;
     }
-     return TBSA_STATUS_SUCCESS;
+    return TBSA_STATUS_SUCCESS;
 }
 
 tbsa_status_t test_dbg_seq_write(uint32_t addr, dbg_seq_status_t seq_status)
@@ -96,8 +105,14 @@ tbsa_status_t test_dbg_seq_read(uint32_t *addr, dbg_seq_status_t seq_status)
 void test_payload(tbsa_val_api_t *val)
 {
     tbsa_status_t status;
-    uint32_t      data, dpm_instance, timeout, dpm_lock, dpm_enable, dpm_status;
-    uint32_t      region_num = 0, instance = 0, minor_id = 1, region_num_inst, s_addr=0, ns_addr=0;
+    uint32_t      data;
+    uint32_t      dpm_instance;
+    uint32_t      dpm_lock;
+    uint32_t      dpm_enable;
+    uint32_t      dpm_status;
+    uint32_t      region_num = 0;
+    uint32_t      instance   = 0;
+    uint32_t      minor_id   = MEMORY_SRAM;
     memory_hdr_t  *memory_hdr;
     memory_desc_t *memory_desc;
     dpm_hdr_t     *dpm_hdr;
@@ -110,7 +125,7 @@ void test_payload(tbsa_val_api_t *val)
 
     /* Check if DPM is present.*/
     if (!dpm_hdr->num) {
-        val->print(PRINT_ERROR, "\nNo DPM present in the platform", 0);
+        val->print(PRINT_ERROR, "\n\r\tNo DPM present in the platform", 0);
         val->err_check_set(TEST_CHECKPOINT_2, TBSA_STATUS_NOT_FOUND);
         return;
     }
@@ -137,14 +152,16 @@ void test_payload(tbsa_val_api_t *val)
             goto clean_up;
         }
 
-        dpm_lock = DPM_LOCK_IMPLEMENTED|DPM_LOCK_VALUE;
-        dpm_enable = DPM_EN_IMPLEMENTED|DPM_EN_VALUE;
+        dpm_lock   = DPM_LOCK_IMPLEMENTED|DPM_LOCK_STATE;
+        dpm_enable = DPM_EN_IMPLEMENTED|DPM_EN_STATE;
 
-        if ((dpm_status & dpm_lock) == dpm_lock)
+        if ((dpm_status & dpm_lock) == dpm_lock) {
+            val->print(PRINT_ALWAYS, "\n\r\tDPM with index %x is in locked state", dpm_desc->index);
             continue;
+        }
         else if ((dpm_status & dpm_enable) == dpm_enable) {
             /* Set the DPM state to Open.*/
-            status = val->dpm_set_state(dpm_desc->index, DPM_OPEN_STATE, dpm_desc->unlock_token);
+            status = val->dpm_set_state(dpm_desc, DPM_OPEN_STATE);
             if (val->err_check_set(TEST_CHECKPOINT_6, status)) {
                 goto clean_up;
             }
@@ -156,105 +173,113 @@ void test_payload(tbsa_val_api_t *val)
             goto clean_up;
         }
         /*Check for R/W address controlled by DPM under check, and access*/
-        for (region_num = 0; region_num < memory_hdr->num; region_num++) {
+        for (region_num = 0; region_num < memory_hdr->num;) {
             instance = 0;
             do {
                 status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, minor_id, instance),
                                       (uint8_t **)&memory_desc, (uint32_t *)sizeof(memory_desc_t));
-                if (status == TBSA_STATUS_NOT_FOUND) {
-                    break;
-                } else if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
+                if (val->err_check_set(TEST_CHECKPOINT_8, status)) {
                     goto clean_up;
                 }
-                region_num_inst = GET_NUM_INSTANCE(memory_desc);
 
                 if ((memory_desc->dpm_index == dpm_desc->index) && (memory_desc->mem_type == TYPE_NORMAL_READ_WRITE)) {
-                    if (memory_desc->attribute == MEM_NONSECURE)
-                        ns_addr++;
-                    else
-                        s_addr++;
+
                     /*Initialize the memory with known data*/
                     val->mem_write((uint32_t *)memory_desc->start, WORD, TEST_DATA);
 
-                    if (test_dbg_seq_write((uint32_t)(memory_desc->start), SEQ_CLOSED_STATE_READ))
+                    if (test_dbg_seq_write((uint32_t)(memory_desc->start), SEQ_CLOSED_STATE_READ)) {
                         goto clean_up;
+                    }
 
-                    /* Set the DPM state to Closed.*/
-                    status = val->dpm_set_state(dpm_desc->index, DPM_CLOSED_STATE, 0);
+                    /* Set the DPM to CLOSED state */
+                    status = val->dpm_set_state(dpm_desc, DPM_CLOSED_STATE);
                     if (val->err_check_set(TEST_CHECKPOINT_9, status)) {
                         goto clean_up;
                     }
-                    /* Wait until debugger has completed the access whilst DPM is in Closed state.*/
-                    timeout = 0x1000000;
-                    while(--timeout);
+                    asm volatile("DSB");
+                    asm volatile("ISB");
 
-                    /* Set the DPM state to Open.*/
-                    status = val->dpm_set_state(dpm_desc->index, DPM_OPEN_STATE, dpm_desc->unlock_token);
-                    if (val->err_check_set(TEST_CHECKPOINT_A, status)) {
+                    /* Indicate the debugger about the transition to CLOSED state */
+                    if (test_dbg_seq_write((uint32_t)(memory_desc->start), SEQ_CLOSED_STATE_READ)) {
                         goto clean_up;
                     }
+
+                    /* We don not read TEST_DATA at dpm_desc->data_addr if OPEN to CLOSED state transition is successful */
+                    /* Wait until debugger has completed the access whilst DPM is in CLOSED  state */
+                    delay(TEST_TIMEOUT);
+
+
                     /* Read the data returned by debugger and compare to get the results.*/
-                    if(test_dbg_seq_read(&data, SEQ_CLOSED_STATE_READ))
-                        goto clean_up;
+                    data = 0;
+		    val->mem_read((uint32_t *)dpm_desc->data_addr, WORD, &data);
 
                     if (data == TEST_DATA) {
-                        val->err_check_set(TEST_CHECKPOINT_B, TBSA_STATUS_ERROR);
-                        val->print(PRINT_ERROR, "\nDPM could not restrict access in Closed State", 0);
-                        val->print(PRINT_ERROR, "\nDebugger read the actual data = 0x%x", TEST_DATA);
+                        val->err_check_set(TEST_CHECKPOINT_A, TBSA_STATUS_ERROR);
+                        val->print(PRINT_ERROR, "\n\r\tDPM could not restrict access in Closed State", 0);
+                        val->print(PRINT_ERROR, "\n\r\tDebugger read the actual data = 0x%x", TEST_DATA);
                         val->print(PRINT_ERROR, " at address = 0x%x", (uint32_t)(memory_desc->start));
                         goto clean_up;
                     }
+
+                    /* Set the DPM state to Open.*/
+                    status = val->dpm_set_state(dpm_desc, DPM_OPEN_STATE);
+                    if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
+                        goto clean_up;
+                    }
+                    asm volatile("DSB");
+                    asm volatile("ISB");
+
                     /*Initialize the memory with known data*/
                     val->mem_write((uint32_t *)memory_desc->start, WORD, ~TEST_DATA);
 
-                    if (test_dbg_seq_write((uint32_t)(memory_desc->start), SEQ_CLOSED_STATE_WRITE))
+                    if (test_dbg_seq_write((uint32_t)(memory_desc->start), SEQ_CLOSED_STATE_WRITE)) {
                         goto clean_up;
+                    }
 
-                    if (test_dbg_seq_write(TEST_DATA, SEQ_CLOSED_STATE_WRITE))
+                    if (test_dbg_seq_write(TEST_DATA, SEQ_CLOSED_STATE_WRITE)) {
                         goto clean_up;
+                    }
 
                     /* Set the DPM state to Closed.*/
-                    status = val->dpm_set_state(dpm_desc->index, DPM_CLOSED_STATE, 0);
+                    status = val->dpm_set_state(dpm_desc, DPM_CLOSED_STATE);
                     if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
                         goto clean_up;
                     }
-                    /* Wait until debugger has completed the access whilst DPM is in Closed state.*/
-                    timeout = 0x1000000;
-                    while(--timeout);
+                    asm volatile("DSB");
+                    asm volatile("ISB");
 
-                    /* Set the DPM state to Open.*/
-                    status = val->dpm_set_state(dpm_desc->index, DPM_OPEN_STATE, dpm_desc->unlock_token);
-                    if (val->err_check_set(TEST_CHECKPOINT_D, status)) {
+                    /* Indicate the debugger about the transition to CLOSED state */
+                    if (test_dbg_seq_write((uint32_t)(memory_desc->start), SEQ_CLOSED_STATE_WRITE)) {
                         goto clean_up;
                     }
-                    /* Read the data returned by debugger and compare to get the results.*/
-                    if(test_dbg_seq_read(&data, SEQ_CLOSED_STATE_WRITE))
-                        goto clean_up;
 
+                    /* Wait until debugger has completed the access whilst DPM is in Closed state.*/
+                    delay(TEST_TIMEOUT);
+
+                    /* Read the data returned by debugger and compare to get the results.*/
+                    data = 0;
                     val->mem_read((uint32_t *)memory_desc->start, WORD, &data);
 
                     if (data != ~TEST_DATA) {
-                        val->err_check_set(TEST_CHECKPOINT_E, TBSA_STATUS_ERROR);
-                        val->print(PRINT_ERROR, "\nDPM could not restrict access in Closed State", 0);
-                        val->print(PRINT_ERROR, "\nDebugger updated the data at address = 0x%x", (uint32_t)(memory_desc->start));
+                        val->err_check_set(TEST_CHECKPOINT_D, TBSA_STATUS_ERROR);
+                        val->print(PRINT_ERROR, "\n\r\tDPM could not restrict access in Closed State", 0);
+                        val->print(PRINT_ERROR, "\n\r\tDebugger updated the data at address = 0x%x", (uint32_t)(memory_desc->start));
                         goto clean_up;
                     }
+
+                    /* Set the DPM state to Open.*/
+                    status = val->dpm_set_state(dpm_desc, DPM_OPEN_STATE);
+                    if (val->err_check_set(TEST_CHECKPOINT_E, status)) {
+                        goto clean_up;
+                    }
+                    asm volatile("DSB");
+                    asm volatile("ISB");
                 }
                 instance++;
-            } while (instance < region_num_inst);
+            } while (instance < GET_NUM_INSTANCE(memory_desc));
             minor_id++;
-            if (status == TBSA_STATUS_NOT_FOUND)
-                region_num -= 1;
-            else
-                region_num += region_num_inst - 1;
+            region_num += GET_NUM_INSTANCE(memory_desc);
         }
-    }
-
-    if (!ns_addr) {
-        val->print(PRINT_WARN, "\n        No non-secure address were accessed", 0);
-    }
-    if (!s_addr) {
-        val->print(PRINT_WARN, "\n        No secure address were accessed", 0);
     }
 
     if (test_env_reset())

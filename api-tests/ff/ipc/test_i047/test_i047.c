@@ -31,15 +31,15 @@ client_test_t test_i047_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_get_with_invalid_msg_pointer(security_t caller)
+int32_t client_test_psa_get_with_invalid_msg_pointer(caller_security_t caller)
 {
    psa_handle_t       handle = 0;
 
    val->print(PRINT_TEST,
             "[Check 1] Test psa_get with invalid msg pointer\n", 0);
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
-   if (handle > 0)
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   if (PSA_HANDLE_IS_VALID(handle))
    {
        psa->close(handle);
    }

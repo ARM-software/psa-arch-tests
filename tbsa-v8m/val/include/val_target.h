@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -101,9 +101,8 @@ typedef enum _FUSE_CONFIG_ID_ {
 } fuse_cfg_id_t;
 
 typedef enum _MISCELLANEOUS_CONFIG_ID_ {
-  MISCELLANEOUS_BOOT       = 0x1,
-  MISCELLANEOUS_VER_COUNT  = 0x2,
-  MISCELLANEOUS_DUT        = 0x3
+  MISCELLANEOUS_VER_COUNT  = 0x1,
+  MISCELLANEOUS_DUT        = 0x2
 } miscellaneous_cfg_id_t;
 
 typedef enum _DPM_CONFIG_ID_ {
@@ -131,7 +130,6 @@ typedef enum _COMPONENT_GROUPING_{
   MPC               = GROUP_PROTECTION_UNITS,
   KEY               = GROUP_KEY,
   FUSE              = GROUP_FUSE,
-  BOOT              = GROUP_MISCELLANEOUS,
   VER_COUNT         = GROUP_MISCELLANEOUS,
   DUT               = GROUP_MISCELLANEOUS,
   DPM               = GROUP_DPM,
@@ -150,15 +148,15 @@ typedef struct _TARGET_CFG_HDR_ {
 }target_cfg_hdr_t;
 
 typedef enum {
-    FUSE_CONFIDENTIAL      = 0x10,
-    FUSE_LOCKABLE          = 0x20,
-    FUSE_LOCKED            = 0x40,
-    FUSE_PUBLIC            = 0x80,
-    FUSE_USER              = 0x100,
-    FUSE_HW_IP             = 0x200,
-    FUSE_OPEN              = 0x400,
-    FUSE_BITWISE           = 0x800,
-    FUSE_BULK              = 0x1000
+    FUSE_CONFIDENTIAL      = 0x001,
+    FUSE_LOCKABLE          = 0x002,
+    FUSE_LOCKED            = 0x004,
+    FUSE_PUBLIC            = 0x008,
+    FUSE_USER              = 0x010,
+    FUSE_HW_IP             = 0x020,
+    FUSE_OPEN              = 0x040,
+    FUSE_BITWISE           = 0x080,
+    FUSE_BULK              = 0x100
 } fuse_type_t;
 
 /**
@@ -177,11 +175,11 @@ typedef enum {
 
 /* Defines for 'type' member in _KEY_INFO_DESC_ struct */
 typedef enum {
-    ROTPK                  = 0x0,
-    HUK                    = 0x1,
-    TRUST                  = 0x2,
-    STATIC                 = 0x4,
-    REVOKE                 = 0x8,
+    ROTPK                  = 0x0100000,
+    HUK                    = 0x0200000,
+    TRUST                  = 0x0400000,
+    STATIC                 = 0x0800000,
+    REVOKE                 = 0x1000000,
 } key_type_t;
 
 
@@ -285,14 +283,14 @@ typedef struct _PROT_UNIT_INFO_DESC_ {
   CRYPTO Information
 **/
 typedef enum {
-    ECC            = 0x2000,
-    RSA            = 0x3000,
+    ECC            = 0x1000,
+    RSA            = 0x2000,
     DIFFIE_HELLMAN = 0x4000,
     NONE           = 0x8000,
     ASM_MSK        = 0xF000,
     HASH           = 0x10000,
     AES            = 0x20000,
-    DES            = 0x30000,
+    DES            = 0x40000,
     SYM_MSK        = 0xF0000,
 } crypt_t;
 
@@ -380,7 +378,7 @@ typedef struct _KEY_INFO_HDR_ {
 typedef struct _KEY_INFO_DESC_ {
     cfg_type_t   cfg_type;
     uint32_t     type;
-    uint32_t     size;
+    uint32_t     size;  /* in words */
     addr_t       addr;
     uint32_t     index;
     uint32_t     state;

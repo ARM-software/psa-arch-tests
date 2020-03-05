@@ -27,15 +27,15 @@
 
 client_test_t test_i009_client_tests_list[] = {
     NULL,
-    client_test_unextern_sid_connection,
+    client_test_unspecified_dependent_sid,
     NULL,
 };
 
-int32_t client_test_unextern_sid_connection(security_t caller)
+int32_t client_test_unspecified_dependent_sid(caller_security_t caller)
 {
    psa_handle_t       handle = 0;
 
-   val->print(PRINT_TEST, "[Check 1] Test unextern SID connection\n", 0);
+   val->print(PRINT_TEST, "[Check 1] Test psa_connect with SID unspecified in dependencies\n", 0);
 
    /*
     * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
@@ -70,7 +70,7 @@ int32_t client_test_unextern_sid_connection(security_t caller)
 	* If access between a client Secure Partition and an RoT Service is not specified in
 	* the manifest, then the client is not allowed to connect to the RoT Service.
     */
-   handle = psa->connect(SERVER_UNEXTERN_SID, 2);
+   handle = psa->connect(SERVER_UNEXTERN_SID, SERVER_UNEXTERN_VERSION);
 
    /* If PROGRAMMER ERROR results into panic then control shouldn't have reached here */
    val->print(PRINT_ERROR, "\tunextern SID connection should have failed but succeed\n", 0);

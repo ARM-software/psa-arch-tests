@@ -36,13 +36,13 @@ client_test_t test_i086_client_tests_list[] = {
     NULL,
 };
 
-#if (SP_HEAP_MEM_SUPP == 1)
+#ifdef SP_HEAP_MEM_SUPP
 static int32_t get_secure_partition_address(addr_t *addr)
 {
    psa_handle_t            handle = 0;
 
-   handle = psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1);
-   if (handle < 0)
+   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   if (!PSA_HANDLE_IS_VALID(handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
@@ -50,17 +50,19 @@ static int32_t get_secure_partition_address(addr_t *addr)
 
    /* Get App-RoT address */
    psa_outvec outvec[1] = {{addr, BUFFER_SIZE}};
-   if (psa->call(handle, NULL, 0, outvec, 1) != PSA_SUCCESS)
+   if (psa->call(handle, PSA_IPC_CALL, NULL, 0, outvec, 1) != PSA_SUCCESS)
    {
        val->print(PRINT_ERROR, "\tmsg request failed\n", 0);
        return VAL_STATUS_CALL_FAILED;
    }
 
+   val->print(PRINT_DEBUG, "\tClient SP: Accessing address 0x%x\n", *addr);
+
    psa->close(handle);
    return VAL_STATUS_SUCCESS;
 }
 
-int32_t client_test_sp_read_other_sp_heap(security_t caller)
+int32_t client_test_sp_read_other_sp_heap(caller_security_t caller)
 {
    addr_t   app_rot_addr;
    uint8_t  data = DATA_VALUE;
@@ -98,7 +100,7 @@ int32_t client_test_sp_read_other_sp_heap(security_t caller)
    return VAL_STATUS_SPM_FAILED;
 }
 
-int32_t client_test_sp_write_other_sp_heap(security_t caller)
+int32_t client_test_sp_write_other_sp_heap(caller_security_t caller)
 {
    addr_t   app_rot_addr;
    uint8_t  data = DATA_VALUE;
@@ -121,7 +123,7 @@ int32_t client_test_sp_write_other_sp_heap(security_t caller)
    *(uint8_t *)app_rot_addr = (uint8_t)data;
 
    /* Handshake with server to decide write status */
-   if ((psa->connect(SERVER_UNSPECIFED_MINOR_V_SID, 1)) > 0)
+   if ((psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION)) > 0)
    {
        val->print(PRINT_ERROR, "\tExpected connection to fail but succeed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
@@ -129,14 +131,14 @@ int32_t client_test_sp_write_other_sp_heap(security_t caller)
    return VAL_STATUS_SUCCESS;
 }
 #else
-int32_t client_test_sp_read_other_sp_heap(security_t caller)
+int32_t client_test_sp_read_other_sp_heap(caller_security_t caller)
 {
    val->print(PRINT_TEST, "[Check 1] Test SP reading other SP heap\n", 0);
    val->print(PRINT_ERROR, "\tSkipping test as heap memory not supported\n", 0);
    return RESULT_SKIP(VAL_STATUS_HEAP_NOT_AVAILABLE);
 }
 
-int32_t client_test_sp_write_other_sp_heap(security_t caller)
+int32_t client_test_sp_write_other_sp_heap(caller_security_t caller)
 {
    val->print(PRINT_TEST, "[Check 2] Test SP writing other SP heap\n", 0);
    val->print(PRINT_ERROR, "\tSkipping test as heap memory not supported\n", 0);
