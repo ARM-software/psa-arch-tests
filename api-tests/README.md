@@ -9,28 +9,13 @@ For more information, visit the [PSA Webpage](https://developer.arm.com/products
 
 ## Architecture test suite
 
-The current implementation of the architecture test suite contains tests for PSA Firmware Framework and PSA Developer APIs specifications. The tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license, allowing external contribution.
+The current implementation of the architecture test suite contains tests for PSA Firmware Framework and PSA Functional APIs specifications. The tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license, allowing external contribution.
 
 ### PSA Firmware Framework (PSA-FF)
 The test suite for this specification is located in the **ff** directory of this repository. See the [PSA Firmware Framework README](ff/README.md) file for more details.
 
-### PSA Developer APIs
-The test suite for this specification is located in the **dev_apis** directory of this repository. See the [PSA Developer APIs README](dev_apis/README.md) file for more details.
-
-## Release Update
- - Code Quality : REL v1.0
- - This release contains following tests: <br />
-
-1. Developer APIs test list:
-
-| Test Category            | Specification Version                |
-|--------------------------|--------------------------------------|
-| Crypto                   | [PSA Crypto API 1.0-Beta3](../api-specs/crypto/v1.0-beta3/doc/)     |
-| Protected Storage        | [PSA Protected Storage API 1.0.0](../api-specs/storage/v1.0/doc/) |
-| Internal Trusted Storage | [PSA Internal Trusted Storage API 1.0.0](../api-specs/storage/v1.0/doc/) |
-| Initial Attestation      | [PSA Initial Attestation API 1.0.0](../api-specs/attestation/v1.0/doc/)  |
-
-2. PSA-FF tests that are written for the PSA FF 1.0 specification.
+### PSA Functional APIs
+The test suite for this specification is located in the **dev_apis** directory of this repository. See the [PSA Functional APIs README](dev_apis/README.md) file for more details.
 
 ## License
 

@@ -1,5 +1,5 @@
 
-# Porting Guide: Developer APIs Architecture Test Suite
+# Porting Guide: PSA Functional APIs Architecture Test Suite
 -----------------------------------------------------
 
 ## Introduction

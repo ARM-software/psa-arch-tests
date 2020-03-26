@@ -1,17 +1,38 @@
 
-# PSA Developer APIs Architecture Test Suite
+# PSA Functional APIs Architecture Test Suite
 
-## PSA Developer APIs
+## PSA Functional APIs
 
-PSA defines security service APIs for application developers. Some of these services are Crypto, Attestation, and Secure storage. For more information on API specifications, refer to the [PSA Developer APIs Specifications](../../api-specs/).
+PSA defines security service APIs for application developers. Some of these services are Crypto, Attestation, and Secure storage. For more information on API specifications, refer to the [PSA Functional APIs Specifications](../../api-specs/).
 
 ## Architecture test suite
 
-The architecture test suite is a set of examples of the invariant behaviors that are specified in the PSA Developer APIs specifications. Use this suite to verify whether these behaviors are implemented correctly in your system. This  suite contains self-checking and portable C-based tests with directed stimulus. These tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license, allowing external contribution.
+The architecture test suite is a set of examples of the invariant behaviors that are specified in the PSA Functional APIs specifications. Use this suite to verify whether these behaviors are implemented correctly in your system. This  suite contains self-checking and portable C-based tests with directed stimulus. These tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license, allowing external contribution.
 
 This test suite is not a substitute for design verification. To review the test logs, Arm licensees can contact Arm directly through their partner managers.
 
 For more information on the architecture test suite framework and methodology to run the tests, refer to the [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf) document.
+
+## This release
+ - Code Quality : REL v1.0
+ - This release contains following PSA Functional APIs tests: <br />
+
+| Test Category            | Specification Version                |
+|--------------------------|--------------------------------------|
+| Crypto                   | [PSA Crypto API 1.0-Beta3](../../api-specs/crypto/v1.0-beta3/doc/)     |
+| Storage (PS and ITS)     | [PSA Storage API 1.0.0](../../api-specs/storage/v1.0/doc/) |
+| Attestation              | [PSA Attestation API 1.0.0](../../api-specs/attestation/v1.0/doc/)  |
+
+
+##  Release Tags
+
+ - For PSA Functional API certification, use release tag from below table:
+
+| Release version | Release tag  | PSA Crypto API | PSA Storage API | PSA Attestation API |
+|-----------------|---------------|----------------|-----------------|---------------------|
+| REL v1.0 | [v20.03_API1.0](https://github.com/ARM-software/psa-arch-tests/tree/v20.03_API1.0/api-tests/dev_apis) | 1.0-Beta3  | 1.0.0 | 1.0.0 |
+| v0.9 | [v19.06_API0.9](https://github.com/ARM-software/psa-arch-tests/tree/v19.06_API0.9/api-tests/dev_apis) | 1.0-Beta2 | 1.0-Beta2 | 1.0-Beta0 |
+| v0.8 | [v19.02_API0.8](https://github.com/ARM-software/psa-arch-tests/tree/v19.02_API0.8/api-tests/dev_apis) | 1.0-Beta1 | 1.0-Beta0 | 1.0-Beta0 |
 
 ## Test scenarios
 
@@ -24,7 +45,7 @@ Follow the instructions in the subsequent sections to get a copy of the source c
 
 ### Porting steps
 
-Refer to the [PSA Developer APIs Test Suite Porting Guide](../docs/porting_guide_dev_apis.md) document for porting steps.
+Refer to the [PSA Functional APIs Test Suite Porting Guide](../docs/porting_guide_dev_apis.md) document for porting steps.
 
 ### Build steps
 
@@ -43,11 +64,11 @@ To build the test suite for your target platform, execute the following commands
 -   -DTARGET=<platform_name> is the same as the name of the target-specific directory created in the **platform/targets/** directory. The current release has been tested on **tgt_dev_apis_tfm_an521**, **tgt_dev_apis_tfm_musca_b1** and **tgt_dev_apis_tfm_musca_a** platforms. Refer [Test_failure analysis](../docs/test_failure_analysis.md) document to know the reason for any known test fail.<br />
 -   -DTOOLCHAIN=<tool_chain> Compiler toolchain to be used for test suite compilation. Supported values are GNUARM (GNU Arm Embedded), ARMCLANG (ARM Compiler 6.x) and HOST_GCC. Default is GNUARM.<br />
 -   -DCPU_ARCH=<cpu_architecture_version> is the Arm Architecture version name for which the tests should be compiled. Supported CPU arch are armv8m_ml, armv8m_bl and armv7m. Default is empty. This option is unused when TOOLCHAIN type is HOST_GCC.<br />
--   -DSUITE=<suite_name> is the suite name that is the same as the suite name available in **dev_apis/** directory.<br />
+-   -DSUITE=<suite_name> is the test suite name. Supported values are CRYPTO, INITIAL_ATTESTATION, PROTECTED_STORAGE and INTERNAL_TRUSTED_STORAGE.<br />
 -   -DVERBOSE=<verbose_level>. Print verbosity level. Default is 3. Supported print levels are 1(INFO & above), 2(DEBUG & above), 3(TEST & above), 4(WARN & ERROR) and 5(ERROR).
 -   -DBUILD=<BUILD_DIR> : To select the build directory to keep output files. Default is BUILD/ inside current directory.
 -   -DWATCHDOG_AVAILABLE=<0|1>: Test harness may require to access watchdog timer to recover system hang. 0 means skip watchdog programming in the test suite and 1 means program the watchdog. Default is 1. Note, watchdog must be available for the tests which check the PSA API behaviour on the system reset.
--   -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>" is an additional directory to be included into the compiler search path.You must provide Developer APIs header files implementation to the test suite build system using this option. For example, to compile Crypto tests, the include path must point to the path where **psa/crypto.h** is located in your build system. Bydefault, PSA_INCLUDE_PATHS accepts absolute path. However, relative path can be provided using below format:<br />
+-   -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>" is an additional directory to be included into the compiler search path.You must provide Functional APIs header files implementation to the test suite build system using this option. For example, to compile Crypto tests, the include path must point to the path where **psa/crypto.h** is located in your build system. Bydefault, PSA_INCLUDE_PATHS accepts absolute path. However, relative path can be provided using below format:<br />
 ```
     -DPSA_INCLUDE_PATHS=`readlink -f <relative_include_path>`
 ```
@@ -69,7 +90,7 @@ Building the test suite generates the following NSPE binaries:<br />
 
 ### Integrating the libraries into your target platform
 
-1. Integrate **val_nspe.a**, **pal_nspe.a**, and **test_combine.a** libraries with your Non-secure OS so that these libraries get access to the PSA Developer APIs. For example, Crypto tests require access to PSA Crypto APIs. This forms an NSPE binary.
+1. Integrate **val_nspe.a**, **pal_nspe.a**, and **test_combine.a** libraries with your Non-secure OS so that these libraries get access to the PSA Functional APIs. For example, Crypto tests require access to PSA Crypto APIs. This forms an NSPE binary.
 2. Load the NSPE binary to the Non-secure memory.
 3. Build your SPE binary and load into the Secure memory.
 
