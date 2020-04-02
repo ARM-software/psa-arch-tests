@@ -22,6 +22,18 @@ This test suite is not a substitute for design verification. To review the test 
 
 For more information on architecture test suite specification, refer to the [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf) document.
 
+## This release
+ - Code Quality : REL v1.0
+ - This release contains the PSA-FF tests that are written for the PSA FF 1.0 specification.
+
+##  Release Tags
+
+| Release version | Release tag  | PSA FF specification version |
+|-----------------|---------------|----------------|
+| REL v1.0 | [v20.03_API1.0](https://github.com/ARM-software/psa-arch-tests/tree/v20.03_API1.0/api-tests/ff) | 1.0 |
+| v0.9 | [v19.06_API0.9](https://github.com/ARM-software/psa-arch-tests/tree/v19.06_API0.9/api-tests/ff) | 1.0-Beta1 |
+| v0.8 | [v19.02_API0.8](https://github.com/ARM-software/psa-arch-tests/tree/v19.02_API0.8/api-tests/ff) | 1.0-Beta0 |
+
 ## Tests scenarios
 
 The mapping of the rules in the specification to the test cases and the steps followed in the tests are mentioned in the [Scenario Document](../docs/) present in the **docs/** folder.
@@ -63,7 +75,7 @@ To build the test suite for your target platform, perform the following steps.
 -   -DTARGET=<platform_name> is the same as the name of the target-specific directory created in the **platform/targets/** directory. The current release has been tested on **tgt_dev_apis_tfm_an521**, **tgt_dev_apis_tfm_musca_b1** and **tgt_dev_apis_tfm_musca_a** platforms except for the tests written for PSA isolation level-3 and secure partition dynamic memory APIs as these features are unsupported by the mentioned platforms. However, it can still be possible to run them if the platform supports these features.<br />
 -   -DTOOLCHAIN=<tool_chain> Compiler toolchain to be used for test suite compilation. Supported values are GNUARM (GNU Arm Embedded), ARMCLANG (ARM Compiler 6.x) and HOST_GCC. Default is GNUARM.<br />
 -   -DCPU_ARCH=<cpu_architecture_version> is the Arm Architecture version name for which the tests should be compiled. Supported CPU arch are armv8m_ml, armv8m_bl and armv7m. Default is empty. This option is unused when TOOLCHAIN type is HOST_GCC.<br />
--   -DSUITE=<suite_name> is the suite name which is the same as the suite name available in **ff/** directory. <br >
+-   -DSUITE=<suite_name> is the test suite name. To compile PSA FF tests, use -DSUITE=IPC<br >
 -   -DVERBOSE=<verbose_level>. Print verbosity level. Default is 3. Supported print levels are 1(INFO & above), 2(DEBUG & above), 3(TEST & above), 4(WARN & ERROR) and 5(ERROR).
 -   -DBUILD=<BUILD_DIR> : To select the build directory to keep output files. Default is BUILD/ inside current directory.
 -   -DINCLUDE_PANIC_TESTS=<0|1> : The default compilation flow includes the functional API tests to build the test suite. It does not include panic tests that check for the API's PROGRAMMER ERROR(Panic) conditions as defined in the PSA-FF specification. You can include the panic tests for building the test suite by setting this option to 1.
