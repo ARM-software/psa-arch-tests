@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #/** @file
-# * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@
 
 import sys
 
-if (len(sys.argv) != 11):
+if (len(sys.argv) != 13):
         print("\nScript requires following inputs")
         print("\narg1  : <INPUT  SUITE identifier>")
         print("\narg2  : <INPUT  testsuite.db file>")
@@ -30,6 +30,8 @@ if (len(sys.argv) != 11):
         print("\narg8  : <OUTPUT client_tests_list>")
         print("\narg9  : <OUTPUT server_tests_list_declare>")
         print("\narg10 : <OUTPUT server_tests_list>")
+        print("\narg11 : <OUTPUT Suite test start number")
+        print("\narg12 : <OUTPUT Suite test end number")
         sys.exit(1)
 
 suite                      = sys.argv[1]
@@ -42,6 +44,14 @@ client_tests_list_declare  = sys.argv[7]
 client_tests_list          = sys.argv[8]
 server_tests_list_declare  = sys.argv[9]
 server_tests_list          = sys.argv[10]
+if sys.argv[11] != "None":
+	suite_test_start_number    = int(sys.argv[11])
+else:
+	suite_test_start_number    = 0
+if sys.argv[12] != "None":
+	suite_test_end_number      = int(sys.argv[12])
+else:
+	suite_test_end_number      = sys.maxsize
 
 # Dictionary to hold the mapping between suite and the base number
 suite_with_base_dict = {"ipc":0, "crypto":1, "protected_storage":2, "internal_trusted_storage":3, "initial_attestation":4}
@@ -53,7 +63,9 @@ def gen_test_list():
 	with open(testlist_file, mode='w') as o_f:
 		with open(testsuite_db_file, mode='r') as i_f:
 			for line in i_f:
-				if ('test_' == line[0:5]):
+				if (('test_' == line[0:5]) and
+                                    (int(line[6:9]) >= suite_test_start_number) and
+				    (int(line[6:9]) <= suite_test_end_number)):
 					if ((panic_tests_included == 1) and ("panic" not in line)):
 						o_f.write(line)
 					elif ((panic_tests_included == 1) and ("panic" in line)):
