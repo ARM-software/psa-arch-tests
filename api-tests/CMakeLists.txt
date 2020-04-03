@@ -283,6 +283,27 @@ else()
     message(STATUS "[PSA] : TEST_COMBINE_ARCHIVE is set to ${TEST_COMBINE_ARCHIVE}")
 endif()
 
+if(NOT DEFINED SUITE_TEST_RANGE)
+	set(SUITE_TEST_RANGE_MIN None)
+	set(SUITE_TEST_RANGE_MAX None)
+else()
+	list(LENGTH SUITE_TEST_RANGE SUITE_TEST_RANGE_LENGTH)
+	if(${SUITE_TEST_RANGE_LENGTH} GREATER "2")
+		message(FATAL_ERROR "[PSA] : -DSUITE_TEST_RANGE=<...> value error! accepts two "
+                                             " numbers in quotes separated with ';'")
+	endif()
+	if(${SUITE_TEST_RANGE_LENGTH} EQUAL "2")
+		list(GET SUITE_TEST_RANGE 0 SUITE_TEST_RANGE_MIN)
+		list(GET SUITE_TEST_RANGE 1 SUITE_TEST_RANGE_MAX)
+		message(STATUS "[PSA] : Testing (${SUITE_TEST_RANGE_MIN}, ${SUITE_TEST_RANGE_MAX}) of ${SUITE} suite")
+	endif()
+	if(${SUITE_TEST_RANGE_LENGTH} EQUAL "1")
+		set(SUITE_TEST_RANGE_MIN ${SUITE_TEST_RANGE})
+		set(SUITE_TEST_RANGE_MAX ${SUITE_TEST_RANGE})
+		message(STATUS "[PSA] : Testing ${SUITE_TEST_RANGE_MIN} of ${SUITE} suite")
+	endif()
+endif()
+
 message(STATUS "[PSA] : ----------Process input arguments- complete-------------")
 
 
@@ -329,10 +350,15 @@ execute_process(COMMAND ${PYTHON_EXECUTABLE} ${PSA_TESTLIST_GENERATOR}
 					${PSA_CLIENT_TEST_LIST_DELCARE_INC}
 					${PSA_CLIENT_TEST_LIST_INC}
 					${PSA_SERVER_TEST_LIST_DECLARE_INC}
-					${PSA_SERVER_TEST_LIST})
+					${PSA_SERVER_TEST_LIST}
+					${SUITE_TEST_RANGE_MIN}
+					${SUITE_TEST_RANGE_MAX})
 
 # Creating CMake list variable from file
 file(READ ${PSA_TESTLIST_FILE} PSA_TEST_LIST)
+if(NOT PSA_TEST_LIST)
+	message(FATAL_ERROR "[PSA] : Invalid test number!")
+endif()
 string(REGEX REPLACE "\n" ";" PSA_TEST_LIST "${PSA_TEST_LIST}")
 
 add_custom_target(
