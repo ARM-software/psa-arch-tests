@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -96,6 +96,7 @@ enum crypto_function_code {
     PAL_CRYPTO_AEAD_FINISH                      = 0x4A,
     PAL_CRYPTO_AEAD_VERIFY                      = 0x4B,
     PAL_CRYPTO_AEAD_ABORT                       = 0x4C,
+    PAL_CRYPTO_RESET                            = 0xFD,
     PAL_CRYPTO_FREE                             = 0xFE,
 };
 

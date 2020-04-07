@@ -96,6 +96,7 @@ enum crypto_function_code {
     PAL_CRYPTO_AEAD_FINISH                      = 0x4A,
     PAL_CRYPTO_AEAD_VERIFY                      = 0x4B,
     PAL_CRYPTO_AEAD_ABORT                       = 0x4C,
+    PAL_CRYPTO_RESET                            = 0xFD,
     PAL_CRYPTO_FREE                             = 0xFE,
 };
 

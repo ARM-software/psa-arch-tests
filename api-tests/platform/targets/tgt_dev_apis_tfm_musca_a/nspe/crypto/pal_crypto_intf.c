@@ -20,6 +20,8 @@
 
 #define  PAL_KEY_SLOT_COUNT  32
 
+int32_t tfm_platform_system_reset(void);
+
 /**
     @brief    - This API will call the requested crypto function
     @param    - type    : function code
@@ -511,6 +513,8 @@ int32_t pal_crypto_function(int type, va_list valist)
             for (i = 0; i < PAL_KEY_SLOT_COUNT; i++)
                 psa_destroy_key(i);
             return 0;
+        case PAL_CRYPTO_RESET:
+            return tfm_platform_system_reset();
         default:
             return PAL_STATUS_UNSUPPORTED_FUNC;
     }
