@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -189,10 +189,11 @@ int32_t psa_open_key_test(caller_security_t caller)
             val->crypto_function(VAL_CRYPTO_GET_KEY_BITS, &get_attributes, &get_key_bits);
             TEST_ASSERT_EQUAL(get_key_bits, check1[i].expected_bit_length, TEST_CHECKPOINT_NUM(18));
 
-            val->crypto_function(VAL_CRYPTO_GET_KEY_USAGE_FLAGS, &attributes, &get_key_usage_flags);
+            val->crypto_function(VAL_CRYPTO_GET_KEY_USAGE_FLAGS, &get_attributes,
+                                 &get_key_usage_flags);
             TEST_ASSERT_EQUAL(get_key_usage_flags, check1[i].usage, TEST_CHECKPOINT_NUM(19));
 
-            val->crypto_function(VAL_CRYPTO_GET_KEY_ALGORITHM, &attributes, &get_key_algorithm);
+            val->crypto_function(VAL_CRYPTO_GET_KEY_ALGORITHM, &get_attributes, &get_key_algorithm);
             TEST_ASSERT_EQUAL(get_key_algorithm, check1[i].key_alg, TEST_CHECKPOINT_NUM(20));
 
             /* Export a key in binary format */
@@ -220,13 +221,17 @@ int32_t psa_open_key_test(caller_security_t caller)
             /* Reset the key attributes */
             val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
 
+            /* Destroy the persistent key to clean up storage for the next test */
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(25));
+
             /* Save the check ID and set boot flags */
              ++i;
             status = val->nvmem_write(VAL_NVMEM_OFFSET(NV_TEST_DATA1), &i, sizeof(int32_t));
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(25));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(26));
 
             status = val->set_boot_flag(BOOT_NOT_EXPECTED);
-            TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(26));
+            TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(27));
 
         }
         else
