@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -145,30 +145,38 @@ int32_t psa_close_key_test(caller_security_t caller)
                      &check1[i].key_handle);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(13));
 
+            /* Get the attributes of the persistent key and check if it matches the given value */
+            status = val->crypto_function(VAL_CRYPTO_GET_KEY_ATTRIBUTES, check1[i].key_handle,
+                     &attributes);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(14));
+
             val->crypto_function(VAL_CRYPTO_GET_KEY_TYPE, &attributes, &get_key_type);
-            TEST_ASSERT_EQUAL(get_key_type, check1[i].key_type, TEST_CHECKPOINT_NUM(14));
+            TEST_ASSERT_EQUAL(get_key_type, check1[i].key_type, TEST_CHECKPOINT_NUM(15));
 
             val->crypto_function(VAL_CRYPTO_GET_KEY_ID, &attributes, &get_key_id);
-            TEST_ASSERT_EQUAL(get_key_id, check1[i].key_id, TEST_CHECKPOINT_NUM(15));
+            TEST_ASSERT_EQUAL(get_key_id, check1[i].key_id, TEST_CHECKPOINT_NUM(16));
 
             val->crypto_function(VAL_CRYPTO_GET_KEY_LIFETIME, &attributes, &get_key_lifetime);
-            TEST_ASSERT_EQUAL(get_key_lifetime, check1[i].key_lifetime, TEST_CHECKPOINT_NUM(16));
+            TEST_ASSERT_EQUAL(get_key_lifetime, check1[i].key_lifetime, TEST_CHECKPOINT_NUM(17));
 
             val->crypto_function(VAL_CRYPTO_GET_KEY_USAGE_FLAGS, &attributes, &get_key_usage_flags);
-            TEST_ASSERT_EQUAL(get_key_usage_flags, check1[i].usage, TEST_CHECKPOINT_NUM(17));
+            TEST_ASSERT_EQUAL(get_key_usage_flags, check1[i].usage, TEST_CHECKPOINT_NUM(18));
 
             val->crypto_function(VAL_CRYPTO_GET_KEY_ALGORITHM, &attributes, &get_key_algorithm);
-            TEST_ASSERT_EQUAL(get_key_algorithm, check1[i].key_alg, TEST_CHECKPOINT_NUM(18));
+            TEST_ASSERT_EQUAL(get_key_algorithm, check1[i].key_alg, TEST_CHECKPOINT_NUM(19));
 
             val->crypto_function(VAL_CRYPTO_GET_KEY_BITS, &attributes, &get_key_bits);
             TEST_ASSERT_EQUAL(get_key_bits,  check1[i].expected_bit_length,
-            TEST_CHECKPOINT_NUM(19));
+            TEST_CHECKPOINT_NUM(20));
+
+            /* Reset the key attributes */
+            val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
 
             status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(20));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(21));
 
             status = val->crypto_function(VAL_CRYPTO_CLOSE_KEY, check1[i].key_handle);
-            TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(21));
+            TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(22));
         }
 
     }

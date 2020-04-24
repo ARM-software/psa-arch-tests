@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -243,8 +243,8 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_ECDSA
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
-{"Test psa_open_key with EC Public key\n", 9, 0x789,
- PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
+{"Test psa_open_key with EC Public key\n", 9,
+ PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1), 0x789,
  {0},
  65, 0, PSA_KEY_USAGE_EXPORT, PSA_ALG_ECDSA_ANY, PSA_KEY_LIFETIME_PERSISTENT,
  256, 65, PSA_SUCCESS
@@ -252,8 +252,8 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_ECC_CURVE_SECP224R1
-{"Test psa_open_key with EC keypair\n", 10, 0x1234,
- PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1),
+{"Test psa_open_key with EC keypair\n", 10,
+ PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1), 0x1234,
  {0},
  28, 0, PSA_KEY_USAGE_EXPORT, PSA_ALG_ECDSA_ANY, PSA_KEY_LIFETIME_PERSISTENT,
  224, 28, PSA_SUCCESS
@@ -263,13 +263,13 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_CIPER_MODE_CTR
 #ifdef ARCH_TEST_AES
-{"Test psa_open_key with key data greater than the algorithm size\n", 11, PSA_KEY_TYPE_AES,
+{"Test psa_open_key with volatile key\n", 11, PSA_KEY_TYPE_AES,
  0x5678,
 {0x24, 0x13, 0x61, 0x47, 0x61, 0xB8, 0xC8, 0xF0, 0xDF, 0xAB, 0x5A, 0x0E, 0x87,
  0x40, 0xAC, 0xA3, 0x90, 0x77, 0x83, 0x52, 0x31, 0x74, 0xF9, 0x05, 0xC9, 0xED,
  0xDF, 0x25, 0x17, 0x68, 0x86, 0xAE},
  AES_32B_KEY_SIZE, 0, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR, PSA_KEY_LIFETIME_VOLATILE,
- BYTES_TO_BITS(AES_32B_KEY_SIZE), AES_32B_KEY_SIZE, PSA_ERROR_INVALID_ARGUMENT
+ BYTES_TO_BITS(AES_32B_KEY_SIZE), AES_32B_KEY_SIZE, PSA_ERROR_DOES_NOT_EXIST
 },
 #endif
 #endif
