@@ -1,6 +1,5 @@
-
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +20,7 @@
 #include "test_c042.h"
 #include "test_data.h"
 
-client_test_t test_c042_crypto_list[] = {
+const client_test_t test_c042_crypto_list[] = {
     NULL,
     psa_asymmetric_verify_test,
     psa_asymmetric_verify_negative_test,
@@ -36,6 +35,7 @@ int32_t psa_asymmetric_verify_test(caller_security_t caller)
     int32_t                 i, status;
     const uint8_t           *key_data;
     psa_key_attributes_t    attributes = PSA_KEY_ATTRIBUTES_INIT;
+    psa_key_handle_t        key_handle;
 
     if (num_checks == 0)
     {
@@ -99,17 +99,17 @@ int32_t psa_asymmetric_verify_test(caller_security_t caller)
 
         /* Import the key data into the key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, key_data,
-                 check1[i].key_length, &check1[i].key_handle);
+                 check1[i].key_length, &key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Verify the signature a hash or short message using a public key */
-        status = val->crypto_function(VAL_CRYPTO_ASYMMTERIC_VERIFY, check1[i].key_handle,
+        status = val->crypto_function(VAL_CRYPTO_ASYMMTERIC_VERIFY, key_handle,
                     check1[i].key_alg, check1[i].input, check1[i].input_length,
                     check1[i].signature, check1[i].signature_size);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
         /* Destroy a key and restore the slot to its default state */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
     }
 
@@ -120,6 +120,7 @@ int32_t psa_asymmetric_verify_negative_test(caller_security_t caller)
 {
     int                     num_checks = sizeof(check2)/sizeof(check2[0]);
     int32_t                 i, status;
+    psa_key_handle_t        key_handle = 13;
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -135,7 +136,7 @@ int32_t psa_asymmetric_verify_negative_test(caller_security_t caller)
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
         /* Verify the signature a hash or short message using a public key */
-        status = val->crypto_function(VAL_CRYPTO_ASYMMTERIC_VERIFY, check2[i].key_handle,
+        status = val->crypto_function(VAL_CRYPTO_ASYMMTERIC_VERIFY, key_handle,
                     check2[i].key_alg, check2[i].input, check2[i].input_length,
                     check2[i].signature, check2[i].signature_size);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));

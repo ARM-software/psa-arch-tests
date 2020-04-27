@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 #include "test_c019.h"
 #include "test_data.h"
 
-client_test_t test_c019_crypto_list[] = {
+const client_test_t test_c019_crypto_list[] = {
     NULL,
     psa_key_derivation_key_agreement_test,
     psa_key_derivation_key_agreement_negative_test,
@@ -35,6 +35,7 @@ int32_t psa_key_derivation_key_agreement_test(caller_security_t caller)
     int32_t                         i, status;
     psa_key_attributes_t            attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_key_derivation_operation_t  operation = PSA_KEY_DERIVATION_OPERATION_INIT;
+    psa_key_handle_t                key_handle;
 
     if (num_checks == 0)
     {
@@ -62,7 +63,7 @@ int32_t psa_key_derivation_key_agreement_test(caller_security_t caller)
 
         /* Import the key data into the key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].key_data,
-                 check1[i].key_length, &check1[i].key_handle);
+                 check1[i].key_length, &key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Set up a key agreement operation */
@@ -72,7 +73,7 @@ int32_t psa_key_derivation_key_agreement_test(caller_security_t caller)
 
         /* Perform a key agreement */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_KEY_AGREEMENT, &operation,
-                 check1[i].step, check1[i].key_handle, check1[i].peer_key,
+                 check1[i].step, key_handle, check1[i].peer_key,
                  check1[i].peer_key_length);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(5));
 
@@ -87,7 +88,7 @@ int32_t psa_key_derivation_key_agreement_test(caller_security_t caller)
             continue;
 
         /* Destroy a key and restore the slot to its default state */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
     }
 
@@ -98,7 +99,8 @@ int32_t psa_key_derivation_key_agreement_negative_test(caller_security_t caller)
 {
     int32_t                         i, status;
     int                             num_checks = sizeof(check2)/sizeof(check2[0]);
-    psa_key_derivation_operation_t  operation = PSA_KEY_DERIVATION_OPERATION_INIT;
+    psa_key_derivation_operation_t  operation  = PSA_KEY_DERIVATION_OPERATION_INIT;
+    psa_key_handle_t                key_handle = 8;
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -119,7 +121,7 @@ int32_t psa_key_derivation_key_agreement_negative_test(caller_security_t caller)
 
         /* Set up a key agreement operation */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_KEY_AGREEMENT, &operation,
-                 check2[i].step, check2[i].key_handle, check2[i].peer_key,
+                 check2[i].step, key_handle, check2[i].peer_key,
                  check2[i].peer_key_length);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
 

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,7 +48,6 @@
 typedef enum _GROUP_CONFIG_ID_ {
   GROUP_SOC_PERIPHERAL      = 0x1,
   GROUP_MEMORY              = 0x2,
-  GROUP_MISCELLANEOUS       = 0x3,
   GROUP_MAX                 = 0xFF,
 } group_cfg_id_t;
 
@@ -68,11 +67,6 @@ typedef enum _MEMORY_CONFIG_ID_ {
   MEMORY_DRIVER_PARTITION_MMIO    = 0x5,
 } memory_cfg_id_t;
 
-typedef enum _MISCELLANEOUS_CONFIG_ID_ {
-  MISCELLANEOUS_BOOT         = 0x1,
-  MISCELLANEOUS_DUT          = 0x2
-} miscellaneous_cfg_id_t;
-
 /**
   Assign group type to each system component
 **/
@@ -84,8 +78,6 @@ typedef enum _COMPONENT_GROUPING_{
   NSPE_MMIO                = GROUP_MEMORY,
   SERVER_PARTITION_MMIO    = GROUP_MEMORY,
   DRIVER_PARTITION_MMIO    = GROUP_MEMORY,
-  BOOT                     = GROUP_MISCELLANEOUS,
-  DUT                      = GROUP_MISCELLANEOUS,
 } comp_group_assign_t;
 
 /**
@@ -173,22 +165,6 @@ typedef struct _SOC_PER_INFO_DESC_ {
   uint32_t    num_of_tick_per_micro_sec;
   dev_attr_t  attribute;
 } soc_peripheral_desc_t;
-
-/**
-  System Miscellaneous Information
-**/
-
-typedef struct _MISCELLANEOUS_INFO_HDR_ {
-    cfg_type_t cfg_type;
-    uint32_t   num;
-} miscellaneous_hdr_t;
-
-typedef struct _MISCELLANEOUS_INFO_DESC_ {
-    cfg_type_t              cfg_type;
-    addr_t                  ns_start_addr_of_combine_test_binary;
-    is_available_t          combine_test_binary_in_ram;
-    addr_t                  ns_test_addr;
-} miscellaneous_desc_t;
 
 /*val target config read apis */
 #ifdef VAL_NSPE_BUILD

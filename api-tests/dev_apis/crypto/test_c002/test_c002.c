@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@
 #include "test_data.h"
 #include "val_crypto.h"
 
-client_test_t test_c002_crypto_list[] = {
+const client_test_t test_c002_crypto_list[] = {
     NULL,
     psa_import_key_test,
     NULL,
@@ -40,6 +40,7 @@ int32_t psa_import_key_test(caller_security_t caller)
     int                   num_checks = sizeof(check1)/sizeof(check1[0]);
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_key_attributes_t  get_attributes = PSA_KEY_ATTRIBUTES_INIT;
+    psa_key_handle_t      key_handle;
 
     if (num_checks == 0)
     {
@@ -99,7 +100,7 @@ int32_t psa_import_key_test(caller_security_t caller)
 
         /* Import the key data into the key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, key_data,
-                 check1[i].key_length, &check1[i].key_handle);
+                 check1[i].key_length, &key_handle);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(3));
 
         /* If failure is expected, continue with the next data set */
@@ -107,7 +108,7 @@ int32_t psa_import_key_test(caller_security_t caller)
             continue;
 
         /* Get the attributes of the imported key and check if it matches the given value */
-        status = val->crypto_function(VAL_CRYPTO_GET_KEY_ATTRIBUTES, check1[i].key_handle,
+        status = val->crypto_function(VAL_CRYPTO_GET_KEY_ATTRIBUTES, key_handle,
                  &get_attributes);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
@@ -118,7 +119,7 @@ int32_t psa_import_key_test(caller_security_t caller)
         TEST_ASSERT_EQUAL(get_key_bits, check1[i].expected_bit_length, TEST_CHECKPOINT_NUM(6));
 
         /* Export a key in binary format */
-        status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, check1[i].key_handle, data,
+        status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, key_handle, data,
                                       BUFFER_SIZE, &length);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
@@ -141,14 +142,14 @@ int32_t psa_import_key_test(caller_security_t caller)
         /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
 
-        val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
 
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, key_data,
-                 check1[i].key_length, &check1[i].key_handle);
+                 check1[i].key_length, &key_handle);
         TEST_ASSERT_NOT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
 
-        TEST_ASSERT_EQUAL(check1[i].key_handle, 0, TEST_CHECKPOINT_NUM(13));
+        TEST_ASSERT_EQUAL(key_handle, 0, TEST_CHECKPOINT_NUM(13));
     }
 
     return VAL_STATUS_SUCCESS;

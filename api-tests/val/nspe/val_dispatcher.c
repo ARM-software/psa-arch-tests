@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,98 +26,6 @@ extern psa_api_t psa_api;
 
 /* gloabls */
 addr_t          g_test_info_addr;
-uint32_t        combine_test_binary_in_ram;
-addr_t          combine_test_binary_addr;
-
-#if !defined(TEST_COMBINE_ARCHIVE)
-static const unsigned char elf_magic_header[ELF_IDENT] = {
-    /* 0x7f, 'E', 'L', 'F' */
-    0x7f, 0x45, 0x4c, 0x46,
-    /* Only 32-bit objects  */
-    0x01,
-    /* Only LSB data. */
-    0x01,
-    /* Only ELF version 1. */
-    0x01,
-    0x0,
-    0x0,
-    0x0,
-    0x0,
-    0x0,
-    0x0,
-    0x0,
-    0x0,
-    0x0
-};
-
-/**
-    @brief    - This API will copy the length of data from addr to *data
-    @param    - addr : address to be read
-                data pointer : address to which data will be copied
-                len  : length of data to be copy in bytes
-    @return   - error status
-**/
-val_status_t val_mem_copy(addr_t addr, uint8_t *data, uint32_t len)
-{
-    if (combine_test_binary_in_ram)
-    {
-        memcpy((void*)data, (void *)addr, len);
-        return VAL_STATUS_SUCCESS;
-    }
-    else
-    {
-        return val_spi_read(addr, data, len);
-    }
-}
-
-
-/**
-    @brief    - This function parses ELF header, entry address(test info addreess)
-                and program headers. Copies the loadable segments to system memory.
-    @return   - Returns Success/Failure
-**/
-int val_copy_elf(uint32_t saddr, uint32_t *info_addr)
-{
-    elf_header_t     test_elfh;
-    elf_pheader_t    test_ph;
-    int              i;
-
-    if (0 != val_mem_copy(saddr, (uint8_t *)&test_elfh, sizeof(elf_header_t)))
-    {
-        val_print(PRINT_ERROR, "Error: read failure for Test ELF header\n", 0);
-        return -1;
-    }
-
-    /* validate ELF header */
-    if (0 != memcmp(&test_elfh.e_ident, &elf_magic_header, ELF_IDENT))
-    {
-        val_print(PRINT_ERROR, "Fail: Test ELF header validation\n", 0);
-        return -1;
-    }
-
-    for (i = 0; i < test_elfh.e_phnum; i++)
-    {
-        /* Read the program header */
-        if (0 != val_mem_copy((saddr + test_elfh.e_phoff + (sizeof(elf_pheader_t)*i)),
-                            (uint8_t *)&test_ph, sizeof(elf_pheader_t)))
-        {
-            val_print(PRINT_ERROR, "Error: reading Test program header\n", 0);
-            return -1;
-        }
-
-        /* Load the program to physical RAM */
-        if (0 != val_mem_copy((saddr + test_ph.p_offset),
-                            (uint8_t *)test_ph.p_paddr, test_ph.p_filesz))
-        {
-            val_print(PRINT_ERROR, "Error: reading Test program header\n", 0);
-            return -1;
-        }
-    }
-
-    *info_addr = test_elfh.e_entry;
-    return 0;
-}
-#endif
 
 /**
     @brief        - This function reads the test ELFs from RAM or secondary storage and loads into
@@ -128,98 +36,6 @@ int val_copy_elf(uint32_t saddr, uint32_t *info_addr)
 **/
 val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
 {
-#if !defined(TEST_COMBINE_ARCHIVE)
-    test_header_t   test_header;
-    addr_t          flash_addr = combine_test_binary_addr;
-
-    /*
-     * The combined Test ELF binary:
-     *
-     * ----------------------
-     * | Custom Test Header*|
-     * |--------------------|
-     * | Test-1 Image       |
-     * ----------------------
-     * | Custom Test Header*|
-     * ----------------------
-     * | Test-2 Image       |
-     * |--------------------|
-     * | Custom Test Header*|
-     *          :
-     *          :
-     * ----------------------
-     * | END Marker         |
-     * ----------------------
-     *
-     */
-
-    if (test_id_prev != VAL_INVALID_TEST_ID)
-    {
-        /* Jump to last test run + 1 */
-        do
-        {
-            if (val_mem_copy(flash_addr, (uint8_t *)&test_header, sizeof(test_header_t)))
-            {
-                val_print(PRINT_ERROR, "Error: reading Test program header\n", 0);
-                return VAL_STATUS_LOAD_ERROR;
-            }
-
-            if (test_header.start_marker == VAL_TEST_END_MARKER)
-            {
-                val_print(PRINT_DEBUG, "\n\nNo more valid tests found. Exiting..", 0);
-                *test_id = VAL_INVALID_TEST_ID;
-                return VAL_STATUS_SUCCESS;
-            }
-
-            if (test_header.start_marker != VAL_TEST_START_MARKER)
-            {
-                flash_addr += 0x4;
-                continue;
-            }
-
-            if ((test_header.start_marker == VAL_TEST_START_MARKER)
-                    && (test_header.test_id == test_id_prev))
-            {
-                flash_addr += (sizeof(test_header_t) + test_header.elf_size);
-                break;
-            }
-
-            flash_addr += (sizeof(test_header_t) + test_header.elf_size);
-        } while(1);
-    }
-
-    if (val_mem_copy(flash_addr, (uint8_t *)&test_header, sizeof(test_header_t)))
-    {
-        val_print(PRINT_ERROR, "\n\nError: reading custom Test header", 0);
-        return VAL_STATUS_LOAD_ERROR;
-    }
-
-    if (test_header.start_marker == VAL_TEST_END_MARKER)
-    {
-        val_print(PRINT_DEBUG, "\n\nNo more valid tests found. Exiting.", 0);
-        *test_id = VAL_INVALID_TEST_ID;
-        return VAL_STATUS_SUCCESS;
-    }
-
-    if (test_header.start_marker != VAL_TEST_START_MARKER)
-    {
-        val_print(PRINT_ERROR, "\n\nError: No valid test binary found. Exiting.", 0);
-        *test_id = VAL_INVALID_TEST_ID;
-        return VAL_STATUS_LOAD_ERROR;
-    }
-
-    flash_addr += sizeof(test_header_t);
-    if (val_copy_elf(flash_addr, &g_test_info_addr))
-    {
-        val_print(PRINT_ERROR, "Error: loading Test program\n", 0);
-        return VAL_STATUS_LOAD_ERROR;
-    }
-
-    *test_id = test_header.test_id;
-    return VAL_STATUS_SUCCESS;
-
-#else /* TEST_COMBINE_ARCHIVE */
-
     int             i;
     val_test_info_t test_list[] = {
 #include "test_entry_list.inc"
@@ -251,7 +67,6 @@ val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
     *test_id = VAL_INVALID_TEST_ID;
     val_print(PRINT_ERROR, "\n\nError: No more valid tests found. Exiting.", 0);
     return VAL_STATUS_LOAD_ERROR;
-#endif /* TEST_COMBINE_ARCHIVE */
 }
 
 /**
@@ -262,11 +77,7 @@ val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
 **/
 val_status_t val_get_test_entry_addr(addr_t *paddr)
 {
-#if !defined(TEST_COMBINE_ARCHIVE)
-    *paddr = (addr_t)(((val_test_info_t *)g_test_info_addr)->entry_addr);
-#else
     *paddr = g_test_info_addr;
-#endif
     return VAL_STATUS_SUCCESS;
 }
 
@@ -298,10 +109,8 @@ char * val_get_comp_name(test_id_t test_id)
             return "IPC Suite";
         case VAL_CRYPTO_BASE:
             return "Crypto Suite";
-        case VAL_PROTECTED_STORAGE_BASE:
-            return "Protected Storage Suite";
-        case VAL_INTERNAL_TRUSTED_STORAGE_BASE:
-            return "Internal Trusted Storage Suite";
+        case VAL_STORAGE_BASE:
+            return "Storage Suite";
         case VAL_INITIAL_ATTESTATION_BASE:
             return "Attestation Suite";
         default:
@@ -320,23 +129,10 @@ int32_t val_dispatcher(test_id_t test_id_prev)
 
     test_id_t            test_id;
     val_status_t         status;
-    miscellaneous_desc_t *misc_desc;
     boot_t               boot;
     test_count_t         test_count;
     uint32_t             test_result;
 
-    status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MISCELLANEOUS,
-                                    MISCELLANEOUS_DUT, 0),
-                                   (uint8_t **)&misc_desc,
-                                   (uint32_t *)sizeof(miscellaneous_desc_t));
-    if (VAL_ERROR(status))
-    {
-        val_print(PRINT_ERROR, "\n\ttarget config read failed", 0);
-        return status;
-    }
-
-    combine_test_binary_addr   = misc_desc->ns_start_addr_of_combine_test_binary;
-    combine_test_binary_in_ram = misc_desc->combine_test_binary_in_ram;
     do
     {
         status = val_get_boot_flag(&boot.state);

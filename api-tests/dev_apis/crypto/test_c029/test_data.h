@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@
 
 typedef struct {
     char                    test_desc[75];
-    psa_key_handle_t        key_handle;
     psa_key_type_t          key_type;
     uint8_t                 key_data[64];
     uint32_t                key_length;
@@ -28,10 +27,10 @@ typedef struct {
     psa_status_t            expected_status;
 } test_data;
 
-static test_data check1[] = {
+static const test_data check1[] = {
 #ifdef ARCH_TEST_HMAC
 #ifdef ARCH_TEST_SHA256
-{"Test psa_mac_verify_setup 64 Byte HMAC\n", 1, PSA_KEY_TYPE_HMAC,
+{"Test psa_mac_verify_setup 64 Byte HMAC\n", PSA_KEY_TYPE_HMAC,
 {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c,
  0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
  0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26,
@@ -45,7 +44,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_AES_128
 #ifdef ARCH_TEST_CMAC
-{"Test psa_mac_verify_setup 16 Byte AES - CMAC\n", 2, PSA_KEY_TYPE_AES,
+{"Test psa_mac_verify_setup 16 Byte AES - CMAC\n", PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x00},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_VERIFY, PSA_ALG_CMAC,
@@ -54,7 +53,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_GMAC
-{"Test psa_mac_verify_setup 16 Byte AES - GMAC\n", 3, PSA_KEY_TYPE_AES,
+{"Test psa_mac_verify_setup 16 Byte AES - GMAC\n", PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x00},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_VERIFY, PSA_ALG_GMAC,
@@ -65,7 +64,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_CMAC
 #ifdef ARCH_TEST_HMAC
-{"Test psa_mac_verify_setup incompactible HMAC for CMAC\n", 4, PSA_KEY_TYPE_HMAC,
+{"Test psa_mac_verify_setup incompactible HMAC for CMAC\n", PSA_KEY_TYPE_HMAC,
 {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C,
  0x0D, 0x0E, 0x0F},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_VERIFY, PSA_ALG_CMAC,
@@ -74,7 +73,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_AES_128
-{"Test psa_mac_verify_setup invalid usage\n", 5, PSA_KEY_TYPE_AES,
+{"Test psa_mac_verify_setup invalid usage\n", PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_EXPORT, PSA_ALG_CMAC,
@@ -85,7 +84,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_HMAC
 #ifdef ARCH_TEST_SHA256
-{"Test psa_mac_verify_setup invalid key type\n", 6, PSA_KEY_TYPE_RAW_DATA,
+{"Test psa_mac_verify_setup invalid key type\n", PSA_KEY_TYPE_RAW_DATA,
 {0x0B, 0x0B, 0x0B, 0x0B, 0x0B, 0x0B, 0x0B, 0x0B, 0x0B, 0x0B, 0x0B, 0x0B, 0x0B,
  0x0B, 0x0B, 0x0B},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_VERIFY, PSA_ALG_HMAC(PSA_ALG_SHA_256),
@@ -96,7 +95,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_HMAC
 #ifdef ARCH_TEST_SHA256
-{"Test psa_mac_verify_setup truncated MAC too large\n", 7, PSA_KEY_TYPE_HMAC,
+{"Test psa_mac_verify_setup truncated MAC too large\n", PSA_KEY_TYPE_HMAC,
 {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c,
  0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
  0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26,
@@ -106,7 +105,7 @@ static test_data check1[] = {
  PSA_ERROR_INVALID_ARGUMENT
 },
 
-{"Test psa_mac_verify_setup truncated MAC too small\n", 8, PSA_KEY_TYPE_HMAC,
+{"Test psa_mac_verify_setup truncated MAC too small\n", PSA_KEY_TYPE_HMAC,
 {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c,
  0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
  0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26,
@@ -118,7 +117,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_AES_128
-{"Test psa_mac_verify_setup bad algorithm (unknown MAC algorithm)\n", 9, PSA_KEY_TYPE_AES,
+{"Test psa_mac_verify_setup bad algorithm (unknown MAC algorithm)\n", PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x00},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_VERIFY, PSA_ALG_HMAC(0),
@@ -129,7 +128,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_AES_128
 #ifdef ARCH_TEST_CBC_NO_PADDING
-{"Test psa_mac_verify_setup bad algorithm (not a MAC algorithm)\n", 10, PSA_KEY_TYPE_AES,
+{"Test psa_mac_verify_setup bad algorithm (not a MAC algorithm)\n", PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x00},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_VERIFY, PSA_ALG_CBC_NO_PADDING,
@@ -139,10 +138,10 @@ static test_data check1[] = {
 #endif
 };
 
-static test_data check2[] = {
+static const test_data check2[] = {
 #ifdef ARCH_TEST_HMAC
 #ifdef ARCH_TEST_SHA256
-{"Test psa_mac_verify_setup 64 negative case\n", 11, PSA_KEY_TYPE_HMAC,
+{"Test psa_mac_verify_setup 64 negative case\n", PSA_KEY_TYPE_HMAC,
 {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c,
  0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
  0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26,

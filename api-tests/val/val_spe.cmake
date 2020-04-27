@@ -58,8 +58,8 @@ target_include_directories(${PSA_TARGET_DRIVER_PARTITION_LIB} PRIVATE
 	${PSA_ROOT_DIR}/val/common
 	${PSA_ROOT_DIR}/val/spe
 	${PSA_ROOT_DIR}/ff/partition
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto
+	${PSA_ROOT_DIR}/platform/targets/common/nspe
+	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe
 )
 
 # Include paths from platform for driver partition build
@@ -72,16 +72,16 @@ target_include_directories(${PSA_TARGET_CLIENT_PARTITION_LIB} PRIVATE
 	${PSA_ROOT_DIR}/val/common
 	${PSA_ROOT_DIR}/val/nspe
 	${PSA_ROOT_DIR}/val/spe
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto
+	${PSA_ROOT_DIR}/platform/targets/common/nspe
+	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe
 	${PSA_ROOT_DIR}/ff/partition
 )
 target_include_directories(${PSA_TARGET_SERVER_PARTITION_LIB} PRIVATE
 	${CMAKE_CURRENT_BINARY_DIR}
 	${PSA_ROOT_DIR}/val/common
 	${PSA_ROOT_DIR}/val/spe
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto
+	${PSA_ROOT_DIR}/platform/targets/common/nspe
+	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe
 	${PSA_ROOT_DIR}/ff/partition
 )
 

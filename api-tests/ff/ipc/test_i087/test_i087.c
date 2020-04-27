@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,7 @@
 
 #define DATA_VALUE 0x1234
 
-client_test_t test_i087_client_tests_list[] = {
+const client_test_t test_i087_client_tests_list[] = {
     NULL,
     client_test_sp_read_other_sp_mmio,
     client_test_sp_write_other_sp_mmio,

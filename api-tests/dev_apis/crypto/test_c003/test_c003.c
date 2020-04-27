@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 #include "test_c003.h"
 #include "test_data.h"
 
-client_test_t test_c003_crypto_list[] = {
+const client_test_t test_c003_crypto_list[] = {
     NULL,
     psa_export_key_test,
     NULL,
@@ -36,6 +36,7 @@ int32_t psa_export_key_test(caller_security_t caller)
     const uint8_t        *key_data;
     int                   num_checks = sizeof(check1)/sizeof(check1[0]);
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
+    psa_key_handle_t      key_handle;
 
     if (num_checks == 0)
     {
@@ -97,11 +98,11 @@ int32_t psa_export_key_test(caller_security_t caller)
 
         /* Import the key data into the key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, key_data,
-                 check1[i].key_length, &check1[i].key_handle);
+                 check1[i].key_length, &key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Export a key in binary format */
-        status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, check1[i].key_handle, data,
+        status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, key_handle, data,
                                       check1[i].buffer_size, &length);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
@@ -126,10 +127,10 @@ int32_t psa_export_key_test(caller_security_t caller)
         }
 
         /* Destroy the key handle and check if export key fails */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
-        status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, check1[i].key_handle, data,
+        status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, key_handle, data,
                                       check1[i].buffer_size, &length);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(9));
     }

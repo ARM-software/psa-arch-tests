@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 #include "test_a001.h"
 #include "test_data.h"
 
-client_test_t test_a001_attestation_list[] = {
+const client_test_t test_a001_attestation_list[] = {
     NULL,
     psa_initial_attestation_get_token_test,
     psa_initial_attestation_get_token_size_test,

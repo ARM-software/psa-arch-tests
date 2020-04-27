@@ -54,7 +54,7 @@ else:
 	suite_test_end_number      = sys.maxsize
 
 # Dictionary to hold the mapping between suite and the base number
-suite_with_base_dict = {"ipc":0, "crypto":1, "protected_storage":2, "internal_trusted_storage":3, "initial_attestation":4}
+suite_with_base_dict = {"ipc":0, "crypto":1, "internal_trusted_storage":2, "protected_storage":2, "storage":2, "initial_attestation":3}
 
 def gen_test_list():
 	"""
@@ -64,7 +64,7 @@ def gen_test_list():
 		with open(testsuite_db_file, mode='r') as i_f:
 			for line in i_f:
 				if (('test_' == line[0:5]) and
-                                    (int(line[6:9]) >= suite_test_start_number) and
+				    (int(line[6:9]) >= suite_test_start_number) and
 				    (int(line[6:9]) <= suite_test_end_number)):
 					if ((panic_tests_included == 1) and ("panic" not in line)):
 						o_f.write(line)
@@ -92,10 +92,7 @@ def gen_test_entry_info():
 		for line in i_f:
 			line = line.strip()
 			test_num = int(line[6:9]) + (max_test_per_suite * suite_with_base_dict[suite])
-			if (suite == "protected_storage"):
-				uniq_test_string = 'p'+line[6:9]
-			else:
-				uniq_test_string = line[5:9]
+			uniq_test_string = line[5:9]
 			o_f1.write("\t{%d, &test_entry_%s},\n" %(test_num, uniq_test_string))
 			o_f2.write("void test_entry_%s(val_api_t *val_api, psa_api_t *psa_api);\n" %(uniq_test_string))
 	print("Non-secure test entry symbol list:\n\t%s,\n\t%s" %(test_entry_list, test_entry_fn_declare_list))

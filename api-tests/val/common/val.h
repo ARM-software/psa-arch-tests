@@ -85,9 +85,8 @@
 #define VAL_MAX_TEST_PER_COMP                200
 #define VAL_FF_BASE                            0
 #define VAL_CRYPTO_BASE                        1
-#define VAL_PROTECTED_STORAGE_BASE             2
-#define VAL_INTERNAL_TRUSTED_STORAGE_BASE      3
-#define VAL_INITIAL_ATTESTATION_BASE           4
+#define VAL_STORAGE_BASE                       2
+#define VAL_INITIAL_ATTESTATION_BASE           3
 
 #define VAL_GET_COMP_NUM(test_id)      \
    ((test_id - (test_id % VAL_MAX_TEST_PER_COMP)) / VAL_MAX_TEST_PER_COMP)

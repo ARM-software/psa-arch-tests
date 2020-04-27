@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,7 @@ int32_t server_test_sp_write_other_sp_variable(void);
 /* Application RoT data region */
 volatile uint32_t g_test_i084 = DATA_VALUE;
 
-server_test_t test_i084_server_tests_list[] = {
+const server_test_t test_i084_server_tests_list[] = {
     NULL,
     server_test_sp_read_other_sp_variable,
     server_test_sp_write_other_sp_variable,

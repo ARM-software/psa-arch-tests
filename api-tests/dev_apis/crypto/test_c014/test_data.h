@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@ static const char sha512_hash[] = {
 0xcb, 0x7b, 0x00, 0xae, 0xa8, 0x91, 0x49, 0x9c, 0xf4, 0xef, 0x6a, 0x03, 0xc8, 0xa8, 0x3f, 0xe3,
 0x7c, 0x3f, 0x7b, 0xaf};
 
-static test_data check1[] = {
+static const test_data check1[] = {
 #ifdef ARCH_TEST_MD2
 {"Test psa_hash_finish with MD2 algorithm\n",
  PSA_ALG_MD2, 0xbd, 1,

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@
 #include "test_data.h"
 #include "val_crypto.h"
 
-client_test_t test_c014_crypto_list[] = {
+const client_test_t test_c014_crypto_list[] = {
     NULL,
     psa_hash_finish_test,
     psa_hash_finish_inactive_operation_handle,

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,7 +42,7 @@ val_status_t val_uart_init_sf(addr_t uart_base_addr)
                - data            : Value for Format specifier
     @return    - error status
  */
-val_status_t val_print_sf(char *string, int32_t data)
+val_status_t val_print_sf(const char *string, int32_t data)
 {
     if (is_uart_init_done == 1)
     {

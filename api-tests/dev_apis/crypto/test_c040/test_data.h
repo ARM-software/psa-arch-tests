@@ -19,7 +19,6 @@
 
 typedef struct {
     char                    test_desc[75];
-    psa_key_handle_t        key_handle;
     psa_key_type_t          key_type;
     uint8_t                 key_data[16];
     uint32_t                key_length;
@@ -125,7 +124,7 @@ static const uint8_t rsa_128_keypair[] = {
 static test_data check1[] = {
 #ifdef ARCH_TEST_RSA_1024
 #ifdef ARCH_TEST_RSA_PKCS1V15_CRYPT
-{"Test psa_asymmetric_decrypt - RSA KEY_PAIR PKCS1V15\n", 1, PSA_KEY_TYPE_RSA_KEY_PAIR,
+{"Test psa_asymmetric_decrypt - RSA KEY_PAIR PKCS1V15\n", PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 610, PSA_KEY_USAGE_DECRYPT, PSA_ALG_RSA_PKCS1V15_CRYPT,
 {0}, 0,
 {0x99, 0xff, 0xde, 0x2f, 0xcc, 0x00, 0xc9, 0xcc, 0x01, 0x97, 0x2e, 0xbf, 0xa7,
@@ -148,7 +147,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_SHA256
 #ifdef ARCH_TEST_RSA_OAEP
-{"Test psa_asymmetric_decrypt - RSA KEY_PAIR OAEP SHA256\n", 2, PSA_KEY_TYPE_RSA_KEY_PAIR,
+{"Test psa_asymmetric_decrypt - RSA KEY_PAIR OAEP SHA256\n", PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 610, PSA_KEY_USAGE_DECRYPT, PSA_ALG_RSA_OAEP(PSA_ALG_SHA_256),
 {0}, 0,
 {0x3d, 0x31, 0x46, 0xb1, 0xc9, 0x82, 0x00, 0x42, 0x73, 0xa9, 0xeb, 0xb9, 0xb0,
@@ -166,7 +165,7 @@ static test_data check1[] = {
  0, 1024, PSA_SUCCESS
 },
 
-{"Test psa_asymmetric_decrypt - RSA KEY_PAIR OAEP SHA256 with label\n", 3,
+{"Test psa_asymmetric_decrypt - RSA KEY_PAIR OAEP SHA256 with label\n",
  PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 610, PSA_KEY_USAGE_DECRYPT, PSA_ALG_RSA_OAEP(PSA_ALG_SHA_256),
 {0x74, 0x68, 0x69, 0x73, 0x00, 0x69, 0x73, 0x00, 0x61, 0x00, 0x6c, 0x61, 0x62,
@@ -191,7 +190,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_CRYPT
-{"Test psa_asymmetric_decrypt - Invalid key type (RSA public key)\n", 4,
+{"Test psa_asymmetric_decrypt - Invalid key type (RSA public key)\n",
 PSA_KEY_TYPE_RSA_PUBLIC_KEY,
 {0}, 162, PSA_KEY_USAGE_DECRYPT, PSA_ALG_RSA_PKCS1V15_CRYPT,
 {0}, 0,
@@ -210,7 +209,7 @@ PSA_KEY_TYPE_RSA_PUBLIC_KEY,
  0, 1024, PSA_ERROR_INVALID_ARGUMENT
 },
 
-{"Test psa_asymmetric_decrypt - Small output buffer\n", 5, PSA_KEY_TYPE_RSA_KEY_PAIR,
+{"Test psa_asymmetric_decrypt - Small output buffer\n", PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 610, PSA_KEY_USAGE_DECRYPT, PSA_ALG_RSA_PKCS1V15_CRYPT,
 {0}, 0,
 {0x99, 0xff, 0xde, 0x2f, 0xcc, 0x00, 0xc9, 0xcc, 0x01, 0x97, 0x2e, 0xbf, 0xa7,
@@ -232,7 +231,7 @@ PSA_KEY_TYPE_RSA_PUBLIC_KEY,
 #endif
 
 #ifdef ARCH_TEST_SHA256
-{"Test psa_asymmetric_decrypt - Invalid algorithm\n", 6, PSA_KEY_TYPE_RSA_KEY_PAIR,
+{"Test psa_asymmetric_decrypt - Invalid algorithm\n", PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 610, PSA_KEY_USAGE_DECRYPT, PSA_ALG_SHA_256,
 {0}, 0,
 {0x99, 0xff, 0xde, 0x2f, 0xcc, 0x00, 0xc9, 0xcc, 0x01, 0x97, 0x2e, 0xbf, 0xa7,
@@ -256,7 +255,7 @@ PSA_KEY_TYPE_RSA_PUBLIC_KEY,
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_CRYPT
 #ifdef ARCH_TEST_AES_128
-{"Test psa_asymmetric_decrypt - Invalid key type (AES Key)\n", 7, PSA_KEY_TYPE_AES,
+{"Test psa_asymmetric_decrypt - Invalid key type (AES Key)\n", PSA_KEY_TYPE_AES,
 {0x30, 0x82, 0x02, 0x5e, 0x02, 0x01, 0x00, 0x02, 0x81, 0x81, 0x00, 0xaf, 0x05,
  0x7d, 0x39, 0x6e}, AES_16B_KEY_SIZE, PSA_KEY_USAGE_DECRYPT, PSA_ALG_RSA_PKCS1V15_CRYPT,
 {0}, 0,
@@ -279,7 +278,7 @@ PSA_KEY_TYPE_RSA_PUBLIC_KEY,
 #endif
 
 #ifdef ARCH_TEST_RSA_1024
-{"Test psa_asymmetric_decrypt - Invalid usage\n", 8, PSA_KEY_TYPE_RSA_KEY_PAIR,
+{"Test psa_asymmetric_decrypt - Invalid usage\n", PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 610, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_RSA_PKCS1V15_CRYPT,
 {0}, 0,
 {0x99, 0xff, 0xde, 0x2f, 0xcc, 0x00, 0xc9, 0xcc, 0x01, 0x97, 0x2e, 0xbf, 0xa7,
@@ -305,7 +304,7 @@ PSA_KEY_TYPE_RSA_PUBLIC_KEY,
 static test_data check2[] = {
 #ifdef ARCH_TEST_RSA_PKCS1V15_CRYPT
 #ifdef ARCH_TEST_RSA_1024
-{"Test psa_asymmetric_decrypt - Negative case\n", 1, PSA_KEY_TYPE_RSA_KEY_PAIR,
+{"Test psa_asymmetric_decrypt - Negative case\n", PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 610, PSA_KEY_USAGE_DECRYPT, PSA_ALG_RSA_PKCS1V15_CRYPT,
 {0}, 0,
 {0x99, 0xff, 0xde, 0x2f, 0xcc, 0x00, 0xc9, 0xcc, 0x01, 0x97, 0x2e, 0xbf, 0xa7,

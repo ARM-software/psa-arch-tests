@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,9 +24,8 @@ list(APPEND VAL_SRC_C_NSPE
 	${PSA_ROOT_DIR}/val/nspe/val_interfaces.c
 	${PSA_ROOT_DIR}/val/nspe/val_peripherals.c
 	${PSA_ROOT_DIR}/val/common/val_target.c
-	${PSA_ROOT_DIR}/val/nspe/val_protected_storage.c
-	${PSA_ROOT_DIR}/val/nspe/val_internal_trusted_storage.c
 	${PSA_ROOT_DIR}/val/nspe/val_attestation.c
+	${PSA_ROOT_DIR}/val/nspe/val_storage.c
 )
 
 # Create VAL NSPE library
@@ -49,16 +48,12 @@ target_include_directories(${PSA_TARGET_VAL_NSPE_LIB} PRIVATE
 	${PSA_ROOT_DIR}/val/common
 	${PSA_ROOT_DIR}/val/nspe
 	${PSA_ROOT_DIR}/val/spe
+	${PSA_ROOT_DIR}/platform/targets/common/nspe
+	${PSA_ROOT_DIR}/platform/targets/common/nspe/crypto
 	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto
 )
 
 if(${WATCHDOG_AVAILABLE} EQUAL 1)
 	target_compile_definitions(${PSA_TARGET_VAL_NSPE_LIB} PRIVATE WATCHDOG_AVAILABLE)
 endif()
-if(${TEST_COMBINE_ARCHIVE} EQUAL 1)
-	target_compile_definitions(${PSA_TARGET_VAL_NSPE_LIB} PRIVATE TEST_COMBINE_ARCHIVE)
-endif()
 target_compile_definitions(${PSA_TARGET_VAL_NSPE_LIB} PRIVATE VAL_NSPE_BUILD)
-target_compile_definitions(${PSA_TARGET_VAL_NSPE_LIB} PRIVATE TEST_COMBINE_ARCHIVE)

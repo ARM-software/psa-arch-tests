@@ -25,7 +25,7 @@
 
 #include "test_i058.h"
 
-client_test_t test_i058_client_tests_list[] = {
+const client_test_t test_i058_client_tests_list[] = {
     NULL,
     client_test_psa_doorbell_signal,
     NULL,

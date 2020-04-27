@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -63,6 +63,7 @@ target_include_directories(${PSA_TARGET_TEST_COMBINE_LIB} PRIVATE
 	${PSA_ROOT_DIR}/val/common
 	${PSA_ROOT_DIR}/val/nspe
 	${PSA_ROOT_DIR}/val/spe
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common
-	 ${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto
+	${PSA_ROOT_DIR}/platform/targets/common/nspe
+	${PSA_ROOT_DIR}/platform/targets/common/nspe/crypto
+	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe
 )

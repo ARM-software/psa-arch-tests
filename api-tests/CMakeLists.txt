@@ -39,6 +39,7 @@ list(APPEND PSA_SUITES
 	"CRYPTO"
 	"PROTECTED_STORAGE"
 	"INTERNAL_TRUSTED_STORAGE"
+	"STORAGE"
 	"INITIAL_ATTESTATION"
 )
 
@@ -67,6 +68,12 @@ list(APPEND PSA_PROTECTED_STORAGE_FILES
 # list of internal_trusted_storage files required
 list(APPEND PSA_INTERNAL_TRUSTED_STORAGE_FILES
 	"psa/internal_trusted_storage.h"
+)
+
+# list of storage files required
+list(APPEND PSA_STORAGE_FILES
+	${PSA_INTERNAL_TRUSTED_STORAGE_FILES}
+	${PSA_PROTECTED_STORAGE_FILES}
 )
 
 # list of initial_attestation files required
@@ -152,6 +159,9 @@ set(PSA_TARGET_SERVER_PARTITION_LIB	server_partition)
 if(${SUITE} STREQUAL "IPC")
 	set(PSA_SUITE_DIR		${PSA_ROOT_DIR}/ff/${SUITE_LOWER})
 	set(PSA_SUITE_OUT_DIR		${CMAKE_CURRENT_BINARY_DIR}/ff/${SUITE_LOWER})
+elseif((${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE") OR (${SUITE} STREQUAL "PROTECTED_STORAGE"))
+	set(PSA_SUITE_DIR		${PSA_ROOT_DIR}/dev_apis/storage)
+	set(PSA_SUITE_OUT_DIR		${CMAKE_CURRENT_BINARY_DIR}/dev_apis/storage)
 else()
 	set(PSA_SUITE_DIR		${PSA_ROOT_DIR}/dev_apis/${SUITE_LOWER})
 	set(PSA_SUITE_OUT_DIR		${CMAKE_CURRENT_BINARY_DIR}/dev_apis/${SUITE_LOWER})
@@ -163,9 +173,15 @@ set(TGT_CONFIG_SOURCE_C			${CMAKE_CURRENT_BINARY_DIR}/targetConfigGen.c)
 set(OUTPUT_HEADER			target_database.h)
 set(DATABASE_TABLE_NAME			target_database)
 set(DATABASE_TABLE_SECTION_NAME		"NOSECTION")
-set(TARGET_HEADER_GEN_INCLUDE_PATHS     "${PSA_ROOT_DIR}/val/nspe|${PSA_ROOT_DIR}/val/common|${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common|${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto")
-set(TESTSUITE_DB			${PSA_SUITE_DIR}/testsuite.db)
-set(PSA_TESTLIST_FILE			${CMAKE_CURRENT_BINARY_DIR}/testlist.txt)
+set(TARGET_HEADER_GEN_INCLUDE_PATHS     "${PSA_ROOT_DIR}/val/nspe|${PSA_ROOT_DIR}/val/common|${PSA_ROOT_DIR}/platform/targets/common/nspe|${PSA_ROOT_DIR}/platform/targets/common/nspe/crypto|${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe")
+if(${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE")
+	set(TESTSUITE_DB			${PSA_SUITE_DIR}/its_testsuite.db)
+elseif((${SUITE} STREQUAL "PROTECTED_STORAGE") OR (${SUITE} STREQUAL "STORAGE"))
+	set(TESTSUITE_DB			${PSA_SUITE_DIR}/ps_testsuite.db)
+else()
+	set(TESTSUITE_DB			${PSA_SUITE_DIR}/testsuite.db)
+endif()
+set(PSA_TESTLIST_FILE			${CMAKE_CURRENT_BINARY_DIR}/${SUITE_LOWER}_testlist.txt)
 set(PSA_TEST_ENTRY_LIST_INC		${CMAKE_CURRENT_BINARY_DIR}/test_entry_list.inc)
 set(PSA_TEST_ENTRY_FUN_DECLARE_INC	${CMAKE_CURRENT_BINARY_DIR}/test_entry_fn_declare_list.inc)
 set(PSA_CLIENT_TEST_LIST_DELCARE_INC	${CMAKE_CURRENT_BINARY_DIR}/client_tests_list_declare.inc)
@@ -273,14 +289,6 @@ if(NOT DEFINED SP_HEAP_MEM_SUPP)
 	#Are dynamic memory functions available to secure partition?
 	set(SP_HEAP_MEM_SUPP 1 CACHE INTERNAL "Default SP_HEAP_MEM_SUPP value" FORCE)
         message(STATUS "[PSA] : Defaulting SP_HEAP_MEM_SUPP to ${SP_HEAP_MEM_SUPP}")
-endif()
-
-if(NOT DEFINED TEST_COMBINE_ARCHIVE)
-	#Default option is to create archive
-	set(TEST_COMBINE_ARCHIVE 1 CACHE INTERNAL "Default TEST_COMBINE_ARCHIVE value" FORCE)
-        message(STATUS "[PSA] : Defaulting TEST_COMBINE_ARCHIVE to ${TEST_COMBINE_ARCHIVE}")
-else()
-    message(STATUS "[PSA] : TEST_COMBINE_ARCHIVE is set to ${TEST_COMBINE_ARCHIVE}")
 endif()
 
 if(NOT DEFINED SUITE_TEST_RANGE)

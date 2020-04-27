@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,7 @@
 
 #include "test_i069.h"
 
-client_test_t test_i069_client_tests_list[] = {
+const client_test_t test_i069_client_tests_list[] = {
     NULL,
     client_test_write_to_code_space,
     NULL,

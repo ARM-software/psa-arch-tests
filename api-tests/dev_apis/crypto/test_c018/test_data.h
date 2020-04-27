@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@
 
 typedef struct {
     char                        test_desc[75];
-    psa_key_handle_t            key_handle;
     psa_key_type_t              key_type;
     uint8_t                     key_data[34];
     uint32_t                    key_length;
@@ -163,9 +162,9 @@ static const uint8_t ec_keypair[] = {
  0x68, 0x49, 0xf9, 0x7d, 0x10, 0x66, 0xf6, 0x99, 0x77, 0x59, 0x63, 0x7c, 0x7e, 0x38,
  0x99, 0x46, 0x4c, 0xee, 0x3e, 0xc7, 0xac, 0x97, 0x06, 0x53, 0xa0, 0xbe, 0x07, 0x42};
 
-static test_data check1[] = {
+static const test_data check1[] = {
 
-{"Test psa_key_derivation_input_key 16 Byte Key\n", 1, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_input_key 16 Byte Key\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, 0, PSA_KEY_USAGE_DERIVE, PSA_ALG_HKDF(PSA_ALG_SHA_256),
@@ -173,7 +172,7 @@ static test_data check1[] = {
  BYTES_TO_BITS(AES_16B_KEY_SIZE), AES_16B_KEY_SIZE, PSA_SUCCESS
 },
 
-{"Test psa_key_derivation_input_key with invalid usage\n", 2, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_input_key with invalid usage\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, 0, PSA_KEY_USAGE_EXPORT, PSA_ALG_HKDF(PSA_ALG_SHA_256),
@@ -181,7 +180,7 @@ static test_data check1[] = {
  BYTES_TO_BITS(AES_16B_KEY_SIZE), AES_16B_KEY_SIZE, PSA_ERROR_NOT_PERMITTED
 },
 
-{"Test psa_key_derivation_input_key with step as label\n", 3, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_input_key with step as label\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, 0, PSA_KEY_USAGE_DERIVE, PSA_ALG_HKDF(PSA_ALG_SHA_256),
@@ -189,7 +188,7 @@ static test_data check1[] = {
  BYTES_TO_BITS(AES_16B_KEY_SIZE), AES_16B_KEY_SIZE, PSA_ERROR_INVALID_ARGUMENT
 },
 
-{"Test psa_key_derivation_input_key with step as info\n", 4, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_input_key with step as info\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, 0, PSA_KEY_USAGE_DERIVE, PSA_ALG_HKDF(PSA_ALG_SHA_256),
@@ -197,7 +196,7 @@ static test_data check1[] = {
  BYTES_TO_BITS(AES_16B_KEY_SIZE), AES_16B_KEY_SIZE, PSA_ERROR_INVALID_ARGUMENT
 },
 
-{"Test psa_key_derivation_input_key with step as seed\n", 5, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_input_key with step as seed\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, 0, PSA_KEY_USAGE_DERIVE, PSA_ALG_HKDF(PSA_ALG_SHA_256),
@@ -205,7 +204,7 @@ static test_data check1[] = {
  BYTES_TO_BITS(AES_16B_KEY_SIZE), AES_16B_KEY_SIZE, PSA_ERROR_INVALID_ARGUMENT
 },
 
-{"Test psa_key_derivation_input_key with step as salt\n", 6, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_input_key with step as salt\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, 0, PSA_KEY_USAGE_DERIVE, PSA_ALG_HKDF(PSA_ALG_SHA_256),
@@ -214,7 +213,7 @@ static test_data check1[] = {
 },
 
 #ifdef ARCH_TEST_AES_192
-{"Test psa_key_derivation_input_key with key type as AES(not derive)\n", 7, PSA_KEY_TYPE_AES,
+{"Test psa_key_derivation_input_key with key type as AES(not derive)\n", PSA_KEY_TYPE_AES,
 {0x24, 0x13, 0x61, 0x47, 0x61, 0xB8, 0xC8, 0xF0, 0xDF, 0xAB, 0x5A, 0x0E, 0x87,
  0x40, 0xAC, 0xA3, 0x90, 0x77, 0x83, 0x52, 0x31, 0x74, 0xF9, 0x05},
  AES_24B_KEY_SIZE, 0, PSA_KEY_USAGE_DERIVE, PSA_ALG_HKDF(PSA_ALG_SHA_256),
@@ -223,7 +222,7 @@ static test_data check1[] = {
 },
 #endif
 
-{"Test psa_key_derivation_input_key incorrect key algorithm\n", 8, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_input_key incorrect key algorithm\n", PSA_KEY_TYPE_DERIVE,
 {0xEA, 0xD5, 0xE6, 0xC8, 0x51, 0xF9, 0xEC, 0xBB, 0x9B, 0x57, 0x7C, 0xED, 0xD2,
  0x4B, 0x82, 0x84, 0x9F, 0x9F, 0xE6, 0x73, 0x21, 0x3D, 0x1A, 0x05, 0xC9, 0xED,
  0xDF, 0x25, 0x17, 0x68, 0x86, 0xAE},
@@ -234,14 +233,14 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 #ifdef ARCH_TEST_RSA_2048
-{"Test psa_key_derivation_input_key 2048 RSA public key\n", 9, PSA_KEY_TYPE_RSA_PUBLIC_KEY,
+{"Test psa_key_derivation_input_key 2048 RSA public key\n", PSA_KEY_TYPE_RSA_PUBLIC_KEY,
  {0},
  270, 0, PSA_KEY_USAGE_DERIVE, PSA_ALG_HKDF(PSA_ALG_SHA_256), PSA_KEY_DERIVATION_INPUT_SECRET,
  PSA_ALG_HKDF(PSA_ALG_SHA_256),
  2048, 270, PSA_ERROR_INVALID_ARGUMENT,
 },
 
-{"Test psa_key_derivation_input_key with RSA 2048 keypair\n", 10, PSA_KEY_TYPE_RSA_KEY_PAIR,
+{"Test psa_key_derivation_input_key with RSA 2048 keypair\n", PSA_KEY_TYPE_RSA_KEY_PAIR,
  {0},
  1193, 0, PSA_KEY_USAGE_DERIVE, PSA_ALG_HKDF(PSA_ALG_SHA_256), PSA_KEY_DERIVATION_INPUT_SECRET,
  PSA_ALG_HKDF(PSA_ALG_SHA_256),
@@ -250,7 +249,7 @@ static test_data check1[] = {
 #endif
 #endif
 
-{"Test psa_key_derivation_input_key with zero as step\n", 1, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_input_key with zero as step\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, 0, PSA_KEY_USAGE_DERIVE, PSA_ALG_HKDF(PSA_ALG_SHA_256),
@@ -259,9 +258,9 @@ static test_data check1[] = {
 },
 };
 
-static test_data check2[] = {
+static const test_data check2[] = {
 
-{"Test psa_key_derivation_input_key invalid handle\n", 11, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_input_key invalid handle\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, 0, PSA_KEY_USAGE_DERIVE, PSA_ALG_HKDF(PSA_ALG_SHA_256),

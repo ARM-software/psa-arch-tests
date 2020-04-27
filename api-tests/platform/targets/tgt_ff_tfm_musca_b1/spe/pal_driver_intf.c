@@ -33,7 +33,7 @@ void pal_uart_init(uint32_t uart_base_addr)
               - data     : Value for format specifier
 **/
 
-void pal_print(char *str, int32_t data)
+void pal_print(const char *str, int32_t data)
 {
   pal_uart_pl011_print(str, data);
 }

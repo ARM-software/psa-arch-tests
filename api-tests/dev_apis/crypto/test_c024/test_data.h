@@ -19,7 +19,6 @@
 
 typedef struct {
     char                    test_desc[75];
-    psa_key_handle_t        key_handle;
     psa_key_type_t          key_type;
     uint8_t                 key_data[32];
     uint32_t                key_length;
@@ -40,7 +39,7 @@ typedef struct {
 static test_data check1[] = {
 #ifdef ARCH_TEST_CCM
 #ifdef ARCH_TEST_AES_128
-{"Test psa_aead_encrypt - CCM - 16B AES - 13B nounce & 8B addi data\n", 1, PSA_KEY_TYPE_AES,
+{"Test psa_aead_encrypt - CCM - 16B AES - 13B nounce & 8B addi data\n", PSA_KEY_TYPE_AES,
 {0xD7, 0x82, 0x8D, 0x13, 0xB2, 0xB0, 0xBD, 0xC3, 0x25, 0xA7, 0x62, 0x36, 0xDF,
  0x93, 0xCC, 0x6B},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CCM,
@@ -55,7 +54,7 @@ static test_data check1[] = {
  BUFFER_SIZE, 39, PSA_SUCCESS
 },
 
-{"Test psa_aead_encrypt - AES-CCM\n", 2, PSA_KEY_TYPE_AES,
+{"Test psa_aead_encrypt - AES-CCM\n", PSA_KEY_TYPE_AES,
 {0x41, 0x89, 0x35, 0x1B, 0x5C, 0xAE, 0xA3, 0x75, 0xA0, 0x29, 0x9E, 0x81, 0xC6,
  0x21, 0xBF, 0x43}, AES_16B_KEY_SIZE, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CCM,
 {0x48, 0xc0, 0x90, 0x69, 0x30, 0x56, 0x1e, 0x0a, 0xb0, 0xef, 0x4c, 0xd9, 0x72},
@@ -71,7 +70,7 @@ static test_data check1[] = {
  0xe9}, BUFFER_SIZE, 40, PSA_SUCCESS
 },
 
-{"Test psa_aead_encrypt - AES-CCM 24 bytes Tag length = 4\n", 3, PSA_KEY_TYPE_AES,
+{"Test psa_aead_encrypt - AES-CCM 24 bytes Tag length = 4\n", PSA_KEY_TYPE_AES,
 {0x41, 0x89, 0x35, 0x1B, 0x5C, 0xAE, 0xA3, 0x75, 0xA0, 0x29, 0x9E, 0x81, 0xC6,
  0x21, 0xBF, 0x43}, AES_16B_KEY_SIZE, PSA_KEY_USAGE_ENCRYPT,
  PSA_ALG_AEAD_WITH_TAG_LENGTH(PSA_ALG_CCM, 4),
@@ -93,7 +92,7 @@ static test_data check1[] = {
 #ifdef ARCH_TEST_GCM
 #ifdef ARCH_TEST_AES_128
 {"Test psa_aead_encrypt - GCM - 16B AES - 12B Nounce & 12B addi data\n",
-4, PSA_KEY_TYPE_AES,
+PSA_KEY_TYPE_AES,
 {0x3d, 0xe0, 0x98, 0x74, 0xb3, 0x88, 0xe6, 0x49, 0x19, 0x88, 0xd0, 0xc3, 0x60,
  0x7e, 0xae, 0x1f}, AES_16B_KEY_SIZE, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_GCM,
 {0x57, 0x69, 0x0e, 0x43, 0x4e, 0x28, 0x00, 0x00, 0xa2, 0xfc, 0xa1, 0xa3}, 12,
@@ -112,7 +111,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_CCM
 #ifdef ARCH_TEST_DES_1KEY
-{"Test psa_aead_encrypt - DES Key\n", 5, PSA_KEY_TYPE_DES,
+{"Test psa_aead_encrypt - DES Key\n", PSA_KEY_TYPE_DES,
 {0x70, 0x24, 0x55, 0x0C, 0x14, 0x9D, 0xED, 0x29}, DES_8B_KEY_SIZE,
  PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CCM,
 {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B}, 12,
@@ -126,7 +125,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_AES_128
 #ifdef ARCH_TEST_CIPER_MODE_CFB
-{"Test psa_aead_encrypt - Unsupported Algorithm\n", 6, PSA_KEY_TYPE_AES,
+{"Test psa_aead_encrypt - Unsupported Algorithm\n", PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9}, AES_16B_KEY_SIZE, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CFB,
 {0}, 13, {0}, 0, "hello world", 11,
@@ -138,7 +137,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_GCM
-{"Test psa_aead_encrypt - Invalid key usage\n", 7, PSA_KEY_TYPE_AES,
+{"Test psa_aead_encrypt - Invalid key usage\n", PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9}, AES_16B_KEY_SIZE, PSA_KEY_USAGE_DECRYPT, PSA_ALG_GCM,
 {0}, 13, {0}, 0, "hello world", 11,
@@ -148,7 +147,7 @@ static test_data check1[] = {
  BUFFER_SIZE, 27, PSA_ERROR_NOT_PERMITTED
 },
 
-{"Test psa_aead_encrypt - Small output buffer size\n", 8, PSA_KEY_TYPE_AES,
+{"Test psa_aead_encrypt - Small output buffer size\n", PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9}, AES_16B_KEY_SIZE, PSA_KEY_USAGE_DECRYPT, PSA_ALG_GCM,
 {0}, 13, {0}, 0, "hello world", 11,

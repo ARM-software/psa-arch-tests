@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +26,7 @@
 #include "val_service_defs.h"
 
 val_status_t val_uart_init_sf(addr_t uart_base_addr);
-val_status_t val_print_sf(char *string, int32_t data);
+val_status_t val_print_sf(const char *string, int32_t data);
 val_status_t val_wd_timer_init_sf(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us);
 val_status_t val_wd_timer_enable_sf(addr_t base_addr);
 val_status_t val_wd_timer_disable_sf(addr_t base_addr);

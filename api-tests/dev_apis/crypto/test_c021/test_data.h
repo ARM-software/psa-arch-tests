@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@
 
 typedef struct {
     char                        test_desc[75];
-    psa_key_handle_t            key_handle;
     psa_key_type_t              key_type;
     uint8_t                     key_data[34];
     uint32_t                    key_length;
@@ -36,8 +35,8 @@ typedef struct {
     psa_status_t                expected_status;
 } test_data;
 
-static test_data check1[] = {
-{"Test psa_key_derivation_output_key - Key\n", 1, PSA_KEY_TYPE_DERIVE,
+static const test_data check1[] = {
+{"Test psa_key_derivation_output_key - Key\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
@@ -48,7 +47,7 @@ static test_data check1[] = {
  PSA_SUCCESS
 },
 
-{"Test psa_key_derivation_output_key - Info\n", 1, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_output_key - Info\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
@@ -59,7 +58,7 @@ static test_data check1[] = {
  PSA_SUCCESS
 },
 
-{"Test psa_key_derivation_output_key - Label\n", 1, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_output_key - Label\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
@@ -70,7 +69,7 @@ static test_data check1[] = {
  PSA_SUCCESS
 },
 
-{"Test psa_key_derivation_output_key - Seed\n", 1, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_output_key - Seed\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
@@ -81,7 +80,7 @@ static test_data check1[] = {
  PSA_SUCCESS
 },
 
-{"Test psa_key_derivation_output_key - Salt\n", 1, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_output_key - Salt\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
@@ -92,7 +91,7 @@ static test_data check1[] = {
  PSA_SUCCESS
 },
 
-{"Test psa_key_derivation_output_key - DES key export\n", 1, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_output_key - DES key export\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
@@ -103,7 +102,7 @@ static test_data check1[] = {
  PSA_SUCCESS
 },
 
-{"Test psa_key_derivation_output_key - Greater Capacity than available\n", 1, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_output_key - Greater Capacity than available\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
@@ -114,7 +113,7 @@ static test_data check1[] = {
  PSA_ERROR_INSUFFICIENT_DATA
 },
 
-{"Test psa_key_derivation_output_key - ECC Public key\n", 1, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_output_key - ECC Public key\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
@@ -124,7 +123,7 @@ static test_data check1[] = {
  PSA_ERROR_NOT_SUPPORTED,
 },
 
-{"Test psa_key_derivation_output_key -  ECC keypair\n", 1, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_output_key -  ECC keypair\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
@@ -135,7 +134,7 @@ static test_data check1[] = {
  PSA_SUCCESS
 },
 
-{"Test psa_key_derivation_output_key -  RSA Public Key", 1, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_output_key -  RSA Public Key", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
@@ -146,7 +145,7 @@ static test_data check1[] = {
  PSA_ERROR_NOT_SUPPORTED,
 },
 
-{"Test psa_key_derivation_output_key -  RSA keypair\n", 1, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_output_key -  RSA keypair\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
@@ -157,7 +156,7 @@ static test_data check1[] = {
  PSA_SUCCESS
 },
 
-{"Test psa_key_derivation_output_key - Invalid key size\n", 1, PSA_KEY_TYPE_DERIVE,
+{"Test psa_key_derivation_output_key - Invalid key size\n", PSA_KEY_TYPE_DERIVE,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, PSA_KEY_USAGE_DERIVE,
