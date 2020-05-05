@@ -96,7 +96,7 @@ int32_t psa_aead_update_test(caller_security_t caller)
         {
             /* Encrypt or decrypt a message fragment in an inactive AEAD operation should fail */
             status = val->crypto_function(VAL_CRYPTO_AEAD_UPDATE, &operation,
-                     check1[i].plaintext_length, check1[i].plaintext, output,
+                     check1[i].plaintext, check1[i].plaintext_length, output,
                      check1[i].output_size, &length);
             TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(9));
 
