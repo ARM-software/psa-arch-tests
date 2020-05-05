@@ -21,8 +21,8 @@
 #include "test_data.h"
 #include "val_crypto.h"
 
-#define     SLOT_1      1
-#define     SLOT_2      2
+#define     SLOT_1      0
+#define     SLOT_2      1
 
 client_test_t test_c021_crypto_list[] = {
     NULL,
