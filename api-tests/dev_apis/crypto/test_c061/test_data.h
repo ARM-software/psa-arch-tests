@@ -34,10 +34,10 @@ typedef struct {
     size_t                  plaintext_length;
     size_t                  input_length;
     size_t                  output_size;
-    size_t                  expected_output[45];
+    uint8_t                 expected_output[45];
     size_t                  expected_length;
     size_t                  tag_size;
-    size_t                  expected_tag[64];
+    uint8_t                 expected_tag[64];
     size_t                  expected_tag_length;
     psa_status_t            expected_status;
 } test_data;
