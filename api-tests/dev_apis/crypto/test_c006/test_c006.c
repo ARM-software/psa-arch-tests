@@ -65,7 +65,7 @@ int32_t psa_hash_compute_test(caller_security_t caller)
 
         /* Calculate the hash (digest) of a message */
         status = val->crypto_function(VAL_CRYPTO_HASH_COMPUTE, check1[i].alg, &check1[i].input,
-                 check1[i].input_length, hash, hash_size, &hash_length);
+                 check1[i].input_length, hash, check1[i].hash_length, &hash_length);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(3));
 
         if (check1[i].expected_status != PSA_SUCCESS)
