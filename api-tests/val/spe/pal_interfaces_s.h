@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +37,7 @@ void pal_uart_init(addr_t uart_base_addr);
                - data           : Value for Format specifier
     @return    - void
  */
-void pal_print(char *str, int32_t data);
+void pal_print(const char *str, int32_t data);
 
 /**
     @brief           - Initializes an hardware watchdog timer

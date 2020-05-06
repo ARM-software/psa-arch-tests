@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@
 
 typedef struct {
     char                    test_desc[75];
-    psa_key_handle_t        key_handle;
     psa_key_type_t          key_type;
     uint8_t                 key_data[32];
     uint32_t                key_length;
@@ -33,10 +32,10 @@ typedef struct {
     psa_status_t            expected_status;
 } test_data;
 
-static test_data check1[] = {
+static const test_data check1[] = {
 #ifdef ARCH_TEST_AES_128
 #ifdef ARCH_TEST_CBC_NO_PADDING
-{"Test psa_cipher_decrypt - Encrypt - AES CBC_NO_PADDING\n", 1, PSA_KEY_TYPE_AES,
+{"Test psa_cipher_decrypt - Encrypt - AES CBC_NO_PADDING\n", PSA_KEY_TYPE_AES,
 {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
  0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
  PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING,
@@ -48,7 +47,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_CBC_NO_PADDING
-{"Test psa_cipher_decrypt - Decrypt - AES CBC_NO_PADDING\n", 11, PSA_KEY_TYPE_AES,
+{"Test psa_cipher_decrypt - Decrypt - AES CBC_NO_PADDING\n", PSA_KEY_TYPE_AES,
 {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
  0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
  PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_NO_PADDING,
@@ -59,7 +58,7 @@ static test_data check1[] = {
  0x93, 0x17, 0x2a}, 0, PSA_SUCCESS
 },
 
-{"Test psa_cipher_decrypt - Decrypt - AES CBC_NO_PADDING (Short input)\n", 12, PSA_KEY_TYPE_AES,
+{"Test psa_cipher_decrypt - Decrypt - AES CBC_NO_PADDING (Short input)\n", PSA_KEY_TYPE_AES,
 {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
  0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
  PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING,
@@ -67,7 +66,7 @@ static test_data check1[] = {
 {0x6b, 0xc1, 0xbe, 0xe2, 0x23}, 0, PSA_ERROR_INVALID_ARGUMENT
 },
 
-{"Test psa_cipher_decrypt - Decrypt - AES CBC_NO_PADDING\n", 2, PSA_KEY_TYPE_AES,
+{"Test psa_cipher_decrypt - Decrypt - AES CBC_NO_PADDING\n", PSA_KEY_TYPE_AES,
 {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
  0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
  PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_NO_PADDING,
@@ -81,7 +80,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_CBC_PKCS7
-{"Test psa_cipher_decrypt - Decrypt - AES CBC_PKCS7\n", 13, PSA_KEY_TYPE_AES,
+{"Test psa_cipher_decrypt - Decrypt - AES CBC_PKCS7\n", PSA_KEY_TYPE_AES,
 {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
  0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
  PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_PKCS7,
@@ -92,7 +91,7 @@ static test_data check1[] = {
  0x93, 0x17, 0x2a}, 0, PSA_SUCCESS
 },
 
-{"Test psa_cipher_decrypt - Decrypt - AES CBC_PKCS7 (Short input)\n", 14, PSA_KEY_TYPE_AES,
+{"Test psa_cipher_decrypt - Decrypt - AES CBC_PKCS7 (Short input)\n", PSA_KEY_TYPE_AES,
 {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
  0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
  PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_PKCS7,
@@ -104,7 +103,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_CIPER_MODE_CTR
-{"Test psa_cipher_decrypt - Decrypt - AES CTR\n", 15, PSA_KEY_TYPE_AES,
+{"Test psa_cipher_decrypt - Decrypt - AES CTR\n", PSA_KEY_TYPE_AES,
 {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
  0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
  PSA_KEY_USAGE_DECRYPT, PSA_ALG_CTR,
@@ -115,7 +114,7 @@ static test_data check1[] = {
  0, PSA_SUCCESS
 },
 
-{"Test psa_cipher_decrypt - Decrypt - AES CTR (short input)\n", 16, PSA_KEY_TYPE_AES,
+{"Test psa_cipher_decrypt - Decrypt - AES CTR (short input)\n", PSA_KEY_TYPE_AES,
 {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
  0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
  PSA_KEY_USAGE_DECRYPT, PSA_ALG_CTR,
@@ -129,7 +128,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_CBC_NO_PADDING
 #ifdef ARCH_TEST_DES_1KEY
-{"Test psa_cipher_decrypt - Decrypt - DES CBC (nopad)\n", 17, PSA_KEY_TYPE_DES,
+{"Test psa_cipher_decrypt - Decrypt - DES CBC (nopad)\n", PSA_KEY_TYPE_DES,
 {0x01, 0x02, 0x04, 0x07, 0x08, 0x0b, 0x0d, 0x0e}, DES_8B_KEY_SIZE,
  PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_NO_PADDING,
 {0x64, 0xf9, 0x17, 0xb0, 0x15, 0x2f, 0x8f, 0x05}, 8, SIZE_32B,
@@ -138,7 +137,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_DES_2KEY
-{"Test psa_cipher_decrypt - Decrypt - 2-key 3DE -CBC (nopad)\n", 18, PSA_KEY_TYPE_DES,
+{"Test psa_cipher_decrypt - Decrypt - 2-key 3DE -CBC (nopad)\n", PSA_KEY_TYPE_DES,
 {0x01, 0x02, 0x04, 0x07, 0x08, 0x0b, 0x0d, 0x0e, 0xc1, 0xc2, 0xc4, 0xc7, 0xc8,
  0xcb, 0xcd, 0xce}, DES3_2KEY_SIZE,
  PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_NO_PADDING,
@@ -148,7 +147,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_DES_3KEY
-{"Test psa_cipher_decrypt - 3-key 3DE -CBC (nopad)\n", 19, PSA_KEY_TYPE_DES,
+{"Test psa_cipher_decrypt - 3-key 3DE -CBC (nopad)\n", PSA_KEY_TYPE_DES,
 {0x01, 0x02, 0x04, 0x07, 0x08, 0x0b, 0x0d, 0x0e, 0xc1, 0xc2, 0xc4, 0xc7, 0xc8,
  0xcb, 0xcd, 0xce, 0x31, 0x32, 0x34, 0x37, 0x38, 0x3b, 0x3d, 0x3e}, DES3_3KEY_SIZE,
  PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_NO_PADDING,

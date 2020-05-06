@@ -19,7 +19,6 @@
 
 typedef struct {
     char                    test_desc[75];
-    psa_key_handle_t        key_handle;
     psa_key_type_t          key_type;
     psa_key_id_t            key_id;
     uint8_t                 key_data[34];
@@ -166,7 +165,7 @@ static const uint8_t ec_keypair[] = {
 static test_data check1[] = {
 #ifdef ARCH_TEST_CIPER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
-{"Test psa_open_key 16 Byte AES\n", 1, PSA_KEY_TYPE_AES, 0x12,
+{"Test psa_open_key 16 Byte AES\n", PSA_KEY_TYPE_AES, 0x12,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0x77},
  AES_16B_KEY_SIZE, 0, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR, PSA_KEY_LIFETIME_PERSISTENT,
@@ -175,7 +174,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_AES_192
-{"Test psa_open_key 24 Byte AES\n", 2, PSA_KEY_TYPE_AES, 0x34,
+{"Test psa_open_key 24 Byte AES\n", PSA_KEY_TYPE_AES, 0x34,
 {0x24, 0x13, 0x61, 0x47, 0x61, 0xB8, 0xC8, 0xF0, 0xDF, 0xAB, 0x5A, 0x0E, 0x87,
  0x40, 0xAC, 0xA3, 0x90, 0x77, 0x83, 0x52, 0x31, 0x74, 0xF9, 0x05},
  AES_24B_KEY_SIZE, BYTES_TO_BITS(AES_24B_KEY_SIZE), PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
@@ -185,7 +184,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_AES_256
-{"Test psa_open_key 32 Byte AES\n", 3, PSA_KEY_TYPE_AES, 0x56,
+{"Test psa_open_key 32 Byte AES\n", PSA_KEY_TYPE_AES, 0x56,
 {0xEA, 0xD5, 0xE6, 0xC8, 0x51, 0xF9, 0xEC, 0xBB, 0x9B, 0x57, 0x7C, 0xED, 0xD2,
  0x4B, 0x82, 0x84, 0x9F, 0x9F, 0xE6, 0x73, 0x21, 0x3D, 0x1A, 0x05, 0xC9, 0xED,
  0xDF, 0x25, 0x17, 0x68, 0x86, 0xAE},
@@ -197,13 +196,13 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 #ifdef ARCH_TEST_RSA_2048
-{"Test psa_open_key 2048 RSA public key\n", 4, PSA_KEY_TYPE_RSA_PUBLIC_KEY, 0x78,
+{"Test psa_open_key 2048 RSA public key\n", PSA_KEY_TYPE_RSA_PUBLIC_KEY, 0x78,
  {0},
  270, 0, PSA_KEY_USAGE_EXPORT, PSA_ALG_RSA_PKCS1V15_SIGN_RAW, PSA_KEY_LIFETIME_PERSISTENT,
  2048, 270, PSA_SUCCESS
 },
 
-{"Test psa_open_key with RSA 2048 keypair\n", 5, PSA_KEY_TYPE_RSA_KEY_PAIR, 0x89,
+{"Test psa_open_key with RSA 2048 keypair\n", PSA_KEY_TYPE_RSA_KEY_PAIR, 0x89,
  {0},
  1193, 0, PSA_KEY_USAGE_EXPORT, PSA_ALG_RSA_PKCS1V15_SIGN_RAW, PSA_KEY_LIFETIME_PERSISTENT,
  2048, 1193, PSA_SUCCESS
@@ -213,7 +212,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_CIPER_MODE_CTR
 #ifdef ARCH_TEST_DES_1KEY
-{"Test psa_open_key with DES 64 bit key\n", 6, PSA_KEY_TYPE_DES, 0x90,
+{"Test psa_open_key with DES 64 bit key\n", PSA_KEY_TYPE_DES, 0x90,
  {0x70, 0x24, 0x55, 0x0C, 0x14, 0x9D, 0xED, 0x29},
  DES_8B_KEY_SIZE, BYTES_TO_BITS(DES_8B_KEY_SIZE), PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR,
  PSA_KEY_LIFETIME_PERSISTENT,
@@ -222,7 +221,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_DES_2KEY
-{"Test psa_open_key with Triple DES 2-Key\n", 7, PSA_KEY_TYPE_DES, 0x123,
+{"Test psa_open_key with Triple DES 2-Key\n", PSA_KEY_TYPE_DES, 0x123,
 {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
  DES3_2KEY_SIZE, 0, PSA_KEY_USAGE_EXPORT, PSA_ALG_CTR, PSA_KEY_LIFETIME_PERSISTENT,
@@ -231,7 +230,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_DES_3KEY
-{"Test psa_open_key with Triple DES 3-Key\n", 8, PSA_KEY_TYPE_DES, 0x456,
+{"Test psa_open_key with Triple DES 3-Key\n", PSA_KEY_TYPE_DES, 0x456,
 {0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
  0xF1, 0xE0, 0xD3, 0xC2, 0xB5, 0xA4, 0x97, 0x86,
  0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10},
@@ -243,7 +242,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_ECDSA
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
-{"Test psa_open_key with EC Public key\n", 9,
+{"Test psa_open_key with EC Public key\n",
  PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1), 0x789,
  {0},
  65, 0, PSA_KEY_USAGE_EXPORT, PSA_ALG_ECDSA_ANY, PSA_KEY_LIFETIME_PERSISTENT,
@@ -252,7 +251,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_ECC_CURVE_SECP224R1
-{"Test psa_open_key with EC keypair\n", 10,
+{"Test psa_open_key with EC keypair\n",
  PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1), 0x1234,
  {0},
  28, 0, PSA_KEY_USAGE_EXPORT, PSA_ALG_ECDSA_ANY, PSA_KEY_LIFETIME_PERSISTENT,
@@ -263,7 +262,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_CIPER_MODE_CTR
 #ifdef ARCH_TEST_AES
-{"Test psa_open_key with volatile key\n", 11, PSA_KEY_TYPE_AES,
+{"Test psa_open_key with volatile key\n", PSA_KEY_TYPE_AES,
  0x5678,
 {0x24, 0x13, 0x61, 0x47, 0x61, 0xB8, 0xC8, 0xF0, 0xDF, 0xAB, 0x5A, 0x0E, 0x87,
  0x40, 0xAC, 0xA3, 0x90, 0x77, 0x83, 0x52, 0x31, 0x74, 0xF9, 0x05, 0xC9, 0xED,

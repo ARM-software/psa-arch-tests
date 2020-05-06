@@ -26,7 +26,7 @@
 
 #include "test_i003.h"
 
-client_test_t test_i003_client_tests_list[] = {
+const client_test_t test_i003_client_tests_list[] = {
     NULL,
     client_test_zero_length_invec,
     client_test_zero_length_outvec,

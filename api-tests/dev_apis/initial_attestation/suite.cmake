@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,12 +35,6 @@ add_definitions(${CC_OPTIONS})
 add_definitions(${AS_OPTIONS})
 add_library(${PSA_TARGET_TEST_COMBINE_LIB} STATIC ${SUITE_CC_SOURCE} ${SUITE_AS_SOURCE})
 
-if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
-target_include_directories(${PSA_TARGET_TEST_COMBINE_LIB} PRIVATE
-    ${PSA_QCBOR_INCLUDE_PATH}
-)
-endif()
-
 # Test related Include directories
 foreach(test ${PSA_TEST_LIST})
 	target_include_directories(${PSA_TARGET_TEST_COMBINE_LIB} PRIVATE ${PSA_SUITE_DIR}/${test})
@@ -57,6 +51,8 @@ target_include_directories(${PSA_TARGET_TEST_COMBINE_LIB} PRIVATE
 	${CMAKE_CURRENT_BINARY_DIR}
 	${PSA_ROOT_DIR}/val/common
 	${PSA_ROOT_DIR}/val/nspe
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto
+	${PSA_ROOT_DIR}/platform/targets/common/nspe
+	${PSA_ROOT_DIR}/platform/targets/common/nspe/crypto
+	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe
+	${PSA_QCBOR_INCLUDE_PATH}
 )

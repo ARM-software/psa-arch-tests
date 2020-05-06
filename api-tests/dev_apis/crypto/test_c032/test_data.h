@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@
 
 typedef struct {
     char                    test_desc[75];
-    psa_key_handle_t        key_handle;
     psa_key_type_t          key_type;
     uint8_t                 key_data[64];
     uint32_t                key_length;
@@ -160,10 +159,10 @@ static const uint8_t ec_keypair[] = {
  0x68, 0x49, 0xf9, 0x7d, 0x10, 0x66, 0xf6, 0x99, 0x77, 0x59, 0x63, 0x7c, 0x7e, 0x38,
  0x99, 0x46, 0x4c, 0xee, 0x3e, 0xc7, 0xac, 0x97, 0x06, 0x53, 0xa0, 0xbe, 0x07, 0x42};
 
-static test_data check1[] = {
+static const test_data check1[] = {
 #ifdef ARCH_TEST_CIPER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
-{"Test psa_cipher_encrypt_setup 16 Byte AES\n", 1, PSA_KEY_TYPE_AES,
+{"Test psa_cipher_encrypt_setup 16 Byte AES\n", PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0xD0}, AES_16B_KEY_SIZE, BYTES_TO_BITS(AES_16B_KEY_SIZE),
  PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CTR, BYTES_TO_BITS(AES_16B_KEY_SIZE),
@@ -172,7 +171,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_AES_192
-{"Test psa_cipher_encrypt_setup 24 Byte AES\n", 2, PSA_KEY_TYPE_AES,
+{"Test psa_cipher_encrypt_setup 24 Byte AES\n", PSA_KEY_TYPE_AES,
 {0x24, 0x13, 0x61, 0x47, 0x61, 0xB8, 0xC8, 0xF0, 0xDF, 0xAB, 0x5A, 0x0E, 0x87,
  0x40, 0xAC, 0xA3, 0x90, 0x77, 0x83, 0x52, 0x31, 0x74, 0xF9}, AES_24B_KEY_SIZE, 0,
  PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CTR, BYTES_TO_BITS(AES_24B_KEY_SIZE),
@@ -181,7 +180,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_AES_256
-{"Test psa_cipher_encrypt_setup 32 Byte AES\n", 3, PSA_KEY_TYPE_AES,
+{"Test psa_cipher_encrypt_setup 32 Byte AES\n", PSA_KEY_TYPE_AES,
 {0xEA, 0xD5, 0xE6, 0xC8, 0x51, 0xF9, 0xEC, 0xBB, 0x9B, 0x57, 0x7C, 0xED, 0xD2,
  0x4B, 0x82, 0x84, 0x9F, 0x9F, 0xE6, 0x73, 0x21, 0x3D, 0x1A, 0x05, 0xC9, 0xED,
  0xDF, 0x25, 0x17, 0x68, 0x86, 0xAE}, AES_32B_KEY_SIZE, 0,
@@ -193,7 +192,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_CBC_NO_PADDING
 #ifdef ARCH_TEST_DES_1KEY
-{"Test psa_cipher_encrypt_setup DES 64 bit key\n", 4, PSA_KEY_TYPE_DES,
+{"Test psa_cipher_encrypt_setup DES 64 bit key\n", PSA_KEY_TYPE_DES,
  {0x70, 0x24, 0x55, 0x0C, 0x14, 0x9D, 0xED, 0x29},
  DES_8B_KEY_SIZE, 0, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING, BYTES_TO_BITS(DES_8B_KEY_SIZE),
  PSA_SUCCESS
@@ -201,7 +200,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_DES_2KEY
-{"Test psa_cipher_encrypt_setup Triple DES 2-Key\n", 5, PSA_KEY_TYPE_DES,
+{"Test psa_cipher_encrypt_setup Triple DES 2-Key\n", PSA_KEY_TYPE_DES,
 {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
  DES3_2KEY_SIZE, 0, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING, BYTES_TO_BITS(DES3_2KEY_SIZE),
@@ -210,7 +209,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_DES_3KEY
-{"Test psa_cipher_encrypt_setup Triple DES 3-Key\n", 6, PSA_KEY_TYPE_DES,
+{"Test psa_cipher_encrypt_setup Triple DES 3-Key\n", PSA_KEY_TYPE_DES,
 {0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
  0xF1, 0xE0, 0xD3, 0xC2, 0xB5, 0xA4, 0x97, 0x86,
  0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10},
@@ -221,7 +220,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_CIPER_MODE_CTR
-{"Test psa_cipher_encrypt_setup 16 Byte raw data\n", 7, PSA_KEY_TYPE_RAW_DATA,
+{"Test psa_cipher_encrypt_setup 16 Byte raw data\n", PSA_KEY_TYPE_RAW_DATA,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0xD0}, AES_16B_KEY_SIZE, 0,
  PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CTR, BYTES_TO_BITS(AES_16B_KEY_SIZE),
@@ -231,7 +230,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_AES_128
 #ifdef ARCH_TEST_CMAC
-{"Test psa_cipher_encrypt_setup - not a cipher algorithm\n", 8, PSA_KEY_TYPE_AES,
+{"Test psa_cipher_encrypt_setup - not a cipher algorithm\n", PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0xD0}, AES_16B_KEY_SIZE, 0,
  PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CMAC, BYTES_TO_BITS(AES_16B_KEY_SIZE),
@@ -240,7 +239,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_CIPER
-{"Test psa_cipher_encrypt_setup - unknown cipher algorithm\n", 9, PSA_KEY_TYPE_AES,
+{"Test psa_cipher_encrypt_setup - unknown cipher algorithm\n", PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0xD0}, AES_16B_KEY_SIZE, 0,
  PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CATEGORY_CIPHER, BYTES_TO_BITS(AES_16B_KEY_SIZE),
@@ -250,7 +249,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_CIPER_MODE_CTR
 #ifdef ARCH_TEST_ARC4
-{"Test psa_cipher_encrypt_setup - incompatible key ARC4\n", 10, PSA_KEY_TYPE_ARC4,
+{"Test psa_cipher_encrypt_setup - incompatible key ARC4\n", PSA_KEY_TYPE_ARC4,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0xD0}, AES_16B_KEY_SIZE, 0,
  PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CTR, BYTES_TO_BITS(AES_16B_KEY_SIZE),
@@ -258,7 +257,7 @@ static test_data check1[] = {
 },
 #endif
 
-{"Test psa_cipher_encrypt_setup - incorrect usage\n", 11, PSA_KEY_TYPE_AES,
+{"Test psa_cipher_encrypt_setup - incorrect usage\n", PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0xD0}, AES_16B_KEY_SIZE, 0,
  PSA_KEY_USAGE_DECRYPT, PSA_ALG_CTR, BYTES_TO_BITS(AES_16B_KEY_SIZE),
@@ -269,13 +268,13 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 #ifdef ARCH_TEST_RSA_2048
-{"Test psa_cipher_encrypt_setup - RSA public key\n", 12, PSA_KEY_TYPE_RSA_PUBLIC_KEY,
+{"Test psa_cipher_encrypt_setup - RSA public key\n", PSA_KEY_TYPE_RSA_PUBLIC_KEY,
 {0}, 270, 0,
  PSA_KEY_USAGE_ENCRYPT, PSA_ALG_RSA_PKCS1V15_SIGN_RAW, 2048,
  PSA_ERROR_INVALID_ARGUMENT
 },
 
-{"Test psa_cipher_encrypt_setup - RSA keypair\n", 13, PSA_KEY_TYPE_RSA_KEY_PAIR,
+{"Test psa_cipher_encrypt_setup - RSA keypair\n", PSA_KEY_TYPE_RSA_KEY_PAIR,
 {0}, 1193, 0,
  PSA_KEY_USAGE_ENCRYPT, PSA_ALG_RSA_PKCS1V15_SIGN_RAW, 2048,
  PSA_ERROR_INVALID_ARGUMENT
@@ -285,7 +284,7 @@ static test_data check1[] = {
 
 #ifdef ARCH_TEST_ASYMMETRIC_ENCRYPTION
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
-{"Test psa_cipher_encrypt_setup - EC Public key\n", 14,
+{"Test psa_cipher_encrypt_setup - EC Public key\n",
  PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1), {0}, 65, 0,
  PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION, 256,
  PSA_ERROR_INVALID_ARGUMENT
@@ -293,7 +292,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_ECC_CURVE_SECP224R1
-{"Test psa_cipher_encrypt_setup - EC keypair\n", 15,
+{"Test psa_cipher_encrypt_setup - EC keypair\n",
  PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1), {0}, 28, 0,
  PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION, 224,
  PSA_ERROR_INVALID_ARGUMENT
@@ -302,10 +301,10 @@ static test_data check1[] = {
 #endif
 };
 
-static test_data check2[] = {
+static const test_data check2[] = {
 #ifdef ARCH_TEST_CIPER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
-{"Test psa_cipher_encrypt_setup negative cases\n", 16, PSA_KEY_TYPE_AES,
+{"Test psa_cipher_encrypt_setup negative cases\n", PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9, 0xD0}, AES_16B_KEY_SIZE, 0,
  PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CTR, BYTES_TO_BITS(AES_16B_KEY_SIZE),

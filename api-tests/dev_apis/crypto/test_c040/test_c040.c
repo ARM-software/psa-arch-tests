@@ -1,6 +1,5 @@
-
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +20,7 @@
 #include "test_c040.h"
 #include "test_data.h"
 
-client_test_t test_c040_crypto_list[] = {
+const client_test_t test_c040_crypto_list[] = {
     NULL,
     psa_asymmetric_decrypt_test,
     psa_asymmetric_decrypt_negative_test,
@@ -52,6 +51,7 @@ int32_t psa_asymmetric_decrypt_test(caller_security_t caller)
     uint8_t                 *salt;
     size_t                  length;
     psa_key_attributes_t    attributes = PSA_KEY_ATTRIBUTES_INIT;
+    psa_key_handle_t        key_handle;
 
     if (num_checks == 0)
     {
@@ -117,7 +117,7 @@ int32_t psa_asymmetric_decrypt_test(caller_security_t caller)
 
         /* Import the key data into the key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, key_data,
-                 check1[i].key_length, &check1[i].key_handle);
+                 check1[i].key_length, &key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         if (is_buffer_empty(check1[i].salt, check1[i].salt_length) == TRUE)
@@ -129,7 +129,7 @@ int32_t psa_asymmetric_decrypt_test(caller_security_t caller)
             salt = check1[i].salt;
 
         /* Decrypt a short message with a private key */
-        status = val->crypto_function(VAL_CRYPTO_ASYMMTERIC_DECRYPT, check1[i].key_handle,
+        status = val->crypto_function(VAL_CRYPTO_ASYMMTERIC_DECRYPT, key_handle,
                     check1[i].key_alg, check1[i].input, check1[i].input_length, salt,
                     check1[i].salt_length, output, check1[i].output_size, &length);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
@@ -137,7 +137,7 @@ int32_t psa_asymmetric_decrypt_test(caller_security_t caller)
         if (check1[i].expected_status != PSA_SUCCESS)
         {
             /* Destroy the key */
-            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
             continue;
@@ -150,7 +150,7 @@ int32_t psa_asymmetric_decrypt_test(caller_security_t caller)
         TEST_ASSERT_MEMCMP(output, check1[i].expected_output, length, TEST_CHECKPOINT_NUM(7));
 
         /* Destroy the key */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
         /* Reset the key attributes and check if psa_import_key fails */
@@ -166,6 +166,7 @@ int32_t psa_asymmetric_decrypt_negative_test(caller_security_t caller)
     int32_t                 i, status;
     uint8_t                 *salt;
     size_t                  length;
+    psa_key_handle_t        key_handle = 1;
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -189,7 +190,7 @@ int32_t psa_asymmetric_decrypt_negative_test(caller_security_t caller)
         val->print(PRINT_TEST, "[Check %d] Test psa_asymmetric_decrypt - Invalid key handle\n",
                                                                                  g_test_count++);
         /* Encrypt a short message with a public key */
-        status = val->crypto_function(VAL_CRYPTO_ASYMMTERIC_DECRYPT, check2[i].key_handle,
+        status = val->crypto_function(VAL_CRYPTO_ASYMMTERIC_DECRYPT, key_handle,
                     check2[i].key_alg, check2[i].input, check2[i].input_length, salt,
                     check2[i].salt_length, output, check2[i].output_size, &length);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));

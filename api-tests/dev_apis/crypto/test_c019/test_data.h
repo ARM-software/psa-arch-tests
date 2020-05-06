@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@
 
 typedef struct {
     char                        test_desc[85];
-    psa_key_handle_t            key_handle;
     psa_key_type_t              key_type;
     uint8_t                     key_data[91];
     uint32_t                    key_length;
@@ -32,10 +31,10 @@ typedef struct {
 } test_data;
 
 
-static test_data check1[] = {
+static const test_data check1[] = {
 #ifdef ARCH_TEST_ECDH
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
-{"Test psa_key_derivation_key_agreement - ECDH SECP256R1\n", 1,
+{"Test psa_key_derivation_key_agreement - ECDH SECP256R1\n",
  PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1),
 {0xc8, 0x8f, 0x01, 0xf5, 0x10, 0xd9, 0xac, 0x3f, 0x70, 0xa2, 0x92, 0xda, 0xa2,
  0x31, 0x6d, 0xe5, 0x44, 0xe9, 0xaa, 0xb8, 0xaf, 0xe8, 0x40, 0x49, 0xc6, 0x2a,
@@ -50,7 +49,7 @@ static test_data check1[] = {
  65, PSA_SUCCESS
 },
 
-{"Test psa_key_derivation_key_agreement - Invalid step\n", 2,
+{"Test psa_key_derivation_key_agreement - Invalid step\n",
  PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1),
 {0xc8, 0x8f, 0x01, 0xf5, 0x10, 0xd9, 0xac, 0x3f, 0x70, 0xa2, 0x92, 0xda, 0xa2,
  0x31, 0x6d, 0xe5, 0x44, 0xe9, 0xaa, 0xb8, 0xaf, 0xe8, 0x40, 0x49, 0xc6, 0x2a,
@@ -68,7 +67,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_ECC_CURVE_SECP384R1
-{"Test psa_key_derivation_key_agreement - ECDH SECP384R1\n", 3,
+{"Test psa_key_derivation_key_agreement - ECDH SECP384R1\n",
  PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP384R1),
 {0x09, 0x9f, 0x3c, 0x70, 0x34, 0xd4, 0xa2, 0xc6, 0x99, 0x88, 0x4d, 0x73, 0xa3,
  0x75, 0xa6, 0x7f, 0x76, 0x24, 0xef, 0x7c, 0x6b, 0x3c, 0x0f, 0x16, 0x06, 0x47,
@@ -90,7 +89,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
-{"Test psa_key_derivation_key_agreement - Invalid usage\n", 4,
+{"Test psa_key_derivation_key_agreement - Invalid usage\n",
  PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1),
 {0xc8, 0x8f, 0x01, 0xf5, 0x10, 0xd9, 0xac, 0x3f, 0x70, 0xa2, 0x92, 0xda, 0xa2,
  0x31, 0x6d, 0xe5, 0x44, 0xe9, 0xaa, 0xb8, 0xaf, 0xe8, 0x40, 0x49, 0xc6, 0x2a,
@@ -111,7 +110,7 @@ static test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 #ifdef ARCH_TEST_SHA256
 #ifdef ARCH_TEST_HKDF
-{"Test psa_key_derivation_key_agreement - KDF instead of a key agreement algorithm\n", 5,
+{"Test psa_key_derivation_key_agreement - KDF instead of a key agreement algorithm\n",
  PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1),
 {0xc8, 0x8f, 0x01, 0xf5, 0x10, 0xd9, 0xac, 0x3f, 0x70, 0xa2, 0x92, 0xda, 0xa2,
  0x31, 0x6d, 0xe5, 0x44, 0xe9, 0xaa, 0xb8, 0xaf, 0xe8, 0x40, 0x49, 0xc6, 0x2a,
@@ -129,7 +128,7 @@ static test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_ECDH
-{"Test psa_key_derivation_key_agreement - Public key on different curve\n", 6,
+{"Test psa_key_derivation_key_agreement - Public key on different curve\n",
  PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1),
 {0xc8, 0x8f, 0x01, 0xf5, 0x10, 0xd9, 0xac, 0x3f, 0x70, 0xa2, 0x92, 0xda, 0xa2,
  0x31, 0x6d, 0xe5, 0x44, 0xe9, 0xaa, 0xb8, 0xaf, 0xe8, 0x40, 0x49, 0xc6, 0x2a,
@@ -148,7 +147,7 @@ static test_data check1[] = {
  PSA_ERROR_INVALID_ARGUMENT
 },
 
-{"Test psa_key_derivation_key_agreement - Public key instead of private key\n", 7,
+{"Test psa_key_derivation_key_agreement - Public key instead of private key\n",
  PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
 {0x04, 0xd1, 0x2d, 0xfb, 0x52, 0x89, 0xc8, 0xd4, 0xf8, 0x12, 0x08, 0xb7, 0x02,
  0x70, 0x39, 0x8c, 0x34, 0x22, 0x96, 0x97, 0x0a, 0x0b, 0xcc, 0xb7, 0x4c, 0x73,
@@ -169,10 +168,10 @@ static test_data check1[] = {
 #endif
 };
 
-static test_data check2[] = {
+static const test_data check2[] = {
 #ifdef ARCH_TEST_ECDH
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
-{"Test psa_key_derivation_key_agreement - Negative case\n", 8,
+{"Test psa_key_derivation_key_agreement - Negative case\n",
  PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1),
 {0xc8, 0x8f, 0x01, 0xf5, 0x10, 0xd9, 0xac, 0x3f, 0x70, 0xa2, 0x92, 0xda, 0xa2,
  0x31, 0x6d, 0xe5, 0x44, 0xe9, 0xaa, 0xb8, 0xaf, 0xe8, 0x40, 0x49, 0xc6, 0x2a,

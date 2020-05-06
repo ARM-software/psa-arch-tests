@@ -21,7 +21,7 @@
 #include "test_data.h"
 #include "val_crypto.h"
 
-client_test_t test_c050_crypto_list[] = {
+const client_test_t test_c050_crypto_list[] = {
     NULL,
     psa_open_key_test,
     NULL,
@@ -44,6 +44,7 @@ int32_t psa_open_key_test(caller_security_t caller)
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_key_attributes_t  get_attributes = PSA_KEY_ATTRIBUTES_INIT;
     boot_t                boot;
+    psa_key_handle_t      tdata_key_handle;
 
     if (num_checks == 0)
     {
@@ -127,7 +128,7 @@ int32_t psa_open_key_test(caller_security_t caller)
 
             /* Import the key data into the key slot */
             status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, key_data,
-                     check1[i].key_length, &check1[i].key_handle);
+                     check1[i].key_length, &tdata_key_handle);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
             /* Save the details of current check, key id and key handle value in NV memory */
@@ -138,7 +139,7 @@ int32_t psa_open_key_test(caller_security_t caller)
                      sizeof(psa_key_id_t));
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
-            status = val->nvmem_write(VAL_NVMEM_OFFSET(NV_TEST_DATA3), &check1[i].key_handle,
+            status = val->nvmem_write(VAL_NVMEM_OFFSET(NV_TEST_DATA3), &tdata_key_handle,
                      sizeof(psa_key_handle_t));
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
@@ -147,7 +148,11 @@ int32_t psa_open_key_test(caller_security_t caller)
             TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(10));
 
             /* Wait for system to reset */
-            val->crypto_function(VAL_CRYPTO_RESET);
+            status = val->crypto_function(VAL_CRYPTO_RESET);
+            if (status != PSA_SUCCESS)
+            {
+                return RESULT_SKIP(status);
+            }
             while (1);
         }
         else if (boot.state == BOOT_EXPECTED_CONT_TEST_EXEC)

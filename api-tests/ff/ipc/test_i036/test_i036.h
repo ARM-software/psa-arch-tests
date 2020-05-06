@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,7 @@
 extern val_api_t *val;
 extern psa_api_t *psa;
 
-extern client_test_t test_i036_client_tests_list[];
+extern const client_test_t test_i036_client_tests_list[];
 
 int32_t client_test_psa_skip_with_null_handle(caller_security_t);
 #endif

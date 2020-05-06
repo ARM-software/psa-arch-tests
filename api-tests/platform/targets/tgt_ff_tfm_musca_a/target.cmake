@@ -33,8 +33,7 @@ if(${SUITE} STREQUAL "IPC")
 	list(APPEND PAL_SRC_C_NSPE
 		# driver functionalities are implemented as RoT-services
 		# and secure and non-secure clients will call to these RoT-services to get appropriate driver services.
-		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common/pal_client_api_intf.c
-		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common/pal_driver_ipc_intf.c
+		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/pal_driver_ipc_intf.c
 	)
 	list(APPEND PAL_SRC_C_DRIVER_SP
 		# Driver files will be compiled as part of driver partition
@@ -43,40 +42,14 @@ if(${SUITE} STREQUAL "IPC")
 		${PSA_ROOT_DIR}/platform/drivers/uart/pl011/pal_uart.c
 		${PSA_ROOT_DIR}/platform/drivers/watchdog/cmsdk/pal_wd_cmsdk.c
 	)
-else()
-	list(APPEND PAL_SRC_C_NSPE
-		# driver files will be compiled as part of NSPE
-		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common/pal_client_api_empty_intf.c
-		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common/pal_driver_ns_intf.c
-		${PSA_ROOT_DIR}/platform/drivers/nvmem/pal_nvmem.c
-		${PSA_ROOT_DIR}/platform/drivers/uart/pl011/pal_uart.c
-		${PSA_ROOT_DIR}/platform/drivers/watchdog/cmsdk/pal_wd_cmsdk.c
-	)
 endif()
-if(${SUITE} STREQUAL "CRYPTO")
-	list(APPEND PAL_SRC_C_NSPE
-		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto/pal_crypto_intf.c
-	)
-endif()
-if(${SUITE} STREQUAL "PROTECTED_STORAGE")
-	list(APPEND PAL_SRC_C_NSPE
-		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/protected_storage/pal_protected_storage_intf.c
-	)
-endif()
-if(${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE")
-	list(APPEND PAL_SRC_C_NSPE
-		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/internal_trusted_storage/pal_internal_trusted_storage_intf.c
-	)
-endif()
-if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
-	list(APPEND PAL_SRC_C_NSPE
-		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/initial_attestation/pal_attestation_intf.c
-		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/initial_attestation/pal_attestation_crypto.c
-                ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/src/UsefulBuf.c
-                ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/src/ieee754.c
-                ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/src/qcbor_decode.c
-                ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/src/qcbor_encode.c
-	)
+
+if((${SUITE} STREQUAL "CRYPTO") OR
+   (${SUITE} STREQUAL "STORAGE") OR
+   (${SUITE} STREQUAL "PROTECTED_STORAGE") OR
+   (${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE") OR
+   (${SUITE} STREQUAL "INITIAL_ATTESTATION"))
+	message(FATAL_ERROR "For Functional API - use -DTARGET=tgt_dev_apis_tfm_musca_a instead")
 endif()
 
 # Create NSPE library
@@ -95,15 +68,7 @@ list(APPEND PAL_DRIVER_INCLUDE_PATHS
 
 target_include_directories(${PSA_TARGET_PAL_NSPE_LIB} PRIVATE
 	${PAL_DRIVER_INCLUDE_PATHS}
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/protected_storage
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/internal_trusted_storage
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/initial_attestation
+	${PSA_ROOT_DIR}/platform/targets/common/nspe
+	${PSA_ROOT_DIR}/platform/targets/common/nspe/crypto
+	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe
 )
-
-if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
-target_include_directories(${PSA_TARGET_PAL_NSPE_LIB} PRIVATE
-	${PSA_QCBOR_INCLUDE_PATH}
-)
-endif()

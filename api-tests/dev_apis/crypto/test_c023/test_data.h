@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@ typedef struct {
     psa_status_t            expected_status;
 } test_data;
 
-static test_data check1[] = {
+static const test_data check1[] = {
 {"Test psa_key_derivation_set_get_capacity - Less than operation's capacity\n",
  PSA_ALG_HKDF(PSA_ALG_SHA_256), 42, PSA_SUCCESS
 },

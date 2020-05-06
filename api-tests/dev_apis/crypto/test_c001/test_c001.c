@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@
 #include "val_target.h"
 #include "test_c001.h"
 
-client_test_t test_c001_crypto_list[] = {
+const client_test_t test_c001_crypto_list[] = {
     NULL,
     psa_generate_random_without_init_test,
     psa_crypto_init_test,

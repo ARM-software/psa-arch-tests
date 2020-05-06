@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,73 +22,6 @@
 #include <stdarg.h>
 
 /**
-    @brief    - This function will read peripherals using SPI commands
-    @param    - addr : address of the peripheral
-              - data : read buffer
-              - len  : length of the read buffer in bytes
-    @return   - error status
-**/
-int pal_spi_read(addr_t addr, uint8_t *data, uint32_t len);
-
-/**
- * @brief    - Retrieve the version of the PSA Framework API that is implemented.
- *             This is a wrapper API for psa_framework_version API.
- * @param    - void
- * @return   - The PSA Framework API version.
- *             Note - Return PAL_STATUS_ERROR if PSA IPC is not implemented.
- */
-uint32_t pal_ipc_framework_version(void);
-
-/**
- * @brief    - Retrieve the version of a Root of Trust Service by its SID.
- *             This is a wrapper API for the psa_version API.
- * @param    - sid The Root of Trust Service ID
- * @return   - Version of Root of Trust Service or PSA_VERSION_NONE if Root of Trust Service
- *             not present on the system.
- *             Note - Return PAL_STATUS_ERROR if PSA IPC is not implemented.
- */
-uint32_t pal_ipc_version(uint32_t sid);
-
-/**
- * @brief   - Connect to given sid.
- *            This is a wrapper API for the psa_connect API.
- * @param   - sid : RoT service id
- *          - version : version of RoT service
- * @return  - psa_handle_t : return connection handle
- *            Note - Return PSA_NULL_HANDLE if PSA IPC is not implemented.
- */
-psa_handle_t pal_ipc_connect(uint32_t sid, uint32_t version);
-
-/**
- * @brief  - Call a connected Root of Trust Service.
- *          This is a wrapper API for the psa_call API. The caller must provide an array of
- *          psa_invec_t structures as the input payload.
- * @param  - handle:   Handle for the connection.
- *         - type:     Request type
- *         - in_vec:   Array of psa_invec structures.
- *         - in_len:   Number of psa_invec structures in in_vec.
- *         - out_vec:  Array of psa_outvec structures for optional Root of Trust Service response.
- *         - out_len:  Number of psa_outvec structures in out_vec.
- * @return - psa_status_t
- */
-
-psa_status_t pal_ipc_call(psa_handle_t handle,
-                          int32_t type,
-                          const psa_invec *in_vec,
-                          size_t in_len,
-                          psa_outvec *out_vec,
-                          size_t out_len);
-
-/**
- * @brief - Close a connection to a Root of Trust Service.
- *          This is a wrapper API for the psa_close API.
- *          Sends the PSA_IPC_DISCONNECT message to the Root of Trust Service
- *          so it can clean up resources.
- * @param - handle Handle for the connection.
- * @return - void
- */
-void pal_ipc_close(psa_handle_t handle);
-/**
     @brief    - This function initializes the UART
     @param    - uart base addr
     @return   - SUCCESS/FAILURE
@@ -102,7 +35,7 @@ int pal_uart_init_ns(uint32_t uart_base_addr);
  *   @return   - SUCCESS/FAILURE
 **/
 
-int pal_print_ns(char *str, int32_t data);
+int pal_print_ns(const char *str, int32_t data);
 
 /**
  *   @brief           - Initializes an hardware watchdog timer
@@ -186,4 +119,11 @@ int32_t pal_attestation_function(int type, va_list valist);
  *   @return   - void
 **/
 void pal_terminate_simulation(void);
+
+/**
+ *   @brief    - Resets the system.
+ *   @param    - void
+ *   @return   - SUCCESS/FAILURE
+**/
+int pal_system_reset(void);
 #endif

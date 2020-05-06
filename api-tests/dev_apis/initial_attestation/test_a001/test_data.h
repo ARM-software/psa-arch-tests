@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -68,7 +68,7 @@ static test_data check1[] = {
 },
 };
 
-static test_data check2[] = {
+static const test_data check2[] = {
 {"Test psa_initial_attestation_get_token_size with Challenge 32\n",
  PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32, PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32, TOKEN_SIZE, PSA_SUCCESS
 },

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,7 @@ void free(void *ptr);
 #define DATA_VALUE_ORG 0x11
 #define BUFFER_SIZE    0x4
 
-server_test_t test_i074_server_tests_list[] = {
+const server_test_t test_i074_server_tests_list[] = {
     NULL,
     server_test_nspe_read_app_rot_heap,
     server_test_nspe_write_app_rot_heap,

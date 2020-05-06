@@ -25,7 +25,7 @@
 
 #include "test_i002.h"
 
-client_test_t test_i002_client_tests_list[] = {
+const client_test_t test_i002_client_tests_list[] = {
     NULL,
     client_test_connection_busy_and_reject,
     client_test_accept_and_close_connect,
