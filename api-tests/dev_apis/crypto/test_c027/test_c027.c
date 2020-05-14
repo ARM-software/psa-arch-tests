@@ -51,7 +51,7 @@ int32_t psa_mac_update_test(caller_security_t caller)
 
     for (i = 0; i < num_checks; i++)
     {
-	val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
+        val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
         memset(&operation, 0, sizeof(operation));
         memset(data, 0, sizeof(data));
