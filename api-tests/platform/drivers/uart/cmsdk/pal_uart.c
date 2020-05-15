@@ -31,8 +31,8 @@ void pal_uart_cmsdk_init(uint32_t uart_base_addr)
     ((uart_t *) g_uart)->CTRL = CMSDK_UART_CTRL_TXEN_Msk;
     /* However, the UART resets to a BAUDDIV of 0, which is invalid. Set it to
     * the minimum valid number. */
-    ((uart_t *) g_uart)->BAUDDIV = 16;
-
+    /* Avoiding baud rate reconfiguration */
+    /* ((uart_t *) g_uart)->BAUDDIV = 16; */
 }
 
 /**
