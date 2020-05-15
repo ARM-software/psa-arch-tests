@@ -89,7 +89,7 @@ int32_t psa_aead_verify_test(caller_security_t caller)
 
         /* Encrypt or decrypt a message fragment in an active AEAD operation */
         status = val->crypto_function(VAL_CRYPTO_AEAD_UPDATE, &operation,
-                 check1[i].plaintext_length, check1[i].plaintext, output,
+                 check1[i].plaintext, check1[i].plaintext_length, output,
                  BUFFER_SIZE, &length);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
