@@ -35,7 +35,7 @@ int32_t psa_hash_compute_test(caller_security_t caller)
     int32_t                 i, status;
     const char              *expected_hash;
     char                    hash[HASH_64B];
-    size_t                  hash_length, hash_size = sizeof(hash);
+    size_t                  hash_length;
 
     if (num_checks == 0)
     {
