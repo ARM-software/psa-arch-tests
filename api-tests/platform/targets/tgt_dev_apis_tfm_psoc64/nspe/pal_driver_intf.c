@@ -75,8 +75,6 @@ int pal_wd_timer_disable_ns(addr_t base_addr)
     return PAL_STATUS_SUCCESS;
 }
 
-static char nvmem[1024];
-
 /**
     @brief    - Reads from given non-volatile address.
     @param    - base    : Base address of nvmem
@@ -87,7 +85,7 @@ static char nvmem[1024];
 **/
 int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size)
 {
-    memcpy(buffer, &nvmem[offset], size);
+    memcpy(buffer, (void *)(base+offset), size);
     return PAL_STATUS_SUCCESS;
 }
 
@@ -101,7 +99,7 @@ int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size)
 **/
 int pal_nvmem_write_ns(addr_t base, uint32_t offset, void *buffer, int size)
 {
-    memcpy(&nvmem[offset], buffer, size);
+    memcpy((void *)(base+offset), buffer, size);
     return PAL_STATUS_SUCCESS;
 }
 
