@@ -36,8 +36,8 @@ const client_test_t              s001_storage_test_list[] = {
 
 static int32_t sst_calls_without_set_call(storage_function_code_t fCode, psa_storage_uid_t p_uid)
 {
-    int32_t  status;
-    uint32_t p_data_length = 0;
+    int32_t status;
+    size_t  p_data_length = 0;
 
     /* get() without using set() before */
     val->print(PRINT_TEST, "[Check 1] Call get API for UID %d which is not set\n", p_uid);
@@ -81,8 +81,8 @@ static int32_t sst_set_and_remove(storage_function_code_t fCode, psa_storage_uid
 
 static int32_t sst_calls_after_uid_remove(storage_function_code_t fCode, psa_storage_uid_t p_uid)
 {
-    int32_t  status;
-    uint32_t p_data_length = 0;
+    int32_t status;
+    size_t  p_data_length = 0;
 
     /* get() for UID which is removed */
     val->print(PRINT_TEST, "[Check 4] Call get API for UID %d which is removed\n", p_uid);
@@ -105,8 +105,8 @@ static int32_t sst_calls_after_uid_remove(storage_function_code_t fCode, psa_sto
 
 static int32_t sst_calls_with_different_uid(storage_function_code_t fCode, psa_storage_uid_t p_uid)
 {
-    int32_t  status;
-    uint32_t p_data_length = 0;
+    int32_t status;
+    size_t  p_data_length = 0;
 
     /* set() a UID */
     val->print(PRINT_TEST, "Set storage for UID %d\n", p_uid);

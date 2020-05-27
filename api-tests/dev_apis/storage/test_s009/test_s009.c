@@ -36,8 +36,8 @@ static uint8_t           write_buff[TEST_BUFF_SIZE] = {0x99, 0x01, 0x02, 0x03, 0
 
 static int32_t psa_sst_zero_length_check(storage_function_code_t fCode)
 {
-    int32_t  status;
-    uint32_t p_data_length = 0;
+    int32_t status;
+    size_t  p_data_length = 0;
 
     /* Set data for UID with length 0 and NULL pointer */
     val->print(PRINT_TEST, "[Check 1] Call set API with NULL pointer and data length 0\n", 0);

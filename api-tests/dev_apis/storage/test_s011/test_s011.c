@@ -34,9 +34,10 @@ static uint8_t read_buff[TEST_BUFF_SIZE]  = {0};
 
 static int32_t psa_sst_uid_not_found(storage_function_code_t fCode)
 {
-    int32_t  status;
-    uint32_t j, p_data_length = 0;
-    psa_storage_uid_t p_uid = UID_BASE_VALUE + 5;
+    int32_t                   status;
+    uint32_t                  j;
+    size_t                    p_data_length = 0;
+    psa_storage_uid_t         p_uid         = UID_BASE_VALUE + 5;
     struct psa_storage_info_t orig_info;
 
     /* Call the set_extended API with UID which is not created */
@@ -53,7 +54,7 @@ static int32_t psa_sst_uid_not_found(storage_function_code_t fCode)
     /* Try to change data length for same UID using create API */
     val->print(PRINT_TEST, "[Check 2] Call create API with length different than original\n", 0);
     status = STORAGE_FUNCTION(s011_data[VAL_TEST_IDX3].api[fCode], p_uid, TEST_BUFF_SIZE/2,
-                              PSA_STORAGE_FLAG_WRITE_ONCE);
+                              PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s011_data[VAL_TEST_IDX3].status, TEST_CHECKPOINT_NUM(3));
 
     /* Try to change flag value associated with the UID */

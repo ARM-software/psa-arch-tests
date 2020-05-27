@@ -37,8 +37,8 @@ static uint8_t           write_buff[TEST_BUFF_SIZE] = {0x99, 0x01, 0x30, 0x50, 0
 
 static int32_t psa_sst_get_data_check(storage_function_code_t fCode)
 {
-    int32_t  status;
-    uint32_t p_data_length = 0;
+    int32_t status;
+    size_t  p_data_length = 0;
 
     /* Set data for UID */
     status = STORAGE_FUNCTION(s004_data[VAL_TEST_IDX1].api[fCode], uid, TEST_BUFF_SIZE, write_buff,

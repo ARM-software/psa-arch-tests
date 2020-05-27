@@ -36,7 +36,7 @@ static uint8_t read_buff[TEST_BUFF_SIZE];
 static int32_t psa_sst_get_incorrect_size(storage_function_code_t fCode)
 {
     psa_storage_uid_t uid           = UID_BASE_VALUE + 5;
-    uint32_t          p_data_length = 0;
+    size_t            p_data_length = 0;
     int32_t           status        = VAL_STATUS_SUCCESS;
 
     /* Set the UID with the data_len and data_buff */
