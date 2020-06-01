@@ -33,7 +33,7 @@ const client_test_t s002_storage_test_list[] = {
 static int32_t psa_sst_update_write_once_flag_after_create(storage_function_code_t fCode)
 {
     int32_t           status;
-    uint32_t          p_data_length                    = 0;
+    size_t            p_data_length                    = 0;
     psa_storage_uid_t uid                              = UID_WRITE_ONCE_1;
     uint8_t           write_buff[TEST_BUFF_SIZE/2]     = {0xDE, 0xAD, 0xBE, 0xEF,
                                                           0xCA, 0xFE, 0xBA, 0xBE};
@@ -43,7 +43,16 @@ static int32_t psa_sst_update_write_once_flag_after_create(storage_function_code
     /* set() data without a WRITE_ONCE flag */
     status = STORAGE_FUNCTION(s002_data[VAL_TEST_IDX1].api[fCode], uid, TEST_BUFF_SIZE/2,
                               write_buff, PSA_STORAGE_FLAG_NONE);
-    TEST_ASSERT_EQUAL(status, s002_data[VAL_TEST_IDX1].status, TEST_CHECKPOINT_NUM(1));
+    if (status == PSA_ERROR_NOT_PERMITTED)
+    {
+        val->print(PRINT_TEST, "[Info] UID %d was created with PSA_STORAGE_FLAG_WRITE_ONCE "
+                               "previously\n", uid);
+        val->print(PRINT_TEST, "[Check 1] Retrieve metadata for UID %d and check content\n", uid);
+        goto check_write_once_uid_metadata;
+    } else
+    {
+        TEST_ASSERT_EQUAL(status, s002_data[VAL_TEST_IDX1].status, TEST_CHECKPOINT_NUM(1));
+    }
 
     /* Check that get_info() returns correct attributes; also store for reference for later */
     status = STORAGE_FUNCTION(s002_data[VAL_TEST_IDX2].api[fCode], uid, &orig_info);
@@ -64,6 +73,7 @@ static int32_t psa_sst_update_write_once_flag_after_create(storage_function_code
                               write_buff_new, PSA_STORAGE_FLAG_WRITE_ONCE);
     TEST_ASSERT_EQUAL(status, s002_data[VAL_TEST_IDX7].status, TEST_CHECKPOINT_NUM(8));
 
+check_write_once_uid_metadata:
     /* Check that info is updated, after new set */
     status = STORAGE_FUNCTION(s002_data[VAL_TEST_IDX8].api[fCode], uid, &new_info);
     TEST_ASSERT_EQUAL(status, s002_data[VAL_TEST_IDX8].status, TEST_CHECKPOINT_NUM(9));
@@ -89,7 +99,7 @@ static int32_t psa_sst_update_write_once_flag_after_create(storage_function_code
 static int32_t psa_sst_create_with_write_once_flag(storage_function_code_t fCode)
 {
     int32_t           status;
-    uint32_t          p_data_length                      = 0;
+    size_t            p_data_length                      = 0;
     psa_storage_uid_t uid                                = UID_WRITE_ONCE_2;
     uint8_t           write_buff[TEST_BUFF_SIZE]         = {0x00, 0x01, 0x02, 0x03,
                                                             0x04, 0x05, 0x06, 0x07,
@@ -105,7 +115,14 @@ static int32_t psa_sst_create_with_write_once_flag(storage_function_code_t fCode
     val->print(PRINT_TEST, "[Check 3] Create a new UID %d with WRITE_ONCE flag\n", uid);
     status = STORAGE_FUNCTION(s002_data[VAL_TEST_IDX14].api[fCode], uid, TEST_BUFF_SIZE, write_buff,
                           PSA_STORAGE_FLAG_WRITE_ONCE);
-    TEST_ASSERT_EQUAL(status, s002_data[VAL_TEST_IDX14].status, TEST_CHECKPOINT_NUM(16));
+    if (status == PSA_ERROR_NOT_PERMITTED)
+    {
+        val->print(PRINT_TEST, "[Info ] UID %d was created with PSA_STORAGE_FLAG_WRITE_ONCE "
+                               "previously\n", uid);
+    } else
+    {
+        TEST_ASSERT_EQUAL(status, s002_data[VAL_TEST_IDX14].status, TEST_CHECKPOINT_NUM(16));
+    }
 
     /* Check that remove() fails with PSA_SST_ERROR_WRITE_ONCE */
     val->print(PRINT_TEST, "[Check 4] Try to remove the UID %d having WRITE_ONCE flag\n", uid);
@@ -131,7 +148,7 @@ static int32_t psa_sst_create_with_write_once_flag(storage_function_code_t fCode
                           write_buff_new, PSA_STORAGE_FLAG_WRITE_ONCE);
     TEST_ASSERT_EQUAL(status, s002_data[VAL_TEST_IDX21].status, TEST_CHECKPOINT_NUM(24));
 
-    /* Check that remove() still fails with PSA_SST_ERROR_WRITE_ONCE */
+    /* Check that remove() still fails */
     val->print(PRINT_TEST, "[Check 6] Check UID removal still fails\n", 0);
     status = STORAGE_FUNCTION(s002_data[VAL_TEST_IDX22].api[fCode], uid);
     TEST_ASSERT_EQUAL(status, s002_data[VAL_TEST_IDX22].status, TEST_CHECKPOINT_NUM(25));
@@ -157,7 +174,7 @@ static int32_t psa_sst_create_with_write_once_flag(storage_function_code_t fCode
                           write_buff_new, PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s002_data[VAL_TEST_IDX28].status, TEST_CHECKPOINT_NUM(32));
 
-    /* Check that remove() still fails with PSA_SST_ERROR_WRITE_ONCE */
+    /* Check that remove() still fails with */
     val->print(PRINT_TEST, "[Check 8] Check UID removal still fails\n", 0);
     status = STORAGE_FUNCTION(s002_data[VAL_TEST_IDX29].api[fCode], uid);
     TEST_ASSERT_EQUAL(status, s002_data[VAL_TEST_IDX29].status, TEST_CHECKPOINT_NUM(33));

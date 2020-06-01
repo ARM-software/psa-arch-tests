@@ -34,11 +34,11 @@ static const test_data_t s011_data[] = {
 },
 {
     /* Create API for present UID with different length */
-    VAL_TEST_IDX3, {VAL_API_UNUSED, VAL_PS_CREATE}, PSA_ERROR_INVALID_ARGUMENT
+    VAL_TEST_IDX3, {VAL_API_UNUSED, VAL_PS_CREATE}, PSA_ERROR_ALREADY_EXISTS
 },
 {
     /* Call create API for to set WRITE_ONCE flag */
-    VAL_TEST_IDX4, {VAL_API_UNUSED, VAL_PS_CREATE}, PSA_ERROR_INVALID_ARGUMENT
+    VAL_TEST_IDX4, {VAL_API_UNUSED, VAL_PS_CREATE}, PSA_ERROR_NOT_SUPPORTED
 },
 {
     /* Validate existing UID attributes maintained */

@@ -34,9 +34,9 @@ static uint8_t           read_buff[TEST_BUFF_SIZE/4]  = {0};
 
 static int32_t psa_sst_optional_api_not_supported(storage_function_code_t fCode)
 {
-    int32_t  status;
-    uint32_t p_data_length = 0;
-    struct psa_storage_info_t info;
+    int32_t status;
+    size_t  p_data_length = 0;
+    struct  psa_storage_info_t info;
 
     /* Try to create storage using create API */
     val->print(PRINT_TEST, "[Check 1] Call to create API should fail as API not supported\n", 0);

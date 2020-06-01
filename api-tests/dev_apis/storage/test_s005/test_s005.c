@@ -39,8 +39,8 @@ static int32_t psa_sst_apis_check(storage_function_code_t    fCode,
                                   uint8_t                    *data_buff,
                                   psa_storage_create_flags_t create_flag)
 {
-    int32_t  status;
-    uint32_t p_data_length = 0;
+    int32_t status;
+    size_t  p_data_length = 0;
 
     /* Set the UID with the data_len and data_buff */
     status = STORAGE_FUNCTION(s005_data[VAL_TEST_IDX1].api[fCode], uid, data_len, data_buff,

@@ -41,8 +41,8 @@ static uint8_t           write_buff_2[TEST_BUFF_SIZE] = {0xFF, 0xC1, 0xA2, 0xE3,
 
 static int32_t psa_sst_offset_invalid(storage_function_code_t fCode)
 {
-    int32_t  status;
-    uint32_t p_data_length = 0;
+    int32_t status;
+    size_t  p_data_length = 0;
 
     /* Create valid storage using create API */
     status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX1].api[fCode], p_uid, TEST_BUFF_SIZE,
@@ -102,23 +102,24 @@ static int32_t psa_sst_offset_invalid(storage_function_code_t fCode)
 
 static int32_t psa_sst_bad_pointer(storage_function_code_t fCode)
 {
-    int32_t status;
+    int32_t            status;
+    psa_storage_uid_t  uid = 0;
 
     /* Call create API with UID value 0 */
     val->print(PRINT_TEST, "[Check 7] Call create API with UID 0\n", 0);
-    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX11].api[fCode], 0, 0, TEST_BUFF_SIZE,
+    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX11].api[fCode], uid, 0, TEST_BUFF_SIZE,
                               write_buff);
     TEST_ASSERT_EQUAL(status, s012_data[VAL_TEST_IDX11].status, TEST_CHECKPOINT_NUM(12));
 
     /* Call set extended API with UID value 0 */
     val->print(PRINT_TEST, "[Check 8] Call set_extended API with UID 0\n", 0);
-    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX12].api[fCode], 0, 0, TEST_BUFF_SIZE,
+    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX12].api[fCode], uid, 0, TEST_BUFF_SIZE,
                               write_buff_2);
     TEST_ASSERT_EQUAL(status, s012_data[VAL_TEST_IDX12].status, TEST_CHECKPOINT_NUM(13));
 
     /* Call remove API with UID value 0 */
     val->print(PRINT_TEST, "[Check 9] Call remove API with UID 0\n", 0);
-    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX13].api[fCode], 0);
+    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX13].api[fCode], uid);
     TEST_ASSERT_EQUAL(status, s012_data[VAL_TEST_IDX13].status, TEST_CHECKPOINT_NUM(14));
 
     /* Remove the UID */

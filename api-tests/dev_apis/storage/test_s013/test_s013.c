@@ -41,8 +41,8 @@ static uint8_t           write_buff_3[TEST_BUFF_SIZE]   = {0x00, 0x01, 0x02, 0x0
 
 static int32_t psa_sst_set_extended_create_success(storage_function_code_t fCode)
 {
-    int32_t  status;
-    uint32_t p_data_length = 0;
+    int32_t                   status;
+    size_t                    p_data_length = 0;
     struct psa_storage_info_t info;
 
     /* Create storage of zero length using create API */
@@ -127,7 +127,7 @@ static int32_t psa_sst_set_extended_create_success(storage_function_code_t fCode
     /* Validate there should not be duplicate UID present */
     val->print(PRINT_TEST, "[Check 10] No duplicate entry of UID present\n", 0);
     status = STORAGE_FUNCTION(s013_data[VAL_TEST_IDX20].api[fCode], p_uid, 0, TEST_BUFF_SIZE,
-                              read_buff);
+                              read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s013_data[VAL_TEST_IDX20].status, TEST_CHECKPOINT_NUM(23));
 
     return VAL_STATUS_SUCCESS;

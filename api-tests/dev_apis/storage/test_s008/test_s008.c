@@ -38,8 +38,9 @@ static uint8_t           write_buff[TEST_BUFF_SIZE] = {0x99, 0x01, 0x02, 0x03, 0
 
 static int32_t psa_sst_invalid_offset_failure(storage_function_code_t fCode)
 {
-    uint32_t j, p_data_length = 0;
-    int32_t status;
+    uint32_t j;
+    size_t   p_data_length = 0;
+    int32_t  status;
 
     /* Case where offset = data_size +1 , data_len 0. Also check nothing is returned in read buff */
     val->print(PRINT_TEST, "[Check 2] Try to access data with varying invalid offset\n", 0);
@@ -84,7 +85,7 @@ static int32_t psa_sst_valid_offset_success(storage_function_code_t fCode)
 {
     int32_t  status;
     uint32_t data_len, offset = TEST_BUFF_SIZE;
-    uint32_t p_data_length = 0;
+    size_t   p_data_length = 0;
 
     /* Set data for UID */
     status = STORAGE_FUNCTION(s008_data[VAL_TEST_IDX1].api[fCode], uid, TEST_BUFF_SIZE, write_buff,
