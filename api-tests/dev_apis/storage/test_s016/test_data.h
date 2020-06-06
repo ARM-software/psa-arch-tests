@@ -58,7 +58,7 @@ static const test_data_t s016_data[] = {
 },
 {
     /* Set_extended on old capacity should not work */
-    VAL_TEST_IDX10, {VAL_API_UNUSED, VAL_PS_SET_EXTENDED}, PSA_ERROR_STORAGE_FAILURE
+    VAL_TEST_IDX10, {VAL_API_UNUSED, VAL_PS_SET_EXTENDED}, PSA_ERROR_INVALID_ARGUMENT
 },
 {
     /* Remove the UID */
