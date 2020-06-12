@@ -80,7 +80,7 @@ static const test_data_t s013_data[] = {
 },
 {
     /* Call Create API for existing UID with same parameters */
-    VAL_TEST_IDX16, {VAL_API_UNUSED, VAL_PS_CREATE}, PSA_SUCCESS
+    VAL_TEST_IDX16, {VAL_API_UNUSED, VAL_PS_CREATE}, PSA_ERROR_ALREADY_EXISTS
 },
 {
     /* Validate the data */

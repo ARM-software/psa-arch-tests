@@ -60,7 +60,7 @@ static const test_data_t s011_data[] = {
 },
 {
     /* Again call create API with different length */
-    VAL_TEST_IDX10, {VAL_API_UNUSED, VAL_PS_CREATE}, PSA_ERROR_INVALID_ARGUMENT
+    VAL_TEST_IDX10, {VAL_API_UNUSED, VAL_PS_CREATE}, PSA_ERROR_ALREADY_EXISTS
 },
 {
     /* Validate the storage is empty */
