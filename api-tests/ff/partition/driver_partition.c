@@ -590,6 +590,8 @@ void driver_test_isolation_psa_rot_heap_rd(psa_msg_t *msg)
     psa_write(msg->handle, 0, (void *) &buffer, BUFFER_SIZE);
     psa_reply(msg->handle, PSA_SUCCESS);
     free(buffer);
+#else
+    (void)msg;
 #endif
 }
 
@@ -638,6 +640,8 @@ void driver_test_isolation_psa_rot_heap_wr(psa_msg_t *msg)
         psa_reply(msg->handle, -2);
     }
     free(buffer);
+#else
+    (void)msg;
 #endif
 }
 

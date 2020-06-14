@@ -42,7 +42,7 @@ val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
                                   {VAL_INVALID_TEST_ID, NULL}
                                   };
 
-    for (i = 0; i < (sizeof(test_list)/sizeof(test_list[0])); i++)
+    for (i = 0; i < (int)(sizeof(test_list)/sizeof(test_list[0])); i++)
     {
         if (test_id_prev == VAL_INVALID_TEST_ID)
         {

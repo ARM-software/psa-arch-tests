@@ -48,25 +48,15 @@ static uint8_t g_nvmem[NVMEM_SIZE];
 static int nvmem_check_bounds(addr_t base, uint32_t offset, int size)
 {
     if (base != NVMEM_BASE)
-    {
         return PAL_STATUS_ERROR;
-    }
     if (offset > NVMEM_SIZE)
-    {
         return PAL_STATUS_ERROR;
-    }
     if (size < 0)
-    {
         return PAL_STATUS_ERROR;
-    }
-    if (offset > INT_MAX - size)
-    {
+    if (offset > (uint32_t)(INT_MAX - size))
         return PAL_STATUS_ERROR;
-    }
     if (offset + size > NVMEM_SIZE)
-    {
         return PAL_STATUS_ERROR;
-    }
     return PAL_STATUS_SUCCESS;
 }
 
@@ -117,6 +107,7 @@ int pal_nvmem_write_ns(addr_t base, uint32_t offset, void *buffer, int size)
 **/
 int pal_uart_init_ns(uint32_t uart_base_addr)
 {
+    (void)uart_base_addr;
     return PAL_STATUS_SUCCESS;
 }
 
@@ -151,6 +142,9 @@ int pal_print_ns(const char *str, int32_t data)
 **/
 int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
 {
+    (void)base_addr;
+    (void)time_us;
+    (void)timer_tick_us;
     return PAL_STATUS_SUCCESS;
 }
 
@@ -164,6 +158,7 @@ int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick
 **/
 int pal_wd_timer_enable_ns(addr_t base_addr)
 {
+    (void)base_addr;
     return PAL_STATUS_SUCCESS;
 }
 
@@ -177,6 +172,7 @@ int pal_wd_timer_enable_ns(addr_t base_addr)
 **/
 int pal_wd_timer_disable_ns(addr_t base_addr)
 {
+    (void)base_addr;
     return PAL_STATUS_SUCCESS;
 }
 

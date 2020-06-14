@@ -63,6 +63,7 @@ int32_t val_storage_function(int type, ...)
     va_end(valist);
     return status;
 #else
+    (void)type;
     return VAL_STATUS_ERROR;
 #endif
 }

@@ -31,7 +31,7 @@ const client_test_t test_i054_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_call_with_not_writable_outvec_base(caller_security_t caller)
+int32_t client_test_psa_call_with_not_writable_outvec_base(caller_security_t caller __UNUSED)
 {
    int32_t                 status = VAL_STATUS_SUCCESS;
    psa_handle_t            handle = 0;

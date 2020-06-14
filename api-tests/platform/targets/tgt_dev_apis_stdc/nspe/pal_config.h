@@ -88,12 +88,12 @@ typedef uint32_t            cfg_id_t;
 #include "psa/crypto.h"
 #endif
 
-#ifdef INTERNAL_TRUSTED_STORAGE
+#if defined(INTERNAL_TRUSTED_STORAGE) || defined(STORAGE)
 /* psa/internal_trusted_storage.h: Contains the PSA ITS API elements */
 #include "psa/internal_trusted_storage.h"
 #endif
 
-#ifdef PROTECTED_STORAGE
+#if defined(PROTECTED_STORAGE) || defined(STORAGE)
 /* psa/protected_storage.h: Contains the PSA PS API elements */
 #include "psa/protected_storage.h"
 #endif

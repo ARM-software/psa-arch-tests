@@ -95,7 +95,7 @@ static int32_t psa_sst_zero_length_check(storage_function_code_t fCode)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t s009_storage_test(caller_security_t caller)
+int32_t s009_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 

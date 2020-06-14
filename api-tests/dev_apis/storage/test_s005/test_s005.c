@@ -92,7 +92,7 @@ static int32_t psa_sst_apis_check_success_case(storage_function_code_t fCode)
     return status;
 }
 
-int32_t s005_storage_test(caller_security_t caller)
+int32_t s005_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 

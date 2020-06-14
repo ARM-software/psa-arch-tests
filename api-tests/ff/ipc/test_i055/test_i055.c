@@ -31,7 +31,7 @@ const client_test_t test_i055_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_read_with_invalid_buffer_addr(caller_security_t caller)
+int32_t client_test_psa_read_with_invalid_buffer_addr(caller_security_t caller __UNUSED)
 {
    int32_t            status = VAL_STATUS_SUCCESS;
    uint8_t            data = 0x11;

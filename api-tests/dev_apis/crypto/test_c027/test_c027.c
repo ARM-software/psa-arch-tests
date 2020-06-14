@@ -30,7 +30,7 @@ const client_test_t test_c027_crypto_list[] = {
 static int      g_test_count = 1;
 static uint8_t  data[BUFFER_SIZE];
 
-int32_t psa_mac_update_test(caller_security_t caller)
+int32_t psa_mac_update_test(caller_security_t caller __UNUSED)
 {
     int                   num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t               i, status;
@@ -115,11 +115,11 @@ int32_t psa_mac_update_test(caller_security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_mac_update_invalid_operator_test(caller_security_t caller)
+int32_t psa_mac_update_invalid_operator_test(caller_security_t caller __UNUSED)
 {
     int32_t             i, status;
     psa_mac_operation_t operation[] = {psa_mac_operation_init(), PSA_MAC_OPERATION_INIT, {0} };
-    uint32_t            operation_count = sizeof(operation)/sizeof(operation[0]);
+    int32_t             operation_count = sizeof(operation)/sizeof(operation[0]);
 
     memset(data, 0, sizeof(data));
     val->print(PRINT_TEST, "[Check %d] ", g_test_count++);

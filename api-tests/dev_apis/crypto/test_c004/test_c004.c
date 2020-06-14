@@ -29,7 +29,7 @@ const client_test_t test_c004_crypto_list[] = {
 static int          g_test_count = 1;
 static uint8_t      data[BUFFER_SIZE];
 
-int32_t test_psa_export_public_key(caller_security_t caller)
+int32_t test_psa_export_public_key(caller_security_t caller __UNUSED)
 {
     int32_t               i, status;
     size_t                length;

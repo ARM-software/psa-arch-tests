@@ -34,8 +34,6 @@ static uint8_t write_buff[TEST_BUFF_SIZE] = {
 
 static int32_t psa_sst_remove_api(storage_function_code_t    fCode,
                                   psa_storage_uid_t          uid,
-                                  uint32_t                   data_len,
-                                  uint8_t                    *data_buff,
                                   psa_storage_create_flags_t create_flag)
 {
     int32_t status;
@@ -69,7 +67,7 @@ static int32_t psa_sst_create_storage_api(storage_function_code_t    fCode,
                           create_flag);
     if (status == s006_data[VAL_TEST_IDX1].status)
     {
-        test_status = psa_sst_remove_api(fCode, uid, data_len, data_buff, create_flag);
+        test_status = psa_sst_remove_api(fCode, uid, create_flag);
         if (test_status != VAL_STATUS_SUCCESS)
         {
             return test_status;
@@ -126,7 +124,7 @@ static int32_t psa_sst_flags_not_supported(storage_function_code_t fCode)
     return status;
 }
 
-int32_t s006_storage_test(caller_security_t caller)
+int32_t s006_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 

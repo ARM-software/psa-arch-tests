@@ -30,9 +30,10 @@ const client_test_t test_c020_crypto_list[] = {
 static int      g_test_count = 1;
 static uint8_t  output[BUFFER_SIZE];
 
-int32_t psa_key_derivation_output_bytes_test(caller_security_t caller)
+int32_t psa_key_derivation_output_bytes_test(caller_security_t caller __UNUSED)
 {
-    uint32_t                        i, status;
+    int32_t                         status;
+    int                             i;
     int                             num_checks = sizeof(check1)/sizeof(check1[0]);
     psa_key_attributes_t            attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_key_derivation_operation_t  operation = PSA_KEY_DERIVATION_OPERATION_INIT;

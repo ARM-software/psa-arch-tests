@@ -33,7 +33,7 @@ const client_test_t test_i071_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_mem_manipulation_fn(caller_security_t caller)
+int32_t client_test_mem_manipulation_fn(caller_security_t caller __UNUSED)
 {
   uint8_t    buffer[BUFF_SIZE] = {0};
   uint8_t    buffer1[BUFF_SIZE] = {0};

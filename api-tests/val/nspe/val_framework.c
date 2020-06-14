@@ -110,6 +110,8 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, const client_test_t
     test_info_t           test_info;
 
     test_info.test_num = test_num;
+#else
+   (void)test_num;
 #endif
 
     status = val_get_boot_flag(&boot.state);
@@ -572,7 +574,7 @@ val_status_t val_get_last_run_test_id(test_id_t *test_id)
 
     val_print(PRINT_INFO, "\n\tboot.state=0x%x", boot.state);
 
-    for (i = 0; i < (sizeof(boot_state)/sizeof(boot_state[0])); i++)
+    for (i = 0; i < (int)(sizeof(boot_state)/sizeof(boot_state[0])); i++)
     {
         if (boot.state == boot_state[i])
         {

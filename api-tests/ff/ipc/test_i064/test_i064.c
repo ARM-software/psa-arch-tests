@@ -31,7 +31,7 @@ const client_test_t test_i064_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_eoi_with_non_intr_signal(caller_security_t caller)
+int32_t client_test_psa_eoi_with_non_intr_signal(caller_security_t caller __UNUSED)
 {
    psa_handle_t           handle;
    driver_test_fn_id_t    driver_test_fn_id = TEST_PSA_EOI_WITH_NON_INTR_SIGNAL;

@@ -58,6 +58,6 @@ elseif(${CPU_ARCH} STREQUAL armv8m_bl)
 	set(TARGET_SWITCH "-march=armv8-m.base -mcmse")
 endif()
 
-set(CMAKE_C_FLAGS          "${TARGET_SWITCH}  -Wall -Werror -fdata-sections -ffunction-sections -mno-unaligned-access")
+set(CMAKE_C_FLAGS          "${TARGET_SWITCH}  -Wall -Werror -Wextra -fdata-sections -ffunction-sections -mno-unaligned-access")
 set(CMAKE_ASM_FLAGS        "${TARGET_SWITCH} -mthumb")
 set(CMAKE_EXE_LINKER_FLAGS "-Xlinker --fatal-warnings -Xlinker --gc-sections -z max-page-size=0x400 -lgcc -lc -lnosys")

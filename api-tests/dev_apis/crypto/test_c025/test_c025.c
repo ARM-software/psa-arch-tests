@@ -32,7 +32,7 @@ static bool_t is_buffer_empty(uint8_t *buffer, size_t size)
 {
     int i;
 
-    for (i = 0; i < size; i++)
+    for (i = 0; i < (int)size; i++)
     {
         if (buffer[i] != 0)
             return FALSE;
@@ -41,7 +41,7 @@ static bool_t is_buffer_empty(uint8_t *buffer, size_t size)
     return TRUE;
 }
 
-int32_t psa_aead_decrypt_test(caller_security_t caller)
+int32_t psa_aead_decrypt_test(caller_security_t caller __UNUSED)
 {
     int32_t          i, status;
     uint8_t          plaintext[BUFFER_SIZE];

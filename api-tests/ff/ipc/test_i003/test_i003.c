@@ -37,7 +37,7 @@ const client_test_t test_i003_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_zero_length_invec(caller_security_t caller)
+int32_t client_test_zero_length_invec(caller_security_t caller __UNUSED)
 {
    int32_t              status = VAL_STATUS_SUCCESS;
    psa_handle_t         handle = 0;
@@ -93,7 +93,7 @@ int32_t client_test_zero_length_invec(caller_security_t caller)
    return status;
 }
 
-int32_t client_test_zero_length_outvec(caller_security_t caller)
+int32_t client_test_zero_length_outvec(caller_security_t caller __UNUSED)
 {
    int32_t              status = VAL_STATUS_SUCCESS;
    psa_handle_t         handle = 0;
@@ -151,7 +151,7 @@ int32_t client_test_zero_length_outvec(caller_security_t caller)
    return status;
 }
 
-int32_t client_test_call_read_and_skip(caller_security_t caller)
+int32_t client_test_call_read_and_skip(caller_security_t caller __UNUSED)
 {
    int32_t              status = VAL_STATUS_SUCCESS;
    int                  data1[2] = {0xaa, 0xbb};
@@ -188,7 +188,7 @@ int32_t client_test_call_read_and_skip(caller_security_t caller)
    return status;
 }
 
-int32_t client_test_call_and_write(caller_security_t caller)
+int32_t client_test_call_and_write(caller_security_t caller __UNUSED)
 {
    int32_t              status = VAL_STATUS_SUCCESS;
    int                  data[4] = {0}, expected_data[4] = {0xaa, 0xbb, 0xcc, 0xeedd}, i;
@@ -250,7 +250,7 @@ int32_t client_test_call_and_write(caller_security_t caller)
    return status;
 }
 
-int32_t client_test_psa_set_rhandle(caller_security_t caller)
+int32_t client_test_psa_set_rhandle(caller_security_t caller __UNUSED)
 {
    int32_t            status = VAL_STATUS_SUCCESS;
    psa_handle_t       handle = 0;
@@ -286,7 +286,7 @@ int32_t client_test_psa_set_rhandle(caller_security_t caller)
    return status;
 }
 
-int32_t client_test_overlapping_vectors(caller_security_t caller)
+int32_t client_test_overlapping_vectors(caller_security_t caller __UNUSED)
 {
    int32_t            status = VAL_STATUS_SUCCESS;
    psa_handle_t       handle = 0;

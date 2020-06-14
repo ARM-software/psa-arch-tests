@@ -108,7 +108,7 @@ static int32_t psa_sst_get_incorrect_size(storage_function_code_t fCode)
     return status;
 }
 
-int32_t s007_storage_test(caller_security_t caller)
+int32_t s007_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 

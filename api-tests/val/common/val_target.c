@@ -79,6 +79,8 @@ STATIC_DECLARE val_status_t val_target_get_cfg_blob(cfg_id_t cfg_id, uint8_t **d
     val_status_t    status;
     void            *config_blob = NULL;
 
+    (void)size;
+
     val_print(PRINT_INFO, "\tInput id is %x \n", cfg_id);
     do
     {
@@ -133,7 +135,7 @@ STATIC_DECLARE val_status_t val_target_get_config(cfg_id_t cfg_id, uint8_t **dat
 {
     val_status_t status;
 
-    if ((cfg_id < TARGET_MIN_CFG_ID) || (cfg_id > TARGET_MAX_CFG_ID))
+    if ((cfg_id < (cfg_id_t)TARGET_MIN_CFG_ID) || (cfg_id > (cfg_id_t)TARGET_MAX_CFG_ID))
     {
         val_print(PRINT_ERROR, "\tInvalid Target data config ID = %x \n", cfg_id);
         return VAL_STATUS_INSUFFICIENT_SIZE;

@@ -157,7 +157,7 @@ int32_t psa_sst_optional_api_success_check(storage_function_code_t fCode)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t s013_storage_test(caller_security_t caller)
+int32_t s013_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 

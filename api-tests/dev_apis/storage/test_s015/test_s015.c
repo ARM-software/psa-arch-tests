@@ -54,7 +54,7 @@ static int32_t psa_sst_create_api_write_once_flag_check(storage_function_code_t 
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t s015_storage_test(caller_security_t caller)
+int32_t s015_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 

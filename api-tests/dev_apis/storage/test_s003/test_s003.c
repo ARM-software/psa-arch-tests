@@ -50,28 +50,29 @@ int32_t psa_sst_insufficient_space(storage_function_code_t fCode)
         for (uid = TEST_BASE_UID_VALUE; status == PSA_SUCCESS; uid++)
         {
             val->print(PRINT_INFO, "Setting 0x%x bytes for ", ARCH_TEST_STORAGE_UID_MAX_SIZE);
-            val->print(PRINT_INFO, "UID %d\n", uid);
+            val->print(PRINT_INFO, "UID %d\n", (int32_t)uid);
             status = STORAGE_FUNCTION(s003_data[VAL_TEST_IDX1].api[fCode], uid,
                                       ARCH_TEST_STORAGE_UID_MAX_SIZE, write_buff,
                                       PSA_STORAGE_FLAG_NONE);
             if (status != PSA_SUCCESS)
             {
-                val->print(PRINT_TEST, "UID %d set failed due to insufficient space\n", uid);
+                val->print(PRINT_TEST, "UID %d set failed due to insufficient space\n",
+                                       (int32_t)uid);
                 break;
             }
         }
         TEST_ASSERT_EQUAL(status, s003_data[VAL_TEST_IDX1].status, TEST_CHECKPOINT_NUM(1));
 
         /* Store number of set()s it took to saturate the storage */
-        count = uid - (TEST_BASE_UID_VALUE);
-        results[i] = uid - (TEST_BASE_UID_VALUE);
+        count = (uint32_t)uid - (TEST_BASE_UID_VALUE);
+        results[i] = count;
 
         if (count) {
            val->print(PRINT_TEST, "Remove all registered UIDs\n", 0);
         }
         for (uid = TEST_BASE_UID_VALUE; uid < (count + TEST_BASE_UID_VALUE); uid++)
         {
-            val->print(PRINT_INFO, "Removing UID %d\n", uid);
+            val->print(PRINT_INFO, "Removing UID %d\n", (int32_t)uid);
             status = STORAGE_FUNCTION(s003_data[VAL_TEST_IDX2].api[fCode], uid);
             if (status != PSA_SUCCESS)
                 break;
@@ -95,7 +96,7 @@ int32_t psa_sst_insufficient_space(storage_function_code_t fCode)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t s003_storage_test(caller_security_t caller)
+int32_t s003_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 

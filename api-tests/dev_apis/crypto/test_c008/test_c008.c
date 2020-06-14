@@ -29,7 +29,7 @@ const client_test_t test_c008_crypto_list[] = {
 
 static int g_test_count = 1;
 
-int32_t psa_key_derivation_setup_test(caller_security_t caller)
+int32_t psa_key_derivation_setup_test(caller_security_t caller __UNUSED)
 {
     int32_t                         i, status;
     int                             num_checks = sizeof(check1)/sizeof(check1[0]);

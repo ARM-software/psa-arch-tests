@@ -44,10 +44,8 @@ static void copy_mem(void *addr, void *data, size_t l)
    char *src = (char *)data;
    char *dest = (char *)addr;
 
-   for (i = 0; i < l; i++)
-   {
+   for (i = 0; i < (int)l; i++)
        dest[i] = src[i];
-   }
 }
 
 /* Empty function to create opcode data set */
@@ -55,7 +53,7 @@ void test_i068_dummy_func(void)
 {
 }
 
-int32_t client_test_instr_exec_from_writable_mem(caller_security_t caller)
+int32_t client_test_instr_exec_from_writable_mem(caller_security_t caller __UNUSED)
 {
   val->print(PRINT_TEST, "[Check 1] Test Instr execution from writable memory\n", 0);
 
