@@ -30,16 +30,16 @@ const client_test_t test_c044_crypto_list[] = {
 static int g_test_count = 1;
 static uint8_t data[BUFFER_SIZE];
 
-int32_t psa_copy_key_test(caller_security_t caller)
+int32_t psa_copy_key_test(caller_security_t caller __UNUSED)
 {
-    uint32_t              length, i;
+    uint32_t              length;
     const uint8_t        *key_data;
     psa_key_handle_t      target_handle = 0;
     psa_key_usage_t       get_key_usage_flags;
     psa_algorithm_t       get_key_algorithm;
     size_t                get_key_bits;
     psa_key_type_t        get_key_type;
-    int                   num_checks = sizeof(check1)/sizeof(check1[0]);
+    int                   i, num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t               status, export_status;
     psa_key_attributes_t  source_attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_key_attributes_t  target_attributes = PSA_KEY_ATTRIBUTES_INIT;

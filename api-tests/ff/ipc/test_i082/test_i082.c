@@ -74,7 +74,7 @@ static void close_driver_fn(psa_handle_t *handle)
    psa->close(*handle);
 }
 
-int32_t client_test_app_rot_read_psa_rot_heap(caller_security_t caller)
+int32_t client_test_app_rot_read_psa_rot_heap(caller_security_t caller __UNUSED)
 {
    addr_t       psa_rot_addr;
    uint8_t      data = DATA_VALUE;
@@ -117,7 +117,7 @@ int32_t client_test_app_rot_read_psa_rot_heap(caller_security_t caller)
    return VAL_STATUS_SPM_FAILED;
 }
 
-int32_t client_test_app_rot_write_psa_rot_heap(caller_security_t caller)
+int32_t client_test_app_rot_write_psa_rot_heap(caller_security_t caller __UNUSED)
 {
    addr_t       psa_rot_addr;
    uint8_t      data = DATA_VALUE;
@@ -146,14 +146,14 @@ int32_t client_test_app_rot_write_psa_rot_heap(caller_security_t caller)
    return VAL_STATUS_SUCCESS;
 }
 #else
-int32_t client_test_app_rot_read_psa_rot_heap(caller_security_t caller)
+int32_t client_test_app_rot_read_psa_rot_heap(caller_security_t caller __UNUSED)
 {
    val->print(PRINT_TEST, "[Check 1] Test APP-RoT reading PSA-RoT heap\n", 0);
    val->print(PRINT_ERROR, "\tSkipping test as heap memory not supported\n", 0);
    return RESULT_SKIP(VAL_STATUS_HEAP_NOT_AVAILABLE);
 }
 
-int32_t client_test_app_rot_write_psa_rot_heap(caller_security_t caller)
+int32_t client_test_app_rot_write_psa_rot_heap(caller_security_t caller __UNUSED)
 {
    val->print(PRINT_TEST, "[Check 2] Test APP-RoT writing PSA-RoT heap\n", 0);
    val->print(PRINT_ERROR, "\tSkipping test as heap memory not supported\n", 0);

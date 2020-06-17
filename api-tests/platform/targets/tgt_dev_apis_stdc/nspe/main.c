@@ -27,5 +27,7 @@ int32_t val_entry(void);
 **/
 int main(int argc, char **argv)
 {
+    (void)argc;
+    (void)argv;
     return val_entry();
 }

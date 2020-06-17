@@ -41,7 +41,8 @@ static int32_t psa_sst_uid_not_found(storage_function_code_t fCode)
     struct psa_storage_info_t orig_info;
 
     /* Call the set_extended API with UID which is not created */
-    val->print(PRINT_TEST, "[Check 1] Call set_extended API for UID %d which is not set\n", p_uid);
+    val->print(PRINT_TEST, "[Check 1] Call set_extended API for UID %d which is not set\n",
+                            (int32_t)p_uid);
     status = STORAGE_FUNCTION(s011_data[VAL_TEST_IDX1].api[fCode], p_uid, 0, TEST_BUFF_SIZE,
                               write_buff);
     TEST_ASSERT_EQUAL(status, s011_data[VAL_TEST_IDX1].status, TEST_CHECKPOINT_NUM(1));
@@ -101,7 +102,8 @@ static int32_t psa_sst_uid_not_found(storage_function_code_t fCode)
     TEST_ASSERT_EQUAL(status, s011_data[VAL_TEST_IDX13].status, TEST_CHECKPOINT_NUM(14));
 
     /* Call the set_extended API with UID which is removed */
-    val->print(PRINT_TEST, "[Check 5] Call set_extended API for UID %d which is removed\n", p_uid);
+    val->print(PRINT_TEST, "[Check 5] Call set_extended API for UID %d which is removed\n",
+                            (int32_t)p_uid);
     status = STORAGE_FUNCTION(s011_data[VAL_TEST_IDX14].api[fCode], p_uid, 0, TEST_BUFF_SIZE,
                               write_buff);
     TEST_ASSERT_EQUAL(status, s011_data[VAL_TEST_IDX14].status, TEST_CHECKPOINT_NUM(15));
@@ -111,7 +113,7 @@ static int32_t psa_sst_uid_not_found(storage_function_code_t fCode)
 
 static int32_t psa_sst_optional_api_uid_not_found(storage_function_code_t fCode)
 {
-    uint32_t status;
+    int32_t status;
     int32_t test_status;
 
     /* Call the get_support API and check if create and set_extended API are supported */
@@ -133,7 +135,7 @@ static int32_t psa_sst_optional_api_uid_not_found(storage_function_code_t fCode)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t s011_storage_test(caller_security_t caller)
+int32_t s011_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 

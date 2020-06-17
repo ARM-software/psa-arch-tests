@@ -98,7 +98,7 @@ static int32_t psa_sst_optional_api_not_supported_check(storage_function_code_t 
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t s014_storage_test(caller_security_t caller)
+int32_t s014_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 

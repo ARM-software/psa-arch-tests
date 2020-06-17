@@ -30,7 +30,7 @@ const client_test_t test_c038_crypto_list[] = {
 static int         g_test_count = 1;
 static uint8_t     output[SIZE_32B];
 
-int32_t psa_cipher_abort_test(caller_security_t caller)
+int32_t psa_cipher_abort_test(caller_security_t caller __UNUSED)
 {
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
@@ -102,7 +102,7 @@ int32_t psa_cipher_abort_test(caller_security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_cipher_abort_before_update_test(caller_security_t caller)
+int32_t psa_cipher_abort_before_update_test(caller_security_t caller __UNUSED)
 {
     size_t                  length;
     psa_algorithm_t         key_alg = PSA_ALG_CBC_NO_PADDING;

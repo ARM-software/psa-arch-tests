@@ -32,9 +32,10 @@ const client_test_t test_c021_crypto_list[] = {
 
 static int      g_test_count = 1;
 
-int32_t psa_key_derivation_output_key_test(caller_security_t caller)
+int32_t psa_key_derivation_output_key_test(caller_security_t caller __UNUSED)
 {
-    uint32_t                        i, status;
+    int32_t                         status;
+    int                             i;
     int                             num_checks = sizeof(check1)/sizeof(check1[0]);
     psa_key_handle_t                key_handle[2];
     psa_key_attributes_t            attributes = PSA_KEY_ATTRIBUTES_INIT;

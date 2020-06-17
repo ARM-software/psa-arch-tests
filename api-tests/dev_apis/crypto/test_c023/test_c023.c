@@ -29,7 +29,7 @@ const client_test_t test_c023_crypto_list[] = {
 
 static int g_test_count = 1;
 
-int32_t psa_key_derivation_set_get_capacity_test(caller_security_t caller)
+int32_t psa_key_derivation_set_get_capacity_test(caller_security_t caller __UNUSED)
 {
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;

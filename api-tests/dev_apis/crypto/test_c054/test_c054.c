@@ -28,7 +28,7 @@ const client_test_t test_c054_crypto_list[] = {
 
 static int g_test_count = 1;
 
-int32_t psa_aead_generate_nonce_test(caller_security_t caller)
+int32_t psa_aead_generate_nonce_test(caller_security_t caller __UNUSED)
 {
     int32_t               i, j, status, nonce_sum;
     uint8_t               nonce[SIZE_32B];
@@ -94,10 +94,8 @@ int32_t psa_aead_generate_nonce_test(caller_security_t caller)
 
         /* Check that if generated iv are non-zero */
         nonce_sum = 0;
-        for (j = 0; j < nonce_length; j++)
-        {
+        for (j = 0; j < (int)nonce_length; j++)
             nonce_sum += nonce[j];
-        }
 
         TEST_ASSERT_NOT_EQUAL(nonce_sum, 0, TEST_CHECKPOINT_NUM(8));
 

@@ -31,7 +31,7 @@ const client_test_t test_i019_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_psa_set_rhandle_with_null_handle(caller_security_t caller)
+int32_t client_test_psa_set_rhandle_with_null_handle(caller_security_t caller __UNUSED)
 {
    psa_handle_t       handle = 0;
 

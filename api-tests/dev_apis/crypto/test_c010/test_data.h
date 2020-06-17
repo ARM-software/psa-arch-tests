@@ -25,7 +25,6 @@ typedef struct {
     psa_algorithm_t         key_alg;
     psa_key_id_t            key_id;
     psa_key_lifetime_t      key_lifetime;
-    psa_key_lifetime_t      lifetime;
 } test_data;
 
 static const test_data check1[] = {

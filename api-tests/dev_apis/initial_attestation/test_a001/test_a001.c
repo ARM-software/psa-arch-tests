@@ -29,10 +29,9 @@ const client_test_t test_a001_attestation_list[] = {
 
 static int         g_test_count = 1;
 
-int32_t psa_initial_attestation_get_token_test(caller_security_t caller)
+int32_t psa_initial_attestation_get_token_test(caller_security_t caller __UNUSED)
 {
-    int         num_checks = sizeof(check1)/sizeof(check1[0]);
-    uint32_t    i;
+    int         i, num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t     status;
     size_t      token_buffer_size, token_size;
     uint8_t     challenge[PSA_INITIAL_ATTEST_CHALLENGE_SIZE_64+1];
@@ -83,10 +82,9 @@ int32_t psa_initial_attestation_get_token_test(caller_security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_initial_attestation_get_token_size_test(caller_security_t caller)
+int32_t psa_initial_attestation_get_token_size_test(caller_security_t caller __UNUSED)
 {
-    int         num_checks = sizeof(check2)/sizeof(check2[0]);
-    uint32_t    i;
+    int         i, num_checks = sizeof(check2)/sizeof(check2[0]);
     int32_t     status;
     size_t      token_size;
 

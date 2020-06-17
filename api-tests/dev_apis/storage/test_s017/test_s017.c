@@ -77,7 +77,7 @@ static int32_t psa_sst_optional_api_partial_write(storage_function_code_t fCode)
 
 static int32_t psa_sst_optional_api_partial_write_check(storage_function_code_t fCode)
 {
-    uint32_t status;
+    int32_t status;
     int32_t test_status;
 
     /* Call the get_support API and check if create and set_extended API are supported */
@@ -99,7 +99,7 @@ static int32_t psa_sst_optional_api_partial_write_check(storage_function_code_t 
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t s017_storage_test(caller_security_t caller)
+int32_t s017_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 

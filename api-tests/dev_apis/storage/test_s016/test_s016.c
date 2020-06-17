@@ -121,7 +121,7 @@ static int32_t psa_sst_optional_api_sst_capacity_check(storage_function_code_t f
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t s016_storage_test(caller_security_t caller)
+int32_t s016_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 

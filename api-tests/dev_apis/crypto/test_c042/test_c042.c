@@ -29,7 +29,7 @@ const client_test_t test_c042_crypto_list[] = {
 
 static int     g_test_count = 1;
 
-int32_t psa_asymmetric_verify_test(caller_security_t caller)
+int32_t psa_asymmetric_verify_test(caller_security_t caller __UNUSED)
 {
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
@@ -116,7 +116,7 @@ int32_t psa_asymmetric_verify_test(caller_security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_asymmetric_verify_negative_test(caller_security_t caller)
+int32_t psa_asymmetric_verify_negative_test(caller_security_t caller __UNUSED)
 {
     int                     num_checks = sizeof(check2)/sizeof(check2[0]);
     int32_t                 i, status;

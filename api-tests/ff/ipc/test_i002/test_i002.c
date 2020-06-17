@@ -39,7 +39,7 @@ const client_test_t test_i002_client_tests_list[] = {
     NULL,
 };
 
-int32_t client_test_connection_busy_and_reject(caller_security_t caller)
+int32_t client_test_connection_busy_and_reject(caller_security_t caller __UNUSED)
 {
     int32_t         status = VAL_STATUS_SUCCESS;
     psa_handle_t    handle = 0;
@@ -74,7 +74,7 @@ int32_t client_test_connection_busy_and_reject(caller_security_t caller)
    return status;
 }
 
-int32_t client_test_accept_and_close_connect(caller_security_t caller)
+int32_t client_test_accept_and_close_connect(caller_security_t caller __UNUSED)
 {
    psa_handle_t     handle = 0;
 
@@ -95,7 +95,7 @@ int32_t client_test_accept_and_close_connect(caller_security_t caller)
    return VAL_STATUS_SUCCESS;
 }
 
-int32_t client_test_connect_with_allowed_version_policy(caller_security_t caller)
+int32_t client_test_connect_with_allowed_version_policy(caller_security_t caller __UNUSED)
 {
    psa_handle_t     handle = 0;
    uint32_t         i = 0;
@@ -158,7 +158,7 @@ int32_t psa_call_with_null_msg(int32_t expected_status)
    return status;
 }
 
-int32_t client_test_psa_call_with_allowed_status_code(caller_security_t caller)
+int32_t client_test_psa_call_with_allowed_status_code(caller_security_t caller __UNUSED)
 {
    int32_t         status = VAL_STATUS_SUCCESS;
    psa_status_t    expected_status_code[] = {PSA_SUCCESS, 1, 2, INT32_MAX, -1, -2, INT32_MIN+128};
@@ -180,7 +180,7 @@ int32_t client_test_psa_call_with_allowed_status_code(caller_security_t caller)
    return status;
 }
 
-int32_t client_test_psa_call_with_allowed_type_values(caller_security_t caller)
+int32_t client_test_psa_call_with_allowed_type_values(caller_security_t caller __UNUSED)
 {
    int32_t            status = VAL_STATUS_SUCCESS;
    psa_handle_t       handle = 0;
@@ -251,7 +251,7 @@ int32_t client_test_identity(caller_security_t caller)
    return status;
 }
 
-int32_t client_test_spm_concurrent_connect_limit(caller_security_t caller)
+int32_t client_test_spm_concurrent_connect_limit(caller_security_t caller __UNUSED)
 {
    int32_t         status = VAL_STATUS_SUCCESS;
    psa_handle_t    handle[CONNECT_LIMIT] = {0};
@@ -310,13 +310,13 @@ int32_t client_test_psa_wait(void)
    return VAL_STATUS_SUCCESS;
 }
 
-int32_t client_test_psa_block_behave(caller_security_t caller)
+int32_t client_test_psa_block_behave(caller_security_t caller __UNUSED)
 {
    val->print(PRINT_TEST, "[Check 8] Test PSA_BLOCK\n", 0);
    return (client_test_psa_wait());
 }
 
-int32_t client_test_psa_poll_behave(caller_security_t caller)
+int32_t client_test_psa_poll_behave(caller_security_t caller __UNUSED)
 {
    val->print(PRINT_TEST, "[Check 9] Test PSA_POLL\n", 0);
    return (client_test_psa_wait());

@@ -323,6 +323,8 @@ uint32_t pal_crypto_pub_key_verify(int32_t cose_algorithm_id,
     int32_t status = PAL_ATTEST_ERROR;
     psa_algorithm_t key_alg = PSA_ALG_ECDSA(PSA_ALG_SHA_256);
 
+    (void)cose_algorithm_id;
+
     /* Register the attestation public key */
     status = pal_import_attest_key(key_alg);
     if (status != PAL_ATTEST_SUCCESS)

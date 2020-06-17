@@ -70,7 +70,7 @@ int32_t pal_crypto_function(int type, va_list valist)
             return status;
         case PAL_CRYPTO_SET_KEY_TYPE:
             attributes = va_arg(valist, psa_key_attributes_t *);
-            key_type = va_arg(valist, psa_key_type_t);
+            key_type = (psa_key_type_t)va_arg(valist, int);
             psa_set_key_type(attributes, key_type);
             return 0;
         case PAL_CRYPTO_SET_KEY_BITS:

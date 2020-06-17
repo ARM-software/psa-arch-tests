@@ -29,7 +29,7 @@ const client_test_t test_c002_crypto_list[] = {
 
 static int g_test_count = 1;
 
-int32_t psa_import_key_test(caller_security_t caller)
+int32_t psa_import_key_test(caller_security_t caller __UNUSED)
 {
     int32_t               i, status;
     uint8_t               data[BUFFER_SIZE];
