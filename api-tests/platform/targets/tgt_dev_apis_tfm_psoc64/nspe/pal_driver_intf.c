@@ -27,6 +27,7 @@ int32_t tfm_platform_system_reset(void);
 **/
 int pal_uart_init_ns(uint32_t uart_base_addr)
 {
+    (void)uart_base_addr;
     return PAL_STATUS_SUCCESS;
 }
 
@@ -52,6 +53,9 @@ int pal_print_ns(char *str, int32_t data)
 **/
 int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
 {
+    (void)base_addr;
+    (void)time_us;
+    (void)timer_tick_us;
     return PAL_STATUS_SUCCESS;
 }
 
@@ -62,6 +66,7 @@ int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick
 **/
 int pal_wd_timer_enable_ns(addr_t base_addr)
 {
+    (void)base_addr;
     return PAL_STATUS_SUCCESS;
 }
 
@@ -72,6 +77,7 @@ int pal_wd_timer_enable_ns(addr_t base_addr)
 **/
 int pal_wd_timer_disable_ns(addr_t base_addr)
 {
+    (void)base_addr;
     return PAL_STATUS_SUCCESS;
 }
 
@@ -112,6 +118,10 @@ int pal_nvmem_write_ns(addr_t base, uint32_t offset, void *buffer, int size)
 **/
 int pal_spi_read(addr_t addr, uint8_t *data, uint32_t len)
 {
+    (void)addr;
+    (void)data;
+    (void)len;
+
     return 0xFF;
 }
 
