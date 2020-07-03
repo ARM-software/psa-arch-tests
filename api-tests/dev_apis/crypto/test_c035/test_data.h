@@ -15,135 +15,169 @@
  * limitations under the License.
 **/
 
-#include "val_crypto.h"
+#include "test_crypto_common.h"
 
 typedef struct {
     char                    test_desc[75];
-    psa_key_type_t          key_type;
-    uint8_t                 key_data[32];
-    uint32_t                key_length;
-    psa_key_usage_t         usage;
-    psa_algorithm_t         key_alg;
-    uint8_t                 iv[32];
-    size_t                  iv_size;
+    psa_key_type_t          type;
+    const uint8_t          *data;
+    size_t                  data_length;
+    psa_key_usage_t         usage_flags;
+    psa_algorithm_t         alg;
+    const unsigned char    *iv;
+    size_t                  iv_length;
     psa_status_t            expected_status;
 } test_data;
 
 static const test_data check1[] = {
 #ifdef ARCH_TEST_CIPER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
-{"Test psa_cipher_set_iv 16 Byte AES\n", PSA_KEY_TYPE_AES,
-{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
- 0x5F, 0xC9, 0xD0}, AES_16B_KEY_SIZE,
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CTR,
-{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C,
- 0x0D, 0x0E, 0x0F}, 16,
- PSA_SUCCESS
+{
+    .test_desc          = "Test psa_cipher_set_iv 16 Byte AES\n",
+    .type               = PSA_KEY_TYPE_AES,
+    .data               = key_data,
+    .data_length        = AES_16B_KEY_SIZE,
+    .usage_flags        = PSA_KEY_USAGE_ENCRYPT,
+    .alg                = PSA_ALG_CTR,
+    .iv                 = iv,
+    .iv_length          = 16,
+    .expected_status    = PSA_SUCCESS
 },
 #endif
 
 #ifdef ARCH_TEST_AES_192
-{"Test psa_cipher_set_iv 24 Byte AES\n", PSA_KEY_TYPE_AES,
-{0x24, 0x13, 0x61, 0x47, 0x61, 0xB8, 0xC8, 0xF0, 0xDF, 0xAB, 0x5A, 0x0E, 0x87,
- 0x40, 0xAC, 0xA3, 0x90, 0x77, 0x83, 0x52, 0x31, 0x74, 0xF9}, AES_24B_KEY_SIZE,
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CTR,
-{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C,
- 0x0D, 0x0E, 0x0F}, 16,
- PSA_SUCCESS
+{
+    .test_desc          = "Test psa_cipher_set_iv 24 Byte AES\n",
+    .type               = PSA_KEY_TYPE_AES,
+    .data               = key_data,
+    .data_length        = AES_24B_KEY_SIZE,
+    .usage_flags        = PSA_KEY_USAGE_ENCRYPT,
+    .alg                = PSA_ALG_CTR,
+    .iv                 = iv,
+    .iv_length          = 16,
+    .expected_status    = PSA_SUCCESS
 },
 #endif
 
 #ifdef ARCH_TEST_AES_256
-{"Test psa_cipher_set_iv 32 Byte AES\n", PSA_KEY_TYPE_AES,
-{0xEA, 0xD5, 0xE6, 0xC8, 0x51, 0xF9, 0xEC, 0xBB, 0x9B, 0x57, 0x7C, 0xED, 0xD2,
- 0x4B, 0x82, 0x84, 0x9F, 0x9F, 0xE6, 0x73, 0x21, 0x3D, 0x1A, 0x05, 0xC9, 0xED,
- 0xDF, 0x25, 0x17, 0x68, 0x86, 0xAE}, AES_32B_KEY_SIZE,
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CTR,
-{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C,
- 0x0D, 0x0E, 0x0F}, 16,
- PSA_SUCCESS
+{
+    .test_desc          = "Test psa_cipher_set_iv 32 Byte AES\n",
+    .type               = PSA_KEY_TYPE_AES,
+    .data               = key_data,
+    .data_length        = AES_32B_KEY_SIZE,
+    .usage_flags        = PSA_KEY_USAGE_ENCRYPT,
+    .alg                = PSA_ALG_CTR,
+    .iv                 = iv,
+    .iv_length          = 16,
+    .expected_status    = PSA_SUCCESS
 },
 #endif
 #endif
 
 #ifdef ARCH_TEST_CBC_AES_NO_PADDING
 #ifdef ARCH_TEST_DES_1KEY
-{"Test psa_cipher_set_iv DES 64 bit key\n", PSA_KEY_TYPE_DES,
- {0x70, 0x24, 0x55, 0x0C, 0x14, 0x9D, 0xED, 0x29},
- DES_8B_KEY_SIZE, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING,
- {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}, 8,
- PSA_SUCCESS
+{
+    .test_desc          = "Test psa_cipher_set_iv DES 64 bit key\n",
+    .type               = PSA_KEY_TYPE_DES,
+    .data               = key_data,
+    .data_length        = DES_8B_KEY_SIZE,
+    .usage_flags        = PSA_KEY_USAGE_ENCRYPT,
+    .alg                = PSA_ALG_CBC_NO_PADDING,
+    .iv                 = iv,
+    .iv_length          = 8,
+    .expected_status    = PSA_SUCCESS
 },
-
 #endif
 
 #ifdef ARCH_TEST_DES_2KEY
-{"Test psa_cipher_set_iv Triple DES 2-Key\n", PSA_KEY_TYPE_DES,
-{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
- 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF},
- DES3_2KEY_SIZE, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING,
- {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}, 8,
- PSA_SUCCESS
+{
+    .test_desc          = "Test psa_cipher_set_iv DES 2-Key\n",
+    .type               = PSA_KEY_TYPE_DES,
+    .data               = key_data,
+    .data_length        = DES3_2B_KEY_SIZE,
+    .usage_flags        = PSA_KEY_USAGE_ENCRYPT,
+    .alg                = PSA_ALG_CBC_NO_PADDING,
+    .iv                 = iv,
+    .iv_length          = 8,
+    .expected_status    = PSA_SUCCESS
 },
 #endif
 
 #ifdef ARCH_TEST_DES_3KEY
-{"Test psa_cipher_set_iv Triple DES 3-Key\n", PSA_KEY_TYPE_DES,
-{0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
- 0xF1, 0xE0, 0xD3, 0xC2, 0xB5, 0xA4, 0x97, 0x86,
- 0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10},
- DES3_3KEY_SIZE, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING,
- {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}, 8,
- PSA_SUCCESS
+{
+    .test_desc          = "Test psa_cipher_set_iv DES 3-Key\n",
+    .type               = PSA_KEY_TYPE_DES,
+    .data               = key_data,
+    .data_length        = DES3_3B_KEY_SIZE,
+    .usage_flags        = PSA_KEY_USAGE_ENCRYPT,
+    .alg                = PSA_ALG_CBC_NO_PADDING,
+    .iv                 = iv,
+    .iv_length          = 8,
+    .expected_status    = PSA_SUCCESS
 },
 #endif
 #endif
 
 #ifdef ARCH_TEST_CIPER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
-{"Test psa_cipher_set_iv AES - small iv buffer\n", PSA_KEY_TYPE_AES,
-{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
- 0x5F, 0xC9, 0xD0}, AES_16B_KEY_SIZE,
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CTR,
- {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}, 8,
- PSA_ERROR_INVALID_ARGUMENT
+{
+    .test_desc          = "Test psa_cipher_set_iv AES - small iv buffer\n",
+    .type               = PSA_KEY_TYPE_AES,
+    .data               = key_data,
+    .data_length        = AES_16B_KEY_SIZE,
+    .usage_flags        = PSA_KEY_USAGE_ENCRYPT,
+    .alg                = PSA_ALG_CTR,
+    .iv                 = iv,
+    .iv_length          = 8,
+    .expected_status    = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif
 #endif
 
 #ifdef ARCH_TEST_CBC_AES_NO_PADDING
 #ifdef ARCH_TEST_DES_1KEY
-{"Test psa_cipher_set_iv DES - small iv buffer\n", PSA_KEY_TYPE_DES,
- {0x70, 0x24, 0x55, 0x0C, 0x14, 0x9D, 0xED, 0x29},
- DES_8B_KEY_SIZE, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING,
-{0x00, 0x01, 0x02, 0x03,}, 4,
- PSA_ERROR_INVALID_ARGUMENT
+{
+    .test_desc          = "Test psa_cipher_set_iv DES - small iv buffer\n",
+    .type               = PSA_KEY_TYPE_DES,
+    .data               = key_data,
+    .data_length        = DES_8B_KEY_SIZE,
+    .usage_flags        = PSA_KEY_USAGE_ENCRYPT,
+    .alg                = PSA_ALG_CBC_NO_PADDING,
+    .iv                 = iv,
+    .iv_length          = 4,
+    .expected_status    = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif
 #endif
 
 #ifdef ARCH_TEST_CIPER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
-{"Test psa_cipher_set_iv AES - large iv buffer\n", PSA_KEY_TYPE_AES,
-{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
- 0x5F, 0xC9, 0xD0}, AES_16B_KEY_SIZE,
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CTR,
-{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C,
- 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
- 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F}, 32,
- PSA_ERROR_INVALID_ARGUMENT
+{
+    .test_desc          = "Test psa_cipher_set_iv AES - large iv buffer\n",
+    .type               = PSA_KEY_TYPE_AES,
+    .data               = key_data,
+    .data_length        = AES_16B_KEY_SIZE,
+    .usage_flags        = PSA_KEY_USAGE_ENCRYPT,
+    .alg                = PSA_ALG_CTR,
+    .iv                 = iv,
+    .iv_length          = 17,
+    .expected_status    = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif
 #endif
 
 #ifdef ARCH_TEST_CBC_AES_NO_PADDING
 #ifdef ARCH_TEST_DES_1KEY
-{"Test psa_cipher_set_iv DES - large iv buffer\n", PSA_KEY_TYPE_DES,
- {0x70, 0x24, 0x55, 0x0C, 0x14, 0x9D, 0xED, 0x29},
- DES_8B_KEY_SIZE, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING,
-{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C,
- 0x0D, 0x0E, 0x0F}, 16,
- PSA_ERROR_INVALID_ARGUMENT
+{
+    .test_desc          = "Test psa_cipher_set_iv DES - large iv buffer\n",
+    .type               = PSA_KEY_TYPE_DES,
+    .data               = key_data,
+    .data_length        = DES_8B_KEY_SIZE,
+    .usage_flags        = PSA_KEY_USAGE_ENCRYPT,
+    .alg                = PSA_ALG_CBC_NO_PADDING,
+    .iv                 = iv,
+    .iv_length          = 16,
+    .expected_status    = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif
 #endif

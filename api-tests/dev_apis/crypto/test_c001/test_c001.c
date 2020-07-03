@@ -37,9 +37,9 @@ int32_t psa_generate_random_without_init_test(caller_security_t caller __UNUSED)
     /* Generate random bytes */
     status = val->crypto_function(VAL_CRYPTO_GENERATE_RANDOM, output, GENERATE_SIZE);
     if (status == PSA_SUCCESS)
-        return RESULT_SKIP(VAL_STATUS_INIT_ALREADY_DONE);
+        return VAL_STATUS_SUCCESS;
     else
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(1));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(3));
 
     return VAL_STATUS_SUCCESS;
 }
@@ -66,7 +66,7 @@ int32_t multiple_psa_crypto_init_test(caller_security_t caller __UNUSED)
     {
         /* Initialize the PSA crypto library*/
         status = val->crypto_function(VAL_CRYPTO_INIT);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(2));
     }
 
     return VAL_STATUS_SUCCESS;

@@ -27,14 +27,15 @@ const client_test_t test_c019_crypto_list[] = {
     NULL,
 };
 
-static int         g_test_count = 1;
+static uint32_t g_test_count           = 1;
+static int32_t  valid_test_input_index = -1;
 
 int32_t psa_key_derivation_key_agreement_test(caller_security_t caller __UNUSED)
 {
-    int                             num_checks = sizeof(check1)/sizeof(check1[0]);
+    int32_t                         num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                         i, status;
     psa_key_attributes_t            attributes = PSA_KEY_ATTRIBUTES_INIT;
-    psa_key_derivation_operation_t  operation = PSA_KEY_DERIVATION_OPERATION_INIT;
+    psa_key_derivation_operation_t  operation  = PSA_KEY_DERIVATION_OPERATION_INIT;
     psa_key_handle_t                key_handle;
 
     if (num_checks == 0)
@@ -57,24 +58,26 @@ int32_t psa_key_derivation_key_agreement_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
         /* Setup the attributes for the key */
-        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE, &attributes, check1[i].key_type);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM, &attributes, check1[i].key_alg);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE,        &attributes, check1[i].type);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM,   &attributes, check1[i].alg);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage_flags);
 
         /* Import the key data into the key slot */
-        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].key_data,
-                 check1[i].key_length, &key_handle);
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
+                 check1[i].data_length, &key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Set up a key agreement operation */
-        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_SETUP, &operation,
-                 check1[i].key_alg);
+        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_SETUP, &operation, check1[i].alg);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
         /* Perform a key agreement */
-        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_KEY_AGREEMENT, &operation,
-                 check1[i].step, key_handle, check1[i].peer_key,
-                 check1[i].peer_key_length);
+        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_KEY_AGREEMENT,
+                                      &operation,
+                                      check1[i].step,
+                                      key_handle,
+                                      check1[i].peer_key,
+                                      check1[i].peer_key_length);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(5));
 
         /* Abort the key derivation operation */
@@ -90,6 +93,9 @@ int32_t psa_key_derivation_key_agreement_test(caller_security_t caller __UNUSED)
         /* Destroy a key and restore the slot to its default state */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+
+        if (valid_test_input_index < 0)
+            valid_test_input_index = i;
     }
 
     return VAL_STATUS_SUCCESS;
@@ -97,42 +103,52 @@ int32_t psa_key_derivation_key_agreement_test(caller_security_t caller __UNUSED)
 
 int32_t psa_key_derivation_key_agreement_negative_test(caller_security_t caller __UNUSED)
 {
-    int32_t                         i, status;
-    int                             num_checks = sizeof(check2)/sizeof(check2[0]);
-    psa_key_derivation_operation_t  operation  = PSA_KEY_DERIVATION_OPERATION_INIT;
+    int32_t                         status;
+    psa_key_derivation_operation_t  operation;
     psa_key_handle_t                key_handle = 8;
+
+    if (valid_test_input_index < 0)
+        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
 
-    for (i = 0; i < num_checks; i++)
-    {
-        /* Setting up the watchdog timer for each check */
-        status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
-        TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
+    /* Setting up the watchdog timer for each check */
+    status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
+    TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_SETUP, &operation,
-                 check2[i].key_alg);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+    status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_SETUP, &operation,
+                                  check1[valid_test_input_index].alg);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
-        val->print(PRINT_TEST, "[Check %d] Test psa_key_derivation_key_agreement "
-                               "- Invalid handle\n", g_test_count++);
+    val->print(PRINT_TEST, "[Check %d] Test psa_key_derivation_key_agreement "
+                           "- Invalid handle\n", g_test_count++);
 
-        /* Set up a key agreement operation */
-        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_KEY_AGREEMENT, &operation,
-                 check2[i].step, key_handle, check2[i].peer_key,
-                 check2[i].peer_key_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
+    /* Set up a key agreement operation */
+    status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_KEY_AGREEMENT,
+                                  &operation,
+                                  check1[valid_test_input_index].step,
+                                  key_handle,
+                                  check1[valid_test_input_index].peer_key,
+                                  check1[valid_test_input_index].peer_key_length);
+    TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
 
-        val->print(PRINT_TEST, "[Check %d] Test psa_key_derivation_key_agreement"
-                               " - Zero as handle\n", g_test_count++);
+    val->print(PRINT_TEST, "[Check %d] Test psa_key_derivation_key_agreement"
+                           " - Zero as handle\n", g_test_count++);
 
-        /* Set up a key agreement operation */
-        status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_KEY_AGREEMENT, &operation,
-                 check2[i].step, 0, check2[i].peer_key, check2[i].peer_key_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(5));
-    }
+    /* Set up a key agreement operation */
+    status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_KEY_AGREEMENT,
+                                  &operation,
+                                  check1[valid_test_input_index].step,
+                                  0,
+                                  check1[valid_test_input_index].peer_key,
+                                  check1[valid_test_input_index].peer_key_length);
+    TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(5));
+
+    /* Abort the key derivation operation */
+    status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &operation);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
     return VAL_STATUS_SUCCESS;
 }

@@ -15,68 +15,124 @@
  * limitations under the License.
 **/
 
-#include "val_crypto.h"
+#include "test_crypto_common.h"
 
 typedef struct {
     char                    test_desc[50];
     psa_algorithm_t         alg;
-    char                    input[15];
+    const uint8_t          *input;
     size_t                  input_length;
+    const uint8_t          *hash;
+    size_t                  hash_length;
     psa_status_t            expected_status;
 } test_data;
 
 static const test_data check1[] = {
 #ifdef ARCH_TEST_MD2
-{"Test psa_hash_update with MD2 algorithm\n",
- PSA_ALG_MD2, "Hello World", 11, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_update with MD2 algorithm\n",
+    .alg             = PSA_ALG_MD2,
+    .input           = &hash_input,
+    .input_length    = sizeof(hash_input),
+    .hash            = md2_hash,
+    .hash_length     = 16,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_MD4
-{"Test psa_hash_update with MD4 algorithm\n",
- PSA_ALG_MD4, "Hello World", 11, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_update with MD4 algorithm\n",
+    .alg             = PSA_ALG_MD4,
+    .input           = &hash_input,
+    .input_length    = sizeof(hash_input),
+    .hash            = md4_hash,
+    .hash_length     = 16,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_MD5
-{"Test psa_hash_update with MD5 algorithm\n",
- PSA_ALG_MD5, "Hello World", 11, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_update with MD5 algorithm\n",
+    .alg             = PSA_ALG_MD5,
+    .input           = &hash_input,
+    .input_length    = sizeof(hash_input),
+    .hash            = md5_hash,
+    .hash_length     = 16,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_RIPEMD160
-{"Test psa_hash_update with RIPEMD160 algorithm\n",
- PSA_ALG_RIPEMD160, "Hello World", 11, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_update with RIPEMD160 algorithm\n",
+    .alg             = PSA_ALG_RIPEMD160,
+    .input           = &hash_input,
+    .input_length    = sizeof(hash_input),
+    .hash            = ripemd_160_hash,
+    .hash_length     = 20,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_SHA1
-{"Test psa_hash_update with SHA1 algorithm\n",
- PSA_ALG_SHA_1, "Hello World", 11, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_update with SHA1 algorithm\n",
+    .alg             = PSA_ALG_SHA_1,
+    .input           = &hash_input,
+    .input_length    = sizeof(hash_input),
+    .hash            = sha_1_hash,
+    .hash_length     = 20,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_SHA224
-{"Test psa_hash_update with SHA224 algorithm\n",
- PSA_ALG_SHA_224, "Hello World", 11, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_update with SHA224 algorithm\n",
+    .alg             = PSA_ALG_SHA_224,
+    .input           = &hash_input,
+    .input_length    = sizeof(hash_input),
+    .hash            = sha_224_hash,
+    .hash_length     = 28,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_SHA256
-{"Test psa_hash_update with SHA256 algorithm\n",
- PSA_ALG_SHA_256, "Hello World", 11, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_update with SHA256 algorithm\n",
+    .alg             = PSA_ALG_SHA_256,
+    .input           = &hash_input,
+    .input_length    = sizeof(hash_input),
+    .hash            = sha_256_hash,
+    .hash_length     = 32,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_SHA384
-{"Test psa_hash_update with SHA384 algorithm\n",
- PSA_ALG_SHA_384, "Hello World", 11, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_update with SHA384 algorithm\n",
+    .alg             = PSA_ALG_SHA_384,
+    .input           = &hash_input,
+    .input_length    = sizeof(hash_input),
+    .hash            = sha_384_hash,
+    .hash_length     = 48,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_SHA512
-{"Test psa_hash_update with SHA512 algorithm\n",
- PSA_ALG_SHA_512, "Hello World", 11, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_update with SHA512 algorithm\n",
+    .alg             = PSA_ALG_SHA_512,
+    .input           = &hash_input,
+    .input_length    = sizeof(hash_input),
+    .hash            = sha_512_hash,
+    .hash_length     = 64,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 };

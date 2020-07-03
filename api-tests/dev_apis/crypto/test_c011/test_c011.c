@@ -19,7 +19,6 @@
 #include "val_target.h"
 #include "test_c011.h"
 #include "test_data.h"
-#include "val_crypto.h"
 
 const client_test_t test_c011_crypto_list[] = {
     NULL,
@@ -27,11 +26,9 @@ const client_test_t test_c011_crypto_list[] = {
     NULL,
 };
 
-static int g_test_count = 1;
-
 int32_t psa_hash_setup_test(caller_security_t caller __UNUSED)
 {
-    int                     num_checks = sizeof(check1)/sizeof(check1[0]);
+    int32_t                 num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
     psa_hash_operation_t    operation;
 
@@ -47,10 +44,8 @@ int32_t psa_hash_setup_test(caller_security_t caller __UNUSED)
 
     for (i = 0; i < num_checks; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
+        val->print(PRINT_TEST, "[Check %d] ", i+1);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
-
-        /* Initialize the structure */
         memset(&operation, 0, sizeof(operation));
 
         /* Setting up the watchdog timer for each check */

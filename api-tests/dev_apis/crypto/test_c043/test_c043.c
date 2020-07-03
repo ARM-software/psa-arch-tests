@@ -27,7 +27,7 @@ const client_test_t test_c043_crypto_list[] = {
     NULL,
 };
 
-static int         g_test_count = 1;
+static uint32_t    g_test_count = 1;
 static uint8_t     output[SIZE_50B];
 
 int32_t psa_raw_key_agreement_test(caller_security_t caller __UNUSED)

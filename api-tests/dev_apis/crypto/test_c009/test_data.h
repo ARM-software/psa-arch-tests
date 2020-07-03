@@ -15,57 +15,69 @@
  * limitations under the License.
 **/
 
-#include "val_crypto.h"
+#include "test_crypto_common.h"
 
 typedef struct {
     char                        test_desc[75];
     psa_algorithm_t             alg;
-    uint8_t                     data[32];
+    const uint8_t              *data;
     size_t                      data_length;
     psa_key_derivation_step_t   step;
     psa_status_t                expected_status;
 } test_data;
 
 static const test_data check1[] = {
-{"Test psa_key_derivation_input_bytes - Step as Info\n",
- PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
- "abcdefghijklmnop", 16,
- PSA_KEY_DERIVATION_INPUT_INFO,
- PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_key_derivation_input_bytes - Step as Info\n",
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+    .data            = input_bytes_data,
+    .data_length     = INPUT_BYTES_DATA_LEN,
+    .step            = PSA_KEY_DERIVATION_INPUT_INFO,
+    .expected_status = PSA_SUCCESS,
 },
 
-{"Test psa_key_derivation_input_bytes - Step as secret\n",
- PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
- "abcdefghijklmnop", 16,
- PSA_KEY_DERIVATION_INPUT_SECRET,
- PSA_ERROR_INVALID_ARGUMENT,
+{
+    .test_desc       = "Test psa_key_derivation_input_bytes - Step as secret\n",
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+    .data            = input_bytes_data,
+    .data_length     = INPUT_BYTES_DATA_LEN,
+    .step            = PSA_KEY_DERIVATION_INPUT_SECRET,
+    .expected_status = PSA_SUCCESS,
 },
 
-{"Test psa_key_derivation_input_bytes - Step as salt\n",
- PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
- "abcdefghijklmnop", 16,
- PSA_KEY_DERIVATION_INPUT_SALT,
- PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_key_derivation_input_bytes - Step as salt\n",
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+    .data            = input_bytes_data,
+    .data_length     = INPUT_BYTES_DATA_LEN,
+    .step            = PSA_KEY_DERIVATION_INPUT_SALT,
+    .expected_status = PSA_SUCCESS,
 },
 
-{"Test psa_key_derivation_input_bytes - Step as label\n",
- PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
- "abcdefghijklmnop", 16,
- PSA_KEY_DERIVATION_INPUT_LABEL,
- PSA_ERROR_INVALID_ARGUMENT,
+{
+    .test_desc       = "Test psa_key_derivation_input_bytes - Step as label\n",
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+    .data            = input_bytes_data,
+    .data_length     = INPUT_BYTES_DATA_LEN,
+    .step            = PSA_KEY_DERIVATION_INPUT_LABEL,
+    .expected_status = PSA_ERROR_INVALID_ARGUMENT,
 },
 
-{"Test psa_key_derivation_input_bytes - Step as seed\n",
- PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
- "abcdefghijklmnop", 16,
- PSA_KEY_DERIVATION_INPUT_SEED,
- PSA_ERROR_INVALID_ARGUMENT,
+{
+    .test_desc       = "Test psa_key_derivation_input_bytes - Step as seed\n",
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+    .data            = input_bytes_data,
+    .data_length     = INPUT_BYTES_DATA_LEN,
+    .step            = PSA_KEY_DERIVATION_INPUT_SEED,
+    .expected_status = PSA_ERROR_INVALID_ARGUMENT,
 },
 
-{"Test psa_key_derivation_input_bytes - Invalid step\n",
- PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
- "abcdefghijklmnop", 16,
- PSA_KEY_DERIVATION_STEP_INVALID,
- PSA_ERROR_INVALID_ARGUMENT,
+{
+    .test_desc       = "Test psa_key_derivation_input_bytes - Invalid step\n",
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+    .data            = input_bytes_data,
+    .data_length     = INPUT_BYTES_DATA_LEN,
+    .step            = PSA_KEY_DERIVATION_STEP_INVALID,
+    .expected_status = PSA_ERROR_INVALID_ARGUMENT,
 },
 };
