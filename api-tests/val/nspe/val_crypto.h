@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,8 +29,8 @@
 #define AES_18B_KEY_SIZE                18
 #define AES_34B_KEY_SIZE                34
 #define DES_8B_KEY_SIZE                 8
-#define DES3_2KEY_SIZE                  16
-#define DES3_3KEY_SIZE                  24
+#define DES3_2B_KEY_SIZE                16
+#define DES3_3B_KEY_SIZE                24
 #define SIZE_32B                        32
 #define SIZE_50B                        50
 #define SIZE_128B                       128

@@ -15,21 +15,22 @@
  * limitations under the License.
 **/
 
-#include "val_crypto.h"
+#include "test_crypto_common.h"
 
 typedef struct {
     char                    test_desc[75];
-    psa_key_type_t          key_type;
-    uint8_t                 key_data[32];
-    uint32_t                key_length;
-    psa_key_usage_t         usage;
-    psa_algorithm_t         key_alg;
-    uint8_t                 iv[16];
-    size_t                  iv_size;
-    uint8_t                 input[32];
+    psa_key_type_t          type;
+    const uint8_t          *data;
+    size_t                  data_length;
+    psa_key_usage_t         usage_flags;
+    psa_algorithm_t         alg;
+    const unsigned char    *iv;
+    size_t                  iv_length;
+    const uint8_t          *input;
     size_t                  input_length;
-    size_t                  output_size[2];
-    uint8_t                 expected_output[32];
+    unsigned char          *output;
+    size_t                  output_size;
+    const unsigned char    *expected_output;
     size_t                  expected_output_length;
     psa_status_t            expected_status;
 } test_data;
@@ -37,243 +38,377 @@ typedef struct {
 static const test_data check1[] = {
 #ifdef ARCH_TEST_AES_128
 #ifdef ARCH_TEST_CBC_NO_PADDING
-{"Test psa_cipher_finish - Encrypt - AES CBC_NO_PADDING\n", PSA_KEY_TYPE_AES,
-{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
- 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a,
- 0x2a, 0x2a, 0x2a}, 16,
-{0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73,
- 0x93, 0x17, 0x2a}, 16, {SIZE_32B, SIZE_32B},
-{0xA0, 0x76, 0xEC, 0x9D, 0xFB, 0xE4, 0x7D, 0x52, 0xAF, 0xC3, 0x57, 0x33, 0x6F,
- 0x20, 0x74, 0x3B}, 0, PSA_SUCCESS
+{
+    .test_desc              = "Test psa_cipher_finish - Encrypt - AES CBC_NO_PADDING\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_CBC_NO_PADDING,
+    .iv                     = iv,
+    .iv_length              = 16,
+    .input                  = plaintext,
+    .input_length           = 16,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = ciphertext_1,
+    .expected_output_length = 0,
+    .expected_status        = PSA_SUCCESS
 },
 
-{"Test psa_cipher_finish - Encrypt - AES CBC_NO_PADDING (Short input)\n", PSA_KEY_TYPE_AES,
-{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
- 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a,
- 0x2a, 0x2a, 0x2a}, 16,
-{0x6b, 0xc1, 0xbe, 0xe2, 0x23}, 5, {16, 16},
-{0x6b, 0xc1, 0xbe, 0xe2, 0x23}, 0, PSA_ERROR_INVALID_ARGUMENT
+{
+    .test_desc              = "Test psa_cipher_finish - Encrypt - AES CBC_NO_PADDING (Short in)\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_CBC_NO_PADDING,
+    .iv                     = iv,
+    .iv_length              = 16,
+    .input                  = plaintext,
+    .input_length           = 5,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = ciphertext_1,
+    .expected_output_length = 0,
+    .expected_status        = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif
 
 #ifdef ARCH_TEST_CBC_PKCS7
-{"Test psa_cipher_finish - Encrypt - AES CBC_PKCS7\n", PSA_KEY_TYPE_AES,
-{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
- 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_PKCS7,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a,
- 0x2a, 0x2a, 0x2a}, 16,
-{0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73,
- 0x93, 0x17, 0x2a}, 16, {SIZE_32B, SIZE_32B},
-{0xa0, 0x76, 0xec, 0x9d, 0xfb, 0xe4, 0x7d, 0x52, 0xaf, 0xc3, 0x57, 0x33, 0x6f,
- 0x20, 0x74, 0x3b, 0xca, 0x7e, 0x8a, 0x15, 0xdc, 0x3c, 0x77, 0x64, 0x36, 0x31,
- 0x42, 0x93, 0x03, 0x1c, 0xd4, 0xf3}, 16, PSA_SUCCESS
+{
+    .test_desc              = "Test psa_cipher_finish - Encrypt - AES CBC_PKCS7\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_CBC_PKCS7,
+    .iv                     = iv,
+    .iv_length              = 16,
+    .input                  = plaintext,
+    .input_length           = 16,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = ciphertext_1,
+    .expected_output_length = 16,
+    .expected_status        = PSA_SUCCESS
 },
 
-{"Test psa_cipher_finish - Encrypt - AES CBC_PKCS7 (Short input)\n", PSA_KEY_TYPE_AES,
-{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
- 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_PKCS7,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a,
- 0x2a, 0x2a, 0x2a}, 16,
-{0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73,
- 0x93, 0x17}, 15, {SIZE_32B, SIZE_32B},
-{0x62, 0x79, 0xb4, 0x9d, 0x7f, 0x7a, 0x8d, 0xd8, 0x7b, 0x68, 0x51, 0x75, 0xd4,
- 0x27, 0x6e, 0x24}, 16, PSA_SUCCESS
+{
+    .test_desc              = "Test psa_cipher_finish - Encrypt - AES CBC_PKCS7 (Short input)\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_CBC_PKCS7,
+    .iv                     = iv,
+    .iv_length              = 16,
+    .input                  = plaintext,
+    .input_length           = 15,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = ciphertext_6,
+    .expected_output_length = 16,
+    .expected_status        = PSA_SUCCESS
 },
 #endif
 
 #ifdef ARCH_TEST_CIPER_MODE_CTR
-{"Test psa_cipher_finish - Encrypt - AES CTR\n", PSA_KEY_TYPE_AES,
-{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
- 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CTR,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a,
- 0x2a, 0x2a, 0x2a}, 16,
-{0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73,
- 0x93, 0x17, 0x2a}, 16, {SIZE_32B, SIZE_32B},
-{0x8f, 0x94, 0x08, 0xfe, 0x80, 0xa8, 0x1d, 0x3e, 0x81, 0x3d, 0xa3, 0xc7, 0xb0,
- 0xb2, 0xbd, 0x32}, 0, PSA_SUCCESS
+{
+    .test_desc              = "Test psa_cipher_finish - Encrypt - AES CTR\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_CTR,
+    .iv                     = iv,
+    .iv_length              = 16,
+    .input                  = plaintext,
+    .input_length           = 16,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = ciphertext_2,
+    .expected_output_length = 0,
+    .expected_status        = PSA_SUCCESS
 },
 
-{"Test psa_cipher_finish - Encrypt - AES CTR (short input)\n", PSA_KEY_TYPE_AES,
-{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
- 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CTR,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a,
- 0x2a, 0x2a, 0x2a}, 16,
-{0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73,
- 0x93, 0x17}, 15, {SIZE_32B, SIZE_32B},
-{0x8f, 0x94, 0x08, 0xfe, 0x80, 0xa8, 0x1d, 0x3e, 0x81, 0x3d, 0xa3, 0xc7, 0xb0,
- 0xb2, 0xbd}, 0, PSA_SUCCESS
+{
+    .test_desc              = "Test psa_cipher_finish - Encrypt - AES CTR (short input)\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_CTR,
+    .iv                     = iv,
+    .iv_length              = 16,
+    .input                  = plaintext,
+    .input_length           = 15,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = ciphertext_2,
+    .expected_output_length = 0,
+    .expected_status        = PSA_SUCCESS
 },
 #endif
 #endif
 
 #ifdef ARCH_TEST_CBC_NO_PADDING
 #ifdef ARCH_TEST_DES_1KEY
-{"Test psa_cipher_finish - Encrypt - DES CBC (nopad)\n", PSA_KEY_TYPE_DES,
-{0x01, 0x02, 0x04, 0x07, 0x08, 0x0b, 0x0d, 0x0e}, DES_8B_KEY_SIZE,
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a}, 8,
-{0xed, 0xa4, 0x01, 0x12, 0x39, 0xbc, 0x3a, 0xc9}, 8, {SIZE_32B, SIZE_32B},
-{0x64, 0xf9, 0x17, 0xb0, 0x15, 0x2f, 0x8f, 0x05}, 0, PSA_SUCCESS
+{
+    .test_desc              = "Test psa_cipher_finish - Encrypt - DES CBC (nopad)\n",
+    .type                   = PSA_KEY_TYPE_DES,
+    .data                   = key_data,
+    .data_length            = DES_8B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_CBC_NO_PADDING,
+    .iv                     = iv,
+    .iv_length              = 8,
+    .input                  = plaintext,
+    .input_length           = 8,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = ciphertext_3,
+    .expected_output_length = 0,
+    .expected_status        = PSA_SUCCESS
 },
 #endif
 
 #ifdef ARCH_TEST_DES_2KEY
-{"Test psa_cipher_finish - Encrypt - 2-key 3DE -CBC (nopad)\n", PSA_KEY_TYPE_DES,
-{0x01, 0x02, 0x04, 0x07, 0x08, 0x0b, 0x0d, 0x0e, 0xc1, 0xc2, 0xc4, 0xc7, 0xc8,
- 0xcb, 0xcd, 0xce}, DES3_2KEY_SIZE,
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a}, 8,
-{0xed, 0xa4, 0x01, 0x12, 0x39, 0xbc, 0x3a, 0xc9}, 8, {SIZE_32B, SIZE_32B},
-{0x5d, 0x06, 0x52, 0x42, 0x9c, 0x5b, 0x0a, 0xc7}, 0, PSA_SUCCESS
+{
+    .test_desc              = "Test psa_cipher_finish - Encrypt - 2-key 3DE -CBC (nopad)\n",
+    .type                   = PSA_KEY_TYPE_DES,
+    .data                   = key_data,
+    .data_length            = DES3_2B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_CBC_NO_PADDING,
+    .iv                     = iv,
+    .iv_length              = 8,
+    .input                  = plaintext,
+    .input_length           = 8,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = ciphertext_4,
+    .expected_output_length = 0,
+    .expected_status        = PSA_SUCCESS
 },
 #endif
 
 #ifdef ARCH_TEST_DES_3KEY
-{"Test psa_cipher_finish - Encrypt - 3-key 3DE -CBC (nopad)\n", PSA_KEY_TYPE_DES,
-{0x01, 0x02, 0x04, 0x07, 0x08, 0x0b, 0x0d, 0x0e, 0xc1, 0xc2, 0xc4, 0xc7, 0xc8,
- 0xcb, 0xcd, 0xce, 0x31, 0x32, 0x34, 0x37, 0x38, 0x3b, 0x3d, 0x3e}, DES3_3KEY_SIZE,
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a}, 8,
-{0xed, 0xa4, 0x01, 0x12, 0x39, 0xbc, 0x3a, 0xc9}, 8, {SIZE_32B, SIZE_32B},
-{0x81, 0x7c, 0xa7, 0xd6, 0x9b, 0x80, 0xd8, 0x6a}, 0, PSA_SUCCESS
+{
+    .test_desc              = "Test psa_cipher_finish - Encrypt - 3-key 3DE -CBC (nopad)\n",
+    .type                   = PSA_KEY_TYPE_DES,
+    .data                   = key_data,
+    .data_length            = DES3_3B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_CBC_NO_PADDING,
+    .iv                     = iv,
+    .iv_length              = 8,
+    .input                  = plaintext,
+    .input_length           = 8,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = ciphertext_5,
+    .expected_output_length = 0,
+    .expected_status        = PSA_SUCCESS
 },
 #endif
 #endif
 
 #ifdef ARCH_TEST_AES_128
 #ifdef ARCH_TEST_CBC_PKCS7
-{"Test psa_cipher_finish - small output buffer size\n", PSA_KEY_TYPE_AES,
-{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
- 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_PKCS7,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a,
- 0x2a, 0x2a, 0x2a}, 16,
-{0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73,
- 0x93, 0x17, 0x2a}, 16, {SIZE_32B, 15},
-{0xa0, 0x76, 0xec, 0x9d, 0xfb, 0xe4, 0x7d, 0x52, 0xaf, 0xc3, 0x57, 0x33, 0x6f,
- 0x20, 0x74, 0x3b, 0xca, 0x7e, 0x8a, 0x15, 0xdc, 0x3c, 0x77, 0x64, 0x36, 0x31,
- 0x42, 0x93, 0x03, 0x1c, 0xd4, 0xf3}, 16, PSA_ERROR_BUFFER_TOO_SMALL
+{
+    .test_desc              = "Test psa_cipher_finish - Encrypt - small output buffer size\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_CBC_PKCS7,
+    .iv                     = iv,
+    .iv_length              = 16,
+    .input                  = plaintext,
+    .input_length           = 16,
+    .output                 = expected_output,
+    .output_size            = 20,
+    .expected_output        = NULL,
+    .expected_output_length = 0,
+    .expected_status        = PSA_ERROR_BUFFER_TOO_SMALL
 },
 #endif
 
 #ifdef ARCH_TEST_CBC_NO_PADDING
-{"Test psa_cipher_finish - Decrypt - AES CBC_NO_PADDING\n", PSA_KEY_TYPE_AES,
-{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
- 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
- PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_NO_PADDING,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a,
- 0x2a, 0x2a, 0x2a}, 16,
-{0xA0, 0x76, 0xEC, 0x9D, 0xFB, 0xE4, 0x7D, 0x52, 0xAF, 0xC3, 0x57, 0x33, 0x6F,
- 0x20, 0x74, 0x3B},
- 16, {SIZE_32B, SIZE_32B},
-{0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73,
- 0x93, 0x17, 0x2a}, 0, PSA_SUCCESS
+{
+    .test_desc              = "Test psa_cipher_finish - Decrypt - AES CBC_NO_PADDING\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_DECRYPT,
+    .alg                    = PSA_ALG_CBC_NO_PADDING,
+    .iv                     = iv,
+    .iv_length              = 16,
+    .input                  = ciphertext_1,
+    .input_length           = 16,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = plaintext,
+    .expected_output_length = 0,
+    .expected_status        = PSA_SUCCESS
 },
 
-{"Test psa_cipher_finish - Decrypt - AES CBC_NO_PADDING (Short input)\n", PSA_KEY_TYPE_AES,
-{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
- 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
- PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a,
- 0x2a, 0x2a, 0x2a}, 16,
-{0x6b, 0xc1, 0xbe, 0xe2, 0x23}, 5, {16, 16},
-{0x6b, 0xc1, 0xbe, 0xe2, 0x23}, 0, PSA_ERROR_INVALID_ARGUMENT
+{
+    .test_desc              = "Test psa_cipher_finish - Decrypt - AES CBC_NO_PADDING (Short in)\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_DECRYPT,
+    .alg                    = PSA_ALG_CBC_NO_PADDING,
+    .iv                     = iv,
+    .iv_length              = 16,
+    .input                  = ciphertext_1,
+    .input_length           = 5,
+    .output                 = NULL,
+    .output_size            = 0,
+    .expected_output        = NULL,
+    .expected_output_length = 0,
+    .expected_status        = PSA_ERROR_BAD_STATE
 },
+
 #endif
 
 #ifdef ARCH_TEST_CBC_PKCS7
-{"Test psa_cipher_finish - Decrypt - AES CBC_PKCS7\n", PSA_KEY_TYPE_AES,
-{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
- 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
- PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_PKCS7,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a,
- 0x2a, 0x2a, 0x2a}, 16,
-{0xa0, 0x76, 0xec, 0x9d, 0xfb, 0xe4, 0x7d, 0x52, 0xaf, 0xc3, 0x57, 0x33, 0x6f,
- 0x20, 0x74, 0x3b, 0xca, 0x7e, 0x8a, 0x15, 0xdc, 0x3c, 0x77, 0x64, 0x36, 0x31,
- 0x42, 0x93, 0x03, 0x1c, 0xd4, 0xf3}, 32, {SIZE_32B, SIZE_32B},
-{0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73,
- 0x93, 0x17, 0x2a}, 0, PSA_SUCCESS
+{
+    .test_desc              = "Test psa_cipher_update - Decrypt - AES CBC_PKCS7\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_DECRYPT,
+    .alg                    = PSA_ALG_CBC_PKCS7,
+    .iv                     = iv,
+    .iv_length              = 16,
+    .input                  = ciphertext_1,
+    .input_length           = 32,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = plaintext,
+    .expected_output_length = 0,
+    .expected_status        = PSA_SUCCESS
 },
 
-{"Test psa_cipher_finish - Decrypt - AES CBC_PKCS7 (Short input)\n", PSA_KEY_TYPE_AES,
-{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
- 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
- PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_PKCS7,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a,
- 0x2a, 0x2a, 0x2a}, 16,
-{0x62, 0x79, 0xb4, 0x9d, 0x7f, 0x7a, 0x8d, 0xd8, 0x7b, 0x68, 0x51, 0x75, 0xd4,
- 0x27, 0x6e, 0x24}, 16, {SIZE_32B, SIZE_32B},
-{0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73,
- 0x93, 0x17}, 15, PSA_SUCCESS
+{
+    .test_desc              = "Test psa_cipher_finish - Decrypt - AES CBC_PKCS7 (Short input)\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_DECRYPT,
+    .alg                    = PSA_ALG_CBC_PKCS7,
+    .iv                     = iv,
+    .iv_length              = 16,
+    .input                  = ciphertext_6,
+    .input_length           = 16,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = plaintext,
+    .expected_output_length = 15,
+    .expected_status        = PSA_SUCCESS
 },
 #endif
 
 #ifdef ARCH_TEST_CIPER_MODE_CTR
-{"Test psa_cipher_finish - Decrypt - AES CTR\n", PSA_KEY_TYPE_AES,
-{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
- 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
- PSA_KEY_USAGE_DECRYPT, PSA_ALG_CTR,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a,
- 0x2a, 0x2a, 0x2a}, 16,
-{0x8f, 0x94, 0x08, 0xfe, 0x80, 0xa8, 0x1d, 0x3e, 0x81, 0x3d, 0xa3, 0xc7, 0xb0,
- 0xb2, 0xbd, 0x32}, 16, {SIZE_32B, SIZE_32B},
-{0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73,
- 0x93, 0x17, 0x2a},
- 0, PSA_SUCCESS
+{
+    .test_desc              = "Test psa_cipher_finish - Decrypt - AES CTR\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_DECRYPT,
+    .alg                    = PSA_ALG_CTR,
+    .iv                     = iv,
+    .iv_length              = 16,
+    .input                  = ciphertext_2,
+    .input_length           = 16,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = plaintext,
+    .expected_output_length = 0,
+    .expected_status        = PSA_SUCCESS
 },
 
-{"Test psa_cipher_finish - Decrypt - AES CTR (short input)\n", PSA_KEY_TYPE_AES,
-{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
- 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
- PSA_KEY_USAGE_DECRYPT, PSA_ALG_CTR,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a,
- 0x2a, 0x2a, 0x2a}, 16,
-{0x8f, 0x94, 0x08, 0xfe, 0x80, 0xa8, 0x1d, 0x3e, 0x81, 0x3d, 0xa3, 0xc7, 0xb0,
- 0xb2, 0xbd}, 15, {SIZE_32B, SIZE_32B},
-{0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73,
- 0x93, 0x17}, 0, PSA_SUCCESS
+{
+    .test_desc              = "Test psa_cipher_finish - Decrypt - AES CTR (short input)\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_DECRYPT,
+    .alg                    = PSA_ALG_CTR,
+    .iv                     = iv,
+    .iv_length              = 16,
+    .input                  = ciphertext_2,
+    .input_length           = 16,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = plaintext,
+    .expected_output_length = 0,
+    .expected_status        = PSA_SUCCESS
 },
 #endif
 #endif
 
 #ifdef ARCH_TEST_CBC_NO_PADDING
 #ifdef ARCH_TEST_DES_1KEY
-{"Test psa_cipher_finish - Decrypt - DES CBC (nopad)\n", PSA_KEY_TYPE_DES,
-{0x01, 0x02, 0x04, 0x07, 0x08, 0x0b, 0x0d, 0x0e}, DES_8B_KEY_SIZE,
- PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_NO_PADDING,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a}, 8,
-{0x64, 0xf9, 0x17, 0xb0, 0x15, 0x2f, 0x8f, 0x05}, 8, {SIZE_32B, SIZE_32B},
-{0xed, 0xa4, 0x01, 0x12, 0x39, 0xbc, 0x3a, 0xc9}, 0, PSA_SUCCESS
+{
+    .test_desc              = "Test psa_cipher_finish - Decrypt - DES CBC (nopad)\n",
+    .type                   = PSA_KEY_TYPE_DES,
+    .data                   = key_data,
+    .data_length            = DES_8B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_DECRYPT,
+    .alg                    = PSA_ALG_CBC_NO_PADDING,
+    .iv                     = iv,
+    .iv_length              = 8,
+    .input                  = ciphertext_3,
+    .input_length           = 8,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = plaintext,
+    .expected_output_length = 0,
+    .expected_status        = PSA_SUCCESS
 },
 #endif
 
 #ifdef ARCH_TEST_DES_2KEY
-{"Test psa_cipher_finish - Decrypt - 2-key 3DE -CBC (nopad)\n", PSA_KEY_TYPE_DES,
-{0x01, 0x02, 0x04, 0x07, 0x08, 0x0b, 0x0d, 0x0e, 0xc1, 0xc2, 0xc4, 0xc7, 0xc8,
- 0xcb, 0xcd, 0xce}, DES3_2KEY_SIZE,
- PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_NO_PADDING,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a}, 8,
-{0x5d, 0x06, 0x52, 0x42, 0x9c, 0x5b, 0x0a, 0xc7}, 8, {SIZE_32B, SIZE_32B},
-{0xed, 0xa4, 0x01, 0x12, 0x39, 0xbc, 0x3a, 0xc9}, 0, PSA_SUCCESS
+{
+    .test_desc              = "Test psa_cipher_finish - Decrypt - 2-key 3DE -CBC (nopad)\n",
+    .type                   = PSA_KEY_TYPE_DES,
+    .data                   = key_data,
+    .data_length            = DES3_2B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_DECRYPT,
+    .alg                    = PSA_ALG_CBC_NO_PADDING,
+    .iv                     = iv,
+    .iv_length              = 8,
+    .input                  = ciphertext_4,
+    .input_length           = 8,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = plaintext,
+    .expected_output_length = 0,
+    .expected_status        = PSA_SUCCESS
 },
 #endif
 
 #ifdef ARCH_TEST_DES_3KEY
-{"Test psa_cipher_finish - 3-key 3DE -CBC (nopad)\n", PSA_KEY_TYPE_DES,
-{0x01, 0x02, 0x04, 0x07, 0x08, 0x0b, 0x0d, 0x0e, 0xc1, 0xc2, 0xc4, 0xc7, 0xc8,
- 0xcb, 0xcd, 0xce, 0x31, 0x32, 0x34, 0x37, 0x38, 0x3b, 0x3d, 0x3e}, DES3_3KEY_SIZE,
- PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_NO_PADDING,
-{0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a, 0x2a}, 8,
-{0x81, 0x7c, 0xa7, 0xd6, 0x9b, 0x80, 0xd8, 0x6a}, 8, {SIZE_32B, SIZE_32B},
-{0xed, 0xa4, 0x01, 0x12, 0x39, 0xbc, 0x3a, 0xc9}, 0, PSA_SUCCESS
+{
+    .test_desc              = "Test psa_cipher_finish - Decrypt - 3-key 3DE -CBC (nopad)\n",
+    .type                   = PSA_KEY_TYPE_DES,
+    .data                   = key_data,
+    .data_length            = DES3_3B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_DECRYPT,
+    .alg                    = PSA_ALG_CBC_NO_PADDING,
+    .iv                     = iv,
+    .iv_length              = 8,
+    .input                  = ciphertext_5,
+    .input_length           = 8,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = plaintext,
+    .expected_output_length = 0,
+    .expected_status        = PSA_SUCCESS
 },
 #endif
 #endif

@@ -15,7 +15,7 @@
  * limitations under the License.
 **/
 
-#include "val_crypto.h"
+#include "test_crypto_common.h"
 
 typedef struct {
     char                    test_desc[50];
@@ -25,105 +25,141 @@ typedef struct {
 
 static const test_data check1[] = {
 #ifdef ARCH_TEST_MD2
-{"Test psa_hash_setup with MD2 algorithm\n",
- PSA_ALG_MD2, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_setup with MD2 algorithm\n",
+    .alg             = PSA_ALG_MD2,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_MD4
-{"Test psa_hash_setup with MD4 algorithm\n",
- PSA_ALG_MD4, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_setup with MD4 algorithm\n",
+    .alg             = PSA_ALG_MD4,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_MD5
-{"Test psa_hash_setup with MD5 algorithm\n",
- PSA_ALG_MD5, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_setup with MD5 algorithm\n",
+    .alg             = PSA_ALG_MD5,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_RIPEMD160
-{"Test psa_hash_setup with RIPEMD160 algorithm\n",
- PSA_ALG_RIPEMD160, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_setup with RIPEMD160 algorithm\n",
+    .alg             = PSA_ALG_RIPEMD160,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_SHA1
-{"Test psa_hash_setup with SHA1 algorithm\n",
- PSA_ALG_SHA_1, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_setup with SHA1 algorithm\n",
+    .alg             = PSA_ALG_SHA_1,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_SHA224
-{"Test psa_hash_setup with SHA224 algorithm\n",
- PSA_ALG_SHA_224, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_setup with SHA224 algorithm\n",
+    .alg             = PSA_ALG_SHA_224,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_SHA256
-{"Test psa_hash_setup with SHA256 algorithm\n",
- PSA_ALG_SHA_256, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_setup with SHA256 algorithm\n",
+    .alg             = PSA_ALG_SHA_256,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_SHA384
-{"Test psa_hash_setup with SHA384 algorithm\n",
- PSA_ALG_SHA_384, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_setup with SHA384 algorithm\n",
+    .alg             = PSA_ALG_SHA_384,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_SHA512
-{"Test psa_hash_setup with SHA512 algorithm\n",
- PSA_ALG_SHA_512, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_setup with SHA512 algorithm\n",
+    .alg             = PSA_ALG_SHA_512,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_SHA512_224
-{"Test psa_hash_setup with SHA512_224 algorithm\n",
- PSA_ALG_SHA_512_224, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_setup with SHA512_224 algorithm\n",
+    .alg             = PSA_ALG_SHA_512_224,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_SHA512_256
-{"Test psa_hash_setup with SHA512_256 algorithm\n",
- PSA_ALG_SHA_512_256, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_setup with SHA512_256 algorithm\n",
+    .alg             = PSA_ALG_SHA_512_256,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_SHA3_224
-{"Test psa_hash_setup with SHA3_224 algorithm\n",
- PSA_ALG_SHA3_224, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_setup with SHA3_224 algorithm\n",
+    .alg             = PSA_ALG_SHA3_224,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_SHA3_256
-{"Test psa_hash_setup with SHA3_256 algorithm\n",
- PSA_ALG_SHA3_256, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_setup with SHA3_256 algorithm\n",
+    .alg             = PSA_ALG_SHA3_256,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_SHA3_384
-{"Test psa_hash_setup with SHA3_384 algorithm\n",
- PSA_ALG_SHA3_384, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_setup with SHA3_384 algorithm\n",
+    .alg             = PSA_ALG_SHA3_384,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
 #ifdef ARCH_TEST_SHA3_512
-{"Test psa_hash_setup with SHA3_512 algorithm\n",
- PSA_ALG_SHA3_512, PSA_SUCCESS,
+{
+    .test_desc       = "Test psa_hash_setup with SHA3_512 algorithm\n",
+    .alg             = PSA_ALG_SHA3_512,
+    .expected_status = PSA_SUCCESS,
 },
 #endif
 
-{"Test psa_hash_setup with Invalid hash algorithm\n",
- PSA_HASH_ALG_INVALID, PSA_ERROR_NOT_SUPPORTED,
+{
+    .test_desc       = "Test psa_hash_setup with Invalid hash algorithm\n",
+    .alg             = PSA_HASH_ALG_INVALID,
+    .expected_status = PSA_ERROR_NOT_SUPPORTED,
 },
 
-{"Test psa_hash_setup with Invalid algorithm\n",
- PSA_ALG_INVALID, PSA_ERROR_INVALID_ARGUMENT,
+{
+    .test_desc       = "Test psa_hash_setup with Invalid algorithm\n",
+    .alg             = PSA_ALG_INVALID,
+    .expected_status = PSA_ERROR_INVALID_ARGUMENT,
 },
 
-{"Test psa_hash_setup with CTR algorithm\n",
- PSA_ALG_CTR, PSA_ERROR_INVALID_ARGUMENT,
+{
+    .test_desc       = "Test psa_hash_setup with CTR algorithm\n",
+    .alg             = PSA_ALG_CTR,
+    .expected_status = PSA_ERROR_INVALID_ARGUMENT,
 },
 
 };

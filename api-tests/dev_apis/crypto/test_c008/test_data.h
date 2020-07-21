@@ -15,7 +15,7 @@
  * limitations under the License.
 **/
 
-#include "val_crypto.h"
+#include "test_crypto_common.h"
 
 typedef struct {
     char                    test_desc[75];
@@ -24,23 +24,27 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
-{"Test psa_key_derivation_setup - ECDH + HKDF-SHA-256\n",
- PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
- PSA_SUCCESS
+{
+    .test_desc       = "Test psa_key_derivation_setup - ECDH + HKDF-SHA-256\n",
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+    .expected_status = PSA_SUCCESS
 },
 
-{"Test psa_key_derivation_setup - ECDH, unknown KDF\n",
- PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(0)),
- PSA_ERROR_NOT_SUPPORTED
+{
+    .test_desc       = "Test psa_key_derivation_setup - ECDH, unknown KDF\n",
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(0)),
+    .expected_status = PSA_ERROR_NOT_SUPPORTED
 },
 
-{"Test psa_key_derivation_setup - bad key derivation algorithm\n",
- PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_HASH_ALG_INVALID),
- PSA_ERROR_INVALID_ARGUMENT
+{
+    .test_desc       = "Test psa_key_derivation_setup - bad key derivation algorithm\n",
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_HASH_ALG_INVALID),
+    .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
 
-{"Test psa_key_derivation_setup - Invalid Algorithm\n",
- PSA_ALG_INVALID,
- PSA_ERROR_INVALID_ARGUMENT,
+{
+    .test_desc       = "Test psa_key_derivation_setup - Invalid Algorithm\n",
+    .alg             = PSA_ALG_INVALID,
+    .expected_status = PSA_ERROR_INVALID_ARGUMENT,
 },
 };

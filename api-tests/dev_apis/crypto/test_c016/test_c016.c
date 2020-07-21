@@ -19,7 +19,6 @@
 #include "val_target.h"
 #include "test_c016.h"
 #include "test_data.h"
-#include "val_crypto.h"
 
 const client_test_t test_c016_crypto_list[] = {
     NULL,
@@ -27,19 +26,16 @@ const client_test_t test_c016_crypto_list[] = {
     NULL,
 };
 
-static int       g_test_count = 1;
-static uint8_t   data[BUFFER_SIZE];
-
 int32_t psa_generate_key_test(caller_security_t caller __UNUSED)
 {
     int32_t               i, status;
-    size_t                length;
-    psa_key_type_t        get_key_type;
-    psa_key_usage_t       get_key_usage;
-    psa_algorithm_t       get_key_alg;
-    size_t                get_key_bits;
-    int                   num_checks = sizeof(check1)/sizeof(check1[0]);
-    psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
+    size_t                expected_data_length;
+    psa_key_type_t        get_type;
+    psa_key_usage_t       get_usage_flags;
+    psa_algorithm_t       get_alg;
+    size_t                get_bits;
+    int32_t               num_checks     = sizeof(check1)/sizeof(check1[0]);
+    psa_key_attributes_t  attributes     = PSA_KEY_ATTRIBUTES_INIT;
     psa_key_attributes_t  get_attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_key_handle_t      key_handle;
 
@@ -56,7 +52,7 @@ int32_t psa_generate_key_test(caller_security_t caller __UNUSED)
     /* Set the key data buffer to the input base on algorithm */
     for (i = 0; i < num_checks; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
+        val->print(PRINT_TEST, "[Check %d] ", i+1);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
 
         /* Setting up the watchdog timer for each check */
@@ -64,10 +60,10 @@ int32_t psa_generate_key_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
        /* Setup the attributes for the key */
-        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE, &attributes, check1[i].key_type);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_BITS, &attributes, check1[i].attr_bits);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM, &attributes, check1[i].key_alg);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE,        &attributes, check1[i].type);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_BITS,        &attributes, check1[i].bits);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage_flags);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM,   &attributes, check1[i].alg);
 
         /* Generate the key */
         status = val->crypto_function(VAL_CRYPTO_GENERATE_KEY, &attributes, &key_handle);
@@ -81,25 +77,26 @@ int32_t psa_generate_key_test(caller_security_t caller __UNUSED)
                  &get_attributes);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
-        val->crypto_function(VAL_CRYPTO_GET_KEY_TYPE, &get_attributes, &get_key_type);
-        TEST_ASSERT_EQUAL(get_key_type, check1[i].key_type, TEST_CHECKPOINT_NUM(5));
+        val->crypto_function(VAL_CRYPTO_GET_KEY_TYPE, &get_attributes, &get_type);
+        TEST_ASSERT_EQUAL(get_type, check1[i].type, TEST_CHECKPOINT_NUM(5));
 
-        val->crypto_function(VAL_CRYPTO_GET_KEY_BITS, &get_attributes, &get_key_bits);
-        TEST_ASSERT_EQUAL(get_key_bits, check1[i].expected_bit_length, TEST_CHECKPOINT_NUM(6));
+        val->crypto_function(VAL_CRYPTO_GET_KEY_BITS, &get_attributes, &get_bits);
+        TEST_ASSERT_EQUAL(get_bits, check1[i].bits, TEST_CHECKPOINT_NUM(6));
 
-        val->crypto_function(VAL_CRYPTO_GET_KEY_USAGE_FLAGS, &get_attributes, &get_key_usage);
-        TEST_ASSERT_EQUAL(get_key_usage, check1[i].usage, TEST_CHECKPOINT_NUM(7));
+        val->crypto_function(VAL_CRYPTO_GET_KEY_USAGE_FLAGS, &get_attributes, &get_usage_flags);
+        TEST_ASSERT_EQUAL(get_usage_flags, check1[i].usage_flags, TEST_CHECKPOINT_NUM(7));
 
-        val->crypto_function(VAL_CRYPTO_GET_KEY_ALGORITHM, &get_attributes, &get_key_alg);
-        TEST_ASSERT_EQUAL(get_key_alg, check1[i].key_alg, TEST_CHECKPOINT_NUM(8));
+        val->crypto_function(VAL_CRYPTO_GET_KEY_ALGORITHM, &get_attributes, &get_alg);
+        TEST_ASSERT_EQUAL(get_alg, check1[i].alg, TEST_CHECKPOINT_NUM(8));
 
         /* Export a key in binary format */
-        status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, key_handle, data,
-                                      BUFFER_SIZE, &length);
+        status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, key_handle, expected_output,
+                                      BUFFER_SIZE, &expected_data_length);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
         /* Check the attributes of the exported key */
-        TEST_ASSERT_RANGE(length, check1[i].expected_range[0], check1[i].expected_range[1], TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_RANGE(expected_data_length, check1[i].expected_range[0],
+                          check1[i].expected_range[1], TEST_CHECKPOINT_NUM(10));
 
         /* Reset the attributes */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);

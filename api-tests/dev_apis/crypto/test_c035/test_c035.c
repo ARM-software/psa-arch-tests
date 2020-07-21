@@ -20,18 +20,15 @@
 #include "test_c035.h"
 #include "test_data.h"
 
-
 const client_test_t test_c035_crypto_list[] = {
     NULL,
     psa_cipher_set_iv_test,
     NULL,
 };
 
-static int     g_test_count = 1;
-
 int32_t psa_cipher_set_iv_test(caller_security_t caller __UNUSED)
 {
-    int                     num_checks = sizeof(check1)/sizeof(check1[0]);
+    int32_t                 num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
     psa_cipher_operation_t  operation;
     psa_key_attributes_t    attributes = PSA_KEY_ATTRIBUTES_INIT;
@@ -49,7 +46,7 @@ int32_t psa_cipher_set_iv_test(caller_security_t caller __UNUSED)
 
     for (i = 0; i < num_checks; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
+        val->print(PRINT_TEST, "[Check %d] ", i+1);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
         memset(&operation, 0, sizeof(operation));
 
@@ -58,30 +55,30 @@ int32_t psa_cipher_set_iv_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
         /* Setup the attributes for the key */
-        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE, &attributes, check1[i].key_type);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM, &attributes, check1[i].key_alg);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE,        &attributes, check1[i].type);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM,   &attributes, check1[i].alg);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage_flags);
 
         /* Import the key data into the key slot */
-        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].key_data,
-                 check1[i].key_length, &key_handle);
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
+                                      check1[i].data_length, &key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Set the key for a multipart symmetric encryption operation */
-        status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation,
-                    key_handle, check1[i].key_alg);
+        status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation, key_handle,
+                                      check1[i].alg);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
         /* Set an IV for a symmetric encryption operation */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_SET_IV, &operation, check1[i].iv,
-                    check1[i].iv_size);
+                                      check1[i].iv_length);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(5));
 
         /* Setting an IV for a symmetric encryption operation using the same operator
          * should fail for both previous success and failure cases
          */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_SET_IV, &operation, check1[i].iv,
-                    check1[i].iv_size);
+                                      check1[i].iv_length);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(6));
 
         /* Abort a cipher operation */
@@ -94,6 +91,9 @@ int32_t psa_cipher_set_iv_test(caller_security_t caller __UNUSED)
 
         /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
+                                      check1[i].data_length, &key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_NOT_SUPPORTED, TEST_CHECKPOINT_NUM(9));
     }
 
     return VAL_STATUS_SUCCESS;

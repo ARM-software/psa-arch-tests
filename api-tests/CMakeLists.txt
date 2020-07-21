@@ -420,6 +420,7 @@ add_definitions(-DPSA_CMAKE_BUILD)
 add_definitions(-D${SUITE})
 add_definitions(-DVERBOSE=${VERBOSE})
 add_definitions(-DPLATFORM_PSA_ISOLATION_LEVEL=${PLATFORM_PSA_ISOLATION_LEVEL})
+add_definitions(-D${TARGET})
 
 if(${SP_HEAP_MEM_SUPP} EQUAL 1)
 	add_definitions(-DSP_HEAP_MEM_SUPP)

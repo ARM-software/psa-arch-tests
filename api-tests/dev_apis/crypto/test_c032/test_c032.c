@@ -27,15 +27,15 @@ const client_test_t test_c032_crypto_list[] = {
     NULL,
 };
 
-static int                     g_test_count = 1;
-static psa_cipher_operation_t  operation;
+static uint32_t g_test_count           = 1;
+static int32_t  valid_test_input_index = -1;
 
 int32_t psa_cipher_encrypt_setup_test(caller_security_t caller __UNUSED)
 {
-    int                     num_checks = sizeof(check1)/sizeof(check1[0]);
+    int32_t                 num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
-    const uint8_t          *key_data;
     psa_key_attributes_t    attributes = PSA_KEY_ATTRIBUTES_INIT;
+    psa_cipher_operation_t  operation;
     psa_key_handle_t        key_handle;
 
     if (num_checks == 0)
@@ -53,56 +53,26 @@ int32_t psa_cipher_encrypt_setup_test(caller_security_t caller __UNUSED)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
+        memset(&operation, 0, sizeof(operation));
 
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-        if (PSA_KEY_TYPE_IS_RSA(check1[i].key_type))
-        {
-            if (check1[i].key_type == PSA_KEY_TYPE_RSA_KEY_PAIR)
-            {
-                if (check1[i].expected_bit_length == BYTES_TO_BITS(384))
-                    key_data = rsa_384_keypair;
-                else if (check1[i].expected_bit_length == BYTES_TO_BITS(256))
-                    key_data = rsa_256_keypair;
-                else
-                    return VAL_STATUS_INVALID;
-            }
-            else
-            {
-                if (check1[i].expected_bit_length == BYTES_TO_BITS(384))
-                    key_data = rsa_384_keydata;
-                else if (check1[i].expected_bit_length == BYTES_TO_BITS(256))
-                    key_data = rsa_256_keydata;
-                else
-                    return VAL_STATUS_INVALID;
-            }
-        }
-        else if (PSA_KEY_TYPE_IS_ECC(check1[i].key_type))
-        {
-            if (PSA_KEY_TYPE_IS_ECC_KEY_PAIR(check1[i].key_type))
-                key_data = ec_keypair;
-            else
-                key_data = ec_keydata;
-        }
-        else
-            key_data = check1[i].key_data;
-
         /* Setup the attributes for the key */
-        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE, &attributes, check1[i].key_type);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_BITS, &attributes, check1[i].attr_bits);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM, &attributes, check1[i].key_alg);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE,        &attributes, check1[i].type);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_BITS,        &attributes, check1[i].bits);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM,   &attributes, check1[i].alg);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage_flags);
 
         /* Import the key data into the key slot */
-        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, key_data,
-                 check1[i].key_length, &key_handle);
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
+                                      check1[i].data_length, &key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Set the key for a multipart symmetric encryption operation */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation,
-                    key_handle, check1[i].key_alg);
+                    key_handle, check1[i].alg);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
         /* Whether setup succeeded or failed, abort must succeed.
@@ -114,7 +84,7 @@ int32_t psa_cipher_encrypt_setup_test(caller_security_t caller __UNUSED)
         if (check1[i].expected_status != PSA_SUCCESS)
         {
             status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation,
-                        key_handle, check1[i].key_alg);
+                        key_handle, check1[i].alg);
             TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
 
             status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
@@ -127,6 +97,12 @@ int32_t psa_cipher_encrypt_setup_test(caller_security_t caller __UNUSED)
 
         /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
+                                      check1[i].data_length, &key_handle);
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_NOT_SUPPORTED, TEST_CHECKPOINT_NUM(9));
+
+        if (valid_test_input_index < 0)
+            valid_test_input_index = i;
     }
 
     return VAL_STATUS_SUCCESS;
@@ -134,37 +110,38 @@ int32_t psa_cipher_encrypt_setup_test(caller_security_t caller __UNUSED)
 
 int32_t psa_cipher_encrypt_setup_negative_test(caller_security_t caller __UNUSED)
 {
-    int                     num_checks = sizeof(check2)/sizeof(check2[0]);
-    int32_t                 i, status;
+    int32_t                 status;
+    psa_cipher_operation_t  operation;
     psa_key_handle_t        key_handle = 16;
+
+    if (valid_test_input_index < 0)
+        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
 
-    for (i = 0; i < num_checks; i++)
-    {
-        /* Setting up the watchdog timer for each check */
-        status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
-        TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
+    /* Setting up the watchdog timer for each check */
+    status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
+    TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
+    memset(&operation, 0, sizeof(operation));
 
-        val->print(PRINT_TEST, "[Check %d] Test psa_cipher_encrypt_setup - Invalid key handle\n",
-                                                                                   g_test_count++);
-        /* Set the key for a multipart symmetric encryption operation */
-        status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation,
-                    key_handle, check2[i].key_alg);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));
+    val->print(PRINT_TEST, "[Check %d] Test psa_cipher_encrypt_setup - Invalid key handle\n",
+                                                                               g_test_count++);
+    /* Set the key for a multipart symmetric encryption operation */
+    status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation,
+                                  key_handle, check1[valid_test_input_index].alg);
+    TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));
 
-        val->print(PRINT_TEST, "[Check %d] Test psa_cipher_encrypt_setup - Zero as key handle\n",
-                                                                                   g_test_count++);
-        /* Set the key for a multipart symmetric encryption operation */
-        status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation,
-                    0, check2[i].key_alg);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
+    val->print(PRINT_TEST, "[Check %d] Test psa_cipher_encrypt_setup - Zero as key handle\n",
+                                                                               g_test_count++);
+    /* Set the key for a multipart symmetric encryption operation */
+    status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation,
+                                  0, check1[valid_test_input_index].alg);
+    TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
 
-        status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
-    }
+    status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
     return VAL_STATUS_SUCCESS;
 }
