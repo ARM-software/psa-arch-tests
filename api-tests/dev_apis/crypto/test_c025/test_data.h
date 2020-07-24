@@ -38,8 +38,8 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
-#ifdef ARCH_TEST_AES_128
 #ifdef ARCH_TEST_CCM
+#ifdef ARCH_TEST_AES_128
 {
     .test_desc                  = "Test psa_aead_decrypt - CCM - AES - 13B nonce & 8B add data\n",
     .type                       = PSA_KEY_TYPE_AES,
@@ -140,8 +140,10 @@ static const test_data check1[] = {
     .expected_status            = PSA_SUCCESS
 },
 #endif
+#endif
 
 #ifdef ARCH_TEST_GCM
+#ifdef ARCH_TEST_AES_128
 {
     .test_desc                  = "Test psa_aead_decrypt - GCM - AES - 12B nonce & 12B add data\n",
     .type                       = PSA_KEY_TYPE_AES,
@@ -165,13 +167,14 @@ static const test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_CCM
+#ifdef ARCH_TEST_AES_128
 {
     .test_desc                  = "Test psa_aead_decrypt - Unsupported algorithm\n",
-    .type                       = PSA_KEY_TYPE_DES,
+    .type                       = PSA_KEY_TYPE_AES,
     .data                       = key_data,
-    .data_length                = DES_8B_KEY_SIZE,
+    .data_length                = AES_16B_KEY_SIZE,
     .usage_flags                = PSA_KEY_USAGE_DECRYPT,
-    .alg                        = PSA_ALG_CCM,
+    .alg                        = PSA_ALG_CFB,
     .nonce                      = NULL,
     .nonce_length               = 0,
     .additional_data            = NULL,
@@ -185,7 +188,6 @@ static const test_data check1[] = {
     .expected_status            = PSA_ERROR_NOT_SUPPORTED
 },
 
-#ifdef ARCH_TEST_AES_128
 {
     .test_desc                  = "Test psa_aead_decrypt - Invalid usage flag\n",
     .type                       = PSA_KEY_TYPE_AES,

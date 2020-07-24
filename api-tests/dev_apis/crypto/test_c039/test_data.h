@@ -164,7 +164,6 @@ static const test_data check1[] = {
     .expected_status        = PSA_ERROR_BUFFER_TOO_SMALL
 },
 #endif
-#endif
 
 #ifdef ARCH_TEST_SHA256
 {
@@ -183,6 +182,7 @@ static const test_data check1[] = {
     .expected_output_length = 0,
     .expected_status        = PSA_ERROR_INVALID_ARGUMENT
 },
+#endif
 #endif
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_CRYPT
