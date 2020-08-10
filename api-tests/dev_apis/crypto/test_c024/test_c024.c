@@ -98,6 +98,10 @@ int32_t psa_aead_encrypt_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_MEMCMP(check1[i].ciphertext, check1[i].expected_ciphertext,
                            get_ciphertext_length, TEST_CHECKPOINT_NUM(7));
 
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, handle);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+
         /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY,
@@ -105,11 +109,7 @@ int32_t psa_aead_encrypt_test(caller_security_t caller __UNUSED)
                                       check1[i].data,
                                       check1[i].data_length,
                                       &handle);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_NOT_SUPPORTED, TEST_CHECKPOINT_NUM(8));
-
-        /* Destroy the key */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, handle);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_NOT_SUPPORTED, TEST_CHECKPOINT_NUM(9));
 
         /* Process an authenticated encryption operation on a destroyed key*/
         status = val->crypto_function(VAL_CRYPTO_AEAD_ENCRYPT,

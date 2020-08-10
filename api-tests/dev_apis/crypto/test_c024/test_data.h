@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -167,13 +167,14 @@ static const test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_CCM
+#ifdef ARCH_TEST_AES_128
 {
     .test_desc                  = "Test psa_aead_encrypt - Unsupported algorithm\n",
-    .type                       = PSA_KEY_TYPE_DES,
+    .type                       = PSA_KEY_TYPE_AES,
     .data                       = key_data,
-    .data_length                = DES_8B_KEY_SIZE,
+    .data_length                = AES_16B_KEY_SIZE,
     .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
-    .alg                        = PSA_ALG_CCM,
+    .alg                        = PSA_ALG_CFB,
     .nonce                      = NULL,
     .nonce_length               = 0,
     .additional_data            = NULL,
@@ -187,7 +188,6 @@ static const test_data check1[] = {
     .expected_status            = PSA_ERROR_NOT_SUPPORTED
 },
 
-#ifdef ARCH_TEST_AES_128
 {
     .test_desc                  = "Test psa_aead_encrypt - Invalid usage flag\n",
     .type                       = PSA_KEY_TYPE_AES,
