@@ -129,9 +129,9 @@ void test_payload(tbsa_val_api_t *val)
                  }
 
                  /* Change the mode to unprivilege access */
-                 asm volatile ("MRS %0, control" : "=r" (control));
+                 __asm volatile ("MRS %0, control" : "=r" (control));
                  control |= 0x1;
-                 asm volatile ("MSR control, %0" : : "r" (control) : "memory");
+                 __asm volatile ("MSR control, %0" : : "r" (control) : "memory");
 
                  /* Performing unprivilege access to DPM */
                  certificate_valid[dpm_instance] = val->crypto_validate_certificate(dpm_desc->certificate_addr, dpm_desc->public_key_addr, dpm_desc->certificate_size,dpm_desc->public_key_size);

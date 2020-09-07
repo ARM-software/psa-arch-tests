@@ -118,16 +118,16 @@ tbsa_status_t val_debug_set_status(dbg_access_t dbg_access, dbg_seq_status_t dbg
                 return TBSA_STATUS_TIMEOUT;
             }
             *(uint32_t *)dpm_desc->flag_addr = dbg_status;
-            asm volatile("DSB");
-            asm volatile("ISB");
+            __asm volatile("DSB");
+            __asm volatile("ISB");
             break;
         case DBG_WRITE:
             *(uint32_t *)dpm_desc->flag_addr = dbg_status | DBG_FLAG_TXFULL;
             break;
         case DBG_READ:
             *(uint32_t *)dpm_desc->flag_addr &= ~DBG_FLAG_RXFULL;
-            asm volatile("DSB");
-            asm volatile("ISB");
+            __asm volatile("DSB");
+            __asm volatile("ISB");
             break;
         default:
             return TBSA_STATUS_INCORRECT_VALUE;

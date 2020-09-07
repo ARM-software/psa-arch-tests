@@ -43,16 +43,16 @@ void hard_fault_esr (unsigned long *sf_args)
 
 __attribute__((naked)) void HF_Handler(void)
 {
-    asm volatile("mrs r0, control_ns \n"
-                 "mov r1, #0x2       \n"
-                 "and r0, r1         \n"
-                 "cmp r0, r1         \n"
-                 "beq _psp_ns        \n"
-                 "mrs r0, msp_ns     \n"
-                 "b hard_fault_esr \n"
-                 "_psp_ns:           \n"
-                 "mrs r0, psp_ns     \n"
-                 "b hard_fault_esr \n");
+    __asm volatile("mrs r0, control_ns \n"
+                   "mov r1, #0x2       \n"
+                   "and r0, r1         \n"
+                   "cmp r0, r1         \n"
+                   "beq _psp_ns        \n"
+                   "mrs r0, msp_ns     \n"
+                   "b hard_fault_esr \n"
+                   "_psp_ns:           \n"
+                   "mrs r0, psp_ns     \n"
+                   "b hard_fault_esr \n");
 }
 
 void entry_hook(tbsa_val_api_t *val)

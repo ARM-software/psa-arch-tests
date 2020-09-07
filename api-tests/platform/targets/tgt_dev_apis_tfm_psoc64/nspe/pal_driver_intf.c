@@ -137,7 +137,7 @@ void pal_terminate_simulation(void)
 
     while (1)
     {
-        asm volatile("WFI");
+        __asm volatile("WFI");
     }
 }
 
