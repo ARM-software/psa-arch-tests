@@ -9,3 +9,4 @@ cscope.*
 sbsa
 #Ignore build directory
 build/
+BUILD/
