@@ -71,6 +71,6 @@ void tbsa_main (void)
 
 exit:
     while(1) {
-        __asm volatile("WFI");
+        asm volatile("WFI");
     }
 }
