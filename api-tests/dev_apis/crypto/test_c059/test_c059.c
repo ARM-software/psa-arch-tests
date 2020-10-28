@@ -26,7 +26,7 @@ const client_test_t test_c059_crypto_list[] = {
     NULL,
 };
 
-static uint32_t g_test_count = 1;
+extern  uint32_t g_test_count;
 static uint8_t  output[BUFFER_SIZE], tag[SIZE_128B];
 
 int32_t psa_aead_finish_test(caller_security_t caller __UNUSED)

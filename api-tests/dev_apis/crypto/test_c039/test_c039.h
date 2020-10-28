@@ -28,4 +28,6 @@ extern const client_test_t test_c039_crypto_list[];
 
 int32_t psa_asymmetric_encrypt_test(caller_security_t caller);
 int32_t psa_asymmetric_encrypt_negative_test(caller_security_t caller);
+extern void crypto_common_exit_action(void);
+
 #endif /* _TEST_C039_CLIENT_TESTS_H_ */

@@ -27,4 +27,6 @@ extern psa_api_t *psa;
 extern const client_test_t test_c004_crypto_list[];
 
 int32_t test_psa_export_public_key(caller_security_t caller);
+extern void crypto_common_exit_action(void);
+
 #endif /* _TEST_C004_CLIENT_TESTS_H_ */

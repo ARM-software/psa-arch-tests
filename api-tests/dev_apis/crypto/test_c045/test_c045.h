@@ -29,4 +29,6 @@ extern const client_test_t test_c045_crypto_list[];
 int32_t psa_hash_clone_test(caller_security_t caller);
 int32_t psa_hash_clone_with_inactive_source_operation(caller_security_t caller);
 int32_t psa_hash_clone_with_active_target_operation(caller_security_t caller);
+extern void crypto_common_exit_action(void);
+
 #endif /* _TEST_C045_CLIENT_TESTS_H_ */

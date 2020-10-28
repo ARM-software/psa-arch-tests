@@ -31,4 +31,6 @@ extern const client_test_t test_c001_crypto_list[];
 int32_t psa_crypto_init_test(caller_security_t caller);
 int32_t multiple_psa_crypto_init_test(caller_security_t caller);
 int32_t psa_generate_random_without_init_test(caller_security_t caller);
+extern void crypto_common_exit_action(void);
+
 #endif /* _TEST_C001_CLIENT_TESTS_H_ */

@@ -102,3 +102,4 @@ int32_t test_psa_export_public_key(caller_security_t caller __UNUSED)
 
     return VAL_STATUS_SUCCESS;
 }
+

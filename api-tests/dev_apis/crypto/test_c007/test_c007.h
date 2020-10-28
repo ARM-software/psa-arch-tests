@@ -27,4 +27,6 @@ extern psa_api_t *psa;
 extern const client_test_t test_c007_crypto_list[];
 
 int32_t psa_hash_compare_test(caller_security_t caller);
+extern void crypto_common_exit_action(void);
+
 #endif /* _TEST_C007_CLIENT_TESTS_H_ */

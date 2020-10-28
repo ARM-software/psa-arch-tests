@@ -27,7 +27,8 @@ const client_test_t test_c029_crypto_list[] = {
     NULL,
 };
 
-static uint32_t            g_test_count = 1;
+extern  uint32_t g_test_count;
+
 static psa_mac_operation_t operation;
 
 int32_t psa_mac_verify_setup_test(caller_security_t caller __UNUSED)

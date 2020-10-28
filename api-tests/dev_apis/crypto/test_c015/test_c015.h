@@ -28,4 +28,6 @@ extern const client_test_t test_c015_crypto_list[];
 
 int32_t psa_hash_abort_test(caller_security_t caller);
 int32_t psa_hash_abort_before_operation_finish(caller_security_t caller);
+extern void crypto_common_exit_action(void);
+
 #endif /* _TEST_C015_CLIENT_TESTS_H_ */

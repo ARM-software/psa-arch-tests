@@ -27,7 +27,8 @@ const client_test_t test_c032_crypto_list[] = {
     NULL,
 };
 
-static uint32_t g_test_count           = 1;
+extern  uint32_t g_test_count;
+
 static int32_t  valid_test_input_index = -1;
 
 int32_t psa_cipher_encrypt_setup_test(caller_security_t caller __UNUSED)

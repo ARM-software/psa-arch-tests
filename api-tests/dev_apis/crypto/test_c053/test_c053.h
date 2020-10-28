@@ -27,5 +27,7 @@ extern psa_api_t *psa;
 extern const client_test_t test_c053_crypto_list[];
 
 int32_t psa_aead_decrypt_setup_test(caller_security_t caller);
+extern void crypto_common_exit_action(void);
+
 
 #endif /* _TEST_C053_CLIENT_TESTS_H_ */

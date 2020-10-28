@@ -30,7 +30,9 @@ const client_test_t test_c021_crypto_list[] = {
     NULL,
 };
 
-static uint32_t      g_test_count = 1;
+
+extern  uint32_t g_test_count;
+
 
 int32_t psa_key_derivation_output_key_test(caller_security_t caller __UNUSED)
 {
