@@ -37,6 +37,7 @@
 #define ARCH_TEST_RSA
 #define ARCH_TEST_RSA_1024
 #define ARCH_TEST_RSA_2048
+//#define ARCH_TEST_RSA_2048_GEN_KEY
 #define ARCH_TEST_RSA_3072
 
 /**
