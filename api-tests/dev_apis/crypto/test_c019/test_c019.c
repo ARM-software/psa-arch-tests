@@ -104,7 +104,7 @@ int32_t psa_key_derivation_key_agreement_test(caller_security_t caller __UNUSED)
 int32_t psa_key_derivation_key_agreement_negative_test(caller_security_t caller __UNUSED)
 {
     int32_t                         status;
-    psa_key_derivation_operation_t  operation;
+    psa_key_derivation_operation_t  operation = PSA_KEY_DERIVATION_OPERATION_INIT;
     psa_key_handle_t                key_handle = 8;
 
     if (valid_test_input_index < 0)
