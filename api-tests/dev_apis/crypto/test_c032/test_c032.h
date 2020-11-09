@@ -28,4 +28,6 @@ extern const client_test_t test_c032_crypto_list[];
 
 int32_t psa_cipher_encrypt_setup_test(caller_security_t caller);
 int32_t psa_cipher_encrypt_setup_negative_test(caller_security_t caller);
+extern void crypto_common_exit_action(void);
+
 #endif /* _TEST_C032_CLIENT_TESTS_H_ */

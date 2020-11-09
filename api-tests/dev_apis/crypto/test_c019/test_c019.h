@@ -28,4 +28,6 @@ extern const client_test_t test_c019_crypto_list[];
 
 int32_t psa_key_derivation_key_agreement_test(caller_security_t caller);
 int32_t psa_key_derivation_key_agreement_negative_test(caller_security_t caller);
+extern void crypto_common_exit_action(void);
+
 #endif /* _TEST_C019_CLIENT_TESTS_H_ */

@@ -28,4 +28,6 @@ extern const client_test_t test_c018_crypto_list[];
 
 int32_t psa_key_derivation_input_key_test(caller_security_t caller);
 int32_t psa_key_derivation_input_key_negative_test(caller_security_t caller);
+extern void crypto_common_exit_action(void);
+
 #endif /* _TEST_C018_CLIENT_TESTS_H_ */

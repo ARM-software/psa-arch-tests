@@ -17,6 +17,9 @@
 
 #include "test_crypto_common.h"
 
+uint32_t g_test_count = 1;
+void crypto_common_exit_action(void);
+
 const uint8_t key_data[] = {
  0x01, 0x03, 0x0E, 0x0F, 0x1F, 0x3F, 0xEF, 0XFF,
  0x02, 0x0A, 0x2A, 0xAA, 0x04, 0x24, 0x88, 0x03,
@@ -428,3 +431,9 @@ const uint8_t input_label[INPUT_LABEL_LEN]             = "Label";
 
 /* output buffers */
 uint8_t expected_output[BUFFER_SIZE];
+
+/* crypto common testcase exit action */
+void crypto_common_exit_action(void)
+{
+	g_test_count = 1;
+}

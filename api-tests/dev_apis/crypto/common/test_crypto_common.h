@@ -104,4 +104,6 @@ extern const uint8_t signature_3[];
 
 extern uint8_t expected_output[BUFFER_SIZE];
 
+extern void crypto_common_exit_action(void);
+
 #endif /* _TEST_CRYPTO_COMMON_H_ */

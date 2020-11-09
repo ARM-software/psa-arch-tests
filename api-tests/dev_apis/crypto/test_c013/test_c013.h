@@ -28,4 +28,6 @@ extern const client_test_t test_c013_crypto_list[];
 
 int32_t psa_hash_verify_test(caller_security_t caller);
 int32_t psa_hash_verify_inactive_operation_handle(caller_security_t caller);
+extern void crypto_common_exit_action(void);
+
 #endif /* _TEST_C013_CLIENT_TESTS_H_ */

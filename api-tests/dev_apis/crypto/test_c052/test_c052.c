@@ -26,7 +26,7 @@ const client_test_t test_c052_crypto_list[] = {
     NULL,
 };
 
-static uint32_t g_test_count = 1;
+extern  uint32_t g_test_count;
 
 int32_t psa_aead_encrypt_setup_test(caller_security_t caller __UNUSED)
 {
