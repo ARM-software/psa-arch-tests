@@ -162,7 +162,7 @@ static const uint8_t ec_keypair[] = {
 
 static const test_data check1[] = {
 
-#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
 {"Test psa_close_key 16 Byte AES\n", PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
@@ -213,7 +213,7 @@ static const test_data check1[] = {
 #endif
 #endif
 
-#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_DES_1KEY
 {"Test psa_close_key with DES 64 bit key\n", PSA_KEY_TYPE_DES,
  {0x70, 0x24, 0x55, 0x0C, 0x14, 0x9D, 0xED, 0x29},

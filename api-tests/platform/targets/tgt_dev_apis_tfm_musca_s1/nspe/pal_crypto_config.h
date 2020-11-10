@@ -34,10 +34,14 @@
  *
  * Comment macros to disable the types
  */
+#ifndef TF_M_PROFILE_SMALL
+#ifndef TF_M_PROFILE_MEDIUM
 #define ARCH_TEST_RSA
 #define ARCH_TEST_RSA_1024
 #define ARCH_TEST_RSA_2048
 #define ARCH_TEST_RSA_3072
+#endif
+#endif
 
 /**
  * \def  ARCH_TEST_ECC
@@ -50,11 +54,17 @@
  * Requires: ARCH_TEST_ECC
  * Comment macros to disable the curve
  */
+#ifndef TF_M_PROFILE_SMALL
 #define ARCH_TEST_ECC
 #define ARCH_TEST_ECC_CURVE_SECP192R1
+#ifndef TF_M_PROFILE_MEDIUM
 #define ARCH_TEST_ECC_CURVE_SECP224R1
+#endif
 #define ARCH_TEST_ECC_CURVE_SECP256R1
+#ifndef TF_M_PROFILE_MEDIUM
 #define ARCH_TEST_ECC_CURVE_SECP384R1
+#endif
+#endif
 
 /**
  * \def ARCH_TEST_AES
@@ -92,12 +102,12 @@
 #define ARCH_TEST_RAW
 
 /**
- * \def ARCH_TEST_CIPER
+ * \def ARCH_TEST_CIPHER
  *
  * Enable the generic cipher layer.
  */
 
-#define ARCH_TEST_CIPER
+#define ARCH_TEST_CIPHER
 
 /**
  * \def ARCH_TEST_ARC4
@@ -107,43 +117,51 @@
 //#define ARCH_TEST_ARC4
 
 /**
- * \def ARCH_TEST_CIPER_MODE_CTR
+ * \def ARCH_TEST_CIPHER_MODE_CTR
  *
  * Enable Counter Block Cipher mode (CTR) for symmetric ciphers.
  *
- * Requires: ARCH_TEST_CIPER
+ * Requires: ARCH_TEST_CIPHER
  */
-#define ARCH_TEST_CIPER_MODE_CTR
+#ifndef TF_M_PROFILE_SMALL
+#ifndef TF_M_PROFILE_MEDIUM
+#define ARCH_TEST_CIPHER_MODE_CTR
+#endif
+#endif
 
 /**
- * \def ARCH_TEST_CIPER_MODE_CFB
+ * \def ARCH_TEST_CIPHER_MODE_CFB
  *
  * Enable Cipher Feedback mode (CFB) for symmetric ciphers.
  *
- * Requires: ARCH_TEST_CIPER
+ * Requires: ARCH_TEST_CIPHER
  */
-#define ARCH_TEST_CIPER_MODE_CFB
+#define ARCH_TEST_CIPHER_MODE_CFB
 
 /**
- * \def ARCH_TEST_CIPER_MODE_CBC
+ * \def ARCH_TEST_CIPHER_MODE_CBC
  *
  * Enable Cipher Block Chaining mode (CBC) for symmetric ciphers.
  *
- * Requires: ARCH_TEST_CIPER
+ * Requires: ARCH_TEST_CIPHER
  */
-#define ARCH_TEST_CIPER_MODE_CBC
+#define ARCH_TEST_CIPHER_MODE_CBC
 
 /**
  * \def ARCH_TEST_CTR_AES
  *
- * Requires: ARCH_TEST_CIPER, ARCH_TEST_AES, ARCH_TEST_CIPER_MODE_CTR
+ * Requires: ARCH_TEST_CIPHER, ARCH_TEST_AES, ARCH_TEST_CIPHER_MODE_CTR
  */
+#ifndef TF_M_PROFILE_SMALL
+#ifndef TF_M_PROFILE_MEDIUM
 #define ARCH_TEST_CTR_AES
+#endif
+#endif
 
 /**
  * \def ARCH_TEST_CBC_AES
  *
- * Requires: ARCH_TEST_CIPER, ARCH_TEST_AES, ARCH_TEST_CIPER_MODE_CBC
+ * Requires: ARCH_TEST_CIPHER, ARCH_TEST_AES, ARCH_TEST_CIPHER_MODE_CBC
  *
  * Comment macros to disable the types
  */
@@ -153,16 +171,20 @@
 /**
  * \def ARCH_TEST_CBC_NO_PADDING
  *
- * Requires: ARCH_TEST_CIPER, ARCH_TEST_CIPER_MODE_CBC
+ * Requires: ARCH_TEST_CIPHER, ARCH_TEST_CIPHER_MODE_CBC
  *
  * Comment macros to disable the types
  */
+#ifndef TF_M_PROFILE_SMALL
+#ifndef TF_M_PROFILE_MEDIUM
 #define ARCH_TEST_CBC_NO_PADDING
+#endif
+#endif
 
 /**
  * \def ARCH_TEST_CFB_AES
  *
- * Requires: ARCH_TEST_CIPER, ARCH_TEST_AES, ARCH_TEST_CIPER_MODE_CFB
+ * Requires: ARCH_TEST_CIPHER, ARCH_TEST_AES, ARCH_TEST_CIPHER_MODE_CFB
  */
 #define ARCH_TEST_CFB_AES
 
@@ -177,20 +199,28 @@
  *
  * Comment macros to disable the types
  */
+#ifndef TF_M_PROFILE_SMALL
+#ifndef TF_M_PROFILE_MEDIUM
 #define ARCH_TEST_PKCS1V15
 #define ARCH_TEST_RSA_PKCS1V15_SIGN
 #define ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 #define ARCH_TEST_RSA_PKCS1V15_CRYPT
 #define ARCH_TEST_RSA_OAEP
+#endif
+#endif
 
 /**
  * \def ARCH_TEST_CBC_PKCS7
  *
- * Requires: ARCH_TEST_CIPER_MODE_CBC
+ * Requires: ARCH_TEST_CIPHER_MODE_CBC
  *
  * Comment macros to disable the types
  */
+#ifndef TF_M_PROFILE_SMALL
+#ifndef TF_M_PROFILE_MEDIUM
 #define ARCH_TEST_CBC_PKCS7
+#endif
+#endif
 
 /**
  * \def ARCH_TEST_ASYMMETRIC_ENCRYPTION
@@ -232,10 +262,16 @@
 //#define ARCH_TEST_MD5
 //#define ARCH_TEST_RIPEMD160
 //#define ARCH_TEST_SHA1
+#ifndef TF_M_PROFILE_SMALL
 #define ARCH_TEST_SHA224
+#endif
 #define ARCH_TEST_SHA256
+#ifndef TF_M_PROFILE_SMALL
+#ifndef TF_M_PROFILE_MEDIUM
 #define ARCH_TEST_SHA384
 #define ARCH_TEST_SHA512
+#endif
+#endif
 //#define ARCH_TEST_SHA512_224
 //#define ARCH_TEST_SHA512_256
 //#define ARCH_TEST_SHA3_224
@@ -261,7 +297,11 @@
  *
  * Comment macros to disable the types
  */
+#ifndef TF_M_PROFILE_SMALL
+#ifndef TF_M_PROFILE_MEDIUM
 #define ARCH_TEST_CMAC
+#endif
+#endif
 //#define ARCH_TEST_GMAC
 #define ARCH_TEST_HMAC
 
@@ -282,7 +322,11 @@
  * Requires: ARCH_TEST_AES
  *
  */
+#ifndef TF_M_PROFILE_SMALL
+#ifndef TF_M_PROFILE_MEDIUM
 #define ARCH_TEST_GCM
+#endif
+#endif
 
 /**
  * \def ARCH_TEST_TRUNCATED_MAC
@@ -301,7 +345,9 @@
  *
  * Requires: ARCH_TEST_ECC
  */
+#ifndef TF_M_PROFILE_SMALL
 #define ARCH_TEST_ECDH
+#endif
 
 /**
  * \def ARCH_TEST_ECDSA
@@ -309,7 +355,9 @@
  * Enable the elliptic curve DSA library.
  * Requires: ARCH_TEST_ECC
  */
+#ifndef TF_M_PROFILE_SMALL
 #define ARCH_TEST_ECDSA
+#endif
 
 /**
  * \def ARCH_TEST_DETERMINISTIC_ECDSA

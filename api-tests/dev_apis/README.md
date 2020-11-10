@@ -14,7 +14,7 @@ This test suite is not a substitute for design verification. To review the test 
 For more information on the architecture test suite framework and methodology to run the tests, refer to the [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf) document.
 
 ## This release
- - Code Quality : REL v1.0
+ - Code Quality : REL v1.1
  - This release contains following PSA Functional APIs tests: <br />
 
 | Test Category            | Specification Version                |
@@ -30,6 +30,7 @@ For more information on the architecture test suite framework and methodology to
 
 | Release version | Release tag  | PSA Crypto API | PSA Storage API | PSA Attestation API |
 |-----------------|---------------|----------------|-----------------|---------------------|
+| REL v1.1 | [v20.11_API1.1](https://github.com/ARM-software/psa-arch-tests/tree/v20.11_API1.1/api-tests/dev_apis) | 1.0-Beta3  | 1.0.0 | 1.0.0 |
 | REL v1.0 | [v20.03_API1.0](https://github.com/ARM-software/psa-arch-tests/tree/v20.03_API1.0/api-tests/dev_apis) | 1.0-Beta3  | 1.0.0 | 1.0.0 |
 | v0.9 | [v19.06_API0.9](https://github.com/ARM-software/psa-arch-tests/tree/v19.06_API0.9/api-tests/dev_apis) | 1.0-Beta2 | 1.0-Beta2 | 1.0-Beta0 |
 | v0.8 | [v19.02_API0.8](https://github.com/ARM-software/psa-arch-tests/tree/v19.02_API0.8/api-tests/dev_apis) | 1.0-Beta1 | 1.0-Beta0 | 1.0-Beta0 |
@@ -69,6 +70,7 @@ To build the test suite for your target platform, execute the following commands
 -   -DBUILD=<BUILD_DIR> : To select the build directory to keep output files. Default is BUILD/ inside current directory.
 -   -DWATCHDOG_AVAILABLE=<0|1>: Test harness may require to access watchdog timer to recover system hang. 0 means skip watchdog programming in the test suite and 1 means program the watchdog. Default is 1. Note, watchdog must be available for the tests which check the PSA API behaviour on the system reset.
 -   -DSUITE_TEST_RANGE="<test_start_number>;<test_end_number>" is to select range of tests for build. All tests under -DSUITE are considered by default if not specified.
+-   -DTFM_PROFILE=<profile_small/profile_medium> is to work with TFM defined Pofile Small/Medium definitions. Supported values are profile_small and profile_medium. Unless specified Default Profile is used.
 -   -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>" is an additional directory to be included into the compiler search path.You must provide Functional APIs header files implementation to the test suite build system using this option. For example, to compile Crypto tests, the include path must point to the path where **psa/crypto.h** is located in your build system. Bydefault, PSA_INCLUDE_PATHS accepts absolute path. However, relative path can be provided using below format:<br />
 ```
     -DPSA_INCLUDE_PATHS=`readlink -f <relative_include_path>`

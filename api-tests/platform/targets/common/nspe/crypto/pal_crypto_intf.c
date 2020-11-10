@@ -36,9 +36,7 @@ int32_t pal_crypto_function(int type, va_list valist)
     const uint8_t                   *nonce, *additional_data, *salt, *peer;
     size_t                          *length, size, ciphertext_size, nonce_length;
     size_t                           salt_length, peer_length, additional_data_length;
-#ifdef tgt_dev_apis_stdc
     size_t                          plaintext_size;
-#endif
 #ifdef NO_SUPPORT
     size_t                          *tag_length;
 #endif
@@ -179,7 +177,6 @@ int32_t pal_crypto_function(int type, va_list valist)
         case PAL_CRYPTO_HASH_ABORT:
             hash_operation = va_arg(valist, psa_hash_operation_t*);
             return psa_hash_abort(hash_operation);
-#ifdef tgt_dev_apis_stdc
         case PAL_CRYPTO_HASH_COMPUTE:
             alg = va_arg(valist, psa_algorithm_t);
             plaintext = va_arg(valist, uint8_t*);
@@ -195,7 +192,6 @@ int32_t pal_crypto_function(int type, va_list valist)
             buffer = va_arg(valist, uint8_t*);
             size = va_arg(valist, size_t);
             return psa_hash_compare(alg, plaintext, plaintext_size, buffer, size);
-#endif
         case PAL_CRYPTO_HASH_CLONE:
             hash_operation = va_arg(valist, psa_hash_operation_t*);
             target_operation = va_arg(valist, psa_hash_operation_t*);
@@ -518,8 +514,10 @@ int32_t pal_crypto_function(int type, va_list valist)
             for (i = 0; i < PAL_KEY_SLOT_COUNT; i++)
                 psa_destroy_key(i);
             return 0;
+#ifndef TF_M_PROFILE_SMALL
         case PAL_CRYPTO_RESET:
             return pal_system_reset();
+#endif
         default:
             return PAL_STATUS_UNSUPPORTED_FUNC;
     }

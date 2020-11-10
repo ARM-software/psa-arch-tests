@@ -31,7 +31,7 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
-#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc          = "Test psa_cipher_generate_iv 16 Byte AES\n",
@@ -125,7 +125,7 @@ static const test_data check1[] = {
 #endif
 #endif
 
-#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc          = "Test psa_cipher_generate_iv AES - small iv buffer\n",

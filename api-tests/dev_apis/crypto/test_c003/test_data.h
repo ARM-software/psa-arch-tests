@@ -31,7 +31,6 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
-#ifdef ARCH_TEST_CIPER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc            = "Test psa_export_key 16 Byte AES\n",
@@ -76,7 +75,6 @@ static const test_data check1[] = {
     .expected_status      = PSA_SUCCESS
 },
 #endif
-#endif
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 #ifdef ARCH_TEST_RSA_2048
@@ -108,7 +106,6 @@ static const test_data check1[] = {
 #endif
 #endif
 
-#ifdef ARCH_TEST_CIPER_MODE_CTR
 #ifdef ARCH_TEST_DES_1KEY
 {
     .test_desc            = "Test psa_export_key with DES 64 bit key\n",
@@ -153,7 +150,6 @@ static const test_data check1[] = {
     .expected_status      = PSA_SUCCESS
 },
 #endif
-#endif
 
 #ifdef ARCH_TEST_ASYMMETRIC_ENCRYPTION
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
@@ -187,7 +183,6 @@ static const test_data check1[] = {
 #endif
 #endif
 
-#ifdef ARCH_TEST_CIPER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc            = "Test psa_export_key with key policy verify\n",
@@ -214,6 +209,5 @@ static const test_data check1[] = {
     .expected_data_length = AES_16B_KEY_SIZE,
     .expected_status      = PSA_ERROR_BUFFER_TOO_SMALL
 },
-#endif
 #endif
 };
