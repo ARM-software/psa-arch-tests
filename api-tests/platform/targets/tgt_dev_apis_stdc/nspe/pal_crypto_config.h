@@ -92,12 +92,12 @@
 #define ARCH_TEST_RAW
 
 /**
- * \def ARCH_TEST_CIPER
+ * \def ARCH_TEST_CIPHER
  *
  * Enable the generic cipher layer.
  */
 
-#define ARCH_TEST_CIPER
+#define ARCH_TEST_CIPHER
 
 /**
  * \def ARCH_TEST_ARC4
@@ -107,43 +107,43 @@
 #define ARCH_TEST_ARC4
 
 /**
- * \def ARCH_TEST_CIPER_MODE_CTR
+ * \def ARCH_TEST_CIPHER_MODE_CTR
  *
  * Enable Counter Block Cipher mode (CTR) for symmetric ciphers.
  *
- * Requires: ARCH_TEST_CIPER
+ * Requires: ARCH_TEST_CIPHER
  */
-#define ARCH_TEST_CIPER_MODE_CTR
+#define ARCH_TEST_CIPHER_MODE_CTR
 
 /**
- * \def ARCH_TEST_CIPER_MODE_CFB
+ * \def ARCH_TEST_CIPHER_MODE_CFB
  *
  * Enable Cipher Feedback mode (CFB) for symmetric ciphers.
  *
- * Requires: ARCH_TEST_CIPER
+ * Requires: ARCH_TEST_CIPHER
  */
-#define ARCH_TEST_CIPER_MODE_CFB
+#define ARCH_TEST_CIPHER_MODE_CFB
 
 /**
- * \def ARCH_TEST_CIPER_MODE_CBC
+ * \def ARCH_TEST_CIPHER_MODE_CBC
  *
  * Enable Cipher Block Chaining mode (CBC) for symmetric ciphers.
  *
- * Requires: ARCH_TEST_CIPER
+ * Requires: ARCH_TEST_CIPHER
  */
-#define ARCH_TEST_CIPER_MODE_CBC
+#define ARCH_TEST_CIPHER_MODE_CBC
 
 /**
  * \def ARCH_TEST_CTR_AES
  *
- * Requires: ARCH_TEST_CIPER, ARCH_TEST_AES, ARCH_TEST_CIPER_MODE_CTR
+ * Requires: ARCH_TEST_CIPHER, ARCH_TEST_AES, ARCH_TEST_CIPHER_MODE_CTR
  */
 #define ARCH_TEST_CTR_AES
 
 /**
  * \def ARCH_TEST_CBC_AES
  *
- * Requires: ARCH_TEST_CIPER, ARCH_TEST_AES, ARCH_TEST_CIPER_MODE_CBC
+ * Requires: ARCH_TEST_CIPHER, ARCH_TEST_AES, ARCH_TEST_CIPHER_MODE_CBC
  *
  * Comment macros to disable the types
  */
@@ -153,7 +153,7 @@
 /**
  * \def ARCH_TEST_CBC_NO_PADDING
  *
- * Requires: ARCH_TEST_CIPER, ARCH_TEST_CIPER_MODE_CBC
+ * Requires: ARCH_TEST_CIPHER, ARCH_TEST_CIPHER_MODE_CBC
  *
  * Comment macros to disable the types
  */
@@ -162,7 +162,7 @@
 /**
  * \def ARCH_TEST_CFB_AES
  *
- * Requires: ARCH_TEST_CIPER, ARCH_TEST_AES, ARCH_TEST_CIPER_MODE_CFB
+ * Requires: ARCH_TEST_CIPHER, ARCH_TEST_AES, ARCH_TEST_CIPHER_MODE_CFB
  */
 #define ARCH_TEST_CFB_AES
 
@@ -186,7 +186,7 @@
 /**
  * \def ARCH_TEST_CBC_PKCS7
  *
- * Requires: ARCH_TEST_CIPER_MODE_CBC
+ * Requires: ARCH_TEST_CIPHER_MODE_CBC
  *
  * Comment macros to disable the types
  */

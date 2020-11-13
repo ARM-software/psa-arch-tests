@@ -113,7 +113,7 @@ static const test_data check1[] = {
 },
 #endif
 
-#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 {
     .test_desc              = "Test psa_cipher_finish - Encrypt - AES CTR\n",
     .type                   = PSA_KEY_TYPE_AES,
@@ -312,7 +312,7 @@ static const test_data check1[] = {
 },
 #endif
 
-#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 {
     .test_desc              = "Test psa_cipher_finish - Decrypt - AES CTR\n",
     .type                   = PSA_KEY_TYPE_AES,

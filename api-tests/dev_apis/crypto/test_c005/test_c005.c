@@ -61,49 +61,78 @@ int32_t psa_destroy_key_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
         /* Setup the attributes for the key */
-        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE, &set_attributes, check1[i].type);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_BITS, &set_attributes, check1[i].bits);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &set_attributes,
-                                                             check1[i].usage_flags);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_ID, &set_attributes, check1[i].id);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_LIFETIME, &set_attributes, check1[i].lifetime);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM, &set_attributes, check1[i].alg);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE,
+                             &set_attributes,
+                             check1[i].type);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_BITS,
+                             &set_attributes,
+                             check1[i].bits);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS,
+                             &set_attributes,
+                             check1[i].usage_flags);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_ID,
+                             &set_attributes,
+                             check1[i].id);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_LIFETIME,
+                             &set_attributes,
+                             check1[i].lifetime);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM,
+                             &set_attributes,
+                             check1[i].alg);
 
         /* Import the key data into the key slot */
-        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &set_attributes, check1[i].data,
-                 check1[i].data_length, &key_handle);
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY,
+                                      &set_attributes,
+                                      check1[i].data,
+                                      check1[i].data_length,
+                                      &key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Destroy the key handle */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY,
+                                      key_handle);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
         /* Getting the attributes of the destroyed key should return error */
-        status = val->crypto_function(VAL_CRYPTO_GET_KEY_ATTRIBUTES, key_handle,
-                 &attributes);
+        status = val->crypto_function(VAL_CRYPTO_GET_KEY_ATTRIBUTES,
+                                      key_handle,
+                                      &attributes);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(5));
 
         /* Check if all the attributes are erased */
-        val->crypto_function(VAL_CRYPTO_GET_KEY_TYPE, &attributes, &get_type);
+        val->crypto_function(VAL_CRYPTO_GET_KEY_TYPE,
+                             &attributes,
+                             &get_type);
         TEST_ASSERT_EQUAL(get_type, 0, TEST_CHECKPOINT_NUM(6));
 
-        val->crypto_function(VAL_CRYPTO_GET_KEY_ID, &attributes, &get_id);
+        val->crypto_function(VAL_CRYPTO_GET_KEY_ID,
+                             &attributes,
+                             &get_id);
         TEST_ASSERT_EQUAL(get_id, 0, TEST_CHECKPOINT_NUM(7));
 
-        val->crypto_function(VAL_CRYPTO_GET_KEY_LIFETIME, &attributes, &get_lifetime);
+        val->crypto_function(VAL_CRYPTO_GET_KEY_LIFETIME,
+                             &attributes,
+                             &get_lifetime);
         TEST_ASSERT_EQUAL(get_lifetime, 0, TEST_CHECKPOINT_NUM(8));
 
-        val->crypto_function(VAL_CRYPTO_GET_KEY_USAGE_FLAGS, &attributes, &get_usage_flags);
+        val->crypto_function(VAL_CRYPTO_GET_KEY_USAGE_FLAGS,
+                             &attributes,
+                             &get_usage_flags);
         TEST_ASSERT_EQUAL(get_usage_flags, 0, TEST_CHECKPOINT_NUM(9));
 
-        val->crypto_function(VAL_CRYPTO_GET_KEY_ALGORITHM, &attributes, &get_alg);
+        val->crypto_function(VAL_CRYPTO_GET_KEY_ALGORITHM,
+                             &attributes,
+                             &get_alg);
         TEST_ASSERT_EQUAL(get_alg, 0, TEST_CHECKPOINT_NUM(10));
 
-        val->crypto_function(VAL_CRYPTO_GET_KEY_BITS, &attributes, &get_bits);
+        val->crypto_function(VAL_CRYPTO_GET_KEY_BITS,
+                             &attributes,
+                             &get_bits);
         TEST_ASSERT_EQUAL(get_bits,  0, TEST_CHECKPOINT_NUM(11));
 
         /* Destroying an empty key handle should return error */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY,
+                                      key_handle);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(12));
 
     }

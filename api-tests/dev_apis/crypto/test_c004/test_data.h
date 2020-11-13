@@ -63,7 +63,6 @@ static const uint8_t expected_ec_pubprv[] = {
 
 static const test_data check1[] = {
 
-#ifdef ARCH_TEST_CIPER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc            = "Test psa_export_public_key 16 Byte AES\n",
@@ -108,7 +107,6 @@ static const test_data check1[] = {
     .expected_status      = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif
-#endif
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 #ifdef ARCH_TEST_RSA_2048
@@ -140,7 +138,6 @@ static const test_data check1[] = {
 #endif
 #endif
 
-#ifdef ARCH_TEST_CIPER_MODE_CTR
 #ifdef ARCH_TEST_DES_1KEY
 {
     .test_desc            = "Test psa_export_public_key with DES 64 bit key\n",
@@ -184,7 +181,6 @@ static const test_data check1[] = {
     .expected_data_length = DES3_3B_KEY_SIZE,
     .expected_status      = PSA_ERROR_INVALID_ARGUMENT
 },
-#endif
 #endif
 
 #ifdef ARCH_TEST_ASYMMETRIC_ENCRYPTION

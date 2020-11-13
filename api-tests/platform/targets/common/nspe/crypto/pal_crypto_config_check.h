@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -77,35 +77,35 @@
 #error "ARCH_TEST_DES_3KEY defined, but not all prerequisites"
 #endif
 
-#if defined(ARCH_TEST_CIPER_MODE_CTR) && !defined(ARCH_TEST_CIPER)
-#error "ARCH_TEST_CIPER_MODE_CTR defined, but not all prerequisites"
+#if defined(ARCH_TEST_CIPHER_MODE_CTR) && !defined(ARCH_TEST_CIPHER)
+#error "ARCH_TEST_CIPHER_MODE_CTR defined, but not all prerequisites"
 #endif
 
-#if defined(ARCH_TEST_CIPER_MODE_CFB) && !defined(ARCH_TEST_CIPER)
-#error "ARCH_TEST_CIPER_MODE_CFB defined, but not all prerequisites"
+#if defined(ARCH_TEST_CIPHER_MODE_CFB) && !defined(ARCH_TEST_CIPHER)
+#error "ARCH_TEST_CIPHER_MODE_CFB defined, but not all prerequisites"
 #endif
 
-#if defined(ARCH_TEST_CIPER_MODE_CBC) && !defined(ARCH_TEST_CIPER)
-#error "ARCH_TEST_CIPER_MODE_CBC defined, but not all prerequisites"
+#if defined(ARCH_TEST_CIPHER_MODE_CBC) && !defined(ARCH_TEST_CIPHER)
+#error "ARCH_TEST_CIPHER_MODE_CBC defined, but not all prerequisites"
 #endif
 
 #if defined(ARCH_TEST_CTR_AES) &&\
-    (!defined(ARCH_TEST_CIPER) || !defined(ARCH_TEST_AES) || !defined(ARCH_TEST_CIPER_MODE_CTR))
+    (!defined(ARCH_TEST_CIPHER) || !defined(ARCH_TEST_AES) || !defined(ARCH_TEST_CIPHER_MODE_CTR))
 #error "ARCH_TEST_CTR_AES defined, but not all prerequisites"
 #endif
 
 #if (defined(ARCH_TEST_CBC_AES) || defined(ARCH_TEST_CBC_AES_NO_PADDING)) &&\
-    (!defined(ARCH_TEST_CIPER) || !defined(ARCH_TEST_AES) || !defined(ARCH_TEST_CIPER_MODE_CBC))
+    (!defined(ARCH_TEST_CIPHER) || !defined(ARCH_TEST_AES) || !defined(ARCH_TEST_CIPHER_MODE_CBC))
 #error "ARCH_TEST_CBC_AES defined, but not all prerequisites"
 #endif
 
 #if (defined(ARCH_TEST_CBC_NO_PADDING)) &&\
-    (!defined(ARCH_TEST_CIPER) || !defined(ARCH_TEST_CIPER_MODE_CBC))
+    (!defined(ARCH_TEST_CIPHER) || !defined(ARCH_TEST_CIPHER_MODE_CBC))
 #error "ARCH_TEST_CBC_NO_PADDING defined, but not all prerequisites"
 #endif
 
 #if defined(ARCH_TEST_CFB_AES) &&\
-    (!defined(ARCH_TEST_CIPER) || !defined(ARCH_TEST_AES) || !defined(ARCH_TEST_CIPER_MODE_CFB))
+    (!defined(ARCH_TEST_CIPHER) || !defined(ARCH_TEST_AES) || !defined(ARCH_TEST_CIPHER_MODE_CFB))
 #error "ARCH_TEST_CFB_AES defined, but not all prerequisites"
 #endif
 
@@ -124,7 +124,7 @@
 #error "ARCH_TEST_RSA_PKCS1V15_CRYPT defined, but not all prerequisites"
 #endif
 
-#if defined(ARCH_TEST_CBC_PKCS7) && !defined(ARCH_TEST_CIPER_MODE_CBC)
+#if defined(ARCH_TEST_CBC_PKCS7) && !defined(ARCH_TEST_CIPHER_MODE_CBC)
 #error "ARCH_TEST_CBC_PKCS7 defined, but not all prerequisites"
 #endif
 

@@ -23,13 +23,14 @@ This test suite is not a substitute for design verification. To review the test 
 For more information on architecture test suite specification, refer to the [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf) document.
 
 ## This release
- - Code Quality : REL v1.0
+ - Code Quality : REL v1.1
  - This release contains the PSA-FF tests that are written for the PSA FF 1.0 specification.
 
 ##  Release Tags
 
 | Release version | Release tag  | PSA FF specification version |
 |-----------------|---------------|----------------|
+| REL v1.1 | [v20.11_API1.1](https://github.com/ARM-software/psa-arch-tests/tree/v20.11_API1.1/api-tests/ff) | 1.0 |
 | REL v1.0 | [v20.03_API1.0](https://github.com/ARM-software/psa-arch-tests/tree/v20.03_API1.0/api-tests/ff) | 1.0 |
 | v0.9 | [v19.06_API0.9](https://github.com/ARM-software/psa-arch-tests/tree/v19.06_API0.9/api-tests/ff) | 1.0-Beta1 |
 | v0.8 | [v19.02_API0.8](https://github.com/ARM-software/psa-arch-tests/tree/v19.02_API0.8/api-tests/ff) | 1.0-Beta0 |
@@ -83,6 +84,7 @@ To build the test suite for your target platform, perform the following steps.
 -   -DSP_HEAP_MEM_SUPP=<0|1> : Are dynamic memory functions available to secure partition? 0 means no and 1 means yes. This skips the secure partition dynamic memory functions related tests if this is marked as zero.
 -   -DWATCHDOG_AVAILABLE=<0|1>: Test harness may require to access watchdog timer to recover system hang. 0 means skip watchdog programming in the test suite and 1 means program the watchdog. Default is 1. Note, If the system under test doesn't support the reboot of the system when it encounters the panic situation, a watchdog must be available to the tests if INCLUDE_PANIC_TESTS set to 1.
 -   -DSUITE_TEST_RANGE="<test_start_number>;<test_end_number>" is to select range of tests for build. All tests under -DSUITE are considered by default if not specified.
+-   -DTFM_PROFILE=<profile_small/profile_medium> is to work with TFM defined Pofile Small/Medium definitions. Supported values are profile_small and profile_medium. Unless specified Default Profile is used.
 -   -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>" is an additional directory to be included into the compiler search path. To compile IPC tests, the include path must point to the path where **psa/client.h**, **psa/service.h**,  **psa/lifecycle.h** and test partition manifest output files(**psa_manifest/sid.h**, **psa_manifest/pid.h** and **psa_manifest/<manifestfilename>.h**) are located in your build system. Bydefault, PSA_INCLUDE_PATHS accepts absolute path. However, relative path can be provided using below format:<br />
 ```
     -DPSA_INCLUDE_PATHS=`readlink -f <relative_include_path>`

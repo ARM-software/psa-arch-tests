@@ -21,7 +21,7 @@
 #include "val_framework.h"
 
 #define PSA_ACS_MAJOR_VER    1
-#define PSA_ACS_MINOR_VER    0
+#define PSA_ACS_MINOR_VER    1
 
 /**
     @brief    - PSA Test Suite C main function, does VAL init and calls test dispatcher

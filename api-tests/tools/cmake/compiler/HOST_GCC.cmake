@@ -47,6 +47,6 @@ set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 foreach(_LNG IN ITEMS "C" "ASM")
 	set(CMAKE_${_LNG}_COMPILER ${_C_TOOLCHAIN_PATH})
-	set(CMAKE_C_FLAGS	"-g -Wall -Werror -Werror")
+	set(CMAKE_C_FLAGS	"-g -Wall -Werror -Werror -std=c99")
 	message(STATUS "[PSA] : ${_LNG}  compiler used '${CMAKE_${_LNG}_COMPILER}'")
 endforeach()

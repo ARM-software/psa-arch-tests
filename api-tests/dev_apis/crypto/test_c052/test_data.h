@@ -68,7 +68,7 @@ static const test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_AES_128
-#ifdef ARCH_TEST_CIPER_MODE_CFB
+#ifdef ARCH_TEST_CIPHER_MODE_CFB
 {"Test psa_aead_encrypt_setup - Unsupported Algorithm\n", PSA_KEY_TYPE_AES,
 {0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
  0x5F, 0xC9}, AES_16B_KEY_SIZE, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CFB, PSA_ALG_CFB,

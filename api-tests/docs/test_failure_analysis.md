@@ -3,24 +3,19 @@
 
 This file contains list of failures identified when testing the release
 on tgt_dev_apis_tfm_an521, tgt_dev_apis_tfm_musca_a and  tgt_dev_apis_tfm_musca_b1
-targets with TFM commit Hash - 6e7be077eabef00b4825e245604148d82b11f832.
+targets with TFM commit Hash - cea100b1e09fe53fd1ed6818b8129ef51daa0822.
 The reason for each failing test is listed here in this file.
 
 ## Known Failures
 
 | Test | Fail description                                                                | Github issue |
 |------|---------------------------------------------------------------------------------| ------------ |
-|test_c006 | psa_hash_compute is unimplemented in TFM/mbed-crypto. So the test has not been verified. 	| https://github.com/ARMmbed/mbed-crypto/issues/381 |
-|test_c007 | psa_hash_compare is unimplemented in TFM/mbed-crypto. So the test has not been verified.	| https://github.com/ARMmbed/mbed-crypto/issues/381 |
-|test_c009 | psa_key_derivation_input_bytes returns incorrect error code | https://github.com/ARMmbed/mbed-crypto/issues/175 |
-|test_c020 | psa_key_derivation_output_bytes returns incorrect error code | https://github.com/ARMmbed/mbed-crypto/issues/175 |
 |test_c021 | psa_key_derivation_output_key returns incorrect error code | https://github.com/ARMmbed/mbed-crypto/issues/175 |
 |test_c046 | psa_mac_compute is unimplemented in TFM/mbed-crypto. So the test has not been verified.	| https://github.com/ARMmbed/mbed-crypto/issues/381 |
 |test_c047 | psa_mac_verify is unimplemented in TFM/mbed-crypto. So the test has not been verified.		| https://github.com/ARMmbed/mbed-crypto/issues/381 |
 |test_c048 | psa_cipher_encrypt is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
 |test_c049 | psa_cipher_decrypt is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
 |test_c050 | Persistent key storage is unavailable in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/382 |
-|test_c051 | Persistent key storage is unavailable in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/382 |
 |test_c052 | psa_aead_encrypt_setup is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
 |test_c053 | psa_aead_decrypt_setup is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
 |test_c054 | psa_aead_generate_nonce is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |

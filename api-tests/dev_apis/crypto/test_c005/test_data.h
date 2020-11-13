@@ -32,7 +32,8 @@ typedef struct {
 
 static const test_data check1[] = {
 
-#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_AES
+#ifdef ARCH_TEST_CCM
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc       = "Test psa_destroy_key 16 Byte AES\n",
@@ -41,7 +42,7 @@ static const test_data check1[] = {
     .data_length     = AES_16B_KEY_SIZE,
     .bits            = BYTES_TO_BITS(AES_16B_KEY_SIZE),
     .usage_flags     = PSA_KEY_USAGE_EXPORT,
-    .alg             = PSA_ALG_CTR,
+    .alg             = PSA_ALG_CCM,
     .id              = 0x12,
     .lifetime        = PSA_KEY_LIFETIME_VOLATILE,
     .expected_status = PSA_SUCCESS
@@ -56,7 +57,7 @@ static const test_data check1[] = {
     .data_length     = AES_24B_KEY_SIZE,
     .bits            = BYTES_TO_BITS(AES_24B_KEY_SIZE),
     .usage_flags     = PSA_KEY_USAGE_EXPORT,
-    .alg             = PSA_ALG_CTR,
+    .alg             = PSA_ALG_CCM,
     .id              = 0x34,
     .lifetime        = PSA_KEY_LIFETIME_VOLATILE,
     .expected_status = PSA_SUCCESS
@@ -71,11 +72,12 @@ static const test_data check1[] = {
     .data_length      = AES_32B_KEY_SIZE,
     .bits             = BYTES_TO_BITS(AES_32B_KEY_SIZE),
     .usage_flags      = PSA_KEY_USAGE_EXPORT,
-    .alg              = PSA_ALG_CTR,
+    .alg              = PSA_ALG_CCM,
     .id               = 0x56,
     .lifetime         = PSA_KEY_LIFETIME_VOLATILE,
     .expected_status  = PSA_SUCCESS
 },
+#endif
 #endif
 #endif
 
@@ -109,7 +111,7 @@ static const test_data check1[] = {
 #endif
 #endif
 
-#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_DES_1KEY
 {
     .test_desc        = "Test psa_destroy_key with DES 64 bit key\n",

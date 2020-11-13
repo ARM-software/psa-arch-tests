@@ -30,7 +30,7 @@ typedef struct {
 static const test_data check1[] = {
 #ifdef ARCH_TEST_MD2
 {
-    .test_desc       = "Test psa_hash_compare with MD2 algorithm\n",
+    .test_desc       = "Test psa_hash_compare - MD2 algorithm\n",
     .alg             = PSA_ALG_MD2,
     .input           = &hash_input,
     .input_length    = sizeof(hash_input),
@@ -42,7 +42,7 @@ static const test_data check1[] = {
 
 #ifdef ARCH_TEST_MD4
 {
-    .test_desc       = "Test psa_hash_compare with MD4 algorithm\n",
+    .test_desc       = "Test psa_hash_compare - MD4 algorithm\n",
     .alg             = PSA_ALG_MD4,
     .input           = &hash_input,
     .input_length    = sizeof(hash_input),
@@ -54,7 +54,7 @@ static const test_data check1[] = {
 
 #ifdef ARCH_TEST_MD5
 {
-    .test_desc       = "Test psa_hash_compare with MD5 algorithm\n",
+    .test_desc       = "Test psa_hash_compare - MD5 algorithm\n",
     .alg             = PSA_ALG_MD5,
     .input           = &hash_input,
     .input_length    = sizeof(hash_input),
@@ -66,7 +66,7 @@ static const test_data check1[] = {
 
 #ifdef ARCH_TEST_RIPEMD160
 {
-    .test_desc       = "Test psa_hash_compare with RIPEMD160 algorithm\n",
+    .test_desc       = "Test psa_hash_compare - RIPEMD160 algorithm\n",
     .alg             = PSA_ALG_RIPEMD160,
     .input           = &hash_input,
     .input_length    = sizeof(hash_input),
@@ -78,7 +78,7 @@ static const test_data check1[] = {
 
 #ifdef ARCH_TEST_SHA1
 {
-    .test_desc       = "Test psa_hash_compare with SHA1 algorithm\n",
+    .test_desc       = "Test psa_hash_compare - SHA1 algorithm\n",
     .alg             = PSA_ALG_SHA_1,
     .input           = &hash_input,
     .input_length    = sizeof(hash_input),
@@ -90,7 +90,7 @@ static const test_data check1[] = {
 
 #ifdef ARCH_TEST_SHA224
 {
-    .test_desc       = "Test psa_hash_compare with SHA224 algorithm\n",
+    .test_desc       = "Test psa_hash_compare - SHA224 algorithm\n",
     .alg             = PSA_ALG_SHA_224,
     .input           = &hash_input,
     .input_length    = sizeof(hash_input),
@@ -102,7 +102,7 @@ static const test_data check1[] = {
 
 #ifdef ARCH_TEST_SHA256
 {
-    .test_desc       = "Test psa_hash_compare with SHA256 algorithm\n",
+    .test_desc       = "Test psa_hash_compare - SHA256 algorithm\n",
     .alg             = PSA_ALG_SHA_256,
     .input           = &hash_input,
     .input_length    = sizeof(hash_input),
@@ -114,7 +114,7 @@ static const test_data check1[] = {
 
 #ifdef ARCH_TEST_SHA384
 {
-    .test_desc       = "Test psa_hash_compare with SHA384 algorithm\n",
+    .test_desc       = "Test psa_hash_compare - SHA384 algorithm\n",
     .alg             = PSA_ALG_SHA_384,
     .input           = &hash_input,
     .input_length    = sizeof(hash_input),
@@ -126,7 +126,7 @@ static const test_data check1[] = {
 
 #ifdef ARCH_TEST_SHA512
 {
-    .test_desc       = "Test psa_hash_compare with SHA512 algorithm\n",
+    .test_desc       = "Test psa_hash_compare - SHA512 algorithm\n",
     .alg             = PSA_ALG_SHA_512,
     .input           = &hash_input,
     .input_length    = sizeof(hash_input),
@@ -138,7 +138,7 @@ static const test_data check1[] = {
 
 #ifdef ARCH_TEST_SHA256
 {
-    .test_desc       = "Test psa_hash_compare with incorrect hash\n",
+    .test_desc       = "Test psa_hash_compare - incorrect hash\n",
     .alg             = PSA_ALG_SHA_256,
     .input           = &hash_input,
     .input_length    = sizeof(hash_input),
@@ -148,7 +148,7 @@ static const test_data check1[] = {
 },
 
 {
-    .test_desc       = "Test psa_hash_compare with incorrect hash length\n",
+    .test_desc       = "Test psa_hash_compare - incorrect hash length\n",
     .alg             = PSA_ALG_SHA_256,
     .input           = &hash_input,
     .input_length    = sizeof(hash_input)/sizeof(uint8_t),
@@ -158,7 +158,7 @@ static const test_data check1[] = {
 },
 
 {
-    .test_desc       = "Test psa_hash_compare with invalid algorithm\n",
+    .test_desc       = "Test psa_hash_compare - invalid algorithm\n",
     .alg             = PSA_HASH_ALG_INVALID,
     .input           = &hash_input,
     .input_length    = sizeof(hash_input),

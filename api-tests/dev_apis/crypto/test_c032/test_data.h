@@ -29,7 +29,7 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
-#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc       = "Test psa_cipher_encrypt_setup 16 Byte AES\n",
@@ -111,7 +111,7 @@ static const test_data check1[] = {
 #endif
 #endif
 
-#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 {
     .test_desc       = "Test psa_cipher_encrypt_setup 16 Byte raw data\n",
     .type            = PSA_KEY_TYPE_RAW_DATA,
@@ -138,7 +138,7 @@ static const test_data check1[] = {
 },
 #endif
 
-#ifdef ARCH_TEST_CIPER
+#ifdef ARCH_TEST_CIPHER
 {
     .test_desc       = "Test psa_cipher_encrypt_setup - unknown cipher algorithm\n",
     .type            = PSA_KEY_TYPE_AES,
@@ -151,7 +151,7 @@ static const test_data check1[] = {
 },
 #endif
 
-#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_ARC4
 {
     .test_desc       = "Test psa_cipher_encrypt_setup - incompatible key ARC4\n",

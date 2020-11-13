@@ -33,16 +33,37 @@ include("common/Utils")
 include(${PSA_ROOT_DIR}/tools/cmake/common/CMakeSettings.cmake)
 include(${PSA_ROOT_DIR}/tools/cmake/common/CMakeExternal.cmake)
 
+if(NOT DEFINED TFM_PROFILE)
+	message(STATUS "[PSA] : Building Default profile")
+list(APPEND PSA_SUITES
+        "IPC"
+        "CRYPTO"
+        "INTERNAL_TRUSTED_STORAGE"
+        "PROTECTED_STORAGE"
+        "STORAGE"
+        "INITIAL_ATTESTATION"
+)
+else()
+
+if("${TFM_PROFILE}" STREQUAL "profile_small")
+# list of supported suites
+list(APPEND PSA_SUITES
+	"CRYPTO"
+	"INTERNAL_TRUSTED_STORAGE"
+	"INITIAL_ATTESTATION"
+)
+else()
 # list of supported suites
 list(APPEND PSA_SUITES
 	"IPC"
 	"CRYPTO"
-	"PROTECTED_STORAGE"
 	"INTERNAL_TRUSTED_STORAGE"
+	"PROTECTED_STORAGE"
 	"STORAGE"
 	"INITIAL_ATTESTATION"
 )
-
+endif()
+endif()
 # list of ipc files required
 list(APPEND PSA_IPC_FILES
 	"psa/client.h"
@@ -100,7 +121,11 @@ list(APPEND PSA_CPU_ARCH_SUPPORT
 list(APPEND PSA_VERBOSE_OPTIONS 1 2 3 4 5)
 
 # list of PLATFORM_PSA_ISOLATION_LEVEL options
+if("${TFM_PROFILE}" STREQUAL "profile_medium")
+list(APPEND PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS 1 2)
+else()
 list(APPEND PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS 1 2 3)
+endif()
 
 message(STATUS "[PSA] : ----------Process input arguments- start-------------")
 
@@ -243,7 +268,11 @@ endif()
 
 # Check for PLATFORM_PSA_ISOLATION_LEVEL
 if(NOT DEFINED PLATFORM_PSA_ISOLATION_LEVEL)
+	if("${TFM_PROFILE}" STREQUAL "profile_medium")
+	set(PLATFORM_PSA_ISOLATION_LEVEL 2 CACHE INTERNAL "Default PLATFORM_PSA_ISOLATION_LEVEL value" FORCE)
+	else()
 	set(PLATFORM_PSA_ISOLATION_LEVEL 3 CACHE INTERNAL "Default PLATFORM_PSA_ISOLATION_LEVEL value" FORCE)
+	endif()
 	if(${SUITE} STREQUAL "IPC")
         message(STATUS "[PSA] : Defaulting PLATFORM_PSA_ISOLATION_LEVEL to ${PLATFORM_PSA_ISOLATION_LEVEL}")
 	endif()
@@ -315,7 +344,7 @@ endif()
 message(STATUS "[PSA] : ----------Process input arguments- complete-------------")
 
 
-if((${SUITE} STREQUAL "INITIAL_ATTESTATION") AND (NOT EXISTS ${PSA_TARGET_QCBOR}))
+if((${SUITE} STREQUAL "INITIAL_ATTESTATION") AND (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}))
 # Clone QCBOR and move to specified tag
 execute_process(COMMAND ${GIT_EXECUTABLE} clone ${PSA_QCBOR_GIT_REPO_LINK} ${PSA_TARGET_QCBOR}
 	RESULT_VARIABLE ${PSA_TARGET_QCBOR}_clone_result
@@ -421,7 +450,13 @@ add_definitions(-D${SUITE})
 add_definitions(-DVERBOSE=${VERBOSE})
 add_definitions(-DPLATFORM_PSA_ISOLATION_LEVEL=${PLATFORM_PSA_ISOLATION_LEVEL})
 add_definitions(-D${TARGET})
-
+if("${TFM_PROFILE}" STREQUAL "profile_small")
+	message(STATUS "[PSA] : Building SMALL profile")
+	add_definitions(-DTF_M_PROFILE_SMALL)
+elseif("${TFM_PROFILE}" STREQUAL "profile_medium")
+	message(STATUS "[PSA] : Building MEDIUM profile")
+	add_definitions(-DTF_M_PROFILE_MEDIUM)
+endif()
 if(${SP_HEAP_MEM_SUPP} EQUAL 1)
 	add_definitions(-DSP_HEAP_MEM_SUPP)
 endif()
