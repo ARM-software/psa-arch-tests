@@ -37,11 +37,11 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_RSA_1024
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 {
-    .test_desc                 = "Test psa_asymmetric_sign - RSA KEY_PAIR PKCS1V15 RAW\n",
+    .test_desc                 = "Test psa_sign_hash - RSA KEY_PAIR PKCS1V15 RAW\n",
     .type                      = PSA_KEY_TYPE_RSA_KEY_PAIR,
     .data                      = rsa_128_key_pair,
     .data_length               = 610,
-    .usage_flags               = PSA_KEY_USAGE_SIGN,
+    .usage_flags               = PSA_KEY_USAGE_SIGN_HASH,
     .alg                       = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
     .hash                      = sha_256_hash,
     .hash_length               = 32,
@@ -56,11 +56,11 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN
 #ifdef ARCH_TEST_SHA256
 {
-    .test_desc                 = "Test psa_asymmetric_sign - RSA KEY_PAIR PKCS1V15 SHA-256\n",
+    .test_desc                 = "Test psa_sign_hash - RSA KEY_PAIR PKCS1V15 SHA-256\n",
     .type                      = PSA_KEY_TYPE_RSA_KEY_PAIR,
     .data                      = rsa_128_key_pair,
     .data_length               = 610,
-    .usage_flags               = PSA_KEY_USAGE_SIGN,
+    .usage_flags               = PSA_KEY_USAGE_SIGN_HASH,
     .alg                       = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
     .hash                      = sha_256_hash,
     .hash_length               = 32,
@@ -78,11 +78,11 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_DETERMINISTIC_ECDSA
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {
-    .test_desc                 = "Test psa_asymmetric_sign - ECDSA SECP256R1 SHA-256\n",
+    .test_desc                 = "Test psa_sign_hash - ECDSA SECP256R1 SHA-256\n",
     .type                      = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1),
     .data                      = ec_keypair,
     .data_length               = 32,
-    .usage_flags               = PSA_KEY_USAGE_SIGN,
+    .usage_flags               = PSA_KEY_USAGE_SIGN_HASH,
     .alg                       = PSA_ALG_DETERMINISTIC_ECDSA(PSA_ALG_SHA_256),
     .hash                      = sha_256_hash,
     .hash_length               = 32,
@@ -98,11 +98,11 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_RSA_1024
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN
 {
-    .test_desc                 = "Test psa_asymmetric_sign - Invalid key type (RSA public key)\n",
+    .test_desc                 = "Test psa_sign_hash - Invalid key type (RSA public key)\n",
     .type                      = PSA_KEY_TYPE_RSA_PUBLIC_KEY,
     .data                      = rsa_128_key_data,
     .data_length               = 162,
-    .usage_flags               = PSA_KEY_USAGE_SIGN,
+    .usage_flags               = PSA_KEY_USAGE_SIGN_HASH,
     .alg                       = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
     .hash                      = NULL,
     .hash_length               = 0,
@@ -114,11 +114,11 @@ static const test_data check1[] = {
 },
 
 {
-    .test_desc                 = "Test psa_asymmetric_sign - Small output buffer\n",
+    .test_desc                 = "Test psa_sign_hash - Small output buffer\n",
     .type                      = PSA_KEY_TYPE_RSA_KEY_PAIR,
     .data                      = rsa_128_key_pair,
     .data_length               = 610,
-    .usage_flags               = PSA_KEY_USAGE_SIGN,
+    .usage_flags               = PSA_KEY_USAGE_SIGN_HASH,
     .alg                       = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
     .hash                      = sha_256_hash,
     .hash_length               = 32,
@@ -131,11 +131,11 @@ static const test_data check1[] = {
 #endif
 
 {
-    .test_desc                 = "Test psa_asymmetric_sign - Invalid algorithm\n",
+    .test_desc                 = "Test psa_sign_hash - Invalid algorithm\n",
     .type                      = PSA_KEY_TYPE_RSA_KEY_PAIR,
     .data                      = rsa_128_key_pair,
     .data_length               = 610,
-    .usage_flags               = PSA_KEY_USAGE_SIGN,
+    .usage_flags               = PSA_KEY_USAGE_SIGN_HASH,
     .alg                       = PSA_ALG_SHA_256,
     .hash                      = NULL,
     .hash_length               = 0,
@@ -150,11 +150,11 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN
 #ifdef ARCH_TEST_AES_128
 {
-    .test_desc                 = "Test psa_asymmetric_sign - Invalid key type (AES Key)\n",
+    .test_desc                 = "Test psa_sign_hash - Invalid key type (AES Key)\n",
     .type                      = PSA_KEY_TYPE_AES,
     .data                      = key_data,
     .data_length               = AES_16B_KEY_SIZE,
-    .usage_flags               = PSA_KEY_USAGE_SIGN,
+    .usage_flags               = PSA_KEY_USAGE_SIGN_HASH,
     .alg                       = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
     .hash                      = NULL,
     .hash_length               = 0,
@@ -171,7 +171,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_RSA_1024
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 {
-    .test_desc                 = "Test psa_asymmetric_sign - Invalid usage\n",
+    .test_desc                 = "Test psa_sign_hash - Invalid usage\n",
     .type                      = PSA_KEY_TYPE_RSA_KEY_PAIR,
     .data                      = rsa_128_key_pair,
     .data_length               = 610,
@@ -190,11 +190,11 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN
 #ifdef ARCH_TEST_SHA256
 {
-    .test_desc                 = "Test psa_asymmetric_sign - Wrong hash size\n",
+    .test_desc                 = "Test psa_sign_hash - Wrong hash size\n",
     .type                      = PSA_KEY_TYPE_RSA_KEY_PAIR,
     .data                      = rsa_128_key_pair,
     .data_length               = 610,
-    .usage_flags               = PSA_KEY_USAGE_SIGN,
+    .usage_flags               = PSA_KEY_USAGE_SIGN_HASH,
     .alg                       = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
     .hash                      = sha_256_hash,
     .hash_length               = 31,

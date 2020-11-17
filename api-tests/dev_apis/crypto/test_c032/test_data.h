@@ -146,7 +146,7 @@ static const test_data check1[] = {
     .data_length     = AES_16B_KEY_SIZE,
     .bits            = BYTES_TO_BITS(AES_16B_KEY_SIZE),
     .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
-    .alg             = PSA_ALG_CATEGORY_CIPHER,
+    .alg             = PSA_ALG_NONE,
     .expected_status = PSA_ERROR_NOT_SUPPORTED
 },
 #endif
@@ -213,7 +213,7 @@ static const test_data check1[] = {
     .data_length     = 65,
     .bits            = 256,
     .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
-    .alg             = PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
+    .alg             = PSA_ALG_ECDSA_ANY,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif
@@ -226,7 +226,7 @@ static const test_data check1[] = {
     .data_length     = 28,
     .bits            = 224,
     .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
-    .alg             = PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
+    .alg             = PSA_ALG_ECDSA_ANY,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif

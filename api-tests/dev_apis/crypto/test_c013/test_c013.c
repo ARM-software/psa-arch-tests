@@ -58,21 +58,28 @@ int32_t psa_hash_verify_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
         /* Start a multipart hash operation */
-        status = val->crypto_function(VAL_CRYPTO_HASH_SETUP, &operation, check1[i].alg);
+        status = val->crypto_function(VAL_CRYPTO_HASH_SETUP,
+                                      &operation,
+                                      check1[i].alg);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Add a message fragment to a multipart hash operation */
-        status = val->crypto_function(VAL_CRYPTO_HASH_UPDATE, &operation,
-                                      check1[i].input, check1[i].input_length);
+        status = val->crypto_function(VAL_CRYPTO_HASH_UPDATE,
+                                      &operation,
+                                      check1[i].input,
+                                      check1[i].input_length);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
         /* Finish the calculation of the hash of a message and compare it with an expected value*/
-        status = val->crypto_function(VAL_CRYPTO_HASH_VERIFY, &operation, check1[i].hash,
-                                       check1[i].hash_length);
+        status = val->crypto_function(VAL_CRYPTO_HASH_VERIFY,
+                                      &operation,
+                                      check1[i].hash,
+                                      check1[i].hash_length);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(5));
 
         /*Abort the hash operation */
-        status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &operation);
+        status = val->crypto_function(VAL_CRYPTO_HASH_ABORT,
+                                      &operation);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
         if (valid_test_input_index < 0)
@@ -103,36 +110,42 @@ int32_t psa_hash_verify_inactive_operation_handle(caller_security_t caller __UNU
     TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
     /* Start a multipart hash operation */
-    status = val->crypto_function(VAL_CRYPTO_HASH_SETUP, &operation,
+    status = val->crypto_function(VAL_CRYPTO_HASH_SETUP,
+                                  &operation,
                                   check1[valid_test_input_index].alg);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
     /* Add a message fragment to a multipart hash operation */
-    status = val->crypto_function(VAL_CRYPTO_HASH_UPDATE, &operation,
+    status = val->crypto_function(VAL_CRYPTO_HASH_UPDATE,
+                                  &operation,
                                   check1[valid_test_input_index].input,
-                                  check1[valid_test_input_index]. input_length);
+                                  check1[valid_test_input_index].input_length);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
     /* Finish the calculation of the hash of a message and compare it with an expected value*/
-    status = val->crypto_function(VAL_CRYPTO_HASH_VERIFY, &operation,
+    status = val->crypto_function(VAL_CRYPTO_HASH_VERIFY,
+                                  &operation,
                                   check1[valid_test_input_index].hash,
                                   check1[valid_test_input_index].hash_length);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
     /* Retry the operation with completed operation handle */
-    status = val->crypto_function(VAL_CRYPTO_HASH_VERIFY, &operation,
+    status = val->crypto_function(VAL_CRYPTO_HASH_VERIFY,
+                                  &operation,
                                   check1[valid_test_input_index].hash,
                                   check1[valid_test_input_index].hash_length);
     TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(6));
 
     /* Retry the operation with invalid operation handle */
-    status = val->crypto_function(VAL_CRYPTO_HASH_VERIFY, &invalid_operation,
+    status = val->crypto_function(VAL_CRYPTO_HASH_VERIFY,
+                                  &invalid_operation,
                                   check1[valid_test_input_index].hash,
                                   check1[valid_test_input_index].hash_length);
     TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(7));
 
     /*Abort the hash operation */
-    status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &operation);
+    status = val->crypto_function(VAL_CRYPTO_HASH_ABORT,
+                                  &operation);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
     return VAL_STATUS_SUCCESS;

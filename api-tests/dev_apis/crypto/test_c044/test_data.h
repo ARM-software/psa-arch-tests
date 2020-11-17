@@ -38,19 +38,18 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
-#ifdef ARCH_TEST_AES
-#ifdef ARCH_TEST_CCM
+#ifdef ARCH_TEST_CIPER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc            = "Test psa_copy_key - 16 Byte AES\n",
     .type                 = PSA_KEY_TYPE_AES,
-    .alg                  = PSA_ALG_CCM,
+    .alg                  = PSA_ALG_CTR,
     .usage_flags          = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
     .lifetime             = PSA_KEY_LIFETIME_VOLATILE,
     .data                 = key_data,
     .data_length          = AES_16B_KEY_SIZE,
     .target_type          = PSA_KEY_TYPE_AES,
-    .target_alg           = PSA_ALG_CCM,
+    .target_alg           = PSA_ALG_CTR,
     .target_usage_flags   = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
     .target_lifetime      = PSA_KEY_LIFETIME_VOLATILE,
     .target_bits          = BYTES_TO_BITS(AES_16B_KEY_SIZE),
@@ -64,13 +63,13 @@ static const test_data check1[] = {
 {
     .test_desc            = "Test psa_copy_key - without copy usage\n",
     .type                 = PSA_KEY_TYPE_AES,
-    .alg                  = PSA_ALG_CCM,
+    .alg                  = PSA_ALG_CTR,
     .usage_flags          = PSA_KEY_USAGE_EXPORT,
     .lifetime             = PSA_KEY_LIFETIME_VOLATILE,
     .data                 = key_data,
     .data_length          = AES_16B_KEY_SIZE,
     .target_type          = PSA_KEY_TYPE_AES,
-    .target_alg           = PSA_ALG_CCM,
+    .target_alg           = PSA_ALG_CTR,
     .target_usage_flags   = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
     .target_lifetime      = PSA_KEY_LIFETIME_VOLATILE,
     .target_bits          = BYTES_TO_BITS(AES_16B_KEY_SIZE),
@@ -84,13 +83,13 @@ static const test_data check1[] = {
 {
     .test_desc            = "Test psa_copy_key - invalid lifetime\n",
     .type                 = PSA_KEY_TYPE_AES,
-    .alg                  = PSA_ALG_CCM,
+    .alg                  = PSA_ALG_CTR,
     .usage_flags          = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
     .lifetime             = PSA_KEY_LIFETIME_VOLATILE,
     .data                 = key_data,
     .data_length          = AES_16B_KEY_SIZE,
     .target_type          = PSA_KEY_TYPE_AES,
-    .target_alg           = PSA_ALG_CCM,
+    .target_alg           = PSA_ALG_CTR,
     .target_usage_flags   = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
     .target_lifetime      = PSA_KEY_LIFETIME_PERSISTENT,
     .target_bits          = BYTES_TO_BITS(AES_16B_KEY_SIZE),
@@ -104,13 +103,13 @@ static const test_data check1[] = {
 {
     .test_desc            = "Test psa_copy_key - invalid key type\n",
     .type                 = PSA_KEY_TYPE_AES,
-    .alg                  = PSA_ALG_CCM,
+    .alg                  = PSA_ALG_CTR,
     .usage_flags          = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
     .lifetime             = PSA_KEY_LIFETIME_VOLATILE,
     .data                 = key_data,
     .data_length          = AES_16B_KEY_SIZE,
     .target_type          = PSA_KEY_TYPE_DES,
-    .target_alg           = PSA_ALG_CCM,
+    .target_alg           = PSA_ALG_CTR,
     .target_usage_flags   = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
     .target_lifetime      = PSA_KEY_LIFETIME_VOLATILE,
     .target_bits          = BYTES_TO_BITS(AES_16B_KEY_SIZE),
@@ -124,13 +123,13 @@ static const test_data check1[] = {
 {
     .test_desc            = "Test psa_copy_key - invalid key bits\n",
     .type                 = PSA_KEY_TYPE_AES,
-    .alg                  = PSA_ALG_CCM,
+    .alg                  = PSA_ALG_CTR,
     .usage_flags          = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
     .lifetime             = PSA_KEY_LIFETIME_VOLATILE,
     .data                 = key_data,
     .data_length          = AES_16B_KEY_SIZE,
     .target_type          = PSA_KEY_TYPE_AES,
-    .target_alg           = PSA_ALG_CCM,
+    .target_alg           = PSA_ALG_CTR,
     .target_usage_flags   = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
     .target_lifetime      = PSA_KEY_LIFETIME_VOLATILE,
     .target_bits          = BYTES_TO_BITS(AES_16B_KEY_SIZE)-1,
@@ -146,13 +145,13 @@ static const test_data check1[] = {
 {
     .test_desc            = "Test psa_copy_key - 24 Byte AES\n",
     .type                 = PSA_KEY_TYPE_AES,
-    .alg                  = PSA_ALG_CCM,
+    .alg                  = PSA_ALG_CTR,
     .usage_flags          = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT | PSA_KEY_USAGE_ENCRYPT,
     .lifetime             = PSA_KEY_LIFETIME_VOLATILE,
     .data                 = key_data,
     .data_length          = AES_24B_KEY_SIZE,
     .target_type          = PSA_KEY_TYPE_AES,
-    .target_alg           = PSA_ALG_CCM,
+    .target_alg           = PSA_ALG_CTR,
     .target_usage_flags   = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT | PSA_KEY_USAGE_ENCRYPT,
     .target_lifetime      = PSA_KEY_LIFETIME_VOLATILE,
     .target_bits          = BYTES_TO_BITS(AES_24B_KEY_SIZE),
@@ -168,13 +167,13 @@ static const test_data check1[] = {
 {
     .test_desc            = "Test psa_copy_key - 32 Byte AES\n",
     .type                 = PSA_KEY_TYPE_AES,
-    .alg                  = PSA_ALG_CCM,
+    .alg                  = PSA_ALG_CTR,
     .usage_flags          = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT | PSA_KEY_USAGE_DECRYPT,
     .lifetime             = PSA_KEY_LIFETIME_VOLATILE,
     .data                 = key_data,
     .data_length          = AES_32B_KEY_SIZE,
     .target_type          = PSA_KEY_TYPE_AES,
-    .target_alg           = PSA_ALG_CCM,
+    .target_alg           = PSA_ALG_CTR,
     .target_usage_flags   = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT | PSA_KEY_USAGE_ENCRYPT,
     .target_lifetime      = PSA_KEY_LIFETIME_VOLATILE,
     .target_bits          = BYTES_TO_BITS(AES_32B_KEY_SIZE),
@@ -186,7 +185,6 @@ static const test_data check1[] = {
 },
 #endif
 #endif
-#endif
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 #ifdef ARCH_TEST_RSA_2048
@@ -194,7 +192,7 @@ static const test_data check1[] = {
     .test_desc            = "Test psa_copy_key - 2048 RSA public key\n",
     .type                 = PSA_KEY_TYPE_RSA_PUBLIC_KEY,
     .alg                  = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
-    .usage_flags          = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT | PSA_KEY_USAGE_SIGN,
+    .usage_flags          = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT | PSA_KEY_USAGE_SIGN_HASH,
     .lifetime             = PSA_KEY_LIFETIME_VOLATILE,
     .data                 = rsa_256_key_data,
     .data_length          = 270,
@@ -220,7 +218,7 @@ static const test_data check1[] = {
     .data_length          = 1193,
     .target_type          = PSA_KEY_TYPE_RSA_KEY_PAIR,
     .target_alg           = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
-    .target_usage_flags   = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT | PSA_KEY_USAGE_VERIFY,
+    .target_usage_flags   = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT | PSA_KEY_USAGE_VERIFY_HASH,
     .target_lifetime      = PSA_KEY_LIFETIME_VOLATILE,
     .target_bits          = BYTES_TO_BITS(256),
     .expected_usage_flags = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
@@ -254,7 +252,7 @@ static const test_data check1[] = {
     .test_desc            = "Test psa_copy_key - source key with no export usage\n",
     .type                 = PSA_KEY_TYPE_RSA_KEY_PAIR,
     .alg                  = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
-    .usage_flags          = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_SIGN,
+    .usage_flags          = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_SIGN_HASH,
     .lifetime             = PSA_KEY_LIFETIME_VOLATILE,
     .data                 = rsa_256_key_pair,
     .data_length          = 1193,

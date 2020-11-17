@@ -26,7 +26,7 @@ extern val_api_t *val;
 extern psa_api_t *psa;
 extern const client_test_t test_c051_crypto_list[];
 
-int32_t psa_close_key_test(caller_security_t caller);
+int32_t psa_verify_message_test(caller_security_t caller);
+int32_t psa_verify_message_negative_test(caller_security_t caller);
 extern void crypto_common_exit_action(void);
-
 #endif /* _TEST_C051_CLIENT_TESTS_H_ */

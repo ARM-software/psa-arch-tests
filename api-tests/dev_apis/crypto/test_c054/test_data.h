@@ -15,52 +15,197 @@
  * limitations under the License.
 **/
 
-#include "val_crypto.h"
+#include "test_crypto_common.h"
 
 typedef struct {
     char                    test_desc[75];
-    psa_key_type_t          key_type;
-    uint8_t                 key_data[32];
-    uint32_t                key_length;
-    psa_key_usage_t         usage;
-    psa_algorithm_t         key_alg;
+    psa_key_type_t          type;
+    const uint8_t          *data;
+    size_t                  data_length;
+    psa_key_usage_t         usage_flags;
     psa_algorithm_t         alg;
+    psa_algorithm_t         setup_alg;
+    uint8_t                *nonce;
     size_t                  nonce_size;
+    uint32_t                operation_state;
     psa_status_t            expected_status;
 } test_data;
 
 static const test_data check1[] = {
-#ifdef ARCH_TEST_CCM
 #ifdef ARCH_TEST_AES_128
-{"Test psa_aead_generate_nonce - AES-CCM\n", PSA_KEY_TYPE_AES,
-{0xD7, 0x82, 0x8D, 0x13, 0xB2, 0xB0, 0xBD, 0xC3, 0x25, 0xA7, 0x62, 0x36, 0xDF,
- 0x93, 0xCC, 0x6B},
- AES_16B_KEY_SIZE, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CCM, PSA_ALG_CCM, SIZE_32B,
- PSA_SUCCESS
+#ifdef ARCH_TEST_CCM
+{
+    .test_desc       = "Test psa_aead_generate_nonce - Encrypt - CCM\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
+    .alg             = PSA_ALG_CCM,
+    .setup_alg       = PSA_ALG_CCM,
+    .nonce           = expected_output,
+    .nonce_size      = BUFFER_SIZE,
+    .operation_state = 1,
+    .expected_status = PSA_SUCCESS
 },
 
-{"Test psa_aead_generate_nonce - AES-CCM 24 bytes Tag length = 4\n", PSA_KEY_TYPE_AES,
-{0x41, 0x89, 0x35, 0x1B, 0x5C, 0xAE, 0xA3, 0x75, 0xA0, 0x29, 0x9E, 0x81, 0xC6,
- 0x21, 0xBF, 0x43}, AES_16B_KEY_SIZE, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CCM,
- PSA_ALG_AEAD_WITH_TAG_LENGTH(PSA_ALG_CCM, 4), SIZE_32B,
- PSA_SUCCESS
+{
+    .test_desc       = "Test psa_aead_generate_nonce - Encrypt - CCM - Tag length = 4\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
+    .alg             = PSA_ALG_CCM,
+    .setup_alg       = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
+    .nonce           = expected_output,
+    .nonce_size      = BUFFER_SIZE,
+    .operation_state = 1,
+    .expected_status = PSA_SUCCESS
 },
 
-{"Test psa_aead_generate_nonce - Small buffer size\n", PSA_KEY_TYPE_AES,
-{0xD7, 0x82, 0x8D, 0x13, 0xB2, 0xB0, 0xBD, 0xC3, 0x25, 0xA7, 0x62, 0x36, 0xDF,
- 0x93, 0xCC, 0x6B},
- AES_16B_KEY_SIZE, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CCM, PSA_ALG_CCM, 8,
- PSA_ERROR_BUFFER_TOO_SMALL
+{
+    .test_desc       = "Test psa_aead_generate_nonce - Encrypt - CCM - Default Tag length\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
+    .alg             = PSA_ALG_CCM,
+    .setup_alg       = PSA_ALG_AEAD_WITH_DEFAULT_LENGTH_TAG(PSA_ALG_CCM),
+    .nonce           = expected_output,
+    .nonce_size      = BUFFER_SIZE,
+    .operation_state = 1,
+    .expected_status = PSA_SUCCESS
 },
-#endif
+
+{
+    .test_desc       = "Test psa_aead_generate_nonce - Encrypt - CCM - Small buffer size\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
+    .alg             = PSA_ALG_CCM,
+    .setup_alg       = PSA_ALG_CCM,
+    .nonce           = expected_output,
+    .nonce_size      = PSA_AEAD_NONCE_LENGTH(PSA_KEY_TYPE_AES, PSA_ALG_CCM) - 1,
+    .operation_state = 1,
+    .expected_status = PSA_ERROR_BUFFER_TOO_SMALL
+},
+
+{
+    .test_desc       = "Test psa_aead_generate_nonce - Encrypt - CCM - Invalid operation state\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
+    .alg             = PSA_ALG_CCM,
+    .setup_alg       = PSA_ALG_CCM,
+    .nonce           = expected_output,
+    .nonce_size      = BUFFER_SIZE,
+    .operation_state = 0,
+    .expected_status = PSA_ERROR_BAD_STATE
+},
 #endif
 
 #ifdef ARCH_TEST_GCM
-#ifdef ARCH_TEST_AES_128
-{"Test psa_aead_generate_nonce - GCM - 16B AES - 12B Nounce & 12B addi data\n", PSA_KEY_TYPE_AES,
-{0x3d, 0xe0, 0x98, 0x74, 0xb3, 0x88, 0xe6, 0x49, 0x19, 0x88, 0xd0, 0xc3, 0x60,
- 0x7e, 0xae, 0x1f}, AES_16B_KEY_SIZE, PSA_KEY_USAGE_ENCRYPT, PSA_ALG_GCM, PSA_ALG_GCM, SIZE_32B,
- PSA_SUCCESS
+{
+    .test_desc       = "Test psa_aead_generate_nonce - Encrypt - GCM\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
+    .alg             = PSA_ALG_GCM,
+    .setup_alg       = PSA_ALG_GCM,
+    .nonce           = expected_output,
+    .nonce_size      = BUFFER_SIZE,
+    .operation_state = 1,
+    .expected_status = PSA_SUCCESS
+},
+#endif
+
+#ifdef ARCH_TEST_CCM
+{
+    .test_desc       = "Test psa_aead_generate_nonce - Decrypt - CCM\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_DECRYPT,
+    .alg             = PSA_ALG_CCM,
+    .setup_alg       = PSA_ALG_CCM,
+    .nonce           = expected_output,
+    .nonce_size      = BUFFER_SIZE,
+    .operation_state = 1,
+    .expected_status = PSA_SUCCESS
+},
+
+{
+    .test_desc       = "Test psa_aead_generate_nonce - Decrypt - CCM - Tag length = 4\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_DECRYPT,
+    .alg             = PSA_ALG_CCM,
+    .setup_alg       = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
+    .nonce           = expected_output,
+    .nonce_size      = BUFFER_SIZE,
+    .operation_state = 1,
+    .expected_status = PSA_SUCCESS
+},
+
+{
+    .test_desc       = "Test psa_aead_generate_nonce - Decrypt - CCM - Default Tag length\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_DECRYPT,
+    .alg             = PSA_ALG_CCM,
+    .setup_alg       = PSA_ALG_AEAD_WITH_DEFAULT_LENGTH_TAG(PSA_ALG_CCM),
+    .nonce           = expected_output,
+    .nonce_size      = BUFFER_SIZE,
+    .operation_state = 1,
+    .expected_status = PSA_SUCCESS
+},
+
+{
+    .test_desc       = "Test psa_aead_generate_nonce - Decrypt - CCM - Small buffer size\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_DECRYPT,
+    .alg             = PSA_ALG_CCM,
+    .setup_alg       = PSA_ALG_CCM,
+    .nonce           = expected_output,
+    .nonce_size      = PSA_AEAD_NONCE_LENGTH(PSA_KEY_TYPE_AES, PSA_ALG_CCM) - 1,
+    .operation_state = 1,
+    .expected_status = PSA_ERROR_BUFFER_TOO_SMALL
+},
+
+{
+    .test_desc       = "Test psa_aead_generate_nonce - Decrypt - CCM - Invalid operation state\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_DECRYPT,
+    .alg             = PSA_ALG_CCM,
+    .setup_alg       = PSA_ALG_CCM,
+    .nonce           = expected_output,
+    .nonce_size      = BUFFER_SIZE,
+    .operation_state = 0,
+    .expected_status = PSA_ERROR_BAD_STATE
+},
+#endif
+
+#ifdef ARCH_TEST_GCM
+{
+    .test_desc       = "Test psa_aead_generate_nonce - Decrypt - GCM\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_DECRYPT,
+    .alg             = PSA_ALG_GCM,
+    .setup_alg       = PSA_ALG_GCM,
+    .nonce           = expected_output,
+    .nonce_size      = BUFFER_SIZE,
+    .operation_state = 1,
+    .expected_status = PSA_SUCCESS
 },
 #endif
 #endif

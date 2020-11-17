@@ -187,8 +187,10 @@ Done:
     return status;
 }
 
-static int32_t pal_attest_get_public_key(uint8_t *public_key_buff, size_t public_key_buf_size,
-                                       size_t *public_key_len, psa_ecc_curve_t *elliptic_curve_type)
+static int32_t pal_attest_get_public_key(uint8_t          *public_key_buff,
+                                         size_t            public_key_buf_size,
+                                         size_t           *public_key_len,
+                                         psa_ecc_family_t *elliptic_family_type)
 {
     int32_t     status = PAL_ATTEST_ERROR;
 
@@ -197,14 +199,14 @@ static int32_t pal_attest_get_public_key(uint8_t *public_key_buff, size_t public
         return PAL_ATTEST_ERR_SMALL_BUFFER;
 
     *public_key_len = (attest_key.pubx_key_size + attest_key.puby_key_size + 1);
-    *elliptic_curve_type = PSA_ECC_CURVE_SECP256R1;
+    *elliptic_family_type = PSA_ECC_CURVE_SECP256R1;
     memcpy(public_key_buff, (void *)&attest_public_key, *public_key_len);
     status = PSA_SUCCESS;
 #else
     status = tfm_initial_attest_get_public_key(public_key_buff,
                                                public_key_buf_size,
                                                public_key_len,
-                                               elliptic_curve_type);
+                                               elliptic_family_type);
 #endif
 
     return status;
@@ -214,7 +216,7 @@ static uint32_t pal_import_attest_key(psa_algorithm_t key_alg)
 {
     psa_status_t     status             = PAL_ATTEST_ERROR;
     psa_key_usage_t  usage              = PSA_KEY_USAGE_VERIFY;
-    psa_ecc_curve_t  ecc_curve;
+    psa_ecc_family_t ecc_family;
     psa_key_type_t   attest_key_type;
     size_t           public_key_size;
     uint8_t          public_key_buff[ECC_CURVE_SECP256R1_PULBIC_KEY_LENGTH] = {0};
@@ -227,12 +229,15 @@ static uint32_t pal_import_attest_key(psa_algorithm_t key_alg)
         status = pal_attest_get_public_key(public_key_buff,
                                            sizeof(public_key_buff),
                                            &public_key_size,
-                                           &ecc_curve);
+                                           &ecc_family);
         if (status != PSA_SUCCESS)
             return PAL_ATTEST_ERR_KEY_FAIL;
 
+        if (ecc_family == USHRT_MAX)
+            return PAL_ATTEST_ERROR;
+
         /* Set key type for public key */
-        attest_key_type = PSA_KEY_TYPE_ECC_PUBLIC_KEY(ecc_curve);
+        attest_key_type = PSA_KEY_TYPE_ECC_PUBLIC_KEY(ecc_family);
 
         /* Setup the key policy for public key */
         policy = psa_key_policy_init();
@@ -265,12 +270,15 @@ static uint32_t pal_import_attest_key(psa_algorithm_t key_alg)
         status = pal_attest_get_public_key(public_key_buff,
                                            sizeof(public_key_buff),
                                            &public_key_size,
-                                           &ecc_curve);
+                                           &ecc_family);
         if (status != PSA_SUCCESS)
             return PAL_ATTEST_ERR_KEY_FAIL;
 
+        if (ecc_family == USHRT_MAX)
+            return PAL_ATTEST_ERROR;
+
         /* Set key type for public key */
-        attest_key_type = PSA_KEY_TYPE_ECC_PUBLIC_KEY(ecc_curve);
+        attest_key_type = PSA_KEY_TYPE_ECC_PUBLIC_KEY(ecc_family);
 
         /* Set the attributes for the public key */
         psa_set_key_type(&attributes, attest_key_type);
@@ -325,7 +333,7 @@ uint32_t pal_crypto_pub_key_verify(int32_t cose_algorithm_id,
         return status;
 
     /* Verify the signature */
-    status = psa_asymmetric_verify(public_key_handle,
+    status = psa_verify_hash(public_key_handle,
                                    key_alg, token_hash.ptr, token_hash.len,
                                    signature.ptr, signature.len);
     if (status != PSA_SUCCESS)

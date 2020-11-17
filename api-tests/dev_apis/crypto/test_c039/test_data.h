@@ -244,14 +244,13 @@ static const test_data check1[] = {
 
 #ifdef ARCH_TEST_ECDSA
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
-#ifdef ARCH_TEST_ECC_ASYMMETRIC_API_SUPPORT
 {
     .test_desc              = "Test psa_asymmetric_encrypt - ECC public key\n",
     .type                   = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
     .data                   = ec_key_data,
     .data_length            = 65,
     .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
-    .alg                    = PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
+    .alg                    = PSA_ALG_ECDSA_ANY,
     .input                  = NULL,
     .input_length           = 0,
     .salt                   = NULL,
@@ -261,7 +260,6 @@ static const test_data check1[] = {
     .expected_output_length = 0,
     .expected_status        = PSA_ERROR_NOT_SUPPORTED
 },
-#endif
 #endif
 #endif
 };

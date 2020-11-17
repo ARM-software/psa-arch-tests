@@ -28,6 +28,7 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc       = "Test psa_import_key 16 bytes AES\n",
@@ -63,6 +64,7 @@ static const test_data check1[] = {
     .usage_flags     = PSA_KEY_USAGE_EXPORT,
     .expected_status = PSA_SUCCESS
 },
+#endif
 #endif
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
@@ -153,6 +155,7 @@ static const test_data check1[] = {
 #endif
 #endif
 
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_AES
 {
     .test_desc       = "Test psa_import_key 16 bytes AES with invalid bits\n",
@@ -194,4 +197,6 @@ static const test_data check1[] = {
     .usage_flags     = PSA_KEY_USAGE_EXPORT,
     .expected_status = PSA_ERROR_NOT_SUPPORTED
 },
+
+#endif
 };

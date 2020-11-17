@@ -33,7 +33,7 @@ int32_t psa_key_derivation_output_bytes_test(caller_security_t caller __UNUSED)
     int32_t                         num_checks = sizeof(check1)/sizeof(check1[0]);
     psa_key_attributes_t            attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_key_derivation_operation_t  operation;
-    psa_key_handle_t                handle;
+    psa_key_id_t                    key;
 
     if (num_checks == 0)
     {
@@ -62,7 +62,7 @@ int32_t psa_key_derivation_output_bytes_test(caller_security_t caller __UNUSED)
 
         /* Import the key data into the key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
-                                      check1[i].data_length, &handle);
+                                      check1[i].data_length, &key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Start the key derivation operation */
@@ -79,14 +79,14 @@ int32_t psa_key_derivation_output_bytes_test(caller_security_t caller __UNUSED)
         for (inIdx = 0; inIdx < DERIVATION_INPUT_CNT; inIdx++)
         {
             if ((check1[i].derv_inputs[inIdx].step        == 0) &&
-               (check1[i].derv_inputs[inIdx].data        == NULL) &&
-               (check1[i].derv_inputs[inIdx].data_length == 0))
+                (check1[i].derv_inputs[inIdx].data        == NULL) &&
+                (check1[i].derv_inputs[inIdx].data_length == 0))
                 continue;
 
             if (check1[i].derv_inputs[inIdx].step == PSA_KEY_DERIVATION_INPUT_SECRET)
             {
                 status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY, &operation,
-                                              check1[i].derv_inputs[inIdx].step, handle);
+                                              check1[i].derv_inputs[inIdx].step, key);
                 TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
             } else {
                 status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_BYTES, &operation,
@@ -102,7 +102,7 @@ int32_t psa_key_derivation_output_bytes_test(caller_security_t caller __UNUSED)
                                       check1[i].output, check1[i].output_length);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(8));
 
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
         /* Reset the key attributes */

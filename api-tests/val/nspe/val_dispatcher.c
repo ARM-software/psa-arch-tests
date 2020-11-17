@@ -28,6 +28,38 @@ extern psa_api_t psa_api;
 addr_t          g_test_info_addr;
 
 /**
+    @brief        - This function prints PSA_{SUITE}_API_VERSION_MAJOR
+                    PSA_{SUITE}_API_VERSION_MINOR details.
+    @param        - None
+    @return       - None
+**/
+static void val_print_api_version(void)
+{
+#ifdef CRYPTO
+    val_print(PRINT_ALWAYS, " %d.", PSA_CRYPTO_API_VERSION_MAJOR);
+    val_print(PRINT_ALWAYS, "%d", PSA_CRYPTO_API_VERSION_MINOR);
+#endif
+#ifdef INTERNAL_TRUSTED_STORAGE
+    val_print(PRINT_ALWAYS, " %d.", PSA_ITS_API_VERSION_MAJOR);
+    val_print(PRINT_ALWAYS, "%d", PSA_ITS_API_VERSION_MINOR);
+#endif
+#ifdef PROTECTED_STORAGE
+    val_print(PRINT_ALWAYS, " %d.", PSA_PS_API_VERSION_MAJOR);
+    val_print(PRINT_ALWAYS, "%d", PSA_PS_API_VERSION_MINOR);
+#endif
+#ifdef STORAGE
+    val_print(PRINT_ALWAYS, " ITS %d.", PSA_ITS_API_VERSION_MAJOR);
+    val_print(PRINT_ALWAYS, "%d", PSA_ITS_API_VERSION_MINOR);
+    val_print(PRINT_ALWAYS, " and PS %d.", PSA_PS_API_VERSION_MAJOR);
+    val_print(PRINT_ALWAYS, "%d", PSA_PS_API_VERSION_MINOR);
+#endif
+#ifdef INITIAL_ATTESTATION
+    val_print(PRINT_ALWAYS, " %d.", PSA_INITIAL_ATTEST_API_VERSION_MAJOR);
+    val_print(PRINT_ALWAYS, "%d", PSA_INITIAL_ATTEST_API_VERSION_MINOR);
+#endif
+}
+
+/**
     @brief        - This function reads the test ELFs from RAM or secondary storage and loads into
                     system memory
     @param        - test_id      : Returns the current test ID
@@ -196,6 +228,7 @@ int32_t val_dispatcher(test_id_t test_id_prev)
             {
                 val_print(PRINT_ALWAYS, "\nRunning.. ", 0);
                 val_print(PRINT_ALWAYS, val_get_comp_name(test_id), 0);
+				val_print_api_version();
                 val_print(PRINT_ALWAYS, "\n******************************************\n", 0);
             }
 
