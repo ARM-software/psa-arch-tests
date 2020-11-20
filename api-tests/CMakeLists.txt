@@ -105,6 +105,7 @@ list(APPEND PSA_INITIAL_ATTESTATION_FILES
 # list of supported toolchains
 list(APPEND PSA_TOOLCHAIN_SUPPORT
         GNUARM
+	GNUARM_LINUX
         ARMCLANG
         HOST_GCC
 )
@@ -114,6 +115,7 @@ list(APPEND PSA_CPU_ARCH_SUPPORT
 	armv8m_ml
 	armv8m_bl
 	armv7m
+	armv8a
 )
 
 # list of VERBOSE options
