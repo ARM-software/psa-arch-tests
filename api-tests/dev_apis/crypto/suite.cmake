@@ -35,7 +35,12 @@ add_definitions(${CC_OPTIONS})
 add_definitions(${AS_OPTIONS})
 # append common crypto file to list of source collected
 list(APPEND SUITE_CC_SOURCE ${PSA_SUITE_DIR}/common/test_crypto_common.c)
-add_library(${PSA_TARGET_TEST_COMBINE_LIB} STATIC ${SUITE_CC_SOURCE} ${SUITE_AS_SOURCE})
+
+if (DEFINED PSA_NS_OS AND "${PSA_NS_OS}" STREQUAL "LINUX")
+	add_library(${PSA_TARGET_TEST_COMBINE_LIB} SHARED ${SUITE_CC_SOURCE} ${SUITE_AS_SOURCE})
+else()
+	add_library(${PSA_TARGET_TEST_COMBINE_LIB} STATIC ${SUITE_CC_SOURCE} ${SUITE_AS_SOURCE})
+endif()
 
 # Test related Include directories
 foreach(test ${PSA_TEST_LIST})
