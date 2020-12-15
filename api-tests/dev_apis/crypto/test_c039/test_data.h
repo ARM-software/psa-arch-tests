@@ -246,7 +246,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {
     .test_desc              = "Test psa_asymmetric_encrypt - ECC public key\n",
-    .type                   = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
+    .type                   =  PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .data                   = ec_key_data,
     .data_length            = 65,
     .usage_flags            = PSA_KEY_USAGE_ENCRYPT,

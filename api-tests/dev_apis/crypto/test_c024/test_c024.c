@@ -99,7 +99,7 @@ int32_t psa_aead_encrypt_test(caller_security_t caller __UNUSED)
                            get_ciphertext_length, TEST_CHECKPOINT_NUM(7));
 
         /* Destroy the key */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
         /* Reset the key attributes and check if psa_import_key fails */

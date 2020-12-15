@@ -342,13 +342,13 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {
     .test_desc            = "Test psa_copy_key - EC Public key\n",
-    .type                 = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
+    .type                 = PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .alg                  = PSA_ALG_ECDSA_ANY,
     .usage_flags          = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
     .lifetime             = PSA_KEY_LIFETIME_VOLATILE,
     .data                 = ec_key_data,
     .data_length          = 65,
-    .target_type          = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
+    .target_type          = PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .target_alg           = PSA_ALG_ECDSA_ANY,
     .target_usage_flags   = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
     .target_lifetime      = PSA_KEY_LIFETIME_VOLATILE,
@@ -364,13 +364,13 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP224R1
 {
     .test_desc            = "Test psa_copy_key - EC keypair\n",
-    .type                 = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1),
+    .type                 = PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .alg                  = PSA_ALG_ECDSA_ANY,
     .usage_flags          = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
     .lifetime             = PSA_KEY_LIFETIME_VOLATILE,
     .data                 = ec_key_pair,
     .data_length          = 28,
-    .target_type          = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1),
+    .target_type          = PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .target_alg           = PSA_ALG_ECDSA_ANY,
     .target_usage_flags   = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
     .target_lifetime      = PSA_KEY_LIFETIME_VOLATILE,

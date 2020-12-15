@@ -79,7 +79,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {
     .test_desc                 = "Test psa_sign_hash - ECDSA SECP256R1 SHA-256\n",
-    .type                      = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1),
+    .type                      =  PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .data                      = ec_keypair,
     .data_length               = 32,
     .usage_flags               = PSA_KEY_USAGE_SIGN_HASH,

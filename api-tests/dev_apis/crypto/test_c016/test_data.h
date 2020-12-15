@@ -122,7 +122,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ASYMMETRIC_ENCRYPTION
 {
     .test_desc       = "Test psa_generate_key with ECC KeyPair\n",
-    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1),
+    .type            = PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .usage_flags     = PSA_KEY_USAGE_EXPORT,
     .alg             = PSA_ALG_ECDSA_ANY,
     .bits            = 224,
