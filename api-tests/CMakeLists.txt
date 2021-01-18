@@ -28,8 +28,7 @@ find_package(Git REQUIRED)
 
 get_filename_component(PSA_ROOT_DIR . ABSOLUTE)
 
-list(APPEND CMAKE_MODULE_PATH ${PSA_ROOT_DIR}/tools/cmake)
-include("common/Utils")
+include(${PSA_ROOT_DIR}/tools/cmake/common/Utils.cmake)
 include(${PSA_ROOT_DIR}/tools/cmake/common/CMakeSettings.cmake)
 include(${PSA_ROOT_DIR}/tools/cmake/common/CMakeExternal.cmake)
 
