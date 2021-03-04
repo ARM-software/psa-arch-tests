@@ -20,7 +20,7 @@
 #include "test_c006.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_CRYPTO_BASE, 06)
-#define TEST_DESC "Testing crypto hash functions APIs\n"
+#define TEST_DESC "Testing crypto hash functions APIs | UT: psa_hash_compute\n"
 
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;

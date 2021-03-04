@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 #include "test_a001.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_INITIAL_ATTESTATION_BASE, 1)
-#define TEST_DESC "Testing initial attestation APIs\n"
+#define TEST_DESC "Testing attestation initial attestation APIs | UT: psa_initial_attestation\n"
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;
 psa_api_t *psa = NULL;
