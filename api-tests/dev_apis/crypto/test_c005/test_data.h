@@ -32,8 +32,7 @@ typedef struct {
 
 static const test_data check1[] = {
 
-#ifdef ARCH_TEST_AES
-#ifdef ARCH_TEST_CCM
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc       = "Test psa_destroy_key 16 Byte AES\n",
@@ -42,7 +41,7 @@ static const test_data check1[] = {
     .data_length     = AES_16B_KEY_SIZE,
     .bits            = BYTES_TO_BITS(AES_16B_KEY_SIZE),
     .usage_flags     = PSA_KEY_USAGE_EXPORT,
-    .alg             = PSA_ALG_CCM,
+    .alg             = PSA_ALG_CTR,
     .id              = 0x12,
     .lifetime        = PSA_KEY_LIFETIME_VOLATILE,
     .expected_status = PSA_SUCCESS
@@ -57,7 +56,7 @@ static const test_data check1[] = {
     .data_length     = AES_24B_KEY_SIZE,
     .bits            = BYTES_TO_BITS(AES_24B_KEY_SIZE),
     .usage_flags     = PSA_KEY_USAGE_EXPORT,
-    .alg             = PSA_ALG_CCM,
+    .alg             = PSA_ALG_CTR,
     .id              = 0x34,
     .lifetime        = PSA_KEY_LIFETIME_VOLATILE,
     .expected_status = PSA_SUCCESS
@@ -72,12 +71,11 @@ static const test_data check1[] = {
     .data_length      = AES_32B_KEY_SIZE,
     .bits             = BYTES_TO_BITS(AES_32B_KEY_SIZE),
     .usage_flags      = PSA_KEY_USAGE_EXPORT,
-    .alg              = PSA_ALG_CCM,
+    .alg              = PSA_ALG_CTR,
     .id               = 0x56,
     .lifetime         = PSA_KEY_LIFETIME_VOLATILE,
     .expected_status  = PSA_SUCCESS
 },
-#endif
 #endif
 #endif
 
@@ -162,7 +160,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {
     .test_desc        = "Test psa_destroy_key with EC Public key\n",
-    .type             = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
+    .type             = PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .data             = ec_key_data,
     .data_length      = 65,
     .bits             = 256,
@@ -179,12 +177,12 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP224R1
 {
     .test_desc        = "Test psa_destroy_key with EC keypair\n",
-    .type             = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1),
+    .type             = PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .data             = ec_key_pair,
     .data_length      = 28,
     .bits             = BYTES_TO_BITS(28),
     .usage_flags      = PSA_KEY_USAGE_EXPORT,
-    .alg              = PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
+    .alg              = PSA_ALG_ECDSA_ANY,
     .id               = 0x123,
     .lifetime         = PSA_KEY_LIFETIME_VOLATILE,
     .expected_status  = PSA_SUCCESS

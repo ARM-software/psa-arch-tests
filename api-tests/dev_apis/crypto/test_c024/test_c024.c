@@ -32,7 +32,7 @@ int32_t psa_aead_encrypt_test(caller_security_t caller __UNUSED)
     size_t                get_ciphertext_length;
     int                   num_checks = sizeof(check1)/sizeof(check1[0]);
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
-    psa_key_handle_t      handle;
+    psa_key_id_t          key;
 
     if (num_checks == 0)
     {
@@ -63,12 +63,12 @@ int32_t psa_aead_encrypt_test(caller_security_t caller __UNUSED)
                                       &attributes,
                                       check1[i].data,
                                       check1[i].data_length,
-                                      &handle);
+                                      &key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Process an authenticated encryption operation */
         status = val->crypto_function(VAL_CRYPTO_AEAD_ENCRYPT,
-                                      handle,
+                                      key,
                                       check1[i].alg,
                                       check1[i].nonce,
                                       check1[i].nonce_length,
@@ -84,7 +84,7 @@ int32_t psa_aead_encrypt_test(caller_security_t caller __UNUSED)
         if (check1[i].expected_status != PSA_SUCCESS)
         {
             /* Destroy the key */
-            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, handle);
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
             continue;
@@ -99,7 +99,7 @@ int32_t psa_aead_encrypt_test(caller_security_t caller __UNUSED)
                            get_ciphertext_length, TEST_CHECKPOINT_NUM(7));
 
         /* Destroy the key */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
         /* Reset the key attributes and check if psa_import_key fails */
@@ -108,12 +108,12 @@ int32_t psa_aead_encrypt_test(caller_security_t caller __UNUSED)
                                       &attributes,
                                       check1[i].data,
                                       check1[i].data_length,
-                                      &handle);
+                                      &key);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_NOT_SUPPORTED, TEST_CHECKPOINT_NUM(9));
 
         /* Process an authenticated encryption operation on a destroyed key*/
         status = val->crypto_function(VAL_CRYPTO_AEAD_ENCRYPT,
-                                      handle,
+                                      key,
                                       check1[i].alg,
                                       check1[i].nonce,
                                       check1[i].nonce_length,

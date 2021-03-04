@@ -22,8 +22,8 @@
 
 const client_test_t test_c042_crypto_list[] = {
     NULL,
-    psa_asymmetric_verify_test,
-    psa_asymmetric_verify_negative_test,
+    psa_verify_hash_test,
+    psa_verify_hash_negative_test,
     NULL,
 };
 
@@ -31,13 +31,12 @@ extern  uint32_t g_test_count;
 
 static int32_t  valid_test_input_index = -1;
 
-
-int32_t psa_asymmetric_verify_test(caller_security_t caller __UNUSED)
+int32_t psa_verify_hash_test(caller_security_t caller __UNUSED)
 {
     int32_t                 num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
     psa_key_attributes_t    attributes = PSA_KEY_ATTRIBUTES_INIT;
-    psa_key_handle_t        key_handle;
+    psa_key_id_t            key;
 
     if (num_checks == 0)
     {
@@ -65,12 +64,12 @@ int32_t psa_asymmetric_verify_test(caller_security_t caller __UNUSED)
 
         /* Import the key data into the key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
-                                      check1[i].data_length, &key_handle);
+                                      check1[i].data_length, &key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Verify the signature a hash or short message using a public key */
-        status = val->crypto_function(VAL_CRYPTO_ASYMMTERIC_VERIFY,
-                                      key_handle,
+        status = val->crypto_function(VAL_CRYPTO_VERIFY_HASH,
+                                      key,
                                       check1[i].alg,
                                       check1[i].hash,
                                       check1[i].hash_length,
@@ -79,7 +78,7 @@ int32_t psa_asymmetric_verify_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
         /* Destroy a key and restore the slot to its default state */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
         if (valid_test_input_index < 0)
@@ -89,10 +88,10 @@ int32_t psa_asymmetric_verify_test(caller_security_t caller __UNUSED)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_asymmetric_verify_negative_test(caller_security_t caller __UNUSED)
+int32_t psa_verify_hash_negative_test(caller_security_t caller __UNUSED)
 {
     int32_t                 status;
-    psa_key_handle_t        key_handle = 13;
+    psa_key_id_t            key = 13;
 
     if (valid_test_input_index < 0)
         return RESULT_SKIP(VAL_STATUS_NO_TESTS);
@@ -101,7 +100,7 @@ int32_t psa_asymmetric_verify_negative_test(caller_security_t caller __UNUSED)
     status = val->crypto_function(VAL_CRYPTO_INIT);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
 
-    val->print(PRINT_TEST, "[Check %d] Test psa_asymmetric_verify - Invalid key handle\n",
+    val->print(PRINT_TEST, "[Check %d] Test psa_verify_hash - Invalid key handle\n",
                                                                              g_test_count++);
 
     /* Setting up the watchdog timer for each check */
@@ -109,8 +108,8 @@ int32_t psa_asymmetric_verify_negative_test(caller_security_t caller __UNUSED)
     TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
     /* Verify the signature a hash or short message using a public key */
-    status = val->crypto_function(VAL_CRYPTO_ASYMMTERIC_VERIFY,
-                                  key_handle,
+    status = val->crypto_function(VAL_CRYPTO_VERIFY_HASH,
+                                  key,
                                   check1[valid_test_input_index].alg,
                                   check1[valid_test_input_index].hash,
                                   check1[valid_test_input_index].hash_length,
@@ -118,10 +117,10 @@ int32_t psa_asymmetric_verify_negative_test(caller_security_t caller __UNUSED)
                                   check1[valid_test_input_index].signature_length);
     TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));
 
-    val->print(PRINT_TEST, "[Check %d] Test psa_asymmetric_verify - Zero as key handle\n",
+    val->print(PRINT_TEST, "[Check %d] Test psa_verify_hash - Zero as key handle\n",
                                                                              g_test_count++);
     /* Verify the signature a hash or short message using a public key */
-    status = val->crypto_function(VAL_CRYPTO_ASYMMTERIC_VERIFY,
+    status = val->crypto_function(VAL_CRYPTO_VERIFY_HASH,
                                   0,
                                   check1[valid_test_input_index].alg,
                                   check1[valid_test_input_index].hash,

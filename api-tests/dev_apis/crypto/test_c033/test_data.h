@@ -136,7 +136,7 @@ static const test_data check1[] = {
     .data            = key_data,
     .data_length     = AES_16B_KEY_SIZE,
     .usage_flags     = PSA_KEY_USAGE_DECRYPT,
-    .alg             = PSA_ALG_CATEGORY_CIPHER,
+    .alg             = PSA_ALG_NONE,
     .expected_status = PSA_ERROR_NOT_SUPPORTED
 },
 #endif
@@ -194,11 +194,11 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {
     .test_desc       = "Test psa_cipher_decrypt_setup - EC Public key\n",
-    .type            = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
+    .type            =  PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .data            = ec_key_data,
     .data_length     = 65,
     .usage_flags     = PSA_KEY_USAGE_DECRYPT,
-    .alg             = PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
+    .alg             = PSA_ALG_ECDSA_ANY,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif
@@ -206,11 +206,11 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP224R1
 {
     .test_desc       = "Test psa_cipher_decrypt_setup - EC keypair\n",
-    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1),
+    .type            =  PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .data            = ec_key_pair,
     .data_length     = 28,
     .usage_flags     = PSA_KEY_USAGE_DECRYPT,
-    .alg             = PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
+    .alg             = PSA_ALG_ECDSA_ANY,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif

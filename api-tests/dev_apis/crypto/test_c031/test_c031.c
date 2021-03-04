@@ -29,16 +29,15 @@ const client_test_t test_c031_crypto_list[] = {
 
 extern  uint32_t g_test_count;
 
-static uint8_t     data[BUFFER_SIZE];
 static int32_t  valid_test_input_index = -1;
 
 int32_t psa_mac_abort_test(caller_security_t caller __UNUSED)
 {
-    int                   num_checks = sizeof(check1)/sizeof(check1[0]);
+    int32_t               num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t               i, status;
     psa_mac_operation_t   operation;
-    psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
-    psa_key_handle_t      key_handle;
+    psa_key_attributes_t  attributes;
+    psa_key_id_t          key;
 
     if (num_checks == 0)
     {
@@ -54,37 +53,55 @@ int32_t psa_mac_abort_test(caller_security_t caller __UNUSED)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
-        memset(&operation, 0, sizeof(operation));
+
+        val->crypto_function(VAL_CRYPTO_KEY_ATTRIBUTES_INIT,
+                             &attributes);
+        val->crypto_function(VAL_CRYPTO_MAC_OPERATION_INIT,
+                             &operation);
 
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
         /* Setup the attributes for the key */
-        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE, &attributes, check1[i].key_type);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM, &attributes, check1[i].key_alg);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE,
+                             &attributes,
+                             check1[i].type);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS,
+                             &attributes,
+                             check1[i].usage_flags);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM,
+                             &attributes,
+                             check1[i].alg);
 
         /* Import the key data into the key slot */
-        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].key_data,
-                 check1[i].key_length, &key_handle);
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY,
+                                      &attributes,
+                                      check1[i].data,
+                                      check1[i].data_length,
+                                      &key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Start a multipart MAC calculation operation */
-        status = val->crypto_function(VAL_CRYPTO_MAC_SIGN_SETUP, &operation,
-                    key_handle, check1[i].key_alg);
+        status = val->crypto_function(VAL_CRYPTO_MAC_SIGN_SETUP,
+                                      &operation,
+                                      key,
+                                      check1[i].alg);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
         /* Abort a MAC operation */
-        status = val->crypto_function(VAL_CRYPTO_MAC_ABORT, &operation);
+        status = val->crypto_function(VAL_CRYPTO_MAC_ABORT,
+                                      &operation);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
         /* Multiple Abort a MAC operation should succeed */
-        status = val->crypto_function(VAL_CRYPTO_MAC_ABORT, &operation);
+        status = val->crypto_function(VAL_CRYPTO_MAC_ABORT,
+                                      &operation);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
         /* Destroy the key */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY,
+                                      key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
         if (valid_test_input_index < 0)
@@ -96,19 +113,17 @@ int32_t psa_mac_abort_test(caller_security_t caller __UNUSED)
 
 int32_t psa_mac_abort_before_finish_test(caller_security_t caller __UNUSED)
 {
-    size_t                length;
-    psa_key_handle_t      key_handle = 10;
+    size_t                mac_length;
+    psa_key_id_t          key;
     psa_mac_operation_t   operation;
-    uint8_t               input_data[] = {0x48, 0x69, 0x20, 0x54, 0x68, 0x65, 0x72, 0x65};
-    size_t                inputdata_size = sizeof(input_data);
     int32_t               status;
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
 
     if (valid_test_input_index < 0)
         return RESULT_SKIP(VAL_STATUS_NO_TESTS);
 
-    memset(data, 0, sizeof(data));
-    memset(&operation, 0, sizeof(operation));
+    val->crypto_function(VAL_CRYPTO_MAC_OPERATION_INIT,
+                         &operation);
 
     val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
     val->print(PRINT_TEST, "Test psa_mac_sign_finish after calling psa_mac_abort\n", 0);
@@ -124,33 +139,34 @@ int32_t psa_mac_abort_before_finish_test(caller_security_t caller __UNUSED)
     /* Setup the attributes for the key */
     val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE,
                          &attributes,
-                         check1[valid_test_input_index].key_type);
+                         check1[valid_test_input_index].type);
     val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS,
                          &attributes,
-                         check1[valid_test_input_index].usage);
+                         check1[valid_test_input_index].usage_flags);
     val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM,
                          &attributes,
-                         check1[valid_test_input_index].key_alg);
+                         check1[valid_test_input_index].alg);
 
     /* Import the key data into the key slot */
     status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY,
                                   &attributes,
-                                  check1[valid_test_input_index].key_data,
-                                  check1[valid_test_input_index].key_length,
-                                  &key_handle);
+                                  check1[valid_test_input_index].data,
+                                  check1[valid_test_input_index].data_length,
+                                  &key);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
     /* Start a multipart MAC calculation operation */
     status = val->crypto_function(VAL_CRYPTO_MAC_SIGN_SETUP,
                                   &operation,
-                                  key_handle,
-                                  check1[valid_test_input_index].key_alg);
+                                  key,
+                                  check1[valid_test_input_index].alg);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
     /* Add a message fragment to a multipart MAC operation */
-    status = val->crypto_function(VAL_CRYPTO_MAC_UPDATE, &operation,
-                                  input_data,
-                                  inputdata_size);
+    status = val->crypto_function(VAL_CRYPTO_MAC_UPDATE,
+                                  &operation,
+                                  input_bytes_data,
+                                  16);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
     /* Abort a MAC operation */
@@ -161,14 +177,14 @@ int32_t psa_mac_abort_before_finish_test(caller_security_t caller __UNUSED)
     /* Finish the calculation of the MAC of a message */
     status = val->crypto_function(VAL_CRYPTO_MAC_SIGN_FINISH,
                                   &operation,
-                                  data,
+                                  expected_output,
                                   BUFFER_SIZE,
-                                  &length);
+                                  &mac_length);
     TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(7));
 
     /* Destroy the key */
     status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY,
-                                  key_handle);
+                                  key);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
     return VAL_STATUS_SUCCESS;

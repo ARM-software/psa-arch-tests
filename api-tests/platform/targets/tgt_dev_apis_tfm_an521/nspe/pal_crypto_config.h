@@ -302,7 +302,7 @@
 #define ARCH_TEST_CMAC
 #endif
 #endif
-//#define ARCH_TEST_GMAC
+
 #define ARCH_TEST_HMAC
 
 /**

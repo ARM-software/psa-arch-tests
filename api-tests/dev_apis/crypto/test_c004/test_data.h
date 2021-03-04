@@ -63,6 +63,7 @@ static const uint8_t expected_ec_pubprv[] = {
 
 static const test_data check1[] = {
 
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc            = "Test psa_export_public_key 16 Byte AES\n",
@@ -107,6 +108,7 @@ static const test_data check1[] = {
     .expected_status      = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif
+#endif
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 #ifdef ARCH_TEST_RSA_2048
@@ -138,6 +140,7 @@ static const test_data check1[] = {
 #endif
 #endif
 
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_DES_1KEY
 {
     .test_desc            = "Test psa_export_public_key with DES 64 bit key\n",
@@ -182,12 +185,13 @@ static const test_data check1[] = {
     .expected_status      = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif
+#endif
 
 #ifdef ARCH_TEST_ASYMMETRIC_ENCRYPTION
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {
     .test_desc            = "Test psa_export_public_key with EC Public key\n",
-    .type                 = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
+    .type                 = PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .data                 = ec_key_data,
     .data_length          = 65,
     .bits                 = 256,
@@ -202,7 +206,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP224R1
 {
     .test_desc            = "Test psa_export_public_key with EC keypair\n",
-    .type                 = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1),
+    .type                 = PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .data                 = ec_key_pair,
     .data_length          = 28,
     .bits                 = BYTES_TO_BITS(28),

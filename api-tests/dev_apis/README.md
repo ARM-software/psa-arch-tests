@@ -19,7 +19,7 @@ For more information on the architecture test suite framework and methodology to
 
 | Test Category            | Specification Version                |
 |--------------------------|--------------------------------------|
-| Crypto                   | [PSA Crypto API 1.0-Beta3](../../api-specs/crypto/v1.0-beta3/doc/)     |
+| Crypto                   | [PSA Crypto API 1.0](../../api-specs/crypto/v1.0/doc/)     |
 | Storage (PS and ITS)     | [PSA Storage API 1.0.0](../../api-specs/storage/v1.0/doc/) |
 | Attestation              | [PSA Attestation API 1.0.0](../../api-specs/attestation/v1.0/doc/)  |
 
