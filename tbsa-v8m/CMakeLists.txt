@@ -68,6 +68,11 @@ list(APPEND TOOLCHAIN_SUPPORT
 	GNUARM
 )
 
+# list of supported CROSS_COMPILE toolchains
+list(APPEND CROSS_COMPILE_TOOLCHAIN_SUPPORT
+	GNUARM
+)
+
 # Variables of the project
 set(TBSA_PROJECT_NAME                   tbsa)
 set(TARGET_CONFIGURATION_FILE           ${TBSA_ROOT_DIR}/platform/board/${TARGET}/tbsa_tgt.cfg)
@@ -147,6 +152,9 @@ endif()
 
 # Check for supported toolchain/s
 if(${COMPILER} IN_LIST TOOLCHAIN_SUPPORT)
+	if(CROSS_COMPILE AND NOT (${TOOLCHAIN} IN_LIST CROSS_COMPILE_TOOLCHAIN_SUPPORT))
+		message(FATAL_ERROR "[PSA] : Error: CROSS_COMPILE not supported for this toolchain, supported toolchain are : ${CROSS_COMPILE_TOOLCHAIN_SUPPORT}")
+	endif()
 	include(${TBSA_ROOT_DIR}/cmake/compiler/${COMPILER}.cmake)
 else()
 	message(FATAL_ERROR "[TBSA] : ${COMPILER} toolchain support not available")

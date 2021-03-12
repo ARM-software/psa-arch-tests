@@ -18,7 +18,11 @@
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMKE_SYSTEM_PROCESSOR ARM)
 
-set(_C_TOOLCHAIN_NAME arm-none-eabi-gcc)
+if (DEFINED CROSS_COMPILE)
+	set(_C_TOOLCHAIN_NAME ${CROSS_COMPILE}-gcc)
+else()
+	set(_C_TOOLCHAIN_NAME arm-none-eabi-gcc)
+endif()
 
 if(WIN32)
 	if (NOT DEFINED GNUARM_PATH)
@@ -40,7 +44,7 @@ find_program(
 
 if(_C_TOOLCHAIN_PATH STREQUAL "_C_TOOLCHAIN_PATH-NOTFOUND")
         message(FATAL_ERROR "[PSA] : Couldn't find ${_C_TOOLCHAIN_NAME}."
-			    " Either put ${_C_TOOLCHAIN_NAME} on the PATH or set GNUARM_PATH set properly.")
+			    " Either put ${_C_TOOLCHAIN_NAME} on the PATH or set GNUARM_PATH or CROSS_COMPILE properly.")
 endif()
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
