@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2020-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -101,15 +101,6 @@ extern const uint8_t signature_1[];
 extern const uint8_t signature_2[];
 extern const uint8_t signature_2_invalid[];
 extern const uint8_t signature_3[];
-extern const uint8_t signature_4[];
-extern const uint8_t signature_4_invalid[];
-extern const uint8_t signature_5[];
-
-extern const uint8_t hmac_sha224[];
-extern const uint8_t hmac_sha224_invalid[];
-extern const uint8_t hmac_sha256[];
-extern const uint8_t hmac_sha512[];
-extern const uint8_t cmac_aes_128[];
 
 extern uint8_t expected_output[BUFFER_SIZE];
 

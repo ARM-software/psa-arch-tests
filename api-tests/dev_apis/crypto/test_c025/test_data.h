@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -86,7 +86,7 @@ static const test_data check1[] = {
     .data                       = key_data,
     .data_length                = AES_16B_KEY_SIZE,
     .usage_flags                = PSA_KEY_USAGE_DECRYPT,
-    .alg                        = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
+    .alg                        = PSA_ALG_AEAD_WITH_TAG_LENGTH(PSA_ALG_CCM, 4),
     .nonce                      = nonce,
     .nonce_length               = 13,
     .additional_data            = additional_data,
@@ -294,7 +294,7 @@ static const test_data check1[] = {
     .data                       = key_data,
     .data_length                = AES_16B_KEY_SIZE,
     .usage_flags                = PSA_KEY_USAGE_DECRYPT,
-    .alg                        = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 0),
+    .alg                        = PSA_ALG_AEAD_WITH_TAG_LENGTH(PSA_ALG_CCM, 0),
     .nonce                      = nonce,
     .nonce_length               = 13,
     .additional_data            = additional_data,

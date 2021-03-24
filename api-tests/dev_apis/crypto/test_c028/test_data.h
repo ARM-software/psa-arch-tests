@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,155 +15,103 @@
  * limitations under the License.
 **/
 
-#include "test_crypto_common.h"
+#include "val_crypto.h"
 
 typedef struct {
     char                    test_desc[75];
-    psa_key_type_t          type;
-    psa_key_usage_t         usage_flags;
-    psa_algorithm_t         alg;
-    const uint8_t          *data;
-    size_t                  data_length;
-    const uint8_t          *input;
-    size_t                  input_length;
-    uint8_t                *mac;
+    psa_key_type_t          key_type;
+    uint8_t                 key_data[64];
+    uint32_t                key_length;
+    uint8_t                 data[16];
+    size_t                  data_size;
+    uint8_t                 expected_data[64];
     size_t                  mac_size;
-    size_t                  expected_mac_length;
-    const uint8_t          *expected_mac;
-    uint32_t                operation_state;
+    size_t                  expected_length;
+    psa_key_usage_t         usage;
+    psa_algorithm_t         key_alg;
     psa_status_t            expected_status;
 } test_data;
 
 static const test_data check1[] = {
 #ifdef ARCH_TEST_HMAC
 #ifdef ARCH_TEST_SHA224
-{
-    .test_desc           = "Test psa_mac_sign_finish  - HMAC - SHA224\n",
-    .type                = PSA_KEY_TYPE_HMAC,
-    .alg                 = PSA_ALG_HMAC(PSA_ALG_SHA_224),
-    .usage_flags         = PSA_KEY_USAGE_SIGN_MESSAGE,
-    .data                = key_data,
-    .data_length         = 64,
-    .input               = input_bytes_data,
-    .input_length        = 16,
-    .mac                 = expected_output,
-    .mac_size            = BUFFER_SIZE,
-    .expected_mac_length = 28,
-    .expected_mac        = hmac_sha224,
-    .operation_state     = 1,
-    .expected_status     = PSA_SUCCESS
+{"Test psa_mac_sign_finish HMAC SHA 224\n", PSA_KEY_TYPE_HMAC,
+{0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+ 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b}, 20,
+{0x48, 0x69, 0x20, 0x54, 0x68, 0x65, 0x72, 0x65}, 8,
+{0x89, 0x6f, 0xb1, 0x12, 0x8a, 0xbb, 0xdf, 0x19, 0x68, 0x32, 0x10, 0x7c, 0xd4,
+ 0x9d, 0xf3, 0x3f, 0x47, 0xb4, 0xb1, 0x16, 0x99, 0x12, 0xba, 0x4f, 0x53, 0x68,
+ 0x4b, 0x22}, 64, 28,
+ PSA_KEY_USAGE_SIGN, PSA_ALG_HMAC(PSA_ALG_SHA_224),
+ PSA_SUCCESS
 },
 #endif
 
 #ifdef ARCH_TEST_SHA256
-{
-    .test_desc           = "Test psa_mac_sign_finish  - HMAC - SHA256\n",
-    .type                = PSA_KEY_TYPE_HMAC,
-    .alg                 = PSA_ALG_HMAC(PSA_ALG_SHA_256),
-    .usage_flags         = PSA_KEY_USAGE_SIGN_MESSAGE,
-    .data                = key_data,
-    .data_length         = 64,
-    .input               = input_bytes_data,
-    .input_length        = 16,
-    .mac                 = expected_output,
-    .mac_size            = BUFFER_SIZE,
-    .expected_mac_length = 32,
-    .expected_mac        = hmac_sha256,
-    .operation_state     = 1,
-    .expected_status     = PSA_SUCCESS
+{"Test psa_mac_sign_finish HMAC SHA 256\n", PSA_KEY_TYPE_HMAC,
+{0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+ 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b}, 20,
+{0x48, 0x69, 0x20, 0x54, 0x68, 0x65, 0x72, 0x65}, 8,
+{0xb0, 0x34, 0x4c, 0x61, 0xd8, 0xdb, 0x38, 0x53, 0x5c, 0xa8, 0xaf, 0xce, 0xaf,
+ 0x0b, 0xf1, 0x2b, 0x88, 0x1d, 0xc2, 0x00, 0xc9, 0x83, 0x3d, 0xa7, 0x26, 0xe9,
+ 0x37, 0x6c, 0x2e, 0x32, 0xcf, 0xf7}, 64, 32,
+ PSA_KEY_USAGE_SIGN, PSA_ALG_HMAC(PSA_ALG_SHA_256),
+ PSA_SUCCESS
 },
 #endif
 
 #ifdef ARCH_TEST_SHA512
-{
-    .test_desc           = "Test psa_mac_sign_finish  - HMAC - SHA512\n",
-    .type                = PSA_KEY_TYPE_HMAC,
-    .alg                 = PSA_ALG_HMAC(PSA_ALG_SHA_512),
-    .usage_flags         = PSA_KEY_USAGE_SIGN_MESSAGE,
-    .data                = key_data,
-    .data_length         = 64,
-    .input               = input_bytes_data,
-    .input_length        = 16,
-    .mac                 = expected_output,
-    .mac_size            = BUFFER_SIZE,
-    .expected_mac_length = 64,
-    .expected_mac        = hmac_sha512,
-    .operation_state     = 1,
-    .expected_status     = PSA_SUCCESS
+{"Test psa_mac_sign_finish HMAC SHA 512\n", PSA_KEY_TYPE_HMAC,
+{0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+ 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b}, 20,
+{0x48, 0x69, 0x20, 0x54, 0x68, 0x65, 0x72, 0x65}, 8,
+{0x87, 0xaa, 0x7c, 0xde, 0xa5, 0xef, 0x61, 0x9d, 0x4f, 0xf0, 0xb4, 0x24, 0x1a,
+ 0x1d, 0x6c, 0xb0, 0x23, 0x79, 0xf4, 0xe2, 0xce, 0x4e, 0xc2, 0x78, 0x7a, 0xd0,
+ 0xb3, 0x05, 0x45, 0xe1, 0x7c, 0xde, 0xda, 0xa8, 0x33, 0xb7, 0xd6, 0xb8, 0xa7,
+ 0x02, 0x03, 0x8b, 0x27, 0x4e, 0xae, 0xa3, 0xf4, 0xe4, 0xbe, 0x9d, 0x91, 0x4e,
+ 0xeb, 0x61, 0xf1, 0x70, 0x2e, 0x69, 0x6c, 0x20, 0x3a, 0x12, 0x68, 0x54}, 64, 64,
+ PSA_KEY_USAGE_SIGN, PSA_ALG_HMAC(PSA_ALG_SHA_512),
+ PSA_SUCCESS
 },
 #endif
 
 #ifdef ARCH_TEST_SHA224
-{
-    .test_desc           = "Test psa_mac_sign_finish  - HMAC - SHA224 - Truncated 8 Byte\n",
-    .type                = PSA_KEY_TYPE_HMAC,
-    .alg                 = PSA_ALG_TRUNCATED_MAC(PSA_ALG_HMAC(PSA_ALG_SHA_224), 8),
-    .usage_flags         = PSA_KEY_USAGE_SIGN_MESSAGE,
-    .data                = key_data,
-    .data_length         = 64,
-    .input               = input_bytes_data,
-    .input_length        = 16,
-    .mac                 = expected_output,
-    .mac_size            = BUFFER_SIZE,
-    .expected_mac_length = 8,
-    .expected_mac        = hmac_sha224,
-    .operation_state     = 1,
-    .expected_status     = PSA_SUCCESS
-},
-
-{
-    .test_desc           = "Test psa_mac_sign_finish  - HMAC - SHA224 - Small output buffer\n",
-    .type                = PSA_KEY_TYPE_HMAC,
-    .alg                 = PSA_ALG_HMAC(PSA_ALG_SHA_224),
-    .usage_flags         = PSA_KEY_USAGE_SIGN_MESSAGE,
-    .data                = key_data,
-    .data_length         = 64,
-    .input               = input_bytes_data,
-    .input_length        = 16,
-    .mac                 = expected_output,
-    .mac_size            = 27,
-    .expected_mac_length = 0,
-    .expected_mac        = NULL,
-    .operation_state     = 1,
-    .expected_status     = PSA_ERROR_BUFFER_TOO_SMALL 
-},
-
-{
-    .test_desc           = "Test psa_mac_sign_finish  - HMAC - SHA224 - Invalid operation state\n",
-    .type                = PSA_KEY_TYPE_HMAC,
-    .alg                 = PSA_ALG_HMAC(PSA_ALG_SHA_224),
-    .usage_flags         = PSA_KEY_USAGE_SIGN_MESSAGE,
-    .data                = key_data,
-    .data_length         = 64,
-    .input               = input_bytes_data,
-    .input_length        = 16,
-    .mac                 = expected_output,
-    .mac_size            = BUFFER_SIZE,
-    .expected_mac_length = 28,
-    .expected_mac        = hmac_sha224,
-    .operation_state     = 0,
-    .expected_status     = PSA_ERROR_BAD_STATE 
+{"Test psa_mac_sign_finish HMAC SHA 224 (truncated to 8 Byte)\n", PSA_KEY_TYPE_HMAC,
+{0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+ 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b}, 20,
+{0x48, 0x69, 0x20, 0x54, 0x68, 0x65, 0x72, 0x65}, 8,
+{0x89, 0x6f, 0xb1, 0x12, 0x8a, 0xbb, 0xdf, 0x19, 0x68}, 64, 8,
+ PSA_KEY_USAGE_SIGN, PSA_ALG_TRUNCATED_MAC(PSA_ALG_HMAC(PSA_ALG_SHA_224), 8),
+ PSA_SUCCESS
 },
 #endif
 #endif
 
 #ifdef ARCH_TEST_AES_128
 #ifdef ARCH_TEST_CMAC
-{
-    .test_desc           = "Test psa_mac_sign_finish  - CMAC - AES\n",
-    .type                = PSA_KEY_TYPE_AES,
-    .alg                 = PSA_ALG_CMAC,
-    .usage_flags         = PSA_KEY_USAGE_SIGN_MESSAGE,
-    .data                = key_data,
-    .data_length         = AES_16B_KEY_SIZE,
-    .input               = input_bytes_data,
-    .input_length        = 16,
-    .mac                 = expected_output,
-    .mac_size            = BUFFER_SIZE,
-    .expected_mac_length = 16,
-    .expected_mac        = cmac_aes_128,
-    .operation_state     = 1,
-    .expected_status     = PSA_SUCCESS
+{"Test psa_mac_sign_finish CMAC AES 128\n", PSA_KEY_TYPE_AES,
+{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
+ 0xcf, 0x4f, 0x3c}, 16,
+{0x48, 0x69, 0x20, 0x54, 0x68, 0x65, 0x72, 0x65}, 8,
+{0x9A, 0x8F, 0xFF, 0x8D, 0xA3, 0x5B, 0x97, 0xCB, 0x4C, 0x95, 0xF0, 0xFA, 0x6A,
+ 0xE7, 0xE0, 0x77}, 64, 16,
+ PSA_KEY_USAGE_SIGN, PSA_ALG_CMAC,
+ PSA_SUCCESS
+},
+#endif
+#endif
+
+#ifdef ARCH_TEST_HMAC
+#ifdef ARCH_TEST_SHA256
+{"Test psa_mac_sign_finish - Small buffer size\n", PSA_KEY_TYPE_HMAC,
+{0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+ 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b}, 20,
+{0x48, 0x69, 0x20, 0x54, 0x68, 0x65, 0x72, 0x65}, 8,
+{0xb0, 0x34, 0x4c, 0x61, 0xd8, 0xdb, 0x38, 0x53, 0x5c, 0xa8, 0xaf, 0xce, 0xaf,
+ 0x0b, 0xf1, 0x2b, 0x88, 0x1d, 0xc2, 0x00, 0xc9, 0x83, 0x3d, 0xa7, 0x26, 0xe9,
+ 0x37, 0x6c, 0x2e, 0x32, 0xcf, 0xf7}, 31, 32,
+ PSA_KEY_USAGE_SIGN, PSA_ALG_HMAC(PSA_ALG_SHA_256),
+ PSA_ERROR_BUFFER_TOO_SMALL
 },
 #endif
 #endif

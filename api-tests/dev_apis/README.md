@@ -19,7 +19,7 @@ For more information on the architecture test suite framework and methodology to
 
 | Test Category            | Specification Version                |
 |--------------------------|--------------------------------------|
-| Crypto                   | [PSA Crypto API 1.0](../../api-specs/crypto/v1.0/doc/)     |
+| Crypto                   | [PSA Crypto API 1.0-Beta3](../../api-specs/crypto/v1.0-beta3/doc/)     |
 | Storage (PS and ITS)     | [PSA Storage API 1.0.0](../../api-specs/storage/v1.0/doc/) |
 | Attestation              | [PSA Attestation API 1.0.0](../../api-specs/attestation/v1.0/doc/)  |
 
@@ -123,4 +123,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2021, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2020, Arm Limited and Contributors. All rights reserved.*

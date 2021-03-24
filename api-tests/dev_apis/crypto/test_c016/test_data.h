@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,8 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
-#ifdef ARCH_TEST_CIPHER_MODE_CTR
+#ifdef ARCH_TEST_AES
+#ifdef ARCH_TEST_CCM
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc       = "Test psa_generate_key 16 Byte AES\n",
@@ -64,7 +65,10 @@ static const test_data check1[] = {
     .expected_status = PSA_SUCCESS
 },
 #endif
+#endif
+#endif
 
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_DES_1KEY
 {
     .test_desc       = "Test psa_generate_key with DES 64 bit key\n",
@@ -108,7 +112,7 @@ static const test_data check1[] = {
 {
     .test_desc       = "Test psa_generate_key with RSA 2048 Keypair\n",
     .type            = PSA_KEY_TYPE_RSA_KEY_PAIR,
-    .usage_flags     = PSA_KEY_USAGE_EXPORT | PSA_KEY_USAGE_SIGN_HASH | PSA_KEY_USAGE_VERIFY_HASH,
+    .usage_flags     = PSA_KEY_USAGE_EXPORT | PSA_KEY_USAGE_SIGN | PSA_KEY_USAGE_VERIFY,
     .alg             = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
     .bits            = 2048,
     .expected_range  = {1190, 1194},
@@ -122,9 +126,9 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ASYMMETRIC_ENCRYPTION
 {
     .test_desc       = "Test psa_generate_key with ECC KeyPair\n",
-    .type            = PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
+    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1),
     .usage_flags     = PSA_KEY_USAGE_EXPORT,
-    .alg             = PSA_ALG_ECDSA_ANY,
+    .alg             = PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
     .bits            = 224,
     .expected_range  = {28, 28},
     .expected_status = PSA_SUCCESS
@@ -137,7 +141,7 @@ static const test_data check1[] = {
 {
     .test_desc       = "Test psa_generate_key with RSA 2048 Public key\n",
     .type            = PSA_KEY_TYPE_RSA_PUBLIC_KEY,
-    .usage_flags     = PSA_KEY_USAGE_EXPORT | PSA_KEY_USAGE_SIGN_HASH | PSA_KEY_USAGE_VERIFY_HASH,
+    .usage_flags     = PSA_KEY_USAGE_EXPORT | PSA_KEY_USAGE_SIGN | PSA_KEY_USAGE_VERIFY,
     .alg             = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
     .bits            = 2048,
     .expected_range  = {1190, 1194},
@@ -146,11 +150,14 @@ static const test_data check1[] = {
 #endif
 #endif
 
+#ifdef ARCH_TEST_AES
+#ifdef ARCH_TEST_CCM
+#ifdef ARCH_TEST_AES_128
 {
     .test_desc       = "Test psa_generate_key with invalid key type\n",
     .type            = 0,
     .usage_flags     = PSA_KEY_USAGE_EXPORT,
-    .alg             = PSA_ALG_CTR,
+    .alg             = PSA_ALG_CCM,
     .bits            = BYTES_TO_BITS(AES_16B_KEY_SIZE),
     .expected_range  = {AES_16B_KEY_SIZE, AES_16B_KEY_SIZE},
     .expected_status = PSA_ERROR_NOT_SUPPORTED
@@ -160,9 +167,12 @@ static const test_data check1[] = {
     .test_desc       = "Test psa_generate_key with invalid usage flags\n",
     .type            = PSA_KEY_TYPE_AES,
     .usage_flags     = PSA_KEY_USAGE_INVALID,
-    .alg             = PSA_ALG_CTR,
+    .alg             = PSA_ALG_CCM,
     .bits            = BYTES_TO_BITS(AES_16B_KEY_SIZE),
     .expected_range  = {AES_16B_KEY_SIZE, AES_16B_KEY_SIZE},
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
+#endif
+#endif
+#endif
 };

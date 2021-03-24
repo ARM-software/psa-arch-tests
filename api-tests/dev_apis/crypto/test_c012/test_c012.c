@@ -59,9 +59,7 @@ int32_t psa_hash_update_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
         /* Start a multipart hash operation */
-        status = val->crypto_function(VAL_CRYPTO_HASH_SETUP,
-                                      &operation,
-                                      check1[i].alg);
+        status = val->crypto_function(VAL_CRYPTO_HASH_SETUP, &operation, check1[i].alg);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Add a message fragment to a multipart hash operation */
@@ -72,8 +70,7 @@ int32_t psa_hash_update_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
         /*Abort the hash operation */
-        status = val->crypto_function(VAL_CRYPTO_HASH_ABORT,
-                                      &operation);
+        status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &operation);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
         if (valid_test_input_index < 0)
@@ -110,8 +107,7 @@ int32_t psa_hash_update_invalid_handle(caller_security_t caller __UNUSED)
     TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(3));
 
     /*Abort the hash operation */
-    status = val->crypto_function(VAL_CRYPTO_HASH_ABORT,
-                                  &operation);
+    status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &operation);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
     return VAL_STATUS_SUCCESS;
@@ -164,8 +160,7 @@ int32_t psa_hash_update_with_completed_handle(caller_security_t caller __UNUSED)
     TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(6));
 
     /*Abort the hash operation */
-    status = val->crypto_function(VAL_CRYPTO_HASH_ABORT,
-                                  &operation);
+    status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &operation);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
     return VAL_STATUS_SUCCESS;

@@ -33,16 +33,17 @@ const client_test_t test_c021_crypto_list[] = {
 
 extern  uint32_t g_test_count;
 
+
 int32_t psa_key_derivation_output_key_test(caller_security_t caller __UNUSED)
 {
     int32_t                         status;
     int                             i;
     int                             num_checks = sizeof(check1)/sizeof(check1[0]);
-    psa_key_id_t                    keys[2];
+    psa_key_handle_t                key_handle[2];
     psa_key_attributes_t            attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_key_attributes_t            derv_attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_key_derivation_operation_t  operation = PSA_KEY_DERIVATION_OPERATION_INIT;
-    psa_key_id_t                    key;
+    psa_key_handle_t                tdata_key_handle;
 
     if (num_checks == 0)
     {
@@ -73,7 +74,7 @@ int32_t psa_key_derivation_output_key_test(caller_security_t caller __UNUSED)
         {
             /* Import the key data into the key slot */
             status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].key_data,
-                     check1[i].key_length, &key);
+                     check1[i].key_length, &tdata_key_handle);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
         }
 
@@ -92,7 +93,7 @@ int32_t psa_key_derivation_output_key_test(caller_security_t caller __UNUSED)
         {
             /* Provide an input for key derivation or key agreement */
             status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY, &operation,
-                     check1[i].step, key);
+                     check1[i].step, tdata_key_handle);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
         }
         else
@@ -112,12 +113,12 @@ int32_t psa_key_derivation_output_key_test(caller_security_t caller __UNUSED)
 
         /*  Derive a key from an ongoing key derivation operation */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_OUTPUT_KEY, &derv_attributes,
-                 &operation, &keys[SLOT_1]);
+                 &operation, &key_handle[SLOT_1]);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(8));
 
         if (check1[i].step == PSA_KEY_DERIVATION_INPUT_SECRET)
         {
-            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, tdata_key_handle);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
         }
@@ -132,7 +133,7 @@ int32_t psa_key_derivation_output_key_test(caller_security_t caller __UNUSED)
 
         /* Read some key from a key derivation operation with no data in the operation */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_OUTPUT_KEY, &derv_attributes,
-                 &operation, &keys[SLOT_2]);
+                 &operation, &key_handle[SLOT_2]);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INSUFFICIENT_DATA, TEST_CHECKPOINT_NUM(11));
 
         /* Abort the derivation operation */
@@ -141,7 +142,7 @@ int32_t psa_key_derivation_output_key_test(caller_security_t caller __UNUSED)
 
         /* Expect bad state when derivation is called on an aborted operation */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_OUTPUT_KEY, &derv_attributes,
-                 &operation, &keys[SLOT_2]);
+                 &operation, &key_handle[SLOT_2]);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(13));
     }
 

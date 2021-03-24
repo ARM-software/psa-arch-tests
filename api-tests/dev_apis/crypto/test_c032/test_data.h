@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -146,7 +146,7 @@ static const test_data check1[] = {
     .data_length     = AES_16B_KEY_SIZE,
     .bits            = BYTES_TO_BITS(AES_16B_KEY_SIZE),
     .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
-    .alg             = PSA_ALG_NONE,
+    .alg             = PSA_ALG_CATEGORY_CIPHER,
     .expected_status = PSA_ERROR_NOT_SUPPORTED
 },
 #endif
@@ -208,12 +208,12 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {
     .test_desc       = "Test psa_cipher_encrypt_setup - EC Public key\n",
-    .type            =  PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
+    .type            = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
     .data            = ec_key_data,
     .data_length     = 65,
     .bits            = 256,
     .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
-    .alg             = PSA_ALG_ECDSA_ANY,
+    .alg             = PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif
@@ -221,12 +221,12 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP224R1
 {
     .test_desc       = "Test psa_cipher_encrypt_setup - EC keypair\n",
-    .type            =  PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),    
+    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1),
     .data            = ec_key_pair,
     .data_length     = 28,
     .bits            = 224,
     .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
-    .alg             = PSA_ALG_ECDSA_ANY,
+    .alg             = PSA_ALG_CATEGORY_ASYMMETRIC_ENCRYPTION,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +32,7 @@ int32_t psa_aead_decrypt_test(caller_security_t caller __UNUSED)
     size_t                expected_plaintext_length;
     int32_t               num_checks = sizeof(check1)/sizeof(check1[0]);
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
-    psa_key_id_t          key;
+    psa_key_handle_t      key_handle;
 
     if (num_checks == 0)
     {
@@ -60,11 +60,11 @@ int32_t psa_aead_decrypt_test(caller_security_t caller __UNUSED)
 
         /* Import the key data into the key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
-                                      check1[i].data_length, &key);
+                                      check1[i].data_length, &key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Process an authenticated decryption operation */
-        status = val->crypto_function(VAL_CRYPTO_AEAD_DECRYPT, key, check1[i].alg,
+        status = val->crypto_function(VAL_CRYPTO_AEAD_DECRYPT, key_handle, check1[i].alg,
                                       check1[i].nonce, check1[i].nonce_length,
                                       check1[i].additional_data, check1[i].additional_data_length,
                                       check1[i].ciphertext, check1[i].ciphertext_length,
@@ -75,7 +75,7 @@ int32_t psa_aead_decrypt_test(caller_security_t caller __UNUSED)
         if (check1[i].expected_status != PSA_SUCCESS)
         {
             /* Destroy the key */
-            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
             continue;
@@ -90,17 +90,17 @@ int32_t psa_aead_decrypt_test(caller_security_t caller __UNUSED)
                            expected_plaintext_length, TEST_CHECKPOINT_NUM(7));
 
         /* Destroy the key */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
         /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
-                                      check1[i].data_length, &key);
+                                      check1[i].data_length, &key_handle);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_NOT_SUPPORTED, TEST_CHECKPOINT_NUM(9));
 
         /* Process an authenticated decryption operation on a destroyed key handle */
-        status = val->crypto_function(VAL_CRYPTO_AEAD_DECRYPT, key, check1[i].alg,
+        status = val->crypto_function(VAL_CRYPTO_AEAD_DECRYPT, key_handle, check1[i].alg,
                                       check1[i].nonce, check1[i].nonce_length,
                                       check1[i].additional_data, check1[i].additional_data_length,
                                       check1[i].ciphertext, check1[i].ciphertext_length,
