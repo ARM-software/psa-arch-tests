@@ -39,7 +39,7 @@ static int pal_uart_stm_is_tx_empty(void)
 /*  return ((READ_BIT(USARTx->ISR, USART_ISR_TXE_TXFNF) == (USART_ISR_TXE_TXFNF)) ? 1UL : 0UL);*/
 /*}*/
 
-    return ((((USART_TypeDef*) g_uart)->ISR & USART_ISR_TXE_TXFNF));
+    return ((((USART_TypeDef *) g_uart)->ISR & USART_ISR_TXE_TXFNF));
 }
 
 /**
@@ -48,10 +48,10 @@ static int pal_uart_stm_is_tx_empty(void)
 static void pal_uart_stm_putc(uint8_t c)
 {
     /* ensure TX buffer to be empty */
-    while (!pal_uart_stm_is_tx_empty());
+    while (!pal_uart_stm_is_tx_empty())
 
     /* write the data (upper 24 bits are reserved) */
-    ((USART_TypeDef*) g_uart)->TDR = c;
+    ((USART_TypeDef *) g_uart)->TDR = c;
     if (c == '\n')
     {
         pal_uart_stm_putc('\r');
@@ -84,9 +84,9 @@ void pal_uart_stm_print(const char *str, int32_t data)
                 while (data != 0)
                 {
                     j         = data % 10;
-                    data      = data /10;
+                    data      = data / 10;
                     buffer[i] = j + 48;
-                    i        += 1;
+                    i += 1;
                 }
 
                 if (is_neg)
@@ -140,7 +140,14 @@ void pal_uart_stm_generate_irq(void)
     pal_uart_stm_putc(' ');
     pal_uart_stm_putc(' ');
     /* Loop until TX interrupt trigger */
-    while (!pal_uart_stm_is_tx_irq_triggerd());
+    while (1)
+	{
+		if (!pal_uart_stm_is_tx_irq_triggerd())
+			continue;
+		else
+			break;
+	}
+	
 }
 
 /**
