@@ -109,6 +109,11 @@ list(APPEND PSA_TOOLCHAIN_SUPPORT
         HOST_GCC
 )
 
+# list of supported CROSS_COMPILE toolchains
+list(APPEND CROSS_COMPILE_TOOLCHAIN_SUPPORT
+        GNUARM
+)
+
 # list of suported CPU arch
 list(APPEND PSA_CPU_ARCH_SUPPORT
 	armv8m_ml
@@ -438,6 +443,9 @@ add_custom_target(
 
 # Check for supported toolchain/s
 if(${TOOLCHAIN} IN_LIST PSA_TOOLCHAIN_SUPPORT)
+        if(CROSS_COMPILE AND NOT (${TOOLCHAIN} IN_LIST CROSS_COMPILE_TOOLCHAIN_SUPPORT))
+                message(FATAL_ERROR "[PSA] : Error: CROSS_COMPILE not supported for this toolchain, supported toolchain are : ${CROSS_COMPILE_TOOLCHAIN_SUPPORT}")
+        endif()
         include(${PSA_ROOT_DIR}/tools/cmake/compiler/${TOOLCHAIN}.cmake)
 else()
         message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DTOOLCHAIN=${TOOLCHAIN}, supported toolchain are : ${PSA_TOOLCHAIN_SUPPORT}")
