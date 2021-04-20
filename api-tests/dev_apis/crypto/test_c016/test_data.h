@@ -108,6 +108,7 @@ static const test_data check1[] = {
 
 #ifdef ARCH_TEST_RSA
 #ifdef ARCH_TEST_RSA_2048
+#ifdef ARCH_TEST_RSA_2048_GEN_KEY
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 {
     .test_desc       = "Test psa_generate_key with RSA 2048 Keypair\n",
@@ -118,6 +119,7 @@ static const test_data check1[] = {
     .expected_range  = {1190, 1194},
     .expected_status = PSA_SUCCESS
 },
+#endif
 #endif
 #endif
 #endif
