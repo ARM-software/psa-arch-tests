@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,22 +17,6 @@
 
 #include "pal_common.h"
 #include "pal_nvmem.h"
-
-
-extern int tfm_log_printf(const char *, ...);
-extern int32_t tfm_platform_system_reset(void);
-
-/* Initialize the timer with the given number of ticks. */
-extern void pal_timer_init_ns(uint32_t ticks);
-
-/* Start the timer. */
-extern void pal_timer_start_ns(void);
-
-/* Stop and reset the timer. */
-extern void pal_timer_stop_ns(void);
-
-/* Get the address of a free, word-aligned, 1K memory area. */
-extern uint32_t pal_nvmem_get_addr(void);
 
 /**
     @brief    - This function initializes the UART
@@ -107,7 +91,7 @@ int pal_wd_timer_disable_ns(addr_t base_addr)
 **/
 int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size)
 {
-    if (base != 0){
+    if (base != 0) {
         /* Unexpected base address */
         return PAL_STATUS_ERROR;
     }
@@ -126,7 +110,7 @@ int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size)
 **/
 int pal_nvmem_write_ns(addr_t base, uint32_t offset, void *buffer, int size)
 {
-    if (base != 0){
+    if (base != 0) {
         /* Unexpected base address */
         return PAL_STATUS_ERROR;
     }
@@ -145,7 +129,7 @@ void pal_terminate_simulation(void)
 {
     /* Add logic to terminate the simluation */
 
-    while(1)
+    while (1)
     {
         __asm volatile("WFI");
     }

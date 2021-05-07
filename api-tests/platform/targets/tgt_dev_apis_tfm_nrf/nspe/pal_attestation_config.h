@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2020-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,14 +42,16 @@
  * This is the size of the first part of the CBOR encoded TBS
  * bytes. It is around 20 bytes. See create_tbs_hash().
  */
-#define T_COSE_SIZE_OF_TBS \
+#define T_COSE_SIZE_OF_TBS { \
     1 + /* For opening the array */ \
     sizeof(COSE_SIG_CONTEXT_STRING_SIGNATURE1) + /* "Signature1" */ \
     2 + /* Overhead for encoding string */ \
     T_COSE_SIGN1_MAX_PROT_HEADER + /* entire protected headers */ \
     3 * (/* 3 NULL bstrs for fields not used */ \
         1 /* size of a NULL bstr */  \
-    )
+    ) \
+}
+
 #define NULL_USEFUL_BUF_C  NULLUsefulBufC
 
 #define ATTEST_PUBLIC_KEY_SLOT                  4
@@ -105,3 +107,4 @@ static const ecc_key_t attest_key = {
 };
 
 #endif /* _PAL_ATTESTATION_CONFIG_H_ */
+

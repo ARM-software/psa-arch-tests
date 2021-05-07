@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,7 @@ int32_t psa_cipher_generate_iv_test(caller_security_t caller __UNUSED)
     psa_cipher_operation_t  operation;
     int32_t                 status;
     psa_key_attributes_t    attributes = PSA_KEY_ATTRIBUTES_INIT;
-    psa_key_handle_t        key_handle;
+    psa_key_id_t            key;
 
     if (num_checks == 0)
     {
@@ -50,7 +50,7 @@ int32_t psa_cipher_generate_iv_test(caller_security_t caller __UNUSED)
     {
         val->print(PRINT_TEST, "[Check %d] ", i+1);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
-        memset(&operation, 0, sizeof(operation));
+        val->crypto_function(VAL_CRYPTO_CIPHER_OPERATION_INIT, &operation);
 
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
@@ -63,11 +63,11 @@ int32_t psa_cipher_generate_iv_test(caller_security_t caller __UNUSED)
 
         /* Import the key data into the key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
-                                      check1[i].data_length, &key_handle);
+                                      check1[i].data_length, &key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Set the key for a multipart symmetric encryption operation */
-        status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation, key_handle,
+        status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation, key,
                                       check1[i].alg);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
@@ -83,7 +83,7 @@ int32_t psa_cipher_generate_iv_test(caller_security_t caller __UNUSED)
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
             /* Destroy the key */
-            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
             continue;
@@ -111,13 +111,13 @@ int32_t psa_cipher_generate_iv_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
 
         /* Destroy the key */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
 
         /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
-                                      check1[i].data_length, &key_handle);
+                                      check1[i].data_length, &key);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_NOT_SUPPORTED, TEST_CHECKPOINT_NUM(3));
     }
 

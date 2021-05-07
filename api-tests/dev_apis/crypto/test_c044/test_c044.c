@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,8 +37,8 @@ int32_t psa_copy_key_test(caller_security_t caller __UNUSED)
     int32_t               status, export_status;
     psa_key_attributes_t  source_attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_key_attributes_t  target_attributes = PSA_KEY_ATTRIBUTES_INIT;
-    psa_key_handle_t      key_handle;
-    psa_key_handle_t      target_key_handle = 0;
+    psa_key_id_t          key;
+    psa_key_id_t          target_key = 0;
 
     if (num_checks == 0)
     {
@@ -70,7 +70,7 @@ int32_t psa_copy_key_test(caller_security_t caller __UNUSED)
 
         /* Import the key data into the key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &source_attributes, check1[i].data,
-                                      check1[i].data_length, &key_handle);
+                                      check1[i].data_length, &key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Setup the attributes for the target key */
@@ -86,12 +86,12 @@ int32_t psa_copy_key_test(caller_security_t caller __UNUSED)
                              check1[i].target_bits);
 
         /* Make a copy of a key */
-        status = val->crypto_function(VAL_CRYPTO_COPY_KEY, key_handle, &target_attributes,
-                                      &target_key_handle);
+        status = val->crypto_function(VAL_CRYPTO_COPY_KEY, key, &target_attributes,
+                                      &target_key);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
         /* Destroy the source key */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
         if (check1[i].expected_status != PSA_SUCCESS)
@@ -103,7 +103,7 @@ int32_t psa_copy_key_test(caller_security_t caller __UNUSED)
         }
 
         /* Check if the target key attributes is as expected */
-        status = val->crypto_function(VAL_CRYPTO_GET_KEY_ATTRIBUTES, target_key_handle,
+        status = val->crypto_function(VAL_CRYPTO_GET_KEY_ATTRIBUTES, target_key,
                                       &target_attributes);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
@@ -121,7 +121,7 @@ int32_t psa_copy_key_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_EQUAL(get_bits, check1[i].target_bits, TEST_CHECKPOINT_NUM(10));
 
         /* Export a key in binary format */
-        export_status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, target_key_handle,
+        export_status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY, target_key,
                                              check1[i].expected_data, check1[i].expected_data_size,
                                              &get_data_length);
 
@@ -138,12 +138,12 @@ int32_t psa_copy_key_test(caller_security_t caller __UNUSED)
         }
 
         /* Destroy the target key */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, target_key_handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, target_key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(14));
 
         /* Copy on a destroyed source should be an error */
-        status = val->crypto_function(VAL_CRYPTO_COPY_KEY, key_handle, &target_attributes,
-                                      &target_key_handle);
+        status = val->crypto_function(VAL_CRYPTO_COPY_KEY, key, &target_attributes,
+                                      &target_key);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(14));
 
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &source_attributes);

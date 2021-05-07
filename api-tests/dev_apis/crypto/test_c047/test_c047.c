@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,7 +33,7 @@ int32_t psa_mac_verify_test(caller_security_t caller __UNUSED)
     int                   num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t               i, status;
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
-    psa_key_handle_t      key_handle;
+    psa_key_id_t          key;
 
     if (num_checks == 0)
     {
@@ -61,24 +61,24 @@ int32_t psa_mac_verify_test(caller_security_t caller __UNUSED)
 
         /* Import the key data into the key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].key_data,
-                 check1[i].key_length, &key_handle);
+                 check1[i].key_length, &key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Calculate the MAC of a message and compare it with a reference value */
-        status = val->crypto_function(VAL_CRYPTO_MAC_VERIFY, key_handle,
+        status = val->crypto_function(VAL_CRYPTO_MAC_VERIFY, key,
                  check1[i].key_alg, check1[i].data, check1[i].data_size,
                  check1[i].expected_mac, check1[i].mac_size);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
         /* Destroy the key */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
         /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
 
         /* Calculate the MAC of a message on a destroyed key handle should be an error */
-        status = val->crypto_function(VAL_CRYPTO_MAC_VERIFY, key_handle,
+        status = val->crypto_function(VAL_CRYPTO_MAC_VERIFY, key,
                  check1[i].key_alg, check1[i].data, check1[i].data_size,
                  check1[i].expected_mac, check1[i].mac_size);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(6));

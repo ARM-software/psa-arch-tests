@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,7 +51,7 @@ function(_create_psa_stdc_exe _exe_name _api_dir)
 	)
 
 	add_executable(${EXE_NAME} ${EXE_SRC})
-	target_link_libraries(${EXE_NAME} ${EXE_LIBS} ${PSA_CRYPTO_LIB_FILENAME} ${PSA_STORAGE_LIB_FILENAME})
+	target_link_libraries(${EXE_NAME} ${EXE_LIBS} ${PSA_CRYPTO_LIB_FILENAME} ${PSA_STORAGE_LIB_FILENAME} ${PSA_INITIAL_ATTESTATION_LIB_FILENAME})
 	add_dependencies(${EXE_NAME} ${PSA_TARGET_TEST_COMBINE_LIB})
 endfunction(_create_psa_stdc_exe)
 
@@ -114,7 +114,19 @@ if(${SUITE} STREQUAL "STORAGE")
 	_create_psa_stdc_exe(psa-arch-tests-storage storage)
 endif()
 if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
-	message(FATAL_ERROR "Initial attestation not supported")
+	list(APPEND PAL_SRC_C_NSPE
+		${PSA_ROOT_DIR}/platform/targets/common/nspe/initial_attestation/pal_attestation_intf.c
+		${PSA_ROOT_DIR}/platform/targets/common/nspe/initial_attestation/pal_attestation_crypto.c
+                ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/src/UsefulBuf.c
+                ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/src/ieee754.c
+                ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/src/qcbor_decode.c
+                ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/src/qcbor_encode.c
+	)
+	if(NOT DEFINED PSA_INITIAL_ATTESTATION_LIB_FILENAME)
+		message(FATAL_ERROR "ERROR: PSA_STORAGE_LIB_FILENAME undefined.")
+	endif()
+_create_psa_stdc_exe(psa-arch-tests-initial-attestation initial-attestation)
+
 endif()
 
 # Create NSPE library
@@ -130,5 +142,16 @@ target_include_directories(${PSA_TARGET_PAL_NSPE_LIB} PRIVATE
 	${PSA_ROOT_DIR}/platform/targets/common/nspe/crypto
 	${PSA_ROOT_DIR}/platform/targets/common/nspe/protected_storage
 	${PSA_ROOT_DIR}/platform/targets/common/nspe/internal_trusted_storage
+	${PSA_ROOT_DIR}/platform/targets/common/nspe/initial_attestation
 	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe
 )
+
+if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
+	target_include_directories(${PSA_TARGET_PAL_NSPE_LIB} PRIVATE
+		${PSA_QCBOR_INCLUDE_PATH}
+	)
+#	if(NOT DEFINED PSA_INITIAL_ATTESTATION_LIB_FILENAME)
+#		message(FATAL_ERROR "ERROR: PSA_STORAGE_LIB_FILENAME undefined.")
+#	endif()
+#_create_psa_stdc_exe(psa-arch-tests-initial-attestation initial-attestation)
+endif()

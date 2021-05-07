@@ -71,6 +71,9 @@ To build the test suite for your target platform, execute the following commands
 -   -DWATCHDOG_AVAILABLE=<0|1>: Test harness may require to access watchdog timer to recover system hang. 0 means skip watchdog programming in the test suite and 1 means program the watchdog. Default is 1. Note, watchdog must be available for the tests which check the PSA API behaviour on the system reset.
 -   -DSUITE_TEST_RANGE="<test_start_number>;<test_end_number>" is to select range of tests for build. All tests under -DSUITE are considered by default if not specified.
 -   -DTFM_PROFILE=<profile_small/profile_medium> is to work with TFM defined Pofile Small/Medium definitions. Supported values are profile_small and profile_medium. Unless specified Default Profile is used.
+-   -DSPEC_VERSION=<spec_version> is test suite specification version. Which will build for given specified spec_version. Supported values for CRYPTO test suite are 1.0-BETA1, 1.0-BETA2, 1.0-BETA3 , for INITIAL_ATTESATATION test suite are 1.0-BETA0, 1.0.0, 1.0.1, 1.0.2, for STORAGE, INTERNAL_TRUSTED_STORAGE, PROTECTED_STORAGE test suite are 1.0-BETA2, 1.0 . Default is empty. <br/>
+     If -DSPEC_VERSION option is not given it will build for latest version of testsuite.
+     For every spec version corresponds test list will be in spec_version_testsuite.db file in api-tests/dev_apis/test_suite_name/ folder.
 -   -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>" is an additional directory to be included into the compiler search path.You must provide Functional APIs header files implementation to the test suite build system using this option. For example, to compile Crypto tests, the include path must point to the path where **psa/crypto.h** is located in your build system. Bydefault, PSA_INCLUDE_PATHS accepts absolute path. However, relative path can be provided using below format:<br />
 ```
     -DPSA_INCLUDE_PATHS=`readlink -f <relative_include_path>`
@@ -123,4 +126,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2020, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2021, Arm Limited and Contributors. All rights reserved.*

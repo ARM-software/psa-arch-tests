@@ -196,10 +196,6 @@
 #error "ARCH_TEST_CMAC defined, but not all prerequisites"
 #endif
 
-#if defined(ARCH_TEST_GMAC) && !defined(ARCH_TEST_AES)
-#error "ARCH_TEST_GMAC defined, but not all prerequisites"
-#endif
-
 #if defined(ARCH_TEST_HMAC) && !defined(ARCH_TEST_AES)
 #error "ARCH_TEST_HMAC defined, but not all prerequisites"
 #endif

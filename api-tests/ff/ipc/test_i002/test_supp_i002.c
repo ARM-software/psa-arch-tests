@@ -187,7 +187,7 @@ int32_t server_test_psa_call_with_allowed_type_values(void)
 {
     int32_t         status = VAL_STATUS_SUCCESS;
     psa_msg_t       msg = {0};
-    int32_t         type[] = {PSA_IPC_CALL, 1, 2, INT32_MAX};
+    int16_t         type[] = {PSA_IPC_CALL, 1, 2, INT16_MAX};
     uint32_t        i = 0;
 
     status = ((val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))

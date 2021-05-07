@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -131,6 +131,27 @@ else()
 list(APPEND PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS 1 2 3)
 endif()
 
+# list of available spec version
+if("${SUITE}" STREQUAL "STORAGE" OR ${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE" OR ${SUITE} STREQUAL "PROTECTED_STORAGE")
+list(APPEND PSA_SPEC_VERSION
+	1.0-BETA2
+	1.0
+)
+elseif("${SUITE}" STREQUAL "CRYPTO")
+list(APPEND PSA_SPEC_VERSION
+        1.0-BETA1
+        1.0-BETA2
+        1.0-BETA3
+)
+elseif("${SUITE}" STREQUAL "INITIAL_ATTESTATION")
+list(APPEND PSA_SPEC_VERSION
+        1.0-BETA0
+        1.0.0
+        1.0.1
+        1.0.2
+)
+endif()
+
 message(STATUS "[PSA] : ----------Process input arguments- start-------------")
 
 # Check for TARGET command line argument
@@ -182,9 +203,9 @@ endif()
 set(PSA_TARGET_PAL_NSPE_LIB		pal_nspe)
 set(PSA_TARGET_VAL_NSPE_LIB		val_nspe)
 set(PSA_TARGET_TEST_COMBINE_LIB		test_combine)
-set(PSA_TARGET_DRIVER_PARTITION_LIB	driver_partition)
-set(PSA_TARGET_CLIENT_PARTITION_LIB	client_partition)
-set(PSA_TARGET_SERVER_PARTITION_LIB	server_partition)
+set(PSA_TARGET_DRIVER_PARTITION_LIB	tfm_psa_rot_partition_driver_partition)
+set(PSA_TARGET_CLIENT_PARTITION_LIB	tfm_app_rot_partition_client_partition)
+set(PSA_TARGET_SERVER_PARTITION_LIB	tfm_app_rot_partition_server_partition)
 if(${SUITE} STREQUAL "IPC")
 	set(PSA_SUITE_DIR		${PSA_ROOT_DIR}/ff/${SUITE_LOWER})
 	set(PSA_SUITE_OUT_DIR		${CMAKE_CURRENT_BINARY_DIR}/ff/${SUITE_LOWER})
@@ -203,12 +224,53 @@ set(OUTPUT_HEADER			target_database.h)
 set(DATABASE_TABLE_NAME			target_database)
 set(DATABASE_TABLE_SECTION_NAME		"NOSECTION")
 set(TARGET_HEADER_GEN_INCLUDE_PATHS     "${PSA_ROOT_DIR}/val/nspe|${PSA_ROOT_DIR}/val/common|${PSA_ROOT_DIR}/platform/targets/common/nspe|${PSA_ROOT_DIR}/platform/targets/common/nspe/crypto|${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe")
-if(${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE")
-	set(TESTSUITE_DB			${PSA_SUITE_DIR}/its_testsuite.db)
-elseif((${SUITE} STREQUAL "PROTECTED_STORAGE") OR (${SUITE} STREQUAL "STORAGE"))
-	set(TESTSUITE_DB			${PSA_SUITE_DIR}/ps_testsuite.db)
+if(NOT DEFINED SPEC_VERSION)
+	if(${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE")
+		set(TESTSUITE_DB			${PSA_SUITE_DIR}/its_testsuite.db)
+	elseif((${SUITE} STREQUAL "PROTECTED_STORAGE") OR (${SUITE} STREQUAL "STORAGE"))
+		set(TESTSUITE_DB			${PSA_SUITE_DIR}/ps_testsuite.db)
+	else()
+		set(TESTSUITE_DB			${PSA_SUITE_DIR}/testsuite.db)
+	endif()
 else()
-	set(TESTSUITE_DB			${PSA_SUITE_DIR}/testsuite.db)
+	if(${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE")
+		if(${SPEC_VERSION} STREQUAL "1.0-BETA2")
+                	set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/its_1.0-beta2_testsuite.db)
+	        endif()
+		if(${SPEC_VERSION} STREQUAL "1.0")
+                	set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/its_1.0_testsuite.db)
+	        endif()
+	elseif((${SUITE} STREQUAL "PROTECTED_STORAGE") OR (${SUITE} STREQUAL "STORAGE"))
+		if(${SPEC_VERSION} STREQUAL "1.0-BETA2")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/ps_1.0-beta2_testsuite.db)
+                endif()
+                if(${SPEC_VERSION} STREQUAL "1.0")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/ps_1.0_testsuite.db)
+                endif()
+	elseif(${SUITE} STREQUAL "CRYPTO")
+                if(${SPEC_VERSION} STREQUAL "1.0-BETA1")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0-beta1_testsuite.db)
+                endif()
+                if(${SPEC_VERSION} STREQUAL "1.0-BETA2")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0-beta2_testsuite.db)
+                endif()
+                if(${SPEC_VERSION} STREQUAL "1.0-BETA3")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0-beta3_testsuite.db)
+                endif()
+        elseif(${SUITE} STREQUAL "INITIAL_ATTESTATION")
+                if(${SPEC_VERSION} STREQUAL "1.0-BETA0")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0-beta0_testsuite.db)
+                endif()
+                if(${SPEC_VERSION} STREQUAL "1.0.0")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0.0_testsuite.db)
+                endif()
+                if(${SPEC_VERSION} STREQUAL "1.0.1")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0.1_testsuite.db)
+                endif()
+                if(${SPEC_VERSION} STREQUAL "1.0.2")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0.2_testsuite.db)
+                endif()
+        endif()
 endif()
 set(PSA_TESTLIST_FILE			${CMAKE_CURRENT_BINARY_DIR}/${SUITE_LOWER}_testlist.txt)
 set(PSA_TEST_ENTRY_LIST_INC		${CMAKE_CURRENT_BINARY_DIR}/test_entry_list.inc)
@@ -345,6 +407,16 @@ else()
 	endif()
 endif()
 
+if(NOT DEFINED SPEC_VERSION)
+	message(STATUS "[PSA] : Default spec version")
+else()
+	if(NOT ${SPEC_VERSION} IN_LIST PSA_SPEC_VERSION)
+                message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DSPEC_VERSION=${SPEC_VERSION}, supported values are : ${PSA_SPEC_VERSION} for ${SUITE}")
+	else()
+		message(STATUS "[PSA] : Testing ${SUITE} for spec version ${SPEC_VERSION}")
+	endif()
+endif()
+
 message(STATUS "[PSA] : ----------Process input arguments- complete-------------")
 
 
@@ -443,10 +515,12 @@ add_custom_target(
 
 # Check for supported toolchain/s
 if(${TOOLCHAIN} IN_LIST PSA_TOOLCHAIN_SUPPORT)
-        if(CROSS_COMPILE AND NOT (${TOOLCHAIN} IN_LIST CROSS_COMPILE_TOOLCHAIN_SUPPORT))
+	if (DEFINED CROSS_COMPILE)
+	    if(${CROSS_COMPILE} AND NOT (${TOOLCHAIN} IN_LIST CROSS_COMPILE_TOOLCHAIN_SUPPORT))
                 message(FATAL_ERROR "[PSA] : Error: CROSS_COMPILE not supported for this toolchain, supported toolchain are : ${CROSS_COMPILE_TOOLCHAIN_SUPPORT}")
-        endif()
-        include(${PSA_ROOT_DIR}/tools/cmake/compiler/${TOOLCHAIN}.cmake)
+            endif()
+	endif()
+    include(${PSA_ROOT_DIR}/tools/cmake/compiler/${TOOLCHAIN}.cmake)
 else()
         message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DTOOLCHAIN=${TOOLCHAIN}, supported toolchain are : ${PSA_TOOLCHAIN_SUPPORT}")
 endif()

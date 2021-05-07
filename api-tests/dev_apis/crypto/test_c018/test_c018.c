@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +37,7 @@ int32_t psa_key_derivation_input_key_test(caller_security_t caller __UNUSED)
     int32_t                        num_checks = sizeof(check1)/sizeof(check1[0]);
     psa_key_derivation_operation_t operation  = PSA_KEY_DERIVATION_OPERATION_INIT;
     psa_key_attributes_t           attributes = PSA_KEY_ATTRIBUTES_INIT;
-    psa_key_handle_t               key_handle;
+    psa_key_id_t                   key;
 
     if (num_checks == 0)
     {
@@ -67,7 +67,7 @@ int32_t psa_key_derivation_input_key_test(caller_security_t caller __UNUSED)
 
         /* Import the key data into the key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
-                 check1[i].data_length, &key_handle);
+                 check1[i].data_length, &key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         if (check1[i].expected_status == PSA_SUCCESS)
@@ -76,7 +76,7 @@ int32_t psa_key_derivation_input_key_test(caller_security_t caller __UNUSED)
              * failure.
              */
             status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY, &operation,
-                     check1[i].step, key_handle);
+                     check1[i].step, key);
             TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(4));
         }
 
@@ -87,7 +87,7 @@ int32_t psa_key_derivation_input_key_test(caller_security_t caller __UNUSED)
 
         /* Provide an input for key derivation or key agreement */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY, &operation,
-                 check1[i].step, key_handle);
+                 check1[i].step, key);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
 
         if (check1[i].expected_status != PSA_SUCCESS)
@@ -99,12 +99,12 @@ int32_t psa_key_derivation_input_key_test(caller_security_t caller __UNUSED)
             continue;
         }
 
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key_handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
         /* Provide an input for key derivation or key agreement */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY, &operation,
-                 check1[i].step, key_handle);
+                 check1[i].step, key);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(9));
 
         /* Abort the key derivation operation */
@@ -114,7 +114,7 @@ int32_t psa_key_derivation_input_key_test(caller_security_t caller __UNUSED)
         /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
-                 check1[i].data_length, &key_handle);
+                 check1[i].data_length, &key);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_NOT_SUPPORTED, TEST_CHECKPOINT_NUM(11));
 
         if (valid_test_input_index < 0)
@@ -128,7 +128,7 @@ int32_t psa_key_derivation_input_key_negative_test(caller_security_t caller __UN
 {
     int32_t                        status;
     psa_key_derivation_operation_t operation;
-    psa_key_handle_t               key_handle = 11;
+    psa_key_id_t                   key = 11;
 
     if (valid_test_input_index < 0)
         return RESULT_SKIP(VAL_STATUS_NO_TESTS);
@@ -153,7 +153,7 @@ int32_t psa_key_derivation_input_key_negative_test(caller_security_t caller __UN
 
     /* Provide an input for key derivation or key agreement */
     status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY, &operation,
-             check1[valid_test_input_index].step, key_handle);
+             check1[valid_test_input_index].step, key);
     TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
 
     /* Abort the key derivation operation */

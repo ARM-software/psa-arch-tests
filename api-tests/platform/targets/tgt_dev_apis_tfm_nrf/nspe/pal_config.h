@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@
 #include "pal_crypto_config.h"
 #include "pal_attestation_config.h"
 #include "pal_storage_config.h"
+
 
 /* Define PSA test suite dependent macros for non-cmake build */
 #if !defined(PSA_CMAKE_BUILD)
@@ -91,5 +92,20 @@
 /* psa/initial_attestation.h: Contains the PSA Initial Attestation API elements */
 #include "psa/initial_attestation.h"
 #endif
+
+extern int tfm_log_printf(const char *, ...);
+extern int32_t tfm_platform_system_reset(void);
+
+/* Initialize the timer with the given number of ticks. */
+extern void pal_timer_init_ns(uint32_t ticks);
+
+/* Start the timer. */
+extern void pal_timer_start_ns(void);
+
+/* Stop and reset the timer. */
+extern void pal_timer_stop_ns(void);
+
+/* Get the address of a free, word-aligned, 1K memory area. */
+extern uint32_t pal_nvmem_get_addr(void);
 
 #endif /* _PAL_CONFIG_H_ */
