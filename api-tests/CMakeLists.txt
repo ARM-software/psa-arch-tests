@@ -112,6 +112,7 @@ list(APPEND PSA_TOOLCHAIN_SUPPORT
 # list of supported CROSS_COMPILE toolchains
 list(APPEND CROSS_COMPILE_TOOLCHAIN_SUPPORT
         GNUARM
+        ARMCLANG
 )
 
 # list of suported CPU arch

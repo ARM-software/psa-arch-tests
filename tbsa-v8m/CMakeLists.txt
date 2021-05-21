@@ -66,11 +66,13 @@ list(APPEND ARCHITECTURE_SUPPORT
 # Supported toolchains
 list(APPEND TOOLCHAIN_SUPPORT
 	GNUARM
+	ARMCLANG
 )
 
 # list of supported CROSS_COMPILE toolchains
 list(APPEND CROSS_COMPILE_TOOLCHAIN_SUPPORT
 	GNUARM
+	ARMCLANG
 )
 
 # Variables of the project
