@@ -107,6 +107,7 @@ list(APPEND PSA_TOOLCHAIN_SUPPORT
         GNUARM
         ARMCLANG
         HOST_GCC
+	GCC_LINUX
 )
 
 # list of supported CROSS_COMPILE toolchains
@@ -119,6 +120,7 @@ list(APPEND PSA_CPU_ARCH_SUPPORT
 	armv8m_ml
 	armv8m_bl
 	armv7m
+	armv8a
 )
 
 # list of VERBOSE options
