@@ -233,7 +233,7 @@ static uint32_t pal_import_attest_key(psa_algorithm_t key_alg)
         if (status != PSA_SUCCESS)
             return PAL_ATTEST_ERR_KEY_FAIL;
 
-        if (ecc_family == USHRT_MAX)
+        if (ecc_family == (psa_ecc_family_t)USHRT_MAX)
             return PAL_ATTEST_ERROR;
 
         /* Set key type for public key */
@@ -274,7 +274,7 @@ static uint32_t pal_import_attest_key(psa_algorithm_t key_alg)
         if (status != PSA_SUCCESS)
             return PAL_ATTEST_ERR_KEY_FAIL;
 
-        if (ecc_family == USHRT_MAX)
+        if (ecc_family == (psa_ecc_family_t)USHRT_MAX)
             return PAL_ATTEST_ERROR;
 
         /* Set key type for public key */

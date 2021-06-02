@@ -127,7 +127,7 @@ static const test_data check1[] = {
 
 {
     .test_desc       = "Test psa_key_derivation_key_agreement - Pub key instead of Prv key\n",
-    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
+    .type            = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .data            = ecdh_secp_256_r1_pub_key,
     .data_length     = ECDH_SECP_256_R1_PUB_KEY_LEN,
     .usage_flags     = PSA_KEY_USAGE_DERIVE,

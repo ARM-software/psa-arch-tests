@@ -74,7 +74,18 @@ int32_t psa_cipher_encrypt_setup_test(caller_security_t caller __UNUSED)
         /* Set the key for a multipart symmetric encryption operation */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation,
                     key, check1[i].alg);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
+	    /* TBD Note:- these changes are done because of the spec bug : https://github.com/ARMmbed/mbedtls/pull/4582
+		 *        revisit the 1.0.x spec is out
+		 */
+		if (PSA_ERROR_NOT_SUPPORTED == check1[i].expected_status ||
+		     PSA_ERROR_INVALID_ARGUMENT == check1[i].expected_status)
+		{
+			TEST_ASSERT_DUAL(status, PSA_ERROR_NOT_SUPPORTED,
+                 			 PSA_ERROR_INVALID_ARGUMENT, TEST_CHECKPOINT_NUM(4));
+		} else
+		{
+            TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
+		}
 
         /* Whether setup succeeded or failed, abort must succeed.
          * Abort a cipher operation
@@ -86,8 +97,18 @@ int32_t psa_cipher_encrypt_setup_test(caller_security_t caller __UNUSED)
         {
             status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT_SETUP, &operation,
                         key, check1[i].alg);
-            TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
-
+	        /* TBD Note:- these changes are done because of the spec bug : https://github.com/ARMmbed/mbedtls/pull/4582
+		     *        revisit the 1.0.x spec is out
+		     */
+            if (PSA_ERROR_NOT_SUPPORTED == check1[i].expected_status ||
+          		 PSA_ERROR_INVALID_ARGUMENT == check1[i].expected_status)
+			{
+                TEST_ASSERT_DUAL(status, PSA_ERROR_NOT_SUPPORTED, \
+                                 PSA_ERROR_INVALID_ARGUMENT, TEST_CHECKPOINT_NUM(6));
+			} else
+			{
+                TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
+			}
             status = val->crypto_function(VAL_CRYPTO_CIPHER_ABORT, &operation);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
         }
@@ -100,7 +121,11 @@ int32_t psa_cipher_encrypt_setup_test(caller_security_t caller __UNUSED)
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
                                       check1[i].data_length, &key);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_NOT_SUPPORTED, TEST_CHECKPOINT_NUM(9));
+	    /* TBD Note:- these changes are done because of the spec bug : https://github.com/ARMmbed/mbedtls/pull/4582
+		 *        revisit the 1.0.x spec is out
+		 */
+		 TEST_ASSERT_DUAL(status, PSA_ERROR_NOT_SUPPORTED,
+           		          PSA_ERROR_INVALID_ARGUMENT, TEST_CHECKPOINT_NUM(9));
 
         if (valid_test_input_index < 0)
             valid_test_input_index = i;
