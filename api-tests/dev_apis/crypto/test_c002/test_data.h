@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,7 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc       = "Test psa_import_key 16 bytes AES\n",
@@ -63,6 +64,7 @@ static const test_data check1[] = {
     .usage_flags     = PSA_KEY_USAGE_EXPORT,
     .expected_status = PSA_SUCCESS
 },
+#endif
 #endif
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
@@ -131,7 +133,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {
     .test_desc       = "Test psa_import_key with EC Public key\n",
-    .type            = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
+    .type            = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .data            = ec_key_data,
     .data_length     = 65,
     .bits            = 256,
@@ -143,7 +145,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP224R1
 {
     .test_desc       = "Test psa_import_key with EC keypair\n",
-    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1),
+    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
     .data            = ec_key_pair,
     .data_length     = 28,
     .bits            = 224,
@@ -153,6 +155,7 @@ static const test_data check1[] = {
 #endif
 #endif
 
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_AES
 {
     .test_desc       = "Test psa_import_key 16 bytes AES with invalid bits\n",
@@ -194,4 +197,6 @@ static const test_data check1[] = {
     .usage_flags     = PSA_KEY_USAGE_EXPORT,
     .expected_status = PSA_ERROR_NOT_SUPPORTED
 },
+
+#endif
 };

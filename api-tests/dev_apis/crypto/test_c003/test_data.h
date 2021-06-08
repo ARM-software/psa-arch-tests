@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,6 +31,7 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc            = "Test psa_export_key 16 Byte AES\n",
@@ -75,6 +76,7 @@ static const test_data check1[] = {
     .expected_status      = PSA_SUCCESS
 },
 #endif
+#endif
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 #ifdef ARCH_TEST_RSA_2048
@@ -106,6 +108,7 @@ static const test_data check1[] = {
 #endif
 #endif
 
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_DES_1KEY
 {
     .test_desc            = "Test psa_export_key with DES 64 bit key\n",
@@ -150,12 +153,13 @@ static const test_data check1[] = {
     .expected_status      = PSA_SUCCESS
 },
 #endif
+#endif
 
 #ifdef ARCH_TEST_ASYMMETRIC_ENCRYPTION
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {
     .test_desc            = "Test psa_export_key with EC Public key\n",
-    .type                 = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
+    .type                 = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .data                 = ec_key_data,
     .data_length          = 65,
     .bits                 = 256,
@@ -170,7 +174,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP224R1
 {
     .test_desc            = "Test psa_export_key with EC keypair\n",
-    .type                 = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP224R1),
+    .type                 = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
     .data                 = ec_key_pair,
     .data_length          = 28,
     .bits                 = BYTES_TO_BITS(28),
@@ -183,19 +187,22 @@ static const test_data check1[] = {
 #endif
 #endif
 
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
+#ifdef CRYPTO_1_0
 {
     .test_desc            = "Test psa_export_key with key policy verify\n",
     .type                 = PSA_KEY_TYPE_AES,
     .data                 = key_data,
     .data_length          = AES_16B_KEY_SIZE,
     .bits                 = BYTES_TO_BITS(AES_16B_KEY_SIZE),
-    .usage_flags          = PSA_KEY_USAGE_VERIFY,
+    .usage_flags          = PSA_KEY_USAGE_VERIFY_MESSAGE,
     .expected_data        = expected_output,
     .data_size            = BUFFER_SIZE,
     .expected_data_length = AES_16B_KEY_SIZE,
     .expected_status      = PSA_ERROR_NOT_PERMITTED
 },
+#endif
 
 {
     .test_desc            = "Test psa_export_key with less buffer size\n",
@@ -209,5 +216,6 @@ static const test_data check1[] = {
     .expected_data_length = AES_16B_KEY_SIZE,
     .expected_status      = PSA_ERROR_BUFFER_TOO_SMALL
 },
+#endif
 #endif
 };

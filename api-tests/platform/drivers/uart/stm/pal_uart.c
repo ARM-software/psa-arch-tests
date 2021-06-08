@@ -49,6 +49,7 @@ static void pal_uart_stm_putc(uint8_t c)
 {
     /* ensure TX buffer to be empty */
     while (!pal_uart_stm_is_tx_empty())
+		;
 
     /* write the data (upper 24 bits are reserved) */
     ((USART_TypeDef *) g_uart)->TDR = c;
@@ -140,14 +141,8 @@ void pal_uart_stm_generate_irq(void)
     pal_uart_stm_putc(' ');
     pal_uart_stm_putc(' ');
     /* Loop until TX interrupt trigger */
-    while (1)
-	{
-		if (!pal_uart_stm_is_tx_irq_triggerd())
-			continue;
-		else
-			break;
-	}
-	
+    while (!pal_uart_stm_is_tx_irq_triggerd())
+		;
 }
 
 /**

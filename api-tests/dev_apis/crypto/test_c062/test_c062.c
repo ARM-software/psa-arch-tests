@@ -153,7 +153,7 @@ int32_t psa_hash_suspend_repeated_call(caller_security_t caller __UNUSED)
                                   &operation,
                                   check1[valid_test_input_index].hash_state +
                                   expected_hash_state_length1,
-                                  check1[valid_test_input_index].hash_state_size - 
+                                  check1[valid_test_input_index].hash_state_size -
                                   expected_hash_state_length1,
                                   &expected_hash_state_length2);
     TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(6));

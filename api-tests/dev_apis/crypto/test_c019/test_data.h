@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {
     .test_desc       = "Test psa_key_derivation_key_agreement - ECDH SECP256R1\n",
-    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1),
+    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
     .data            = ecdh_secp_256_r1_prv_key,
     .data_length     = ECDH_SECP_256_R1_PRV_KEY_LEN,
     .usage_flags     = PSA_KEY_USAGE_DERIVE,
@@ -49,7 +49,7 @@ static const test_data check1[] = {
 
 {
     .test_desc       = "Test psa_key_derivation_key_agreement - Invalid step\n",
-    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1),
+    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
     .data            = ecdh_secp_256_r1_prv_key,
     .data_length     = ECDH_SECP_256_R1_PRV_KEY_LEN,
     .usage_flags     = PSA_KEY_USAGE_DERIVE,
@@ -65,7 +65,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP384R1
 {
     .test_desc       = "Test psa_key_derivation_key_agreement - ECDH SECP384R1\n",
-    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP384R1),
+    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
     .data            = ecdh_secp_384_r1_prv_key,
     .data_length     = ECDH_SECP_384_R1_PRV_KEY_LEN,
     .usage_flags     = PSA_KEY_USAGE_DERIVE,
@@ -80,7 +80,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {
     .test_desc       = "Test psa_key_derivation_key_agreement - Invalid usage\n",
-    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1),
+    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
     .data            = ecdh_secp_256_r1_prv_key,
     .data_length     = ECDH_SECP_256_R1_PRV_KEY_LEN,
     .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
@@ -98,7 +98,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_HKDF
 {
     .test_desc       = "Test psa_key_derivation_key_agreement - KDF not a key agreement alg\n",
-    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1),
+    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
     .data            = ecdh_secp_256_r1_prv_key,
     .data_length     = ECDH_SECP_256_R1_PRV_KEY_LEN,
     .usage_flags     = PSA_KEY_USAGE_DERIVE,
@@ -114,7 +114,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECDH
 {
     .test_desc       = "Test psa_key_derivation_key_agreement - Public key of different curve\n",
-    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_CURVE_SECP256R1),
+    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
     .data            = ecdh_secp_256_r1_prv_key,
     .data_length     = ECDH_SECP_256_R1_PRV_KEY_LEN,
     .usage_flags     = PSA_KEY_USAGE_DERIVE,
@@ -127,7 +127,7 @@ static const test_data check1[] = {
 
 {
     .test_desc       = "Test psa_key_derivation_key_agreement - Pub key instead of Prv key\n",
-    .type            = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_CURVE_SECP256R1),
+    .type            = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .data            = ecdh_secp_256_r1_pub_key,
     .data_length     = ECDH_SECP_256_R1_PUB_KEY_LEN,
     .usage_flags     = PSA_KEY_USAGE_DERIVE,

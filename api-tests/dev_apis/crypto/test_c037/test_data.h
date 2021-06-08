@@ -269,7 +269,7 @@ static const test_data check1[] = {
     .output_size            = 0,
     .expected_output        = NULL,
     .expected_output_length = 0,
-    .expected_status        = PSA_ERROR_BAD_STATE
+    .expected_status        = PSA_ERROR_INVALID_ARGUMENT
 },
 
 #endif

@@ -154,20 +154,21 @@ static const test_data check1[] = {
     .expected_hash_length = 64,
     .expected_status      = PSA_SUCCESS,
 },
-#endif
 
-#ifdef ARCH_TEST_SHA256
+#ifdef ARCH_TEST_SHA512
 {
     .test_desc            = "Test psa_hash_compute with small buffer size\n",
-    .alg                  = PSA_ALG_SHA_256,
+    .alg                  = PSA_ALG_SHA_512,
     .input                = &hash_input,
     .input_length         = sizeof(hash_input),
     .hash                 = expected_output,
-    .hash_size            = 30,
-    .expected_hash        = sha_256_hash,
-    .expected_hash_length = 32,
+    .hash_size            = 60,
+    .expected_hash        = expected_output,
+    .expected_hash_length = 64,
     .expected_status      = PSA_ERROR_BUFFER_TOO_SMALL,
 },
+#endif
+#endif
 
 {
     .test_desc            = "Test psa_hash_compute with invalid algorithm\n",
@@ -176,9 +177,8 @@ static const test_data check1[] = {
     .input_length         = sizeof(hash_input),
     .hash                 = expected_output,
     .hash_size            = BUFFER_SIZE,
-    .expected_hash        = sha_256_hash,
-    .expected_hash_length = 32,
+    .expected_hash        = sha_512_hash,
+    .expected_hash_length = 64,
     .expected_status      = PSA_ERROR_NOT_SUPPORTED,
 },
-#endif
 };

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 #include "test_s010.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_STORAGE_BASE, 10)
-#define TEST_DESC "UID value zero check\n"
+#define TEST_DESC "UID value zero check"
 
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;
@@ -35,6 +35,15 @@ void test_entry(val_api_t *val_api, psa_api_t *psa_api)
 
     /* test init */
     val->test_init(TEST_NUM, TEST_DESC, TEST_FIELD(TEST_ISOLATION_L1, WD_HIGH_TIMEOUT));
+
+    #if defined(STORAGE)
+        val->print(PRINT_TEST, TEST_DESC_STORAGE, 0);
+    #elif defined(INTERNAL_TRUSTED_STORAGE)
+        val->print(PRINT_TEST, TEST_DESC_ITS, 0);
+    #elif defined(PROTECTED_STORAGE)
+        val->print(PRINT_TEST, TEST_DESC_PS, 0);
+    #endif
+
     if (!IS_TEST_START(val->get_status()))
     {
         goto test_exit;
