@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,8 @@
 
 #include "test_i063.h"
 
+#if STATELESS_ROT == 1
+
 const client_test_t test_i063_client_tests_list[] = {
     NULL,
     client_test_psa_wait_signal_mask,
@@ -33,6 +35,24 @@ const client_test_t test_i063_client_tests_list[] = {
 
 int32_t client_test_psa_wait_signal_mask(caller_security_t caller __UNUSED)
 {
+
+
+   val->print(PRINT_TEST, "[Check 1] Test psa_wait signal mask\n", 0);
+
+   return VAL_STATUS_SUCCESS;
+}
+
+#else
+
+const client_test_t test_i063_client_tests_list[] = {
+    NULL,
+    client_test_psa_wait_signal_mask,
+    NULL,
+};
+
+int32_t client_test_psa_wait_signal_mask(caller_security_t caller __UNUSED)
+{
+
    psa_handle_t     handle = 0;
 
    val->print(PRINT_TEST, "[Check 1] Test psa_wait signal mask\n", 0);
@@ -52,6 +72,7 @@ int32_t client_test_psa_wait_signal_mask(caller_security_t caller __UNUSED)
        val->print(PRINT_ERROR, "psa_connect failed -2\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
    }
-
    return VAL_STATUS_SUCCESS;
 }
+
+#endif

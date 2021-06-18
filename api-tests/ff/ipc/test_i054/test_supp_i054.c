@@ -23,6 +23,8 @@
 extern val_api_t *val;
 extern psa_api_t *psa;
 
+#if STATELESS_ROT == 1
+
 int32_t server_test_psa_call_with_not_writable_outvec_base(void);
 
 const server_test_t test_i054_server_tests_list[] = {
@@ -33,10 +35,50 @@ const server_test_t test_i054_server_tests_list[] = {
 
 int32_t server_test_psa_call_with_not_writable_outvec_base(void)
 {
-    int32_t         status = VAL_STATUS_SUCCESS;
     psa_msg_t       msg = {0};
     psa_signal_t    signals;
 
+wait:
+    signals = psa->wait(PSA_WAIT_ANY, PSA_BLOCK);
+    if (signals & SERVER_UNSPECIFED_VERSION_SIGNAL)
+    {
+        if (psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
+        {
+            goto wait;
+        }
+
+        if (msg.type == PSA_IPC_CALL)
+        {
+            /* Control shouldn't have come here */
+            val->print(PRINT_ERROR, "\tControl shouldn't have reached here\n", 0);
+            psa->reply(msg.handle, -2);
+        }
+    }
+    else
+    {
+        val->print(PRINT_ERROR, "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
+        return VAL_STATUS_ERROR;
+    }
+
+    return VAL_STATUS_ERROR;
+}
+
+#else
+
+int32_t server_test_psa_call_with_not_writable_outvec_base(void);
+
+const server_test_t test_i054_server_tests_list[] = {
+    NULL,
+    server_test_psa_call_with_not_writable_outvec_base,
+    NULL,
+};
+
+int32_t server_test_psa_call_with_not_writable_outvec_base(void)
+{
+    psa_msg_t       msg = {0};
+    psa_signal_t    signals;
+
+    int32_t         status = VAL_STATUS_SUCCESS;
     status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
     {
@@ -77,3 +119,5 @@ wait:
 
     return VAL_STATUS_ERROR;
 }
+
+#endif

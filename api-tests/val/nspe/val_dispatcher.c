@@ -33,7 +33,7 @@ addr_t          g_test_info_addr;
     @param        - None
     @return       - None
 **/
-static void val_print_api_version(void)
+__attribute__((unused)) static void val_print_api_version(void)
 {
 #ifdef CRYPTO
     val_print(PRINT_ALWAYS, " %d.", PSA_CRYPTO_API_VERSION_MAJOR);
@@ -228,7 +228,7 @@ int32_t val_dispatcher(test_id_t test_id_prev)
             {
                 val_print(PRINT_ALWAYS, "\nRunning.. ", 0);
                 val_print(PRINT_ALWAYS, val_get_comp_name(test_id), 0);
-				val_print_api_version();
+			//	val_print_api_version();
                 val_print(PRINT_ALWAYS, "\n******************************************\n", 0);
             }
 

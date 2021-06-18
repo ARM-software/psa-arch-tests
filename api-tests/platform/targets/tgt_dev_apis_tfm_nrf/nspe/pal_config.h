@@ -49,7 +49,7 @@
 #define CRYPTO_VERSION_BETA3
 
 /* Use hardcoded public key */
-//#define PLATFORM_OVERRIDE_ATTEST_PK
+#define PLATFORM_OVERRIDE_ATTEST_PK
 
 /*
  * Include of PSA defined Header files

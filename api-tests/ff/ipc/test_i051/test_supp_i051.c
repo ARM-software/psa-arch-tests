@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +22,40 @@
 #define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
+
+#if STATELESS_ROT == 1
+
+int32_t server_test_psa_call_with_invalid_outvec_base(void);
+
+const server_test_t test_i051_server_tests_list[] = {
+    NULL,
+    server_test_psa_call_with_invalid_outvec_base,
+    NULL,
+};
+
+int32_t server_test_psa_call_with_invalid_outvec_base(void)
+{
+    psa_msg_t       msg = {0};
+    psa_signal_t    signals;
+
+wait:
+    signals = psa->wait(PSA_WAIT_ANY, PSA_BLOCK);
+    if (psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
+    {
+	goto wait;
+    }
+
+    if (msg.type == PSA_IPC_CALL)
+    {
+        /* Control shouldn't have come here */
+        val->print(PRINT_ERROR, "\tControl shouldn't have reached here\n", 0);
+        psa->reply(msg.handle, -2);
+    }
+
+    return VAL_STATUS_ERROR;
+}
+
+#else
 
 int32_t server_test_psa_call_with_invalid_outvec_base(void);
 
@@ -77,3 +111,5 @@ wait:
 
     return VAL_STATUS_ERROR;
 }
+
+#endif

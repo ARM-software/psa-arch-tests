@@ -20,7 +20,7 @@
 #include "test_c042.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_CRYPTO_BASE, 42)
-#define TEST_DESC "Testing crypto asymmetric APIs | UT: psa_asymmetric_verify\n"
+#define TEST_DESC "Testing crypto asymmetric APIs | UT: psa_verify_hash\n"
 
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;

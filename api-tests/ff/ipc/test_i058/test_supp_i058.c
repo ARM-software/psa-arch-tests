@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +22,38 @@
 #define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
+
+#if STATELESS_ROT == 1
+
+int32_t server_test_psa_doorbell_signal(void);
+
+const server_test_t test_i058_server_tests_list[] = {
+    NULL,
+    server_test_psa_doorbell_signal,
+    NULL,
+};
+
+int32_t server_test_psa_doorbell_signal(void)
+{
+    int32_t                 status = VAL_STATUS_SUCCESS;
+    psa_msg_t               msg = {0};
+
+    if (msg.client_id > 0)
+    {
+        /* Doorbell signal to client partititon */
+        psa->notify(msg.client_id);
+    }
+    else
+    {
+        status = VAL_STATUS_SPM_FAILED;
+        val->print(PRINT_ERROR, "Caller is from non-secure\n", 0);
+    }
+
+    val->err_check_set(TEST_CHECKPOINT_NUM(202), status);
+    return status;
+}
+
+#else
 
 int32_t server_test_psa_doorbell_signal(void);
 
@@ -66,3 +98,5 @@ int32_t server_test_psa_doorbell_signal(void)
 
     return status;
 }
+
+#endif

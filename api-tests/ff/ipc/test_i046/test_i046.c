@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,38 @@
 #endif
 
 #include "test_i046.h"
+
+#if STATELESS_ROT == 1
+
+const client_test_t test_i046_client_tests_list[] = {
+    NULL,
+    client_test_psa_write_with_size_overflow,
+    NULL,
+};
+
+int32_t client_test_psa_write_with_size_overflow(caller_security_t caller __UNUSED)
+{
+   int32_t            status = VAL_STATUS_SUCCESS;
+   psa_status_t       status_of_call;
+   uint8_t            data = 0;
+
+   val->print(PRINT_TEST,
+            "[Check 1] Test psa_write with size overflow\n", 0);
+
+   psa_outvec resp = {&data, sizeof(data)};
+
+   status_of_call =  psa->call(SERVER_UNSPECIFED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, &resp, 1);
+
+   /* Expectation is server test should hang and control shouldn't have come here */
+   val->print(PRINT_ERROR, "\tCall should failed but succeed\n", 0);
+
+   status = VAL_STATUS_SPM_FAILED;
+
+   (void)(status_of_call);
+   return status;
+}
+
+#else
 
 const client_test_t test_i046_client_tests_list[] = {
     NULL,
@@ -58,6 +90,9 @@ int32_t client_test_psa_write_with_size_overflow(caller_security_t caller __UNUS
    status = VAL_STATUS_SPM_FAILED;
 
    psa->close(handle);
+
    (void)(status_of_call);
    return status;
 }
+
+#endif
