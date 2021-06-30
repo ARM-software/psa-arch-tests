@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,38 @@
 #endif
 
 #include "test_i066.h"
+
+#if STATELESS_ROT == 1
+
+const client_test_t test_i066_client_tests_list[] = {
+    NULL,
+    client_test_psa_eoi_with_multiple_signals,
+    NULL,
+};
+
+int32_t client_test_psa_eoi_with_multiple_signals(caller_security_t caller __UNUSED)
+{
+   driver_test_fn_id_t    driver_test_fn_id = TEST_PSA_EOI_WITH_MULTIPLE_SIGNALS;
+
+   /*
+    * The interrupt related test check is captured in driver_partition.c as this is the
+    * only partition in test suite that holds the interrupt source. The interrupt test check
+    * is invoked by client by calling to DRIVER_TEST_SID RoT service of driver partition that
+    * hold the test check.
+    */
+
+   val->print(PRINT_TEST, "[Check 1] Test psa_eoi with multiple signals\n", 0);
+
+   /* Execute driver function related to TEST_PSA_EOI_WITH_MULTIPLE_SIGNALS */
+   psa_invec invec = {&driver_test_fn_id, sizeof(driver_test_fn_id)};
+
+   psa->call(DRIVER_TEST_HANDLE, PSA_IPC_CALL, &invec, 1, NULL, 0);
+
+   /* The expectation is that driver partition get panic and control never reaches here. */
+   return VAL_STATUS_SPM_FAILED;
+}
+
+#else
 
 const client_test_t test_i066_client_tests_list[] = {
     NULL,
@@ -55,6 +87,7 @@ int32_t client_test_psa_eoi_with_multiple_signals(caller_security_t caller __UNU
 
    /* Execute driver function related to TEST_PSA_EOI_WITH_MULTIPLE_SIGNALS */
    psa_invec invec = {&driver_test_fn_id, sizeof(driver_test_fn_id)};
+
    psa->call(handle, PSA_IPC_CALL, &invec, 1, NULL, 0);
 
    psa->close(handle);
@@ -62,3 +95,5 @@ int32_t client_test_psa_eoi_with_multiple_signals(caller_security_t caller __UNU
    /* The expectation is that driver partition get panic and control never reaches here. */
    return VAL_STATUS_SPM_FAILED;
 }
+
+#endif

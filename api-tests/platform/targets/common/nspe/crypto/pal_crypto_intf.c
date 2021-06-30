@@ -60,17 +60,14 @@ int32_t pal_crypto_function(int type, va_list valist)
     size_t                                    nonce_length;
     const uint8_t                            *additional_data;
     size_t                                    additional_data_length;
+#if HOST_GCC_MISSING_CRYPTO_1_0 == 0
     uint8_t                                  *output1;
     size_t                                   output_size1, *p_output_length1;
-
+#endif
 
 
     switch (type)
 	{
-		case PAL_CRYPTO_AEAD_ABORT:
-			aead_operation           = va_arg(valist, psa_aead_operation_t *);
-			return psa_aead_abort(aead_operation);
-			break;
 		case PAL_CRYPTO_AEAD_DECRYPT:
 			key                      = va_arg(valist, psa_key_id_t);
 			alg                      = va_arg(valist, psa_algorithm_t);
@@ -94,14 +91,6 @@ int32_t pal_crypto_function(int type, va_list valist)
 									output,
 									output_size,
 									p_output_length);
-			break;
-		case PAL_CRYPTO_AEAD_DECRYPT_SETUP:
-			aead_operation           = va_arg(valist, psa_aead_operation_t *);
-			key                      = va_arg(valist, psa_key_id_t);
-			alg                      = va_arg(valist, psa_algorithm_t);
-			return psa_aead_decrypt_setup(aead_operation,
-										  key,
-										  alg);
 			break;
 		case PAL_CRYPTO_AEAD_ENCRYPT:
 			key                      = va_arg(valist, psa_key_id_t);
@@ -127,11 +116,24 @@ int32_t pal_crypto_function(int type, va_list valist)
 									output_size,
 									p_output_length);
 			break;
-		case PAL_CRYPTO_AEAD_ENCRYPT_SETUP:
+#if HOST_GCC_MISSING_CRYPTO_1_0 == 0
+		case PAL_CRYPTO_AEAD_ABORT:
+			aead_operation           = va_arg(valist, psa_aead_operation_t *);
+			return psa_aead_abort(aead_operation);
+			break;
+		case PAL_CRYPTO_AEAD_DECRYPT_SETUP:
 			aead_operation           = va_arg(valist, psa_aead_operation_t *);
 			key                      = va_arg(valist, psa_key_id_t);
 			alg                      = va_arg(valist, psa_algorithm_t);
 			return psa_aead_decrypt_setup(aead_operation,
+										  key,
+										  alg);
+			break;
+		case PAL_CRYPTO_AEAD_ENCRYPT_SETUP:
+			aead_operation           = va_arg(valist, psa_aead_operation_t *);
+			key                      = va_arg(valist, psa_key_id_t);
+			alg                      = va_arg(valist, psa_algorithm_t);
+			return psa_aead_encrypt_setup(aead_operation,
 										  key,
 										  alg);
 			break;
@@ -160,13 +162,6 @@ int32_t pal_crypto_function(int type, va_list valist)
 										   output,
 										   output_size,
 										   p_output_length);
-			break;
-		case PAL_CRYPTO_AEAD_OPERATION_INIT:
-			aead_operation           = va_arg(valist, psa_aead_operation_t *);
-			aead_operation_temp      = psa_aead_operation_init();
-			memcpy((void *)aead_operation, (void *)&aead_operation_temp,
-				   sizeof(psa_aead_operation_t));
-			return 0;
 			break;
 		case PAL_CRYPTO_AEAD_SET_LENGTHS:
 			aead_operation           = va_arg(valist, psa_aead_operation_t *);
@@ -220,6 +215,14 @@ int32_t pal_crypto_function(int type, va_list valist)
 								   input,
 								   input_length);
 			break;
+#endif
+		case PAL_CRYPTO_AEAD_OPERATION_INIT:
+			aead_operation           = va_arg(valist, psa_aead_operation_t *);
+			aead_operation_temp      = psa_aead_operation_init();
+			memcpy((void *)aead_operation, (void *)&aead_operation_temp,
+				   sizeof(psa_aead_operation_t));
+			return 0;
+			break;
 		case PAL_CRYPTO_ASYMMETRIC_DECRYPT:
 			key                      = va_arg(valist, psa_key_id_t);
 			alg                      = va_arg(valist, psa_algorithm_t);
@@ -264,6 +267,7 @@ int32_t pal_crypto_function(int type, va_list valist)
 			cipher_operation         =  va_arg(valist, psa_cipher_operation_t *);
 			return psa_cipher_abort(cipher_operation);
 			break;
+#if HOST_GCC_MISSING_CRYPTO_1_0 == 0
 		case PAL_CRYPTO_CIPHER_DECRYPT:
 			key                      = va_arg(valist, psa_key_id_t);
 			alg                      = va_arg(valist, psa_algorithm_t);
@@ -280,6 +284,7 @@ int32_t pal_crypto_function(int type, va_list valist)
 									  output_size,
 									  p_output_length);
 			break;
+#endif
 		case PAL_CRYPTO_CIPHER_DECRYPT_SETUP:
 			cipher_operation         = va_arg(valist, psa_cipher_operation_t *);
 			key                      = va_arg(valist, psa_key_id_t);
@@ -288,6 +293,7 @@ int32_t pal_crypto_function(int type, va_list valist)
 											key,
 											alg);
 			break;
+#if HOST_GCC_MISSING_CRYPTO_1_0 == 0
 		case PAL_CRYPTO_CIPHER_ENCRYPT:
 			key                      = va_arg(valist, psa_key_id_t);
 			alg                      = va_arg(valist, psa_algorithm_t);
@@ -304,6 +310,7 @@ int32_t pal_crypto_function(int type, va_list valist)
 									  output_size,
 									  p_output_length);
 			break;
+#endif
 		case PAL_CRYPTO_CIPHER_ENCRYPT_SETUP:
 			cipher_operation         = va_arg(valist, psa_cipher_operation_t *);
 			key                      = va_arg(valist, psa_key_id_t);
@@ -692,6 +699,7 @@ int32_t pal_crypto_function(int type, va_list valist)
 								  input,
 								  input_length);
 			break;
+#if HOST_GCC_MISSING_CRYPTO_1_0 == 0
 		case PAL_CRYPTO_MAC_VERIFY:
 			key                      = va_arg(valist, psa_key_id_t);
 			alg                      = va_arg(valist, psa_algorithm_t);
@@ -706,6 +714,7 @@ int32_t pal_crypto_function(int type, va_list valist)
 								  input1,
 								  input_length1);
 			break;
+#endif
 		case PAL_CRYPTO_MAC_VERIFY_FINISH:
 			mac_operation            = va_arg(valist, psa_mac_operation_t *);
 			input                    = va_arg(valist, const uint8_t *);

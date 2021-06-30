@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,7 +48,7 @@
 #define CRYPTO_VERSION_BETA3
 
 /* Use hardcoded public key */
-//#define PLATFORM_OVERRIDE_ATTEST_PK
+#define PLATFORM_OVERRIDE_ATTEST_PK
 
 /*
  * Include of PSA defined Header files

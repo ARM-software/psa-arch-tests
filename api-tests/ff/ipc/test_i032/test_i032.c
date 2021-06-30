@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,8 @@
 
 #include "test_i032.h"
 
+#if STATELESS_ROT == 1
+
 const client_test_t test_i032_client_tests_list[] = {
     NULL,
     client_test_psa_read_with_invec_equal_to_max_iovec,
@@ -34,12 +36,40 @@ const client_test_t test_i032_client_tests_list[] = {
 int32_t client_test_psa_read_with_invec_equal_to_max_iovec(caller_security_t caller __UNUSED)
 {
    int32_t            status = VAL_STATUS_SUCCESS;
-   psa_handle_t       handle = 0;
    psa_status_t       status_of_call;
 
    val->print(PRINT_TEST,
             "[Check 1] Test psa_read with invec_idx=PSA_MAX_IOVEC\n", 0);
 
+   status_of_call =  psa->call(SERVER_UNSPECIFED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, NULL, 0);
+
+   /* Expectation is server test should hang and control shouldn't have come here */
+   val->print(PRINT_ERROR, "\tCall should failed but succeed\n", 0);
+
+   status = VAL_STATUS_SPM_FAILED;
+
+   (void)(status_of_call);
+   return status;
+}
+
+#else
+
+const client_test_t test_i032_client_tests_list[] = {
+    NULL,
+    client_test_psa_read_with_invec_equal_to_max_iovec,
+    NULL,
+};
+
+int32_t client_test_psa_read_with_invec_equal_to_max_iovec(caller_security_t caller __UNUSED)
+{
+   int32_t            status = VAL_STATUS_SUCCESS;
+
+   psa_status_t       status_of_call;
+
+   val->print(PRINT_TEST,
+            "[Check 1] Test psa_read with invec_idx=PSA_MAX_IOVEC\n", 0);
+
+   psa_handle_t       handle = 0;
    handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
    if (!PSA_HANDLE_IS_VALID(handle))
    {
@@ -55,6 +85,9 @@ int32_t client_test_psa_read_with_invec_equal_to_max_iovec(caller_security_t cal
    status = VAL_STATUS_SPM_FAILED;
 
    psa->close(handle);
+
    (void)(status_of_call);
    return status;
 }
+
+#endif

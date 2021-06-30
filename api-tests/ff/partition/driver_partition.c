@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,14 @@
 **/
 
 #include "val_driver_service_apis.h"
-
 #define DATA_VALUE  0x1111
 #define BUFFER_SIZE 4
+
+#if SPEC_VERSION == 11
+
+#define DRIVER_UART_INTR_SIG DRIVER_UART_INTR_SIG_SIGNAL
+
+#endif
 
 uint32_t g_psa_rot_data = DATA_VALUE;
 
@@ -352,6 +357,7 @@ int32_t driver_test_psa_eoi_with_unasserted_signal(void)
 
 int32_t driver_test_psa_eoi_with_multiple_signals(void)
 {
+    psa_irq_enable(DRIVER_UART_INTR_SIG);
     /*
      * To test psa_eoi for multiple signals, one of signal should asserted first.
      * Otherwise, check can false pass with psa_eoi_with_unasserted_signal.
@@ -398,13 +404,16 @@ int32_t driver_test_psa_eoi_with_multiple_signals(void)
 
 int32_t driver_test_irq_routing(void)
 {
+
     psa_signal_t signals = 0;
+    psa_irq_enable(DRIVER_UART_INTR_SIG);
 
     /* Assert interrupt signal assigned to driver partition */
     val_generate_interrupt();
 
     /* Wait for DRIVER_UART_INTR_SIG signal */
     signals = psa_wait(DRIVER_UART_INTR_SIG, PSA_BLOCK);
+
 
     if (signals & DRIVER_UART_INTR_SIG)
     {

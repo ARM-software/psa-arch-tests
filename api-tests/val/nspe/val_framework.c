@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -154,8 +154,14 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, const client_test_t
             {
                 /* Handshake with server tests */
                 test_info.block_num = i;
+#if STATELESS_ROT == 1
+                status = val_execute_secure_test_func(&handle, test_info,
+                                                                SERVER_TEST_DISPATCHER_HANDLE);
+                handle = (int32_t)SERVER_TEST_DISPATCHER_HANDLE;
+#else
                 status = val_execute_secure_test_func(&handle, test_info,
                                                 SERVER_TEST_DISPATCHER_SID);
+#endif
                 if (VAL_ERROR(status))
                 {
                     val_set_status(RESULT_FAIL(status));
@@ -258,7 +264,12 @@ val_status_t val_switch_to_secure_client(uint32_t test_num)
        }
 
        /* switch to secure client */
+#if STATELESS_ROT == 1
+       status = val_execute_secure_test_func(&handle, test_info, CLIENT_TEST_DISPATCHER_HANDLE);
+       handle = (int32_t)CLIENT_TEST_DISPATCHER_HANDLE;
+#else
        status = val_execute_secure_test_func(&handle, test_info, CLIENT_TEST_DISPATCHER_SID);
+#endif
        if (VAL_ERROR(status))
        {
            goto exit;
@@ -299,12 +310,25 @@ exit:
     @param    - sid        : RoT service to be connected. Partition dispatcher sid
     @return   - val_status_t
 **/
-val_status_t val_execute_secure_test_func(psa_handle_t *handle, test_info_t test_info, uint32_t sid)
+val_status_t val_execute_secure_test_func(__attribute__((unused)) psa_handle_t *handle,
+		                                           test_info_t test_info, uint32_t sid)
 {
     uint32_t        test_data;
     val_status_t    status = VAL_STATUS_SUCCESS;
     psa_status_t    status_of_call = PSA_SUCCESS;
+#if STATELESS_ROT == 1
+    test_data = ((uint32_t)(test_info.test_num) | ((uint32_t)(test_info.block_num) << BLOCK_NUM_POS)
+                        | ((uint32_t)(TEST_EXECUTE_FUNC) << ACTION_POS));
+    psa_invec data[1] = { {&test_data, sizeof(test_data)} };
 
+    status_of_call = psa_call(sid, 0, data, 1, NULL, 0);
+    if (status_of_call != PSA_SUCCESS)
+    {
+    	status = VAL_STATUS_CALL_FAILED;
+        val_print(PRINT_ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
+    }
+    return status;
+#else
     *handle = psa_connect(sid, 1);
     if (*handle > 0)
     {
@@ -327,6 +351,7 @@ val_status_t val_execute_secure_test_func(psa_handle_t *handle, test_info_t test
     }
 
     return status;
+#endif
 }
 
 /**
@@ -352,8 +377,9 @@ val_status_t val_get_secure_test_result(psa_handle_t *handle)
         status = VAL_STATUS_CALL_FAILED;
         val_print(PRINT_ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
     }
-
+#if STATELESS_ROT != 1
     psa_close(*handle);
+#endif
     return status;
 }
 #endif
