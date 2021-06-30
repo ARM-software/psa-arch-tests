@@ -32,7 +32,7 @@ int32_t psa_aead_encrypt_setup_test(caller_security_t caller __UNUSED)
 {
     int32_t               i, status;
     int32_t               num_checks = sizeof(check1)/sizeof(check1[0]);
-    psa_key_attributes_t  attributes;
+    psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_aead_operation_t  operation;
     psa_key_id_t          key;
 
