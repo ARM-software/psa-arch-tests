@@ -35,7 +35,7 @@ int32_t psa_mac_sign_finish_test(caller_security_t caller __UNUSED)
     int32_t               num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t               i, status;
     size_t                mac_length;
-    psa_mac_operation_t   operation;
+    psa_mac_operation_t   operation=PSA_MAC_OPERATION_INIT;
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_key_id_t          key;
 

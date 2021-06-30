@@ -35,7 +35,7 @@ int32_t psa_mac_sign_setup_test(caller_security_t caller __UNUSED)
     int                   num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t               i, status;
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
-    psa_mac_operation_t   operation;
+    psa_mac_operation_t   operation=PSA_MAC_OPERATION_INIT;
     psa_key_id_t          key;
 
     if (num_checks == 0)
@@ -125,7 +125,7 @@ int32_t psa_mac_sign_setup_negative_test(caller_security_t caller __UNUSED)
 {
     int32_t             status;
     psa_key_id_t        key = 11;
-    psa_mac_operation_t operation;
+    psa_mac_operation_t operation=PSA_MAC_OPERATION_INIT;
 
     if (valid_test_input_index < 0)
         return RESULT_SKIP(VAL_STATUS_NO_TESTS);
