@@ -34,6 +34,8 @@ The test suite for this specification is located in the tbsa-v8m directory of th
 ### PSA APIs
 The test suite for this specification is located in the api-tests directory of this repository. See [PSA APIs Tests Readme](api-tests/README.md) file for more details.
 
+### Secure Debug
+The test suite for this specification is located in the secure-debug directory of this repository. See [Secure Debug Readme](secure-debug/README.md) file for more details.
 
 ## License
 
@@ -49,4 +51,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2020, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2021, Arm Limited and Contributors. All rights reserved.*
