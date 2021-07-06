@@ -29,8 +29,11 @@ list(APPEND VAL_SRC_C_NSPE
 )
 
 # Create VAL NSPE library
-add_library(${PSA_TARGET_VAL_NSPE_LIB} STATIC ${VAL_SRC_C_NSPE})
-
+if(DEFINED PSA_NS_OS AND ("${PSA_NS_OS}" STREQUAL "LINUX"))
+	add_library(${PSA_TARGET_VAL_NSPE_LIB} SHARED ${VAL_SRC_C_NSPE})
+else()
+	add_library(${PSA_TARGET_VAL_NSPE_LIB} STATIC ${VAL_SRC_C_NSPE})
+endif()
 
 # PSA Include directories
 foreach(psa_inc_path ${PSA_INCLUDE_PATHS})
