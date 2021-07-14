@@ -573,6 +573,14 @@ ExternalProject_Add(
         TEST_COMMAND ""
 )
 
+# Check if a specific cross compiler was passed in
+find_program(CMAKE_C_COMPILER ${CROSS_COMPILE}-gcc)
+
+# Otherwise, let CMake look for a C compiler
+if(CMAKE_C_COMPILER STREQUAL "CMAKE_C_COMPILER-NOTFOUND")
+	project(TargetConfigGen LANGUAGES C)
+endif()
+
 # Add custom target to clean generated files of the external project
 add_custom_target(
         ${PSA_TARGET_GENERATE_DATABASE_POST}
