@@ -107,12 +107,15 @@ list(APPEND PSA_TOOLCHAIN_SUPPORT
         GNUARM
         ARMCLANG
         HOST_GCC
-	GCC_LINUX
+		GCC_LINUX
+		INHERIT
 )
 
 # list of supported CROSS_COMPILE toolchains
 list(APPEND CROSS_COMPILE_TOOLCHAIN_SUPPORT
         GNUARM
+		ARMCLANG
+		INHERIT
 )
 
 # list of suported CPU arch
@@ -573,14 +576,6 @@ ExternalProject_Add(
         TEST_COMMAND ""
 )
 
-# Check if a specific cross compiler was passed in
-find_program(CMAKE_C_COMPILER ${CROSS_COMPILE}-gcc)
-
-# Otherwise, let CMake look for a C compiler
-if(CMAKE_C_COMPILER STREQUAL "CMAKE_C_COMPILER-NOTFOUND")
-	project(TargetConfigGen LANGUAGES C)
-endif()
-
 # Add custom target to clean generated files of the external project
 add_custom_target(
         ${PSA_TARGET_GENERATE_DATABASE_POST}
@@ -590,13 +585,13 @@ add_custom_target(
 # Check for supported toolchain/s
 if(${TOOLCHAIN} IN_LIST PSA_TOOLCHAIN_SUPPORT)
 	if (DEFINED CROSS_COMPILE)
-	    if(${CROSS_COMPILE} AND NOT (${TOOLCHAIN} IN_LIST CROSS_COMPILE_TOOLCHAIN_SUPPORT))
-                message(FATAL_ERROR "[PSA] : Error: CROSS_COMPILE not supported for this toolchain, supported toolchain are : ${CROSS_COMPILE_TOOLCHAIN_SUPPORT}")
-            endif()
+		if(NOT (${TOOLCHAIN} IN_LIST CROSS_COMPILE_TOOLCHAIN_SUPPORT))
+			message(FATAL_ERROR "[PSA] : Error: CROSS_COMPILE not supported for this toolchain, supported toolchain are : ${CROSS_COMPILE_TOOLCHAIN_SUPPORT}")
+		endif()
 	endif()
-    include(${PSA_ROOT_DIR}/tools/cmake/compiler/${TOOLCHAIN}.cmake)
+	include(${PSA_ROOT_DIR}/tools/cmake/compiler/${TOOLCHAIN}.cmake)
 else()
-        message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DTOOLCHAIN=${TOOLCHAIN}, supported toolchain are : ${PSA_TOOLCHAIN_SUPPORT}")
+	message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DTOOLCHAIN=${TOOLCHAIN}, supported toolchain are : ${PSA_TOOLCHAIN_SUPPORT}")
 endif()
 
 # Global macro to identify the PSA test suite cmake build
