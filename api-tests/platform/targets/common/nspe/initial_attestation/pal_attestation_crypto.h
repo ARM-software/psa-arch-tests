@@ -19,6 +19,7 @@
 #define _PAL_ATTESTATION_CRYPTO_H_
 
 #include "pal_attestation_eat.h"
+#include "psa/crypto.h"
 
 int32_t pal_cose_crypto_hash_start(psa_hash_operation_t *psa_hash, int32_t cose_hash_alg_id);
 void pal_cose_crypto_hash_update(psa_hash_operation_t *psa_hash,
