@@ -215,7 +215,7 @@ static int32_t pal_attest_get_public_key(uint8_t          *public_key_buff,
 static uint32_t pal_import_attest_key(psa_algorithm_t key_alg)
 {
     psa_status_t     status             = PAL_ATTEST_ERROR;
-    psa_key_usage_t  usage              = PSA_KEY_USAGE_VERIFY;
+    psa_key_usage_t  usage              = PSA_KEY_USAGE_VERIFY_HASH;
     psa_ecc_family_t ecc_family;
     psa_key_type_t   attest_key_type;
     size_t           public_key_size;

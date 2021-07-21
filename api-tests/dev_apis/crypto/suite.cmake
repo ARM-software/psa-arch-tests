@@ -33,6 +33,8 @@ endforeach()
 
 add_definitions(${CC_OPTIONS})
 add_definitions(${AS_OPTIONS})
+add_definitions(-DHOST_GCC_MISSING_CRYPTO_1_0=1)
+
 # append common crypto file to list of source collected
 list(APPEND SUITE_CC_SOURCE ${PSA_SUITE_DIR}/common/test_crypto_common.c)
 add_library(${PSA_TARGET_TEST_COMBINE_LIB} STATIC ${SUITE_CC_SOURCE} ${SUITE_AS_SOURCE})
