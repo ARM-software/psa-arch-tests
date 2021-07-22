@@ -65,7 +65,7 @@ static const test_data check1[] = {
  0x9d, 0xf3, 0x3f, 0x47, 0xb4, 0xb1, 0x16, 0x99, 0x12, 0xba, 0x4f, 0x53, 0x68,
  0x4b, 0x22}, 64, 28,
  PSA_KEY_USAGE_EXPORT, PSA_ALG_HMAC(PSA_ALG_SHA_224),
- PSA_ERROR_NOT_SUPPORTED
+ PSA_ERROR_NOT_PERMITTED
 },
 
 {"Test psa_mac_compute - truncated MAC too small\n", PSA_KEY_TYPE_HMAC,
