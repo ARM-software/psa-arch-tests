@@ -160,15 +160,15 @@ int32_t psa_key_derivation_input_key_negative_test(caller_security_t caller __UN
     status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &operation);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
-    /* Set up a key derivation operation */
-    status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_SETUP, &operation,
-             check1[valid_test_input_index].setup_alg);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
+    memset(&operation, 0, sizeof(operation));
 
     val->print(PRINT_TEST, "[Check %d] Test psa_cipher_decrypt_setup - Zero as key handle\n",
                                                                                g_test_count++);
 
-    memset(&operation, 0, sizeof(operation));
+    /* Set up a key derivation operation */
+    status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_SETUP, &operation,
+             check1[valid_test_input_index].setup_alg);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
     /* Provide an input for key derivation or key agreement */
     status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY, &operation,
