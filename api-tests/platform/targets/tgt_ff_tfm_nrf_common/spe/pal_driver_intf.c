@@ -72,7 +72,7 @@ void pal_print(const char *str, int32_t data)
 **/
 int pal_nvmem_write(addr_t base, uint32_t offset, void *buffer, int size)
 {
-    if (base != 0){
+    if (base != 0) {
         /* Unexpected base address */
         return PAL_STATUS_ERROR;
     }
@@ -90,7 +90,7 @@ int pal_nvmem_write(addr_t base, uint32_t offset, void *buffer, int size)
 **/
 int pal_nvmem_read(addr_t base, uint32_t offset, void *buffer, int size)
 {
-    if (base != 0){
+    if (base != 0) {
         /* Unexpected base address */
         return PAL_STATUS_ERROR;
     }
@@ -145,7 +145,7 @@ int pal_wd_timer_disable(addr_t base_addr)
 **/
 int pal_wd_timer_is_enabled(addr_t base_addr)
 {
-    return (pal_wd_cmsdk_is_enabled(base_addr));
+    return pal_wd_cmsdk_is_enabled(base_addr);
 }
 
 /**
@@ -175,7 +175,7 @@ void pal_disable_interrupt(void)
     @param   - void
     @return  - void
 **/
-void EGU5_IRQHandler()
+void EGU5_IRQHandler(void)
 {
     /* Call TF-M platform interrupt handler */
     pal_interrupt_handler();

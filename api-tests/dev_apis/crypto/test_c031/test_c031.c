@@ -35,9 +35,9 @@ int32_t psa_mac_abort_test(caller_security_t caller __UNUSED)
 {
     int32_t               num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t               i, status;
-    psa_mac_operation_t   operation=PSA_MAC_OPERATION_INIT;
-    psa_key_attributes_t  attributes=PSA_KEY_ATTRIBUTES_INIT;
-    psa_key_id_t          key=0;
+    psa_mac_operation_t   operation = PSA_MAC_OPERATION_INIT;
+    psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
+    psa_key_id_t          key = 0;
 
     if (num_checks == 0)
     {
@@ -115,7 +115,7 @@ int32_t psa_mac_abort_before_finish_test(caller_security_t caller __UNUSED)
 {
     size_t                mac_length;
     psa_key_id_t          key;
-    psa_mac_operation_t   operation=PSA_MAC_OPERATION_INIT;
+    psa_mac_operation_t   operation = PSA_MAC_OPERATION_INIT;
     int32_t               status;
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
 

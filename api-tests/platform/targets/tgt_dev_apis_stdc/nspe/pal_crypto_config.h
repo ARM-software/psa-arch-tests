@@ -26,6 +26,7 @@
 
 #ifndef _PAL_CRYPTO_CONFIG_H_
 #define _PAL_CRYPTO_CONFIG_H_
+
 /**
  * \def ARCH_TEST_RSA
  *

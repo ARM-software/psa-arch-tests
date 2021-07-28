@@ -130,7 +130,7 @@ int pal_wd_timer_disable_ns(addr_t base_addr)
 **/
 int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size)
 {
-    if (base != 0){
+    if (base != 0) {
         /* Unexpected base address */
         return PAL_STATUS_ERROR;
     }
@@ -149,7 +149,7 @@ int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size)
 **/
 int pal_nvmem_write_ns(addr_t base, uint32_t offset, void *buffer, int size)
 {
-    if (base != 0){
+    if (base != 0) {
         /* Unexpected base address */
         return PAL_STATUS_ERROR;
     }
@@ -168,7 +168,7 @@ void pal_terminate_simulation(void)
 {
     /* Add logic to terminate the simluation */
 
-    while(1)
+    while (1)
     {
         __asm volatile("WFI");
     }

@@ -59,7 +59,7 @@ int32_t psa_key_derivation_output_key_test(caller_security_t caller __UNUSED)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
-	memset(&operation,0,sizeof(psa_key_derivation_operation_t));
+	//memset(&operation,0,sizeof(psa_key_derivation_operation_t));
         //attributes = PSA_KEY_ATTRIBUTES_INIT;
         //derv_attributes = PSA_KEY_ATTRIBUTES_INIT;
 
