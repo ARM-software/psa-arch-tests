@@ -21,6 +21,7 @@
 #include "val.h"
 
 #define BYTES_TO_BITS(byte)             (byte * 8)
+#define BITS_TO_BYTES(bits)             (((bits) + 7) / 8)
 
 /* Size */
 #define AES_16B_KEY_SIZE                16
