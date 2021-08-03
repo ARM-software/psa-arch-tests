@@ -38,6 +38,10 @@
 #define INPUT_SEED_LEN                 4
 #define INPUT_LABEL_LEN                5
 
+/* min and max finding macro */
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
+
 extern const uint8_t key_data[];
 
 extern const uint8_t rsa_128_key_pair[];
