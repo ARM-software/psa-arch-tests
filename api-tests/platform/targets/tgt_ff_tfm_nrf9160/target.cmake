@@ -18,4 +18,6 @@
 # * limitations under the License.
 #**/
 
+set(WATCHDOG_AVAILABLE 0)
+
 include(${PSA_ROOT_DIR}/platform/targets/tgt_ff_tfm_nrf_common/target.cmake)

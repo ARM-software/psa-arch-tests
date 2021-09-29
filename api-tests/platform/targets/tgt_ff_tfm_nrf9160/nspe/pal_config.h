@@ -34,7 +34,7 @@
 #define NONSECURE_TEST_BUILD
 
 /* If not defined, skip watchdog programming */
-#define WATCHDOG_AVAILABLE
+//#define WATCHDOG_AVAILABLE
 
 /* Are Dynamic memory APIs available to secure partition? */
 #define SP_HEAP_MEM_SUPP
