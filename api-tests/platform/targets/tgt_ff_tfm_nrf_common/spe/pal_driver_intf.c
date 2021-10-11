@@ -20,18 +20,12 @@
 
 #include "pal_driver_intf.h"
 #include "pal_common.h"
+#include "pal_config.h"
 #include "pal_nvmem.h"
 
+#include "nrf_wdt.h"
+
 extern int tfm_log_printf(const char *, ...);
-
-/* Initialize the timer with the given number of ticks. */
-extern void pal_timer_init_ns(uint32_t ticks);
-
-/* Start the timer. */
-extern void pal_timer_start_ns(void);
-
-/* Stop and reset the timer. */
-extern void pal_timer_stop_ns(void);
 
 /* Get the address of a free, word-aligned, 1K memory area. */
 extern uint32_t pal_nvmem_get_addr(void);
@@ -60,7 +54,6 @@ void pal_print(const char *str, int32_t data)
 {
     tfm_log_printf(str, data);
 }
-
 
 /**
     @brief    - Writes into given non-volatile address.
@@ -98,7 +91,6 @@ int pal_nvmem_read(addr_t base, uint32_t offset, void *buffer, int size)
     return nvmem_read(base, offset, buffer, size);
 }
 
-
 /**
     @brief           - Initializes an hardware watchdog timer
     @param           - base_addr       : Base address of the watchdog module
@@ -108,9 +100,8 @@ int pal_nvmem_read(addr_t base, uint32_t offset, void *buffer, int size)
 **/
 int pal_wd_timer_init(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
 {
-    (void)base_addr;
-    pal_timer_init_ns(time_us * timer_tick_us);
-    return PAL_STATUS_SUCCESS;
+    (void)timer_tick_us;
+    return nrf_wdt_init(base_addr, time_us);
 }
 
 /**
@@ -120,10 +111,7 @@ int pal_wd_timer_init(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us
 **/
 int pal_wd_timer_enable(addr_t base_addr)
 {
-    (void)base_addr;
-    pal_timer_start_ns();
-    return PAL_STATUS_SUCCESS;
-
+    return nrf_wdt_enable(base_addr);
 }
 
 /**
@@ -133,9 +121,7 @@ int pal_wd_timer_enable(addr_t base_addr)
 **/
 int pal_wd_timer_disable(addr_t base_addr)
 {
-    (void)base_addr;
-    pal_timer_stop_ns();
-    return PAL_STATUS_SUCCESS;
+    return nrf_wdt_disable(base_addr);
 }
 
 /**
@@ -145,7 +131,7 @@ int pal_wd_timer_disable(addr_t base_addr)
 **/
 int pal_wd_timer_is_enabled(addr_t base_addr)
 {
-    return pal_wd_cmsdk_is_enabled(base_addr);
+    return nrf_wdt_is_enabled(base_addr);
 }
 
 /**

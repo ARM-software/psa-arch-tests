@@ -23,7 +23,6 @@
 
 #include "pal_uart.h"
 #include "pal_nvmem.h"
-#include "pal_wd_cmsdk.h"
 
 /* Following defines should be used for structure members */
 #define     __IM     volatile const      /*! Defines 'read only' structure member permissions */
