@@ -43,8 +43,18 @@ if(${SUITE} STREQUAL "IPC")
 		# Driver files will be compiled as part of driver partition
 		${PSA_ROOT_DIR}/platform/targets/tgt_ff_tfm_nrf_common/spe/pal_driver_intf.c
 		${PSA_ROOT_DIR}/platform/drivers/nvmem/pal_nvmem.c
-		${PSA_ROOT_DIR}/platform/drivers/watchdog/nrf/${PSA_API_TEST_TARGET}/nrf_wdt.c
 	)
+
+	if(${PSA_API_TEST_TARGET} STREQUAL nrf9160)
+		list(APPEND PAL_SRC_C_DRIVER_SP
+			${PSA_ROOT_DIR}/platform/drivers/watchdog/nrf/nrf9160_wdt.c
+		)
+	else()
+		list(APPEND PAL_SRC_C_DRIVER_SP
+			${PSA_ROOT_DIR}/platform/drivers/watchdog/nrf/nrf_wdt.c
+		)
+	endif()
+
 endif()
 
 if((${SUITE} STREQUAL "CRYPTO") OR
