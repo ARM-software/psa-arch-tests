@@ -23,14 +23,15 @@ This test suite is not a substitute for design verification. To review the test 
 For more information on architecture test suite specification, refer to the [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf) document.
 
 ## This release
- - Code Quality : REL v1.2
+ - Code Quality : REL v1.3
  - This release contains the PSA-FF tests that are written for the PSA FF 1.1 Extensions specification.
 
 ##  Release Tags
 
 | Release version | Release tag  | PSA FF specification version |
 |-----------------|---------------|----------------|
-| REL v1.2 | [v21.07_API1.2_ADAC_ALPHA](https://github.com/ARM-software/psa-arch-tests/tree//api-tests/ff) | 1.1-Alpha0 |
+| REL v1.3 | [v21.10_API1.3_ADAC_ALPHA-1](https://github.com/ARM-software/psa-arch-tests/tree/v21.10_API1.3_ADAC_ALPHA-1/api-tests/ff) | 1.1-Alpha0 |
+| REL v1.2 | [v21.07_API1.2_ADAC_ALPHA](https://github.com/ARM-software/psa-arch-tests/tree/v21.07_API1.2_ADAC_ALPHA/api-tests/ff) | 1.1-Alpha0 |
 | REL v1.1 | [v20.11_API1.1](https://github.com/ARM-software/psa-arch-tests/tree/v20.11_API1.1/api-tests/ff) | 1.0 |
 | REL v1.0 | [v20.03_API1.0](https://github.com/ARM-software/psa-arch-tests/tree/v20.03_API1.0/api-tests/ff) | 1.0 |
 | v0.9 | [v19.06_API0.9](https://github.com/ARM-software/psa-arch-tests/tree/v19.06_API0.9/api-tests/ff) | 1.0-Beta1 |

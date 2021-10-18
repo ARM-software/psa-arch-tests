@@ -18,10 +18,10 @@
 #ifndef _VAL_ENTRY_H_
 #define _VAL_ENTRY_H_
 
-#include "val_framework.h"
+#include "val.h"
 
-#define PSA_ACS_MAJOR_VER    1
-#define PSA_ACS_MINOR_VER    2
+#define PSA_ACS_MAJOR_VER    0
+#define PSA_ACS_MINOR_VER    6
 
 /**
     @brief    - PSA Test Suite C main function, does VAL init and calls test dispatcher

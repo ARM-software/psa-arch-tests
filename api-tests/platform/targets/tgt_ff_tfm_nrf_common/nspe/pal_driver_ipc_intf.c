@@ -47,7 +47,7 @@ int pal_uart_init_ns(uint32_t uart_base_addr)
 
     psa_invec data[3] = {{&uart_fn, sizeof(uart_fn)},
                          {&uart_base_addr, sizeof(uart_base_addr)},
-                         {NULL, 0}};
+                         {NULL, 0} };
 
 #if STATELESS_ROT == 1
     status_of_call = psa_call(DRIVER_UART_HANDLE, 0, data, 3, NULL, 0);
@@ -103,7 +103,7 @@ int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick
     wd_param.wd_base_addr = base_addr;
     wd_param.wd_time_us = time_us;
     wd_param.wd_timer_tick_us = timer_tick_us;
-    psa_invec invec[1] = {{&wd_param, sizeof(wd_param)}};
+    psa_invec invec[1] = { {&wd_param, sizeof(wd_param)} };
 
 #if STATELESS_ROT == 1
     status_of_call = psa_call(DRIVER_WATCHDOG_HANDLE, 0, invec, 1, NULL, 0);
@@ -145,7 +145,7 @@ int pal_wd_timer_enable_ns(addr_t base_addr)
     wd_param.wd_base_addr = base_addr;
     wd_param.wd_time_us = 0;
     wd_param.wd_timer_tick_us = 0;
-    psa_invec invec[1] = {{&wd_param, sizeof(wd_param)}};
+    psa_invec invec[1] = { {&wd_param, sizeof(wd_param)} };
 
 #if STATELESS_ROT == 1
     status_of_call = psa_call(DRIVER_WATCHDOG_HANDLE, 0, invec, 1, NULL, 0);
@@ -186,7 +186,7 @@ int pal_wd_timer_disable_ns(addr_t base_addr)
     wd_param.wd_base_addr = base_addr;
     wd_param.wd_time_us = 0;
     wd_param.wd_timer_tick_us = 0;
-    psa_invec invec[1] = {{&wd_param, sizeof(wd_param)}};
+    psa_invec invec[1] = { {&wd_param, sizeof(wd_param)} };
 #if STATELESS_ROT == 1
     status_of_call = psa_call(DRIVER_WATCHDOG_HANDLE, 0, invec, 1, NULL, 0);
     if (status_of_call != PSA_SUCCESS)

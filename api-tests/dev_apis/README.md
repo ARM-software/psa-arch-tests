@@ -14,7 +14,7 @@ This test suite is not a substitute for design verification. To review the test 
 For more information on the architecture test suite framework and methodology to run the tests, refer to the [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf) document.
 
 ## This release
- - Code Quality : REL v1.2
+ - Code Quality : REL v1.3
  - This release contains following PSA Functional APIs tests: <br />
 
 | Test Category            | Specification Version                |
@@ -30,7 +30,8 @@ For more information on the architecture test suite framework and methodology to
 
 | Release version | Release tag  | PSA Crypto API | PSA Storage API | PSA Attestation API |
 |-----------------|---------------|----------------|-----------------|---------------------|
-| REL v1.2 | [v21.07_API1.2_ADAC_ALPHA](https://github.com/ARM-software/psa-arch-tests/tree//api-tests/dev_apis) | 1.0.0  | 1.0.0 | 1.0.2 |
+| REL v1.3 | [v21.10_API1.3_ADAC_ALPHA-1](https://github.com/ARM-software/psa-arch-tests/tree/v21.10_API1.3_ADAC_ALPHA-1/api-tests/dev_apis) | 1.0.0  | 1.0.0 | 1.0.2 |
+| REL v1.2 | [v21.07_API1.2_ADAC_ALPHA](https://github.com/ARM-software/psa-arch-tests/tree/v21.07_API1.2_ADAC_ALPHA/api-tests/dev_apis) | 1.0.0  | 1.0.0 | 1.0.2 |
 | REL v1.1 | [v20.11_API1.1](https://github.com/ARM-software/psa-arch-tests/tree/v20.11_API1.1/api-tests/dev_apis) | 1.0-Beta3  | 1.0.0 | 1.0.0 |
 | REL v1.0 | [v20.03_API1.0](https://github.com/ARM-software/psa-arch-tests/tree/v20.03_API1.0/api-tests/dev_apis) | 1.0-Beta3  | 1.0.0 | 1.0.0 |
 | v0.9 | [v19.06_API0.9](https://github.com/ARM-software/psa-arch-tests/tree/v19.06_API0.9/api-tests/dev_apis) | 1.0-Beta2 | 1.0-Beta2 | 1.0-Beta0 |
@@ -81,6 +82,7 @@ To build the test suite for your target platform, execute the following commands
 ```
     -DPSA_INCLUDE_PATHS=`readlink -f <relative_include_path>`
 ```
+-   -DTESTS_COVERAGE=<tests_coverage_value> is used to skip known failure tests by selecting value PASS. Supported values are ALL and PASS. ALL value will include all the tests and PASS value will skip the known failure tests and will include pass tests. Default is ALL.
 
 To compile Crypto tests for **tgt_dev_apis_tfm_an521** platform, execute the following commands:
 ```

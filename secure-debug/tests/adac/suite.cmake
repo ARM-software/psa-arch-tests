@@ -35,7 +35,7 @@ endforeach()
 
 target_include_directories(${TEST_COMBINE_LIB} PRIVATE
 	${CMAKE_BINARY_DIR}
-	${PSA_ROOT_DIR}/val/include
-	${PSA_ROOT_DIR}/platform/${TARGET}/include
+	${CMAKE_SOURCE_DIR}/val/include
+	${CMAKE_SOURCE_DIR}/platform/common/include
 )
-target_link_libraries(${TEST_COMBINE_LIB} mbedcrypto)
+target_link_libraries(${TEST_COMBINE_LIB} ${ADAC_HOST_VAL_LIB})

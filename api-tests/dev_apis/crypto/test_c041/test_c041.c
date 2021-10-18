@@ -92,15 +92,35 @@ int32_t psa_sign_hash_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_EQUAL(get_signature_length, check1[i].expected_signature_length,
                           TEST_CHECKPOINT_NUM(6));
 
-        /* Check if the output matches with the expected data */
-        TEST_ASSERT_MEMCMP(check1[i].signature, check1[i].expected_signature, get_signature_length,
-                           TEST_CHECKPOINT_NUM(7));
 
-        /* Destroy the key */
+        /* Destroy a key and restore the slot to its default state */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
-        if (valid_test_input_index < 0)
+       /* verify the expected signature for the hash */
+       memset(&attributes, 0, sizeof(psa_key_attributes_t));
+       val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE,        &attributes, check1[i].type);
+       val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM,   &attributes, check1[i].alg);
+       val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, PSA_KEY_USAGE_VERIFY_HASH);
+       /* Import the key data into the key slot */
+       status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
+                                      check1[i].data_length, &key);
+       TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+
+	  /* Verify the signature a hash or short message using a public key */
+       status = val->crypto_function(VAL_CRYPTO_VERIFY_HASH,
+                                 key,
+                                 check1[i].alg,
+                                 check1[i].hash,
+                                 check1[i].hash_length,
+                                 check1[i].expected_signature,
+                                 check1[i].expected_signature_length);
+       TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+       /* Destroy the key */
+       status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
+       TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
+
+       if (valid_test_input_index < 0)
             valid_test_input_index = i;
     }
 

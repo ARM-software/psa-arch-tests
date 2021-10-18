@@ -17,6 +17,11 @@
 
 #include "pal_attestation_crypto.h"
 
+/* this macro is missing from the psa_crypto.h file
+ * this can be removed once the TFM fix available
+ */
+#define PSA_ALG_MD4 ((psa_algorithm_t)0x02000002)
+
 static uint32_t         public_key_registered;
 static psa_key_handle_t public_key_handle;
 

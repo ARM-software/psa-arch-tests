@@ -16,7 +16,7 @@
 **/
 
 #include <psa_adac.h>
-#include <val_adac.h>
+#include <adac_util.h>
 #include "val_interfaces.h"
 
 #include "test_a001.h"
@@ -27,60 +27,71 @@ TEST_PUBLISH(TEST_NUM, test_entry);
 
 void test_entry(val_api_t *val_api)
 {
-    int32_t   status = VAL_STATUS_SUCCESS;
+    psa_status_t ret;
     val_api_t *val = NULL;
-
     val = val_api;
 
     /* test init */
     val->test_init(TEST_NUM, TEST_DESC);
-    val_adac_host_init();
+    if (!IS_TEST_START(val->get_status()))
+    {
+        goto test_end;
+    }
+    psa_adac_host_init();
 
-    uint8_t challenge1[CHALLENGE_SIZE], challenge2[CHALLENGE_SIZE], i;
-
+    uint8_t challenge1[CHALLENGE_SIZE], i;
+    uint8_t *vect;
     request_packet_t *request;
     response_packet_t *response;
 
-    if (PSA_SUCCESS != val_issue_command(SDP_AUTH_START_CMD, request, NULL, 0))
-        goto test_fail_exit;
+    ret = psa_adac_issue_command(SDP_AUTH_START_CMD, request, NULL, 0);
+    if (ret != PSA_SUCCESS) {
+        val->err_check_set(TEST_CHECKPOINT_NUM(1), VAL_STATUS_WRITE_FAILED);
+        goto test_end;
+    }
 
-    response = val_await_response();
-    if (PSA_SUCCESS != val_parse_response(SDP_AUTH_START_CMD, response))
-        goto test_fail_exit;
+    response = psa_adac_await_response();
+    ret = psa_adac_parse_response(SDP_AUTH_START_CMD, response);
+    if (ret != PSA_SUCCESS) {
+        val->err_check_set(TEST_CHECKPOINT_NUM(2), VAL_STATUS_READ_FAILED);
+        goto test_end;
+    }
 
     psa_auth_challenge_t *challenge = (psa_auth_challenge_t *) response->data;
-
-    *challenge1 = (uint8_t)(challenge->challenge_vector);
+    vect = (challenge->challenge_vector);
     response_packet_release(response);
 
-    if (PSA_SUCCESS != val_issue_command(SDP_AUTH_START_CMD, request, NULL, 0))
-        goto test_fail_exit;
+    for (i = 0; i < CHALLENGE_SIZE; i++)
+        challenge1[i] = *(vect+i);
 
-    response = val_await_response();
-    if (PSA_SUCCESS != val_parse_response(SDP_AUTH_START_CMD, response))
-        goto test_fail_exit;
+    ret = psa_adac_issue_command(SDP_AUTH_START_CMD, request, NULL, 0);
+    if (ret != PSA_SUCCESS) {
+        val->err_check_set(TEST_CHECKPOINT_NUM(3), VAL_STATUS_WRITE_FAILED);
+        goto test_end;
+    }
+
+    response = psa_adac_await_response();
+    ret = psa_adac_parse_response(SDP_AUTH_START_CMD, response);
+    if (ret != PSA_SUCCESS) {
+        val->err_check_set(TEST_CHECKPOINT_NUM(4), VAL_STATUS_READ_FAILED);
+        goto test_end;
+    }
 
     challenge = (psa_auth_challenge_t *) response->data;
-
-    *challenge2 = (uint8_t)(challenge->challenge_vector);
     response_packet_release(response);
 
     for (i = 0; i < CHALLENGE_SIZE; i++) {
-        if (challenge1[i] != challenge2[i])
+        if (challenge1[i] != *(vect+i))
             break;
     }
 
     if (i == CHALLENGE_SIZE) {
 	    val->print(PRINT_ERROR, "Challenge response obtained is not unique\n", 0);
-        goto test_fail_exit;
+        val->err_check_set(TEST_CHECKPOINT_NUM(5), VAL_STATUS_ERROR);
     } else {
 	    val->print(PRINT_INFO, "Challenge response obtained is unique\n", 0);
-        goto test_end;
     }
 
-test_fail_exit:
-	val_set_status(RESULT_FAIL(VAL_STATUS_TEST_FAILED));
 test_end:
     val->test_exit();
 }
-

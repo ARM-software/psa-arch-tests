@@ -17,7 +17,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "pal_common.h"
+#include "pal_interfaces.h"
 #include "unix_msg.h"
 
 int32_t val_entry(void);

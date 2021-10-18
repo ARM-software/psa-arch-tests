@@ -20,7 +20,6 @@
 #define _VAL_INFRA_H_
 
 #include "val.h"
-#include "val_interfaces.h"
 
 /* prototypes */
 uint32_t     val_report_status(void);

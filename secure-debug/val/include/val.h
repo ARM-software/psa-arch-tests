@@ -36,12 +36,6 @@ typedef uint32_t            cfg_id_t;
 #define VERBOSE 9
 #endif
 
-#ifndef VAL_NSPE_BUILD
-#define STATIC_DECLARE  static
-#else
-#define STATIC_DECLARE
-#endif
-
 #ifndef __WEAK
 #define __WEAK __attribute__((weak))
 #endif
@@ -91,8 +85,6 @@ typedef uint32_t            cfg_id_t;
 #define IS_TEST_END(status)     (((status >> TEST_STATE_BIT) & TEST_STATE_MASK) == TEST_END)
 #define VAL_ERROR(status)       ((status & TEST_STATUS_MASK) ? 1 : 0)
 
-
-
 /* Test Defines */
 #define TEST_PUBLISH(test_id, entry) \
    const val_test_info_t __attribute__((section(".acs_test_info"))) \
@@ -101,15 +93,12 @@ typedef uint32_t            cfg_id_t;
 #define VAL_MAX_TEST_PER_COMP                200
 #define VAL_SECURE_DEBUG_BASE                  4
 
-
 #define VAL_GET_COMP_NUM(test_id)      \
    ((test_id - (test_id % VAL_MAX_TEST_PER_COMP)) / VAL_MAX_TEST_PER_COMP)
 #define VAL_GET_TEST_NUM(test_id)      (test_id % VAL_MAX_TEST_PER_COMP)
 #define VAL_CREATE_TEST_ID(comp, num)   ((comp*VAL_MAX_TEST_PER_COMP) + num)
 
 #define TEST_FIELD(num1, num2)           (num2 << 8 | num1)
-#define GET_TEST_ISOLATION_LEVEL(num)   (num & 0x3)
-#define GET_WD_TIMOUT_TYPE(num)         ((num >> 8) & 0x7)
 
 #define TEST_CHECKPOINT_NUM(n)          n
 #define TEST(n)                         n
@@ -124,9 +113,6 @@ typedef uint32_t            cfg_id_t;
 #define TEST_EXECUTE_FUNC               1
 #define TEST_RETURN_RESULT              2
 #define INVALID_HANDLE                  0x1234DEAD
-
-#define VAL_NVMEM_BLOCK_SIZE           4
-#define VAL_NVMEM_OFFSET(nvmem_idx)    (nvmem_idx * VAL_NVMEM_BLOCK_SIZE)
 
 #define UART_INIT_SIGN  0xff
 #define UART_PRINT_SIGN 0xfe
@@ -191,53 +177,6 @@ typedef uint32_t            cfg_id_t;
     } while (0)
 
 /* enums */
-typedef enum {
-    CALLER_NONSECURE = 0x0,
-    CALLER_SECURE    = 0x1,
-} caller_security_t;
-
-typedef enum {
-    TEST_ISOLATION_L1      = 0x1,
-    TEST_ISOLATION_L2      = 0x2,
-    TEST_ISOLATION_L3      = 0x3,
-} test_isolation_level_t;
-
-typedef enum {
-    LEVEL1 = 0x1,
-    LEVEL2,
-    LEVEL3,
-} isolation_level_t;
-
-typedef enum {
-    /* VAL uses this boot flag to mark first time boot of the system  */
-    BOOT_UNKNOWN                       = 0x1,
-    /* VAL/Test uses this boot flag to catch any unwanted system reboot - SIM ERROR Cases*/
-    BOOT_NOT_EXPECTED                  = 0x2,
-    /* Test performs panic check for non-secure test run and expect reboot */
-    BOOT_EXPECTED_NS                   = 0x3,
-    /* Test performs panic check for secure test run and expect reboot */
-    BOOT_EXPECTED_S                    = 0x4,
-    /* Test expects reboot but it didn't happen */
-    BOOT_EXPECTED_BUT_FAILED           = 0x5,
-    /* Test expects reboot for secure/non-secure test run. If reboot happens,
-     * re-enter the same test and execute the next check function
-     */
-    BOOT_EXPECTED_REENTER_TEST         = 0x6,
-    /* Test expect reboot for the test run. If reboot happens,
-     * re-enter the same test and continue executing the same check function
-     */
-    BOOT_EXPECTED_CONT_TEST_EXEC       = 0x7,
-} boot_state_t;
-
-typedef enum {
-    NV_BOOT             = 0x0,
-    NV_TEST_ID_PREVIOUS = 0x1,
-    NV_TEST_ID_CURRENT  = 0x2,
-    NV_TEST_CNT         = 0x3,
-    NV_TEST_DATA1       = 0x4,
-    NV_TEST_DATA2       = 0x5,
-    NV_TEST_DATA3       = 0x6,
-} nvmem_index_t;
 
 /* enums to report test sub-state */
 typedef enum {
@@ -286,26 +225,7 @@ typedef enum {
     PRINT_ALWAYS  = 9
 } print_verbosity_t;
 
-/* Driver test function id enums */
-typedef enum {
-    TEST_PSA_EOI_WITH_NON_INTR_SIGNAL    = 1,
-    TEST_PSA_EOI_WITH_MULTIPLE_SIGNALS   = 2,
-    TEST_PSA_EOI_WITH_UNASSERTED_SIGNAL  = 3,
-    TEST_INTR_SERVICE                    = 4,
-    TEST_ISOLATION_PSA_ROT_DATA_RD       = 5,
-    TEST_ISOLATION_PSA_ROT_DATA_WR       = 6,
-    TEST_ISOLATION_PSA_ROT_STACK_RD      = 7,
-    TEST_ISOLATION_PSA_ROT_STACK_WR      = 8,
-    TEST_ISOLATION_PSA_ROT_HEAP_RD       = 9,
-    TEST_ISOLATION_PSA_ROT_HEAP_WR       = 10,
-    TEST_ISOLATION_PSA_ROT_MMIO_RD       = 11,
-    TEST_ISOLATION_PSA_ROT_MMIO_WR       = 12,
-} driver_test_fn_id_t;
-
 /* typedef's */
-typedef struct {
-    boot_state_t state;
-} boot_t;
 
 typedef struct {
     uint32_t pass_cnt:8;
@@ -327,6 +247,4 @@ typedef struct {
     uint8_t  status;
 } test_status_buffer_t;
 
-typedef int32_t (*client_test_t)(caller_security_t caller);
-typedef int32_t (*server_test_t)(void);
 #endif /* VAL_COMMON_H */

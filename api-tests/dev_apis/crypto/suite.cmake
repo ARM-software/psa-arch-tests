@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,7 +33,7 @@ endforeach()
 
 add_definitions(${CC_OPTIONS})
 add_definitions(${AS_OPTIONS})
-add_definitions(-DHOST_GCC_MISSING_CRYPTO_1_0=1)
+add_definitions(-DMISSING_CRYPTO_1_0=0)
 
 # append common crypto file to list of source collected
 list(APPEND SUITE_CC_SOURCE ${PSA_SUITE_DIR}/common/test_crypto_common.c)

@@ -34,8 +34,9 @@ typedef struct {
     psa_status_t            expected_status;
 } test_data;
 
+const unsigned char cmac_key[] = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6,
+                                  0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c};
 static const test_data check1[] = {
-#ifdef CRYPTO_1_0
 #ifdef ARCH_TEST_HMAC
 #ifdef ARCH_TEST_SHA224
 {
@@ -166,7 +167,6 @@ static const test_data check1[] = {
     .operation_state     = 1,
     .expected_status     = PSA_SUCCESS
 },
-#endif
 #endif
 #endif
 };

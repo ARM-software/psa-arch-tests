@@ -33,7 +33,6 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
-#ifdef CRYPTO_1_0
 #ifdef ARCH_TEST_RSA_1024
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 {
@@ -47,7 +46,7 @@ static const test_data check1[] = {
     .input_length     = sizeof(hash_input),
     .signature        = signature_4,
     .signature_length = 128,
-    .expected_status  = PSA_SUCCESS
+    .expected_status  = PSA_ERROR_INVALID_ARGUMENT
 },
 
 {
@@ -61,7 +60,7 @@ static const test_data check1[] = {
     .input_length     = sizeof(hash_input),
     .signature        = signature_4,
     .signature_length = 128,
-    .expected_status  = PSA_SUCCESS
+    .expected_status  = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif
 
@@ -78,7 +77,7 @@ static const test_data check1[] = {
     .input_length     = sizeof(hash_input),
     .signature        = NULL,
     .signature_length = 0,
-    .expected_status  = PSA_ERROR_INVALID_ARGUMENT
+    .expected_status  = PSA_ERROR_INVALID_SIGNATURE
 },
 #endif
 #endif
@@ -89,28 +88,28 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {
     .test_desc        = "Test psa_verify_message - ECDSA KEY_PAIR SECP256R1 SHA-256\n",
-    .type             = PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
+    .type             = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
     .data             = ec_keypair,
     .data_length      = 32,
     .usage_flags      = PSA_KEY_USAGE_VERIFY_MESSAGE,
     .alg              = PSA_ALG_DETERMINISTIC_ECDSA(PSA_ALG_SHA_256),
     .input            = &hash_input,
     .input_length     = sizeof(hash_input),
-    .signature        = signature_5,
+    .signature        = signature_6,
     .signature_length = 64,
     .expected_status  = PSA_SUCCESS
 },
 
 {
     .test_desc        = "Test psa_verify_message - ECDSA Public Key SECP256R1 SHA-256\n",
-    .type             = PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
+    .type             = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
     .data             = ec_key_data,
     .data_length      = 65,
     .usage_flags      = PSA_KEY_USAGE_VERIFY_MESSAGE,
     .alg              = PSA_ALG_DETERMINISTIC_ECDSA(PSA_ALG_SHA_256),
     .input            = &hash_input,
     .input_length     = sizeof(hash_input),
-    .signature        = signature_5,
+    .signature        = signature_6,
     .signature_length = 64,
     .expected_status  = PSA_SUCCESS
 },
@@ -126,7 +125,7 @@ static const test_data check1[] = {
     .data             = rsa_128_key_pair,
     .data_length      = 610,
     .usage_flags      = PSA_KEY_USAGE_VERIFY_MESSAGE,
-    .alg              = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
+    .alg              = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
     .input            = &hash_input,
     .input_length     = sizeof(hash_input),
     .signature        = signature_4,
@@ -162,7 +161,7 @@ static const test_data check1[] = {
     .input_length     = sizeof(hash_input),
     .signature        = signature_4,
     .signature_length = 128,
-    .expected_status  = PSA_ERROR_NOT_SUPPORTED
+    .expected_status  = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif
 
@@ -172,7 +171,7 @@ static const test_data check1[] = {
     .data             = rsa_128_key_pair,
     .data_length      = 610,
     .usage_flags      = PSA_KEY_USAGE_ENCRYPT,
-    .alg              = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
+    .alg              = PSA_ALG_DETERMINISTIC_ECDSA(PSA_ALG_SHA_256),
     .input            = &hash_input,
     .input_length     = sizeof(hash_input),
     .signature        = signature_4,
@@ -191,7 +190,7 @@ static const test_data check1[] = {
     .input_length     = sizeof(hash_input)-1,
     .signature        = signature_4,
     .signature_length = 128,
-    .expected_status  = PSA_ERROR_INVALID_SIGNATURE
+    .expected_status  = PSA_ERROR_INVALID_ARGUMENT
 },
 
 {
@@ -200,7 +199,7 @@ static const test_data check1[] = {
     .data             = rsa_128_key_pair,
     .data_length      = 610,
     .usage_flags      = PSA_KEY_USAGE_VERIFY_MESSAGE,
-    .alg              = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
+    .alg              = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
     .input            = &hash_input,
     .input_length     = sizeof(hash_input),
     .signature        = signature_4_invalid,
@@ -214,14 +213,13 @@ static const test_data check1[] = {
     .data             = rsa_128_key_pair,
     .data_length      = 610,
     .usage_flags      = PSA_KEY_USAGE_VERIFY_MESSAGE,
-    .alg              = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
+    .alg              = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
     .input            = &hash_input,
     .input_length     = sizeof(hash_input),
     .signature        = signature_4,
     .signature_length = 129,
     .expected_status  = PSA_ERROR_INVALID_SIGNATURE
 },
-#endif
 #endif
 #endif
 };

@@ -17,7 +17,6 @@
 
 #include "val_peripherals.h"
 #include "pal_interfaces.h"
-#include "val_framework.h"
 
 /* Global */
 uint32_t   is_logger_init_done = 0;

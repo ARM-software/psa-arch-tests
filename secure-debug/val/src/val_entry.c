@@ -19,8 +19,7 @@
 #include "val_framework.h"
 #include "val_peripherals.h"
 #include "val_dispatcher.h"
-
-int32_t val_entry(void);
+#include "pal_interfaces.h"
 
 /**
     @brief    - PSA C main function, does VAL init and calls test dispatcher

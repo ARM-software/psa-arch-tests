@@ -157,8 +157,6 @@ val_status_t val_wd_timer_disable(void)
 val_status_t val_wd_reprogram_timer(wd_timeout_type_t timeout_type)
 {
     val_status_t    status = VAL_STATUS_SUCCESS;
-
-    (void)timeout_type; // Argument unused if WATCHDOG_AVAILABLE is not defined
 #ifdef WATCHDOG_AVAILABLE
     /* Disable watchdog Timer */
     val_wd_timer_disable();
@@ -176,6 +174,8 @@ val_status_t val_wd_reprogram_timer(wd_timeout_type_t timeout_type)
     {
         return status;
     }
+#else
+	(void)timeout_type; // Argument unused if WATCHDOG_AVAILABLE is not defined
 #endif
 
     return status;

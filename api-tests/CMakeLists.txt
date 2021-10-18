@@ -136,6 +136,9 @@ else()
 list(APPEND PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS 1 2 3)
 endif()
 
+#list of INCLUDE_PANIC_TESTS options
+list(APPEND PSA_INCLUDE_PANIC_TESTS_OPTIONS 0 1)
+
 # list of available spec version
 if("${SUITE}" STREQUAL "STORAGE" OR ${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE" OR ${SUITE} STREQUAL "PROTECTED_STORAGE")
 list(APPEND PSA_SPEC_VERSION
@@ -160,13 +163,18 @@ list(APPEND PSA_SPEC_VERSION
         1.0
         1.1
 )
-
 endif()
 
 #list of values available for connection based
 if(${SUITE} STREQUAL "IPC")
 list(APPEND PSA_STATELESS_ROT 0 1)
 endif()
+
+#list of TESTS_COVERAGE available options
+list(APPEND PSA_TESTS_COVERAGE_OPTIONS
+		"ALL"
+        "PASS"
+)
 
 message(STATUS "[PSA] : ----------Process input arguments- start-------------")
 
@@ -386,6 +394,9 @@ if(NOT DEFINED INCLUDE_PANIC_TESTS)
 	set(INCLUDE_PANIC_TESTS 0 CACHE INTERNAL "Default INCLUDE_PANIC_TESTS value" FORCE)
         message(STATUS "[PSA] : Defaulting INCLUDE_PANIC_TESTS to ${INCLUDE_PANIC_TESTS}")
 else()
+	if(NOT ${INCLUDE_PANIC_TESTS} IN_LIST PSA_INCLUDE_PANIC_TESTS_OPTIONS)
+		message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DINCLUDE_PANIC_TESTS=${INCLUDE_PANIC_TESTS}, supported values are : ${PSA_INCLUDE_PANIC_TESTS_OPTIONS}")
+	endif()
 	if(INCLUDE_PANIC_TESTS EQUAL 1)
 		message(STATUS "[PSA] : "
 		"INCLUDE_PANIC_TESTS set to 1, therefore including PSA APIs panic tests into the regression,\n"
@@ -486,6 +497,25 @@ else()
 	endif()
 endif()
 
+if(NOT DEFINED TESTS_COVERAGE)
+	#By default all tests are included
+	set(TESTS_COVERAGE "ALL" CACHE INTERNAL "Default TESTS_COVERAGE value" FORCE)
+        message(STATUS "[PSA] : Defaulting TESTS_COVERAGE to ${TESTS_COVERAGE}")
+else()
+	if(NOT ${TESTS_COVERAGE} IN_LIST PSA_TESTS_COVERAGE_OPTIONS)
+		message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DTESTS_COVERAGE=${TESTS_COVERAGE}, supported values are : ${PSA_TESTS_COVERAGE_OPTIONS}")
+	endif()
+	if(TESTS_COVERAGE STREQUAL ALL)
+                message(STATUS "[PSA] : "
+                "TESTS_COVERAGE set to ALL, therefore all tests are included.")
+        endif()
+	if(TESTS_COVERAGE STREQUAL PASS)
+		message(STATUS "[PSA] : "
+		"TESTS_COVERAGE set to PASS, therefore known failure tests are not included.")
+		add_definitions(-DTESTS_COVERAGE)
+	endif()
+endif()
+
 message(STATUS "[PSA] : ----------Process input arguments- complete-------------")
 
 
@@ -526,6 +556,7 @@ execute_process(COMMAND ${PYTHON_EXECUTABLE} ${PSA_TESTLIST_GENERATOR}
 					${SUITE_LOWER}
 					${TESTSUITE_DB}
 					${INCLUDE_PANIC_TESTS}
+					${TESTS_COVERAGE}
 					${PSA_TESTLIST_FILE}
 					${PSA_TEST_ENTRY_LIST_INC}
 					${PSA_TEST_ENTRY_FUN_DECLARE_INC}

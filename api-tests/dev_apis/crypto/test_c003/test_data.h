@@ -189,7 +189,6 @@ static const test_data check1[] = {
 
 #ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
-#ifdef CRYPTO_1_0
 {
     .test_desc            = "Test psa_export_key with key policy verify\n",
     .type                 = PSA_KEY_TYPE_AES,
@@ -202,7 +201,6 @@ static const test_data check1[] = {
     .expected_data_length = AES_16B_KEY_SIZE,
     .expected_status      = PSA_ERROR_NOT_PERMITTED
 },
-#endif
 
 {
     .test_desc            = "Test psa_export_key with less buffer size\n",

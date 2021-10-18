@@ -38,9 +38,11 @@
 #define INPUT_SEED_LEN                 4
 #define INPUT_LABEL_LEN                5
 
+#define PSA_ERROR_PROGRAMMER_ERROR      ((psa_status_t)-129)
+
 /* min and max finding macro */
-#define MIN(a,b) (((a)<(b))?(a):(b))
-#define MAX(a,b) (((a)>(b))?(a):(b))
+#define MIN(a, b) (((a) < (b))?(a):(b))
+#define MAX(a, b) (((a) > (b))?(a):(b))
 
 extern const uint8_t key_data[];
 
@@ -108,6 +110,7 @@ extern const uint8_t signature_3[];
 extern const uint8_t signature_4[];
 extern const uint8_t signature_4_invalid[];
 extern const uint8_t signature_5[];
+extern const uint8_t signature_6[];
 
 extern const uint8_t hmac_sha224[];
 extern const uint8_t hmac_sha224_invalid[];

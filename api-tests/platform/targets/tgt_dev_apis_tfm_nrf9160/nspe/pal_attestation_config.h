@@ -42,7 +42,7 @@
  * This is the size of the first part of the CBOR encoded TBS
  * bytes. It is around 20 bytes. See create_tbs_hash().
  */
-#define T_COSE_SIZE_OF_TBS { \
+#define T_COSE_SIZE_OF_TBS ( \
     1 + /* For opening the array */ \
     sizeof(COSE_SIG_CONTEXT_STRING_SIGNATURE1) + /* "Signature1" */ \
     2 + /* Overhead for encoding string */ \
@@ -50,7 +50,7 @@
     3 * (/* 3 NULL bstrs for fields not used */ \
         1 /* size of a NULL bstr */  \
     ) \
-}
+)
 
 #define NULL_USEFUL_BUF_C  NULLUsefulBufC
 

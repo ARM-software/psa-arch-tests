@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2020-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,6 +37,7 @@
 #ifndef TF_M_PROFILE_SMALL
 #ifndef TF_M_PROFILE_MEDIUM
 #define ARCH_TEST_RSA
+#define ARCH_TEST_SKIP_RSA_2048_GEN_KEY
 #define ARCH_TEST_RSA_1024
 #define ARCH_TEST_RSA_2048
 #define ARCH_TEST_RSA_3072

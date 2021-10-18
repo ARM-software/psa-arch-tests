@@ -31,17 +31,15 @@ set(CMAKE_C_EXTENSIONS Off)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_EXTENSIONS Off)
 
-if(NOT DEFINED RDDI_LIB)
-    set(DEPENDS_INC_PATH ${CMAKE_SOURCE_DIR}/platform/native/include)
-else()
-    set(DEPENDS_INC_PATH ${CMAKE_SOURCE_DIR}/platform/rddi/include)
-
+if(DEFINED RDDI_LIB)
     if(WIN32)
         set(DEPENDS_LIB_PATH ${CMAKE_SOURCE_DIR}/depends/rddi/win_32-x86_64)
     else()
         set(DEPENDS_LIB_PATH ${CMAKE_SOURCE_DIR}/depends/rddi/linux-x86_64)
     endif()
 endif()
+
+set(DEPENDS_INC_PATH ${CMAKE_SOURCE_DIR}/platform/hosts/${TARGET}/include)
 
 if(NOT DEFINED PSA_ADAC_ROOT)
     get_filename_component(PSA_ADAC_ROOT ${CMAKE_SOURCE_DIR}/psa-adac ABSOLUTE)
@@ -92,7 +90,7 @@ _check_arguments("SUITE")
 string(TOLOWER ${SUITE} SUITE_LOWER)
 
 # Check for valid targets
-_get_sub_dir_list(PSA_TARGET_LIST ${PSA_ROOT_DIR}/platform)
+_get_sub_dir_list(PSA_TARGET_LIST ${PSA_ROOT_DIR}/platform/hosts)
 if(NOT ${TARGET} IN_LIST PSA_TARGET_LIST)
 	message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DTARGET=${TARGET}, supported targets are : ${PSA_TARGET_LIST}")
 else()
@@ -189,24 +187,26 @@ add_definitions(-DVERBOSE=${VERBOSE})
 add_definitions(-D${TARGET})
 
 # Build PAL LIB
-if(NOT DEFINED RDDI_LIB)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/platform/native)
-    set(ADAC_HOST_PAL_LIB    platform_native)
-else()
+include(${CMAKE_SOURCE_DIR}/platform/common/pal.cmake)
+if(DEFINED RDDI_LIB)
     add_subdirectory(${CMAKE_SOURCE_DIR}/platform/csapbcom)
     set(ADAC_HOST_PAL_LIB    csapbcom)
+else()
+    add_subdirectory(${CMAKE_SOURCE_DIR}/platform/hosts/${TARGET} platform_stdc)
+    target_link_libraries(${ADAC_HOST_PAL_LIB} platform_stdc)
 endif()
 
 # Generate VAL LIB
 include(${CMAKE_SOURCE_DIR}/val/val.cmake)
 
-# Build test
+# Build test suite
 include(${PSA_SUITE_DIR}/suite.cmake)
 
-#add_dependencies(${TEST_COMBINE_LIB}		${ADAC_HOST_VAL_LIB} ${ADAC_HOST_PAL_LIB} ${ADAC_LIBS})
+#Create single executable
 add_executable(${ADAC_HOST_EXE} ${SUITE_CC_SOURCE})
 target_include_directories(${ADAC_HOST_EXE} PRIVATE
     ${CMAKE_SOURCE_DIR}/val/include
+	${CMAKE_SOURCE_DIR}/platform/common/include
     )
 target_link_libraries (${ADAC_HOST_EXE} ${TEST_COMBINE_LIB}
                                         ${ADAC_HOST_VAL_LIB}

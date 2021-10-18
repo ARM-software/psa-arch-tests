@@ -35,7 +35,6 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
-#ifdef CRYPTO_1_0
 #ifdef ARCH_TEST_RSA_1024
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 {
@@ -52,12 +51,12 @@ static const test_data check1[] = {
     .signature_size            = BUFFER_SIZE,
     .expected_signature        = signature_4,
     .expected_signature_length = 128,
-    .expected_status           = PSA_SUCCESS,
+    .expected_status           = PSA_ERROR_INVALID_ARGUMENT,
 },
 #endif
-
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN
 #ifdef ARCH_TEST_SHA256
+#if PSA_API_MODE_ON == 1
 {
     .test_desc                 = "Test psa_sign_message - RSA KEY_PAIR PKCS1V15 SHA-256\n",
     .type                      = PSA_KEY_TYPE_RSA_KEY_PAIR,
@@ -72,8 +71,9 @@ static const test_data check1[] = {
     .signature_size            = BUFFER_SIZE,
     .expected_signature        = NULL,
     .expected_signature_length = 128,
-    .expected_status           = PSA_ERROR_INVALID_ARGUMENT,
+    .expected_status           = PSA_ERROR_PROGRAMMER_ERROR,
 },
+#endif
 #endif
 #endif
 #endif
@@ -83,7 +83,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
 {
     .test_desc                 = "Test psa_sign_message - ECDSA SECP256R1 SHA-256\n",
-    .type                      = PSA_KEY_TYPE_DH_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
+    .type                      = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
     .data                      = ec_keypair,
     .data_length               = 32,
     .usage_flags               = PSA_KEY_USAGE_SIGN_MESSAGE,
@@ -93,7 +93,7 @@ static const test_data check1[] = {
     .input_length              = sizeof(hash_input),
     .signature                 = expected_output,
     .signature_size            = BUFFER_SIZE,
-    .expected_signature        = signature_5,
+    .expected_signature        = signature_6,
     .expected_signature_length = 64,
     .expected_status           = PSA_SUCCESS,
 },
@@ -125,8 +125,8 @@ static const test_data check1[] = {
     .data                      = rsa_128_key_pair,
     .data_length               = 610,
     .usage_flags               = PSA_KEY_USAGE_SIGN_MESSAGE,
-    .alg                       = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
-    .sign_alg                  = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
+    .alg                       = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
+    .sign_alg                  = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
     .input                     = &hash_input,
     .input_length              = sizeof(hash_input),
     .signature                 = expected_output,
@@ -184,8 +184,8 @@ static const test_data check1[] = {
     .data                      = rsa_128_key_pair,
     .data_length               = 610,
     .usage_flags               = PSA_KEY_USAGE_ENCRYPT,
-    .alg                       = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
-    .sign_alg                  = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
+    .alg                       = PSA_ALG_DETERMINISTIC_ECDSA(PSA_ALG_SHA_256),
+    .sign_alg                  = PSA_ALG_DETERMINISTIC_ECDSA(PSA_ALG_SHA_256),
     .input                     = NULL,
     .input_length              = 0,
     .signature                 = expected_output,
@@ -231,7 +231,6 @@ static const test_data check1[] = {
     .expected_signature_length = 0,
     .expected_status           = PSA_ERROR_NOT_PERMITTED,
 },
-#endif
 #endif
 #endif
 #endif

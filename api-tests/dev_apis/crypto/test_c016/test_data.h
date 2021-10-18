@@ -105,6 +105,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_RSA
 #ifdef ARCH_TEST_RSA_2048
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
+#ifndef ARCH_TEST_SKIP_RSA_2048_GEN_KEY
 {
     .test_desc       = "Test psa_generate_key with RSA 2048 Keypair\n",
     .type            = PSA_KEY_TYPE_RSA_KEY_PAIR,
@@ -112,12 +113,13 @@ static const test_data check1[] = {
 	                   | PSA_KEY_USAGE_SIGN_MESSAGE | PSA_KEY_USAGE_VERIFY_MESSAGE,
     .alg             = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
     .bits            = 2048,
-    .expected_range  = {1, BITS_TO_BYTES(MIN(PSA_EXPORT_KEY_OUTPUT_SIZE(\
+    .expected_range  = {1, (MIN(PSA_EXPORT_KEY_OUTPUT_SIZE(\
 	                    PSA_KEY_TYPE_RSA_KEY_PAIR, 2048), \
                         PSA_EXPORT_KEY_PAIR_MAX_SIZE))},
 
     .expected_status = PSA_SUCCESS
 },
+#endif
 #endif
 #endif
 #endif

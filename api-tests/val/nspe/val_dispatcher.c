@@ -229,6 +229,10 @@ int32_t val_dispatcher(test_id_t test_id_prev)
                 val_print(PRINT_ALWAYS, "\nRunning.. ", 0);
                 val_print(PRINT_ALWAYS, val_get_comp_name(test_id), 0);
 			//	val_print_api_version();
+#ifdef TESTS_COVERAGE
+                val_print(PRINT_ALWAYS, "\nNOTE : Known failing tests are excluded from this \
+build. For PSA functional API certification, all tests must be run.\n", 0);
+#endif
                 val_print(PRINT_ALWAYS, "\n******************************************\n", 0);
             }
 

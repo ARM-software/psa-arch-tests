@@ -20,10 +20,9 @@
 #include "val_interfaces.h"
 #include "val_peripherals.h"
 
-
 extern val_api_t val_api;
 
-/* gloabls */
+/* globals */
 addr_t          g_test_info_addr;
 
 /**
@@ -151,10 +150,8 @@ char *val_get_comp_name(test_id_t test_id)
 **/
 int32_t val_dispatcher(test_id_t test_id_prev)
 {
-
     test_id_t            test_id;
     val_status_t         status;
-    boot_t               boot;
     test_count_t         test_count = {0,};
     uint32_t             test_result;
 
@@ -213,10 +210,4 @@ int32_t val_dispatcher(test_id_t test_id_prev)
 
    return (test_count.fail_cnt > 0) ? VAL_STATUS_TEST_FAILED : VAL_STATUS_SUCCESS;
 }
-
-
-
-
-
-
 

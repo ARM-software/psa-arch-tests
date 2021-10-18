@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,7 @@ static const test_data_t s017_data[] = {
 },
 {
     /* Try to set data in noncontinous manner */
-    VAL_TEST_IDX3, {VAL_API_UNUSED, VAL_PS_SET_EXTENDED}, PSA_ERROR_STORAGE_FAILURE
+    VAL_TEST_IDX3, {VAL_API_UNUSED, VAL_PS_SET_EXTENDED}, PSA_ERROR_INVALID_ARGUMENT
 },
 {
     /* Overwrite the existing data */

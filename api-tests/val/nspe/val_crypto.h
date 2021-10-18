@@ -55,7 +55,6 @@
 
 #define PSA_ALG_NONE ((psa_algorithm_t)0)
 #define PSA_KEY_ID_NULL ((psa_key_id_t)0)
-
 #if 0
 #define PSA_ALG_AEAD_WITH_DEFAULT_LENGTH_TAG(aead_alg) \
         ((((aead_alg) & ~0x003f0000) == 0x05400100) ? PSA_ALG_CCM : \
@@ -66,7 +65,6 @@
 #define PSA_ALG_AEAD_WITH_SHORTENED_TAG(aead_alg, tag_length) \
 		((psa_algorithm_t) (((aead_alg) & ~0x003f0000) | (((tag_length) & 0x3f) << 16)))
 #endif
-
 
 enum crypto_function_code {
     VAL_CRYPTO_AEAD_ABORT                        = 0x1,

@@ -19,7 +19,6 @@
 #define _VAL_INTERFACES_H_
 
 #include "val.h"
-#include "pal_interfaces.h"
 
 /* typedef's */
 typedef struct {

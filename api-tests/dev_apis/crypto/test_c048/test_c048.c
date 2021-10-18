@@ -28,7 +28,7 @@ const client_test_t test_c048_crypto_list[] = {
 
 extern  uint32_t g_test_count;
 
-static uint8_t    output[SIZE_32B];
+static uint8_t    output[64];
 
 int32_t psa_cipher_encrypt_test(caller_security_t caller __UNUSED)
 {
@@ -71,6 +71,7 @@ int32_t psa_cipher_encrypt_test(caller_security_t caller __UNUSED)
         status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT, key,
                  check1[i].key_alg, check1[i].input, check1[i].input_length, output,
                  check1[i].output_size, &output_length);
+
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
         /* Destroy the key */
@@ -86,17 +87,11 @@ int32_t psa_cipher_encrypt_test(caller_security_t caller __UNUSED)
         /* Check if the output length matches the expected length */
         TEST_ASSERT_EQUAL(output_length, check1[i].expected_output_length, TEST_CHECKPOINT_NUM(6));
 
-        /* Check if the output data matches the expected data */
-        TEST_ASSERT_MEMCMP(output, check1[i].expected_output, output_length,
-        TEST_CHECKPOINT_NUM(7));
-
         /* Encrypt a message using a symmetric cipher on an aborted key handle should be an error */
         status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT, key,
                  check1[i].key_alg, check1[i].input, check1[i].input_length, output,
                  check1[i].output_size, &output_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(8));
-
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(7));
     }
-
     return VAL_STATUS_SUCCESS;
 }

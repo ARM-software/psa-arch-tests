@@ -117,8 +117,9 @@ int32_t psa_asymmetric_encrypt_test(caller_security_t caller __UNUSED)
             TEST_ASSERT_EQUAL(get_output_length, check1[i].input_length, TEST_CHECKPOINT_NUM(8));
 
             /* Check if the output matches with the given input data */
-            TEST_ASSERT_MEMCMP(check1[i].output + check1[i].expected_output_length, check1[i].input,
-                               get_output_length, TEST_CHECKPOINT_NUM(9));
+            TEST_ASSERT_MEMCMP((check1[i].output + check1[i].expected_output_length),\
+			                    check1[i].input, get_output_length,\
+								TEST_CHECKPOINT_NUM(9));
         }
 
         /* Destroy the key */

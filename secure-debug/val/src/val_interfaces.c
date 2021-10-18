@@ -15,7 +15,6 @@
  * limitations under the License.
 **/
 
-
 #include "val_framework.h"
 #include "val_interfaces.h"
 #include "val_peripherals.h"

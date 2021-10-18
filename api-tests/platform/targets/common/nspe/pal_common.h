@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2020-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,6 +29,7 @@
 /* typedef's */
 #ifndef TARGET_SPECIFIC_TYPES
 typedef uint8_t             bool_t;
+#define addr_t              undef_addr_t   //To avoid addr_t name collision
 typedef uint32_t            addr_t;
 typedef uint32_t            test_id_t;
 typedef uint32_t            block_id_t;

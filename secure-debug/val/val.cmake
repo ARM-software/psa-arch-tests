@@ -15,14 +15,9 @@
 # * limitations under the License.
 #**/
 
-if(NOT DEFINED PSA_ADAC_ROOT)
-    get_filename_component(PSA_ADAC_ROOT ${CMAKE_SOURCE_DIR}/psa-adac ABSOLUTE)
-endif()
-
 # Listing all the sources from val
 list(APPEND VAL_SRC_C
 	${CMAKE_SOURCE_DIR}/val/src/val_entry.c
-	${CMAKE_SOURCE_DIR}/val/src/val_adac.c
 	${CMAKE_SOURCE_DIR}/val/src/val_dispatcher.c
 	${CMAKE_SOURCE_DIR}/val/src/val_framework.c
 	${CMAKE_SOURCE_DIR}/val/src/val_interfaces.c
@@ -33,10 +28,9 @@ list(APPEND VAL_SRC_C
 add_library(${ADAC_HOST_VAL_LIB} STATIC ${VAL_SRC_C})
 
 target_include_directories(${ADAC_HOST_VAL_LIB} PRIVATE
-    ${CMAKE_SOURCE_DIR}/val/include
     ${CMAKE_BINARY_DIR}
-    ${PSA_ADAC_ROOT}/psa-adac/core/include
-    ${PSA_ADAC_ROOT}/psa-adac/sdm/include
+    ${CMAKE_SOURCE_DIR}/val/include
+    ${CMAKE_SOURCE_DIR}/platform/common/include
     )
 
-target_link_libraries(${ADAC_HOST_VAL_LIB} mbedcrypto)
+target_link_libraries(${ADAC_HOST_VAL_LIB} ${ADAC_HOST_PAL_LIB})

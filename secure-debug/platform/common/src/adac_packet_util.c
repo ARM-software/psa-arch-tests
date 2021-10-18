@@ -17,30 +17,9 @@
 
 #include <psa_adac.h>
 #include <psa_adac_debug.h>
-#include "unix_msg.h"
-
-#include <stdio.h>
-#include <stdlib.h>
+#include <adac_util.h>
+#include <pal_interfaces.h>
 #include <string.h>
-
-#if !defined(_MSC_VER)
-    #include <unistd.h>
-#else // !defined(_MSC_VER)
-    #include <io.h>
-
-    // Disable warning about POSIX function names.
-    #pragma warning(disable : 4996)
-#endif // !defined(_MSC_VER)
-
-int static_buffer_msg_init(uint8_t *buffer, size_t size);
-int static_buffer_msg_release(void);
-
-#define PAL_STATUS_UNSUPPORTED_FUNC      0xFF
-
-typedef enum {
-    PAL_STATUS_SUCCESS = 0x0,
-    PAL_STATUS_ERROR   = 0x80
-} pal_status_t;
 
 enum {
     BUFFER_UNINITIALIZED = 0,
@@ -51,27 +30,6 @@ enum {
 static size_t static_buffer_size;
 static uint8_t *static_buffer_pointer;
 static uint8_t static_buffer_status = BUFFER_UNINITIALIZED;
-static int _fd;
-
-
-int pal_print(const char *str, int32_t data)
-{
-    if (printf(str, data) < 0)
-    {
-        return PAL_STATUS_ERROR;
-    }
-    return PAL_STATUS_SUCCESS;
-}
-
-void pal_terminate_simulation(void)
-{
-    ;
-}
-
-int pal_system_reset(void)
-{
-    return PAL_STATUS_UNSUPPORTED_FUNC;
-}
 
 int static_buffer_msg_init(uint8_t *buffer, size_t size)
 {
@@ -166,49 +124,18 @@ int response_packet_release(response_packet_t *packet)
 
 int msg_interface_init(void *ctx, uint8_t buffer[], size_t buffer_size)
 {
-    unix_socket_init();
-
     if (ctx == NULL)
         return -1;
+    else
+        pal_msg_interface_init(ctx);
 
-    _fd = *((int *) ctx);
     return static_buffer_msg_init(buffer, buffer_size);
 }
 
 int msg_interface_free(void *ctx)
 {
-    unix_socket_close(_fd);
-    _fd = -1;
+    pal_msg_interface_free(ctx);
     return static_buffer_msg_release();
-}
-
-static int message_receive(int fd, uint8_t buffer[], size_t max, size_t *size)
-{
-    if (nread(fd, buffer, sizeof(request_packet_t)) != sizeof(request_packet_t)) {
-        PSA_ADAC_LOG_ERR("transport_unix", "Error receiving message header\n");
-        return -1;
-    }
-    request_packet_t *p = (request_packet_t *) buffer;
-
-    if (4 + p->data_count * 4 > max) {
-        PSA_ADAC_LOG_ERR("transport_unix", "Message would overflow buffer (%d > %d)\n",
-                                            4 + p->data_count * 4, (int) max);
-        return -1;
-    }
-    if (p->data_count) {
-        if (nread(fd, (uint8_t *) p->data, p->data_count * 4) != p->data_count * 4) {
-            PSA_ADAC_LOG_ERR("transport_unix", "Error receiving message body\n");
-            return -1;
-        }
-    }
-    //PSA_ADAC_LOG_DUMP("msg", "receive", buffer, 4 + p->data_count * 4);
-    return 0;
-}
-
-static int message_send(int fd, uint8_t buffer[], size_t size)
-{
-    //PSA_ADAC_LOG_DUMP("msg", "send", buffer, size);
-    return nwrite(fd, (uint8_t *) buffer, size) == size ? 0 : -1;
 }
 
 int request_packet_send(request_packet_t *packet)
@@ -218,7 +145,39 @@ int request_packet_send(request_packet_t *packet)
 
     size_t size = sizeof(request_packet_t) + 4 * packet->data_count;
 
-    return message_send(_fd, (uint8_t *) packet, size);
+    //PSA_ADAC_LOG_DUMP("msg", "send", (uint8_t *) packet, size);
+    return pal_message_send((uint8_t *) packet, size);
+}
+
+static int message_receive(uint8_t buffer[], size_t max, size_t *size)
+{
+    size_t length;
+
+    length = sizeof(response_packet_t);
+    if (pal_message_receive(buffer, length) != length)
+    {
+        PSA_ADAC_LOG_ERR("transport", "Error receiving message header\n");
+        return -1;
+    }
+    response_packet_t *p = (response_packet_t *) buffer;
+
+    if (4 + p->data_count * 4 > max)
+    {
+        PSA_ADAC_LOG_ERR("transport", "Message would overflow buffer (%d > %d)\n",
+                                            4 + p->data_count * 4, (int) max);
+        return -1;
+    }
+    if (p->data_count)
+    {
+        length = p->data_count * 4;
+        if (pal_message_receive((uint8_t *) p->data, length) != length)
+        {
+            PSA_ADAC_LOG_ERR("transport", "Error receiving message body\n");
+            return -1;
+        }
+    }
+    //PSA_ADAC_LOG_DUMP("msg", "receive", buffer, sizeof(response_packet_t) + p->data_count * 4);
+    return 0;
 }
 
 response_packet_t *response_packet_receive()
@@ -227,17 +186,18 @@ response_packet_t *response_packet_receive()
     response_packet_t *r = response_packet_lock(&max);
 
     if (r != NULL) {
-        if (message_receive(_fd, (uint8_t *) r, max, NULL) == 0)
+        if (message_receive((uint8_t *) r, max, NULL) == 0)
             return r;
 
-        PSA_ADAC_LOG_ERR("transport_unix", "Error Receiving Response");
+        PSA_ADAC_LOG_ERR("transport", "Error Receiving Response");
         response_packet_release(r);
     } else {
-        PSA_ADAC_LOG_ERR("transport_unix", "Error Locking Response");
+        PSA_ADAC_LOG_ERR("transport", "Error Locking Response");
     }
     return NULL;
 }
 
+// Not used by test. Required for building dependent ADAC crypto libraries
 void psa_adac_platform_init(void)
 {
     ;

@@ -19,11 +19,8 @@
 #include "val_interfaces.h"
 #include "val_dispatcher.h"
 #include "val_peripherals.h"
-#include "pal_interfaces.h"
-
 
 extern val_api_t val_api;
-
 
 /* globals */
 test_status_buffer_t    g_status_buffer;
@@ -72,7 +69,6 @@ uint32_t val_report_status(void)
             state = TEST_FAIL;
             val_print(PRINT_ALWAYS, "\nTEST RESULT: FAILED(Error Code=0x%x)\n", VAL_STATUS_INVALID);
             break;
-
     }
 
     val_print(PRINT_ALWAYS, "\n******************************************\n", 0);
@@ -119,9 +115,8 @@ val_status_t val_err_check_set(uint32_t checkpoint, val_status_t status)
         if (VAL_ERROR(status)) {
             val_print(PRINT_ERROR, "\tCheckpoint %d : ", checkpoint);
             val_print(PRINT_ERROR, "Error Code=0x%x \n", status);
-        } else {
+        } else
             val_print(PRINT_DEBUG, "\tCheckpoint %d \n", checkpoint);
-        }
     }
     return status;
 }

@@ -15,44 +15,41 @@
  * limitations under the License.
 **/
 
-#include <val_adac.h>
+#include <adac_util.h>
 #include <psa_adac_cryptosystems.h>
 #include <psa_adac_sdm.h>
 #include <psa_adac_debug.h>
-#include <pal_interfaces.h>
 
-void val_adac_host_init(void)
+void psa_adac_host_init(void)
 {
-    psa_adac_platform_init();
     psa_crypto_init();
 }
 
-psa_status_t val_load_certificate_chain(const char *chain_file, uint8_t **chain, size_t *chain_size)
+psa_status_t psa_adac_load_certificate_chain(const char *chain_file, uint8_t **chain,
+                                             size_t *chain_size)
 {
     int ret_val;
     psa_status_t r = PSA_SUCCESS;
 
     if (chain_file == NULL) {
-        printf("Error:Path not found\n");
+        PSA_ADAC_LOG_ERR("file", "chain file path not found\n");
         r = PSA_ERROR_INVALID_ARGUMENT;
         return r;
     }
     ret_val = load_trust_chain(chain_file, chain, chain_size);
     if (ret_val != 0) {
-        printf("Error loading trust chain (%s)\n", chain_file);
+        PSA_ADAC_LOG_ERR("loader", "Certificate chain cannot be loaded\n");
         r = PSA_ERROR_GENERIC_ERROR;
     }
     return r;
 }
 
-psa_status_t val_infer_cryptosystem(uint32_t *chain, size_t chain_size, psa_tlv_t **extns_list,
-                              size_t *extns_count, uint8_t *key_system)
+psa_status_t psa_adac_read_extensions(uint32_t *chain, size_t chain_size, psa_tlv_t **extns_list,
+                                      size_t *extns_count)
 {
     int ret_val;
     psa_status_t r = PSA_SUCCESS;
-    uint8_t key_type;
-    size_t count, i;
-    psa_tlv_t *current_extn;
+    size_t count;
 
     ret_val = split_tlv_static(chain, chain_size, extns_list, MAX_EXTENSIONS, extns_count);
     if (ret_val != 0) {
@@ -62,31 +59,54 @@ psa_status_t val_infer_cryptosystem(uint32_t *chain, size_t chain_size, psa_tlv_
     }
     count = *extns_count;
     if (count > MAX_EXTENSIONS) {
-        printf("Error:Extension count exceeded maximum allowed\n");
+        PSA_ADAC_LOG_ERR("certificate", "Extension count exceeded maximum allowed\n");
         r = PSA_ERROR_NOT_PERMITTED;
         return r;
     }
 
     PSA_ADAC_LOG_INFO("host", "Found %zu certificates\n", count);
-    for (i = 0; i < count; i++) {
-        current_extn = extns_list[i];
-        if ((current_extn)->type_id == 0x0201)
-            key_type = ((certificate_header_t *) current_extn->value)->key_type;
-    }
-    *key_system = key_type;
-    PSA_ADAC_LOG_INFO("host", "Cryptosystem detected: %d\n", key_type);
     return r;
 }
 
-psa_status_t val_get_private_key(const char *key_file, uint8_t *type, psa_key_handle_t *handle,
-                                 uint8_t **key_ptr, size_t *size)
+uint8_t detect_cryptosystem(psa_tlv_t *extns_list[], size_t extn_count)
+{
+    size_t i;
+    psa_tlv_t *current_extn;
+    uint8_t key_type;
+
+    for (i = 0; i < extn_count; i++) {
+        current_extn = extns_list[i];
+        if ((current_extn)->type_id == CERT_ADAC)
+            key_type = ((certificate_header_t *) current_extn->value)->key_type;
+    }
+    PSA_ADAC_LOG_INFO("host", "Cryptosystem detected: %d\n", key_type);
+    return key_type;
+}
+
+uint8_t get_certificate_role(psa_tlv_t *extns_list[], size_t extn_count)
+{
+    size_t i;
+    psa_tlv_t *current_extn;
+    uint8_t role_type;
+
+    for (i = 0; i < extn_count; i++) {
+        current_extn = extns_list[i];
+        if ((current_extn)->type_id == CERT_ADAC)
+            role_type = ((certificate_header_t *) current_extn->value)->role;
+    }
+    PSA_ADAC_LOG_INFO("host", "Certificate role: %d\n", role_type);
+    return role_type;
+}
+
+psa_status_t psa_adac_get_private_key(const char *key_file, uint8_t *type, psa_key_handle_t *handle,
+                                      uint8_t **key_ptr, size_t *size)
 {
     int ret_val;
     psa_status_t r = PSA_SUCCESS;
     uint8_t key_type = *type;
 
     if (key_file == NULL) {
-        printf("Error:Path not found\n");
+        PSA_ADAC_LOG_ERR("file", "key file path not found\n");
         r = PSA_ERROR_INVALID_ARGUMENT;
         return r;
     }
@@ -101,7 +121,7 @@ psa_status_t val_get_private_key(const char *key_file, uint8_t *type, psa_key_ha
     case SM_SM2_SM3:
         ret_val = import_private_key(key_file, type, handle);
         if (ret_val != 0) {
-            printf("Error importing private key (%s)\n", key_file);
+            PSA_ADAC_LOG_ERR("loader", "Could not import private key (%s)\n", key_file);
             r = PSA_ERROR_GENERIC_ERROR;
         } else {
             key_ptr = NULL;
@@ -113,7 +133,7 @@ psa_status_t val_get_private_key(const char *key_file, uint8_t *type, psa_key_ha
     case HMAC_SHA256:
         ret_val = load_secret_key(key_file, key_type, key_ptr, size);
         if (ret_val != 0) {
-            printf("Error importing secret key (%s)\n", key_file);
+            PSA_ADAC_LOG_ERR("loader", "Could not import secret key (%s)\n", key_file);
             r = PSA_ERROR_GENERIC_ERROR;
         } else {
             handle = NULL;
@@ -121,70 +141,49 @@ psa_status_t val_get_private_key(const char *key_file, uint8_t *type, psa_key_ha
         break;
 
     default:
-        printf("Error: unsupported key type (0x%x)\n", key_type);
+        PSA_ADAC_LOG_INFO("host", "Unsupported key type (0x%x)\n", key_type);
         r = PSA_ERROR_NOT_SUPPORTED;
     }
     return r;
 }
 
-request_packet_t *val_construct_command(uint16_t cmd_type, uint8_t *data, size_t data_size)
-{
-    request_packet_t *packet = NULL;
-
-    switch (cmd_type) {
-    case SDP_RESUME_BOOT_CMD:
-    case SDP_LOCK_DEBUG_CMD:
-    case SDP_DISCOVERY_CMD:
-    case SDP_AUTH_START_CMD:
-        packet = request_packet_build(cmd_type, NULL, 0);
-        break;
-    case SDP_AUTH_RESPONSE_CMD:
-        if (data == NULL || data_size == 0) {
-            printf("Error: No payload specified\n");
-            break;
-        }
-        packet = request_packet_build((uint16_t)cmd_type, data, data_size);
-        break;
-    default:
-        //TO DO: Callback for vendor specific command construction
-        printf("Error: Unrecognized command. ID=(0x%x)\n", cmd_type);
-    }
-    return packet;
-}
-
-psa_status_t val_issue_command(uint32_t command, request_packet_t *packet,
+psa_status_t psa_adac_issue_command(uint32_t command, request_packet_t *packet,
                                uint8_t *data, size_t data_size)
 {
     int ret_val;
     psa_status_t r = PSA_SUCCESS;
 
-    packet = val_construct_command((uint16_t)command, data, data_size);
+    packet = request_packet_build((uint16_t)command, data, data_size);
 
     if (packet == NULL) {
-        printf("Command construction failed\n");
+        PSA_ADAC_LOG_ERR("host", "Command construction failed\n");
         r = PSA_ERROR_GENERIC_ERROR;
         return r;
     }
 
     switch (command) {
     case SDP_DISCOVERY_CMD:
-        printf("Sending discovery request\n");
+        PSA_ADAC_LOG_INFO("host", "Sending discovery request\n");
         break;
     case SDP_AUTH_START_CMD:
-        printf("Sending challenge request\n");
+        PSA_ADAC_LOG_INFO("host", "Sending challenge request\n");
         break;
     case SDP_AUTH_RESPONSE_CMD:
-        printf("Sending authentication response\n");
+        PSA_ADAC_LOG_INFO("host", "Sending authentication response\n");
         break;
     case SDP_RESUME_BOOT_CMD:
-        printf("Sending close session command\n");
+        PSA_ADAC_LOG_INFO("host", "Sending close session command\n");
         break;
     case SDP_LOCK_DEBUG_CMD:
-        printf("Sending lock debug request\n");
+        PSA_ADAC_LOG_INFO("host", "Sending lock debug request\n");
+        break;
     default:
-        //TO DO: Vendor specific message
-        printf("Error: Unrecognized command. ID=(0x%x)\n", command);
-        r = PSA_ERROR_NOT_SUPPORTED;
+        if (command & 0x8000u)
+            PSA_ADAC_LOG_INFO("host", "Vendor specific command provided. ID=(0x%x)\n", command);
+        else {
+            PSA_ADAC_LOG_INFO("host", "Unrecognized command. ID=(0x%x)\n", command);
+            r = PSA_ERROR_NOT_SUPPORTED;
+        }
     }
     ret_val = request_packet_send(packet);
     if (ret_val < 0)
@@ -194,12 +193,12 @@ psa_status_t val_issue_command(uint32_t command, request_packet_t *packet,
     return r;
 }
 
-response_packet_t *val_await_response(void)
+response_packet_t *psa_adac_await_response(void)
 {
     return response_packet_receive();
 }
 
-psa_status_t val_parse_response(uint32_t command, response_packet_t *packet)
+psa_status_t psa_adac_parse_response(uint32_t command, response_packet_t *packet)
 {
     int ret_val;
     psa_status_t r = PSA_SUCCESS;
@@ -208,60 +207,44 @@ psa_status_t val_parse_response(uint32_t command, response_packet_t *packet)
     psa_auth_challenge_t *challenge;
 
     if (packet == NULL) {
-        printf("Error: Target response not obtained\n");
+        PSA_ADAC_LOG_ERR("host", "Target response not obtained\n");
         r = PSA_ERROR_COMMUNICATION_FAILURE;
         return r;
+    } else {
+        PSA_ADAC_LOG_DEBUG("host", "status = 0x%04x, data_count = %d\n",
+                                    packet->status, packet->data_count);
     }
 
     switch (command) {
     case SDP_DISCOVERY_CMD:
-        printf("Receiving discovery response...\n");
+        PSA_ADAC_LOG_INFO("host", "Receiving discovery response...\n");
         for (i = 0; (i + 4) < (packet->data_count * 4);) {
             tlv = (psa_tlv_t *) (((uint8_t *)packet->data) + i);
-            i += sizeof(psa_tlv_t) + tlv->length_in_bytes;
+            //PSA_ADAC_LOG_DEBUG("host", "discovery @+%zu, type_id: 0x%04x, length: %d\n",
+            //        i, tlv->type_id, tlv->length_in_bytes);
+            i += sizeof(psa_tlv_t) + ROUND_TO_WORD(tlv->length_in_bytes);
         }
         break;
     case SDP_AUTH_START_CMD:
-        printf("Receiving challenge\n");
-        printf("status = 0x%04x, data_count = %d\n", packet->status, packet->data_count);
+        PSA_ADAC_LOG_INFO("host", "Receiving challenge..\n");
         if (packet->data_count * 4 != sizeof(psa_auth_challenge_t)) {
             r = PSA_ERROR_GENERIC_ERROR;
             return r;
         }
         challenge = (psa_auth_challenge_t *) packet->data;
-        PSA_ADAC_LOG_DUMP("host", "challenge", challenge->challenge_vector,
-                           sizeof(challenge->challenge_vector));
         break;
     case SDP_AUTH_RESPONSE_CMD:
     case SDP_RESUME_BOOT_CMD:
     case SDP_LOCK_DEBUG_CMD:
-        printf("status = 0x%04x, data_count = %d\n", packet->status, packet->data_count);
         break;
     default:
         r = PSA_ERROR_NOT_SUPPORTED;
+        PSA_ADAC_LOG_INFO("host", "Unrecognized command. ID=(0x%x)\n", command);
     }
     return r;
 }
 
-psa_status_t val_sign_token(uint8_t challenge[], size_t challenge_size, uint8_t signature_type,
-                            uint8_t exts[], size_t exts_size, uint8_t *fragment[],
-                            size_t *fragment_size, psa_key_handle_t handle,
-                            uint8_t *key, size_t key_size)
-{
-    psa_status_t r;
-
-    r = psa_adac_sign_token(challenge, challenge_size, signature_type, exts, exts_size,
-                           fragment, fragment_size, handle, key, key_size);
-    if (r == PSA_SUCCESS) {
-        PSA_ADAC_LOG_DUMP("host", "token", *fragment, *fragment_size);
-    } else {
-        PSA_ADAC_LOG_ERR("host", "Error signing token\n");
-        r = PSA_ERROR_GENERIC_ERROR;
-    }
-    return r;
-}
-
-psa_status_t val_send_certificate(psa_tlv_t **extns_list, size_t extns_count)
+psa_status_t psa_adac_send_certificate(psa_tlv_t **extns_list, size_t extns_count)
 {
     request_packet_t *request;
     response_packet_t *response;
@@ -276,14 +259,13 @@ psa_status_t val_send_certificate(psa_tlv_t **extns_list, size_t extns_count)
             payload = (uint8_t *)current_extn;
             payload_size = current_extn->length_in_bytes + sizeof(psa_tlv_t);
 
-            printf("Sending Certificate\n");
-            r = val_issue_command(SDP_AUTH_RESPONSE_CMD, request, payload, payload_size);
+            PSA_ADAC_LOG_INFO("host", "Sending Certificate..\n");
+            r = psa_adac_issue_command(SDP_AUTH_RESPONSE_CMD, request, payload, payload_size);
             if (r != PSA_SUCCESS)
                 return r;
 
-            printf("Receiving token_authentication response\n");
-            response = val_await_response();
-            r = val_parse_response(SDP_AUTH_RESPONSE_CMD, response);
+            response = psa_adac_await_response();
+            r = psa_adac_parse_response(SDP_AUTH_RESPONSE_CMD, response);
             if (r != PSA_SUCCESS)
                 return r;
 
@@ -300,10 +282,27 @@ psa_status_t val_send_certificate(psa_tlv_t **extns_list, size_t extns_count)
     return r;
 }
 
-int val_check_cryptosystem_support(response_packet_t *packet, uint8_t key_system)
+psa_status_t psa_adac_construct_token(uint8_t challenge[], size_t challenge_size,
+                                      uint8_t sign_type, uint8_t exts[], size_t exts_size,
+                                      uint8_t *fragment[], size_t *fragment_size, uint8_t *perm,
+                                      psa_key_handle_t handle, uint8_t *key, size_t key_size)
+{
+    psa_status_t r;
+
+    r = psa_adac_sign_token(challenge, challenge_size, sign_type, exts, exts_size,
+                           fragment, fragment_size, perm, handle, key, key_size);
+    if (r != PSA_SUCCESS) {
+        PSA_ADAC_LOG_ERR("host", "Error signing token\n");
+        r = PSA_ERROR_GENERIC_ERROR;
+    }
+    return r;
+}
+
+psa_status_t psa_adac_check_cryptosystem_support(response_packet_t *packet, uint8_t key_system)
 {
     int found = 0, j;
     size_t i = 0;
+    psa_status_t r;
     psa_tlv_t *tlv;
     uint8_t *key_support_types = NULL;
 
@@ -318,15 +317,18 @@ int val_check_cryptosystem_support(response_packet_t *packet, uint8_t key_system
                 }
            }
         }
-        i += sizeof(psa_tlv_t) + tlv->length_in_bytes;
+        i += sizeof(psa_tlv_t) + ROUND_TO_WORD(tlv->length_in_bytes);
     }
 
-    if (key_support_types == NULL)
-        printf("Cryptosystem Type ID not found in target's response\n");
-    else if (!found)
-        printf("Cryptosystem not supported by target\n");
-    else
-        printf("Cryptosystem supported by target\n");
-
-    return found;
+    if (key_support_types == NULL) {
+        PSA_ADAC_LOG_ERR("host", "Cryptosystem Type ID not specified\n");
+        r = PSA_ERROR_DOES_NOT_EXIST;
+    } else if (!found) {
+        PSA_ADAC_LOG_ERR("host", "Cryptosystem not supported by target\n");
+        r = PSA_ERROR_NOT_SUPPORTED;
+    } else {
+        PSA_ADAC_LOG_INFO("host", "Cryptosystem supported by target\n");
+        r = PSA_SUCCESS;
+    }
+    return r;
 }
