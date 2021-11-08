@@ -150,7 +150,7 @@ static const test_data check1[] = {
     .expected_range  = {1, BITS_TO_BYTES(MIN(PSA_EXPORT_KEY_OUTPUT_SIZE(\
 	                    PSA_KEY_TYPE_RSA_PUBLIC_KEY, 2048), \
                         PSA_EXPORT_PUBLIC_KEY_MAX_SIZE))},
-    .expected_status = PSA_ERROR_NOT_SUPPORTED
+    .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
 #endif
 #endif
