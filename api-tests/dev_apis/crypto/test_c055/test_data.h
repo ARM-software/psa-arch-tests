@@ -71,7 +71,7 @@ static const test_data check1[] = {
     .alg             = PSA_ALG_CCM,
     .setup_alg       = PSA_ALG_CCM,
     .nonce           = nonce,
-    .nonce_length    = PSA_AEAD_NONCE_LENGTH(PSA_KEY_TYPE_AES, PSA_ALG_CCM) - 1,
+    .nonce_length    = 6,
     .operation_state = 1,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
@@ -85,7 +85,7 @@ static const test_data check1[] = {
     .alg             = PSA_ALG_CCM,
     .setup_alg       = PSA_ALG_CCM,
     .nonce           = nonce,
-    .nonce_length    = (PSA_AEAD_NONCE_LENGTH(PSA_KEY_TYPE_AES, PSA_ALG_CCM))*5,
+    .nonce_length    = 14,
     .operation_state = 1,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
@@ -159,7 +159,7 @@ static const test_data check1[] = {
     .alg             = PSA_ALG_CCM,
     .setup_alg       = PSA_ALG_CCM,
     .nonce           = nonce,
-    .nonce_length    = PSA_AEAD_NONCE_LENGTH(PSA_KEY_TYPE_AES, PSA_ALG_CCM) - 1,
+    .nonce_length    = 6,
     .operation_state = 1,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
@@ -173,7 +173,7 @@ static const test_data check1[] = {
     .alg             = PSA_ALG_CCM,
     .setup_alg       = PSA_ALG_CCM,
     .nonce           = nonce,
-    .nonce_length    = (PSA_AEAD_NONCE_LENGTH(PSA_KEY_TYPE_AES, PSA_ALG_CCM))*5,
+    .nonce_length    = 14,
     .operation_state = 1,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
