@@ -32,7 +32,7 @@ static uint8_t  output[BUFFER_SIZE];
 int32_t psa_aead_verify_test(caller_security_t caller __UNUSED)
 {
     int32_t               i, status;
-    size_t                length;
+    size_t                length, verify_length;
     int                   num_checks = sizeof(check1)/sizeof(check1[0]);
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_aead_operation_t  operation = PSA_AEAD_OPERATION_INIT;
@@ -94,8 +94,8 @@ int32_t psa_aead_verify_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
         /* Finish authenticating and decrypting a message in an AEAD operation */
-        status = val->crypto_function(VAL_CRYPTO_AEAD_VERIFY, &operation, output,
-                 check1[i].output_size, &length, check1[i].tag, check1[i].tag_length);
+        status = val->crypto_function(VAL_CRYPTO_AEAD_VERIFY, &operation, output + length,
+                 check1[i].output_size, &verify_length, check1[i].tag, check1[i].tag_length);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(9));
 
         if (check1[i].expected_status != PSA_SUCCESS)
@@ -119,6 +119,7 @@ int32_t psa_aead_verify_test(caller_security_t caller __UNUSED)
         }
 
         /* Compare the output and its length with the expected values */
+        length += verify_length;
         TEST_ASSERT_EQUAL(length, check1[i].plaintext_length, TEST_CHECKPOINT_NUM(13));
         TEST_ASSERT_MEMCMP(output, check1[i].plaintext, length, TEST_CHECKPOINT_NUM(14));
 
