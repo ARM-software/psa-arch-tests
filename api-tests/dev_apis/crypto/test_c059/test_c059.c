@@ -72,14 +72,14 @@ int32_t psa_aead_finish_test(caller_security_t caller __UNUSED)
                  key, check1[i].alg);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
-        /* Set the nonce for an authenticated encryption operation */
-        status = val->crypto_function(VAL_CRYPTO_AEAD_SET_NONCE, &operation, check1[i].nonce,
-                 check1[i].nonce_size);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
-
         /* Declare the lengths of the message and additional data for AEAD */
         status = val->crypto_function(VAL_CRYPTO_AEAD_SET_LENGTHS, &operation, check1[i].ad_length,
                  check1[i].input_length);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+
+        /* Set the nonce for an authenticated encryption operation */
+        status = val->crypto_function(VAL_CRYPTO_AEAD_SET_NONCE, &operation, check1[i].nonce,
+                 check1[i].nonce_size);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
         /* Pass additional data to an active AEAD operation */
