@@ -63,7 +63,7 @@ static const test_data check1[] = {
     .output                 = expected_output,
     .output_size            = BUFFER_SIZE,
     .expected_output        = aead_ciphertext_2,
-    .expected_output_length = AEAD_CIPHERTEXT_LEN_2,
+    .expected_output_length = 24,
     .operation_state        = 1,
     .expected_status        = PSA_SUCCESS
 },
@@ -87,7 +87,7 @@ static const test_data check1[] = {
     .output                 = expected_output,
     .output_size            = BUFFER_SIZE,
     .expected_output        = aead_ciphertext_3,
-    .expected_output_length = AEAD_CIPHERTEXT_LEN_3,
+    .expected_output_length = 24,
     .operation_state        = 1,
     .expected_status        = PSA_SUCCESS
 },
@@ -111,7 +111,7 @@ static const test_data check1[] = {
     .output                 = expected_output,
     .output_size            = BUFFER_SIZE,
     .expected_output        = aead_ciphertext_4,
-    .expected_output_length = AEAD_CIPHERTEXT_LEN_4,
+    .expected_output_length = 24,
     .operation_state        = 1,
     .expected_status        = PSA_SUCCESS
 },
@@ -134,8 +134,8 @@ static const test_data check1[] = {
     .input_length           = 0,
     .output                 = expected_output,
     .output_size            = BUFFER_SIZE,
-    .expected_output        = aead_ciphertext_5,
-    .expected_output_length = AEAD_CIPHERTEXT_LEN_5,
+    .expected_output        = NULL,
+    .expected_output_length = 0,
     .operation_state        = 1,
     .expected_status        = PSA_SUCCESS
 },
@@ -157,7 +157,7 @@ static const test_data check1[] = {
     .input                  = plaintext,
     .input_length           = 24,
     .output                 = expected_output,
-    .output_size            = AEAD_CIPHERTEXT_LEN_2 - 2,
+    .output_size            = 15,
     .expected_output        = NULL,
     .expected_output_length = 0,
     .operation_state        = 1,
