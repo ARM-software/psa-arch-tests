@@ -165,7 +165,7 @@ static const test_data check1[] = {
 },
 
 {
-    .test_desc              = "Test psa_aead_update - Encrypt - Less add data than specified\n",
+    .test_desc              = "Test psa_aead_update - Encrypt - CCM - Less add data than specified\n",
     .type                   = PSA_KEY_TYPE_AES,
     .data                   = key_data,
     .data_length            = AES_16B_KEY_SIZE,
