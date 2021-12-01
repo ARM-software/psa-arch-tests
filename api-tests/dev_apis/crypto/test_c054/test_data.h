@@ -35,7 +35,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_AES_128
 #ifdef ARCH_TEST_CCM
 {
-    .test_desc       = "Test psa_aead_generate_nonce - Encrypt - CCM\n",
+    .test_desc       = "Test psa_aead_generate_nonce - CCM\n",
     .type            = PSA_KEY_TYPE_AES,
     .data            = key_data,
     .data_length     = AES_16B_KEY_SIZE,
@@ -49,7 +49,7 @@ static const test_data check1[] = {
 },
 
 {
-    .test_desc       = "Test psa_aead_generate_nonce - Encrypt - CCM - Tag length = 4\n",
+    .test_desc       = "Test psa_aead_generate_nonce - CCM - Tag length = 4\n",
     .type            = PSA_KEY_TYPE_AES,
     .data            = key_data,
     .data_length     = AES_16B_KEY_SIZE,
@@ -63,7 +63,7 @@ static const test_data check1[] = {
 },
 
 {
-    .test_desc       = "Test psa_aead_generate_nonce - Encrypt - CCM - Small buffer size\n",
+    .test_desc       = "Test psa_aead_generate_nonce - CCM - Small buffer size\n",
     .type            = PSA_KEY_TYPE_AES,
     .data            = key_data,
     .data_length     = AES_16B_KEY_SIZE,
@@ -77,7 +77,7 @@ static const test_data check1[] = {
 },
 
 {
-    .test_desc       = "Test psa_aead_generate_nonce - Encrypt - CCM - Invalid operation state\n",
+    .test_desc       = "Test psa_aead_generate_nonce - CCM - Uninitialized operation\n",
     .type            = PSA_KEY_TYPE_AES,
     .data            = key_data,
     .data_length     = AES_16B_KEY_SIZE,
@@ -89,11 +89,25 @@ static const test_data check1[] = {
     .operation_state = 0,
     .expected_status = PSA_ERROR_BAD_STATE
 },
+
+{
+    .test_desc       = "Test psa_aead_generate_nonce - CCM - Decrypt operation\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_DECRYPT,
+    .alg             = PSA_ALG_CCM,
+    .setup_alg       = PSA_ALG_CCM,
+    .nonce           = expected_output,
+    .nonce_size      = BUFFER_SIZE,
+    .operation_state = 1,
+    .expected_status = PSA_ERROR_BAD_STATE
+},
 #endif
 
 #ifdef ARCH_TEST_GCM
 {
-    .test_desc       = "Test psa_aead_generate_nonce - Encrypt - GCM\n",
+    .test_desc       = "Test psa_aead_generate_nonce - GCM\n",
     .type            = PSA_KEY_TYPE_AES,
     .data            = key_data,
     .data_length     = AES_16B_KEY_SIZE,
@@ -105,69 +119,9 @@ static const test_data check1[] = {
     .operation_state = 1,
     .expected_status = PSA_SUCCESS
 },
-#endif
-
-#ifdef ARCH_TEST_CCM
-{
-    .test_desc       = "Test psa_aead_generate_nonce - Decrypt - CCM\n",
-    .type            = PSA_KEY_TYPE_AES,
-    .data            = key_data,
-    .data_length     = AES_16B_KEY_SIZE,
-    .usage_flags     = PSA_KEY_USAGE_DECRYPT,
-    .alg             = PSA_ALG_CCM,
-    .setup_alg       = PSA_ALG_CCM,
-    .nonce           = expected_output,
-    .nonce_size      = BUFFER_SIZE,
-    .operation_state = 1,
-    .expected_status = PSA_SUCCESS
-},
 
 {
-    .test_desc       = "Test psa_aead_generate_nonce - Decrypt - CCM - Tag length = 4\n",
-    .type            = PSA_KEY_TYPE_AES,
-    .data            = key_data,
-    .data_length     = AES_16B_KEY_SIZE,
-    .usage_flags     = PSA_KEY_USAGE_DECRYPT,
-    .alg             = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
-    .setup_alg       = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
-    .nonce           = expected_output,
-    .nonce_size      = BUFFER_SIZE,
-    .operation_state = 1,
-    .expected_status = PSA_SUCCESS
-},
-
-{
-    .test_desc       = "Test psa_aead_generate_nonce - Decrypt - CCM - Small buffer size\n",
-    .type            = PSA_KEY_TYPE_AES,
-    .data            = key_data,
-    .data_length     = AES_16B_KEY_SIZE,
-    .usage_flags     = PSA_KEY_USAGE_DECRYPT,
-    .alg             = PSA_ALG_CCM,
-    .setup_alg       = PSA_ALG_CCM,
-    .nonce           = expected_output,
-    .nonce_size      = PSA_AEAD_NONCE_LENGTH(PSA_KEY_TYPE_AES, PSA_ALG_CCM) - 1,
-    .operation_state = 1,
-    .expected_status = PSA_ERROR_BUFFER_TOO_SMALL
-},
-
-{
-    .test_desc       = "Test psa_aead_generate_nonce - Decrypt - CCM - Invalid operation state\n",
-    .type            = PSA_KEY_TYPE_AES,
-    .data            = key_data,
-    .data_length     = AES_16B_KEY_SIZE,
-    .usage_flags     = PSA_KEY_USAGE_DECRYPT,
-    .alg             = PSA_ALG_CCM,
-    .setup_alg       = PSA_ALG_CCM,
-    .nonce           = expected_output,
-    .nonce_size      = BUFFER_SIZE,
-    .operation_state = 0,
-    .expected_status = PSA_ERROR_BAD_STATE
-},
-#endif
-
-#ifdef ARCH_TEST_GCM
-{
-    .test_desc       = "Test psa_aead_generate_nonce - Decrypt - GCM\n",
+    .test_desc       = "Test psa_aead_generate_nonce - GCM - Decrypt operation\n",
     .type            = PSA_KEY_TYPE_AES,
     .data            = key_data,
     .data_length     = AES_16B_KEY_SIZE,
@@ -177,7 +131,7 @@ static const test_data check1[] = {
     .nonce           = expected_output,
     .nonce_size      = BUFFER_SIZE,
     .operation_state = 1,
-    .expected_status = PSA_SUCCESS
+    .expected_status = PSA_ERROR_BAD_STATE
 },
 #endif
 #endif
