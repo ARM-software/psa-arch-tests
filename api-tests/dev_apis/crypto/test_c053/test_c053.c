@@ -84,17 +84,22 @@ int32_t psa_aead_decrypt_setup_test(caller_security_t caller __UNUSED)
                                       check1[i].setup_alg);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
+        /* Abort the AEAD operation */
+        status = val->crypto_function(VAL_CRYPTO_AEAD_ABORT,
+                                      &operation);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+
         /* Destroy the key */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY,
                                       key);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
         /* Setting up aead on destroyed key handle should return an error */
         status = val->crypto_function(VAL_CRYPTO_AEAD_DECRYPT_SETUP,
                                       &operation,
                                       key,
                                       check1[i].setup_alg);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(6));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(7));
 
         /* Reset the key attributes */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES,
@@ -103,7 +108,7 @@ int32_t psa_aead_decrypt_setup_test(caller_security_t caller __UNUSED)
         /* Abort the AEAD operation */
         status = val->crypto_function(VAL_CRYPTO_AEAD_ABORT,
                                       &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
     }
 
     return VAL_STATUS_SUCCESS;
