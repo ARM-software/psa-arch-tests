@@ -138,8 +138,15 @@
         {                                                                           \
             val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
             val->print(PRINT_ERROR, "\tActual: %d\n", arg1);                        \
-            val->print(PRINT_ERROR, "\tExpected: %d", status1);                     \
-            val->print(PRINT_ERROR, "or %d\n", status2);                            \
+            if ((status1) != (status2))                                             \
+            {                                                                       \
+                val->print(PRINT_ERROR, "\tExpected: %d", status1);                 \
+                val->print(PRINT_ERROR, "or %d\n", status2);                        \
+            }                                                                       \
+            else                                                                    \
+            {                                                                       \
+                val->print(PRINT_ERROR, "\tExpected: %d\n", status1);               \
+            }                                                                       \
             return 1;                                                               \
         }                                                                           \
     } while (0)

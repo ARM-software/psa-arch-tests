@@ -25,7 +25,7 @@ typedef struct {
     psa_key_usage_t         usage_flags;
     psa_algorithm_t         alg;
     psa_algorithm_t         setup_alg;
-    psa_status_t            expected_status;
+    psa_status_t            expected_status[2];
 } test_data;
 
 static const test_data check1[] = {
@@ -39,7 +39,7 @@ static const test_data check1[] = {
     .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
     .alg             = PSA_ALG_CCM,
     .setup_alg       = PSA_ALG_CCM,
-    .expected_status = PSA_SUCCESS
+    .expected_status = {PSA_SUCCESS, PSA_SUCCESS}
 },
 
 {
@@ -50,7 +50,7 @@ static const test_data check1[] = {
     .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
     .alg             = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
     .setup_alg       = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
-    .expected_status = PSA_SUCCESS
+    .expected_status = {PSA_SUCCESS, PSA_SUCCESS}
 },
 
 {
@@ -61,7 +61,7 @@ static const test_data check1[] = {
     .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
     .alg             = PSA_ALG_CCM,
     .setup_alg       = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
-    .expected_status = PSA_ERROR_NOT_PERMITTED
+    .expected_status = {PSA_ERROR_NOT_PERMITTED, PSA_ERROR_NOT_PERMITTED}
 },
 
 {
@@ -72,7 +72,7 @@ static const test_data check1[] = {
     .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
     .alg             = PSA_ALG_CCM,
     .setup_alg       = PSA_ALG_AEAD_WITH_DEFAULT_LENGTH_TAG(PSA_ALG_CCM),
-    .expected_status = PSA_SUCCESS
+    .expected_status = {PSA_SUCCESS, PSA_SUCCESS}
 },
 #endif
 #endif
@@ -87,7 +87,7 @@ static const test_data check1[] = {
     .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
     .alg             = PSA_ALG_GCM,
     .setup_alg       = PSA_ALG_GCM,
-    .expected_status = PSA_SUCCESS
+    .expected_status = {PSA_SUCCESS, PSA_SUCCESS}
 },
 #endif
 #endif
@@ -102,7 +102,7 @@ static const test_data check1[] = {
     .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
     .alg             = PSA_ALG_CCM,
     .setup_alg       = PSA_ALG_CCM,
-    .expected_status = PSA_ERROR_INVALID_ARGUMENT
+    .expected_status = {PSA_ERROR_INVALID_ARGUMENT, PSA_ERROR_NOT_SUPPORTED}
 },
 #endif
 #endif
@@ -117,7 +117,7 @@ static const test_data check1[] = {
     .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
     .alg             = PSA_ALG_CFB,
     .setup_alg       = PSA_ALG_CFB,
-    .expected_status = PSA_ERROR_NOT_SUPPORTED
+    .expected_status = {PSA_ERROR_NOT_SUPPORTED, PSA_ERROR_NOT_SUPPORTED}
 },
 #endif
 
@@ -130,7 +130,7 @@ static const test_data check1[] = {
     .usage_flags     = PSA_KEY_USAGE_DECRYPT,
     .alg             = PSA_ALG_GCM,
     .setup_alg       = PSA_ALG_GCM,
-    .expected_status = PSA_ERROR_NOT_PERMITTED
+    .expected_status = {PSA_ERROR_NOT_PERMITTED, PSA_ERROR_NOT_PERMITTED}
 },
 #endif
 #endif

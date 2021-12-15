@@ -82,7 +82,10 @@ int32_t psa_aead_encrypt_setup_test(caller_security_t caller __UNUSED)
                                       &operation,
                                       key,
                                       check1[i].setup_alg);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
+        TEST_ASSERT_DUAL(status,
+                         check1[i].expected_status[0],
+                         check1[i].expected_status[1],
+                         TEST_CHECKPOINT_NUM(4));
 
         /* Abort the AEAD operation */
         status = val->crypto_function(VAL_CRYPTO_AEAD_ABORT,
