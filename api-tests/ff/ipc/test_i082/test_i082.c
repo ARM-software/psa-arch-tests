@@ -204,9 +204,11 @@ int32_t client_test_app_rot_read_psa_rot_heap(caller_security_t caller __UNUSED)
    if (VAL_ERROR(get_secure_partition_address(&handle,
                                               &psa_rot_addr,
                                               TEST_ISOLATION_PSA_ROT_HEAP_RD)))
+    {
        return VAL_STATUS_ERROR;
+    }
 
-       close_driver_fn(&handle);
+   close_driver_fn(&handle);
 
    /* Setting boot.state before test check */
    if (val->set_boot_flag(BOOT_EXPECTED_REENTER_TEST))
