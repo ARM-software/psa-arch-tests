@@ -16,16 +16,16 @@
 #**/
 
 list(APPEND CC_SOURCE
-	test_entry_l088.c
-	test_l088.c
+	test_entry_i088.c
+	test_i088.c
 )
 list(APPEND CC_OPTIONS )
 list(APPEND AS_SOURCE  )
 list(APPEND AS_OPTIONS )
 
 list(APPEND CC_SOURCE_SPE
-	test_l088.c
-	test_supp_l088.c
+	test_i088.c
+	test_supp_i088.c
 )
 list(APPEND CC_OPTIONS_SPE )
 list(APPEND AS_SOURCE_SPE  )

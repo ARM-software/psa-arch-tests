@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
-#ifndef _TEST_L088_CLIENT_TESTS_H_
-#define _TEST_L088_CLIENT_TESTS_H_
+#ifndef _TEST_I088_CLIENT_TESTS_H_
+#define _TEST_I088_CLIENT_TESTS_H_
 
 #include "val_client_defs.h"
 
 #ifdef NONSECURE_TEST_BUILD
-#define test_entry CONCAT(test_entry_, l088)
+#define test_entry CONCAT(test_entry_, i088)
 #define val CONCAT(val, test_entry)
 #define psa CONCAT(psa, test_entry)
 #else
