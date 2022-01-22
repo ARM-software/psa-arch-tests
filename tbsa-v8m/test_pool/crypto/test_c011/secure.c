@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -130,9 +130,9 @@ void test_payload(tbsa_val_api_t *val)
         }
 
         /* Change the mode to unprivilege access */
-        asm volatile ("MRS %0, control" : "=r" (control));
+        __asm volatile ("MRS %0, control" : "=r" (control));
         control |= 0x1;
-        asm volatile ("MSR control, %0" : : "r" (control) : "memory");
+        __asm volatile ("MSR control, %0" : : "r" (control) : "memory");
 
         /* Performing unprivilege access to Confidential fuse */
         status = val->fuse_ops(FUSE_READ, fuse_desc->addr, data1, MIN(FUSE_SIZE, fuse_desc->size));

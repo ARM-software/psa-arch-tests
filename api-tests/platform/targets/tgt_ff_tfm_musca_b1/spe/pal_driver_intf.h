@@ -23,7 +23,7 @@
 #include "pal_wd_cmsdk.h"
 
 void pal_uart_init(uint32_t uart_base_addr);
-void pal_print(char *str, int32_t data);
+void pal_print(const char *str, int32_t data);
 int pal_nvmem_write(addr_t base, uint32_t offset, void *buffer, int size);
 int pal_nvmem_read(addr_t base, uint32_t offset, void *buffer, int size);
 int pal_wd_timer_init(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us);

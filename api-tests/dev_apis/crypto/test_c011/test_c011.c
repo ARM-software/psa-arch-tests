@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,19 +19,16 @@
 #include "val_target.h"
 #include "test_c011.h"
 #include "test_data.h"
-#include "val_crypto.h"
 
-client_test_t test_c011_crypto_list[] = {
+const client_test_t test_c011_crypto_list[] = {
     NULL,
     psa_hash_setup_test,
     NULL,
 };
 
-static int g_test_count = 1;
-
-int32_t psa_hash_setup_test(caller_security_t caller)
+int32_t psa_hash_setup_test(caller_security_t caller __UNUSED)
 {
-    int                     num_checks = sizeof(check1)/sizeof(check1[0]);
+    int32_t                 num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
     psa_hash_operation_t    operation;
 
@@ -47,10 +44,8 @@ int32_t psa_hash_setup_test(caller_security_t caller)
 
     for (i = 0; i < num_checks; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
+        val->print(PRINT_TEST, "[Check %d] ", i+1);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
-
-        /* Initialize the structure */
         memset(&operation, 0, sizeof(operation));
 
         /* Setting up the watchdog timer for each check */
@@ -58,17 +53,22 @@ int32_t psa_hash_setup_test(caller_security_t caller)
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
         /* Start a multipart hash operation */
-        status = val->crypto_function(VAL_CRYPTO_HASH_SETUP, &operation, check1[i].alg);
+        status = val->crypto_function(VAL_CRYPTO_HASH_SETUP,
+                                      &operation,
+                                      check1[i].alg);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(3));
 
         if (check1[i].expected_status == PSA_SUCCESS)
         {
             /* Start a multipart hash operation */
-            status = val->crypto_function(VAL_CRYPTO_HASH_SETUP, &operation, check1[i].alg);
+            status = val->crypto_function(VAL_CRYPTO_HASH_SETUP,
+                                          &operation,
+                                          check1[i].alg);
             TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(4));
 
             /*Abort the hash operation */
-            status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &operation);
+            status = val->crypto_function(VAL_CRYPTO_HASH_ABORT,
+                                          &operation);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
         }
     }

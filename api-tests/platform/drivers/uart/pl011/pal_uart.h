@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,7 +59,7 @@ typedef struct
 
 /* function prototypes */
 void pal_uart_pl011_init(uint32_t uart_base_addr);
-void pal_uart_pl011_print(char *str, int32_t data);
+void pal_uart_pl011_print(const char *str, int32_t data);
 void pal_uart_pl011_generate_irq(void);
 void pal_uart_pl011_disable_irq(void);
 

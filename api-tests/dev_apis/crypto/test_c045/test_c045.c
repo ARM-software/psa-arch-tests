@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,25 +19,27 @@
 #include "val_target.h"
 #include "test_c045.h"
 #include "test_data.h"
-#include "val_crypto.h"
 
-client_test_t test_c045_crypto_list[] = {
+const client_test_t test_c045_crypto_list[] = {
     NULL,
     psa_hash_clone_test,
+    psa_hash_clone_with_inactive_source_operation,
+    psa_hash_clone_with_active_target_operation,
     NULL,
 };
 
-static int g_test_count = 1;
+extern  uint32_t g_test_count;
 
-int32_t psa_hash_clone_test(caller_security_t caller)
+static int32_t  valid_test_input_index = -1;
+
+int32_t psa_hash_clone_test(caller_security_t caller __UNUSED)
 {
-    int                     num_checks = sizeof(check1)/sizeof(check1[0]);
+    int32_t                 num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
-    const char              *expected_hash;
-    char                    hash[HASH_64B];
-    size_t                  hash_length, hash_size = sizeof(hash);
-    psa_hash_operation_t    source_operation = PSA_HASH_OPERATION_INIT;
-    psa_hash_operation_t    target_operation = PSA_HASH_OPERATION_INIT;
+    size_t                  get_source_hash_length;
+    size_t                  get_target_hash_length;
+    psa_hash_operation_t    source_operation;
+    psa_hash_operation_t    target_operation;
 
     if (num_checks == 0)
     {
@@ -53,17 +55,14 @@ int32_t psa_hash_clone_test(caller_security_t caller)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
+        memset(&source_operation, 0, sizeof(source_operation));
+        memset(&target_operation, 0, sizeof(target_operation));
+        get_source_hash_length = 0;
+        get_target_hash_length = 0;
 
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
-
-        if (check1[i].alg == PSA_ALG_SHA_384)
-            expected_hash = sha384_hash;
-        else if (check1[i].alg == PSA_ALG_SHA_512)
-            expected_hash = sha512_hash;
-        else
-            expected_hash = check1[i].hash;
 
         /* Start a multipart hash operation */
         status = val->crypto_function(VAL_CRYPTO_HASH_SETUP, &source_operation, check1[i].alg);
@@ -71,42 +70,168 @@ int32_t psa_hash_clone_test(caller_security_t caller)
 
         /* Clone a hash operation */
         status = val->crypto_function(VAL_CRYPTO_HASH_CLONE, &source_operation, &target_operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
-        /* Add a message fragment to a multipart hash source_operation */
-        status = val->crypto_function(VAL_CRYPTO_HASH_UPDATE, &target_operation,
-                                      &check1[i].input, check1[i].input_length);
+        /* Add a message fragment to a multipart for source_operation */
+        status = val->crypto_function(VAL_CRYPTO_HASH_UPDATE,
+                                      &source_operation,
+                                      check1[i].input,
+                                      check1[i].input_length);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
-        /* Cloning to an active hash operation should be an error*/
-        status = val->crypto_function(VAL_CRYPTO_HASH_CLONE, &source_operation, &target_operation);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(6));
+        /* Add a message fragment to a multipart for target_operation */
+        status = val->crypto_function(VAL_CRYPTO_HASH_UPDATE,
+                                      &target_operation,
+                                      check1[i].input,
+                                      check1[i].input_length);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
 
-        /* Finish the calculation of the hash of a message */
-        status = val->crypto_function(VAL_CRYPTO_HASH_FINISH, &target_operation, hash, hash_size,
-                                      &hash_length);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(7));
+        /* Finish the calculation of the hash of a message for source operation */
+        status = val->crypto_function(VAL_CRYPTO_HASH_FINISH,
+                                      &source_operation,
+                                      check1[i].source_hash,
+                                      check1[i].source_hash_size,
+                                      &get_source_hash_length);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
-        if (check1[i].expected_status != PSA_SUCCESS)
-        {
-            continue;
-        }
+        /* Finish the calculation of the hash of a message for target operation */
+        status = val->crypto_function(VAL_CRYPTO_HASH_FINISH,
+                                      &target_operation,
+                                      check1[i].target_hash,
+                                      check1[i].target_hash_size,
+                                      &get_target_hash_length);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
-        TEST_ASSERT_EQUAL(hash_length, PSA_HASH_SIZE(check1[i].alg), TEST_CHECKPOINT_NUM(8));
-        TEST_ASSERT_MEMCMP(hash, expected_hash, hash_length, TEST_CHECKPOINT_NUM(9));
+        /* Check for expected hash length for source and target operation */
+        TEST_ASSERT_EQUAL(get_source_hash_length, check1[i].expected_hash_length,
+                          TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_EQUAL(get_target_hash_length, check1[i].expected_hash_length,
+                          TEST_CHECKPOINT_NUM(10));
+        /* Check for expected hash for source and target operation */
+        TEST_ASSERT_MEMCMP(check1[i].source_hash, check1[i].expected_hash, get_source_hash_length,
+                           TEST_CHECKPOINT_NUM(11));
+        TEST_ASSERT_MEMCMP(check1[i].target_hash, check1[i].expected_hash, get_target_hash_length,
+                           TEST_CHECKPOINT_NUM(12));
 
-        /*Abort the hash operation */
+        if (valid_test_input_index < 0)
+            valid_test_input_index = i;
+
+        /* Abort the hash operation */
         status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &source_operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
-
-        status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &target_operation);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
 
-        /* Cloning on an aborted operator should be an error */
-        status = val->crypto_function(VAL_CRYPTO_HASH_CLONE, &source_operation, &target_operation);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(12));
-
+        status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &target_operation);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
     }
+
+    return VAL_STATUS_SUCCESS;
+}
+
+int32_t psa_hash_clone_with_inactive_source_operation(caller_security_t caller __UNUSED)
+{
+    int32_t                 status;
+    psa_hash_operation_t    source_operation;
+    psa_hash_operation_t    target_operation;
+    size_t                  get_source_hash_length = 0;
+
+    if (valid_test_input_index < 0)
+        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+
+    /* Initialize the PSA crypto library*/
+    status = val->crypto_function(VAL_CRYPTO_INIT);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
+
+    val->print(PRINT_TEST, "[Check %d] Test psa_hash_clone - from an inactive source operation\n",
+                                                                             g_test_count++);
+
+    memset(&source_operation, 0, sizeof(source_operation));
+    memset(&target_operation, 0, sizeof(target_operation));
+
+    /* Setting up the watchdog timer for each check */
+    status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
+    TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
+
+    /* Start a multipart hash operation */
+    status = val->crypto_function(VAL_CRYPTO_HASH_SETUP, &source_operation,
+                                  check1[valid_test_input_index].alg);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+
+    /* Add a message fragment to a multipart for source_operation */
+    status = val->crypto_function(VAL_CRYPTO_HASH_UPDATE,
+                                  &source_operation,
+                                  check1[valid_test_input_index].input,
+                                  check1[valid_test_input_index].input_length);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
+
+    /* Finish the calculation of the hash of a message for source operation */
+    status = val->crypto_function(VAL_CRYPTO_HASH_FINISH,
+                                  &source_operation,
+                                  check1[valid_test_input_index].source_hash,
+                                  check1[valid_test_input_index].source_hash_size,
+                                  &get_source_hash_length);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+
+    /* Check for expected hash length for source operation */
+    TEST_ASSERT_EQUAL(get_source_hash_length, check1[valid_test_input_index].expected_hash_length,
+                      TEST_CHECKPOINT_NUM(6));
+    /* Check for expected hash for source operation */
+    TEST_ASSERT_MEMCMP(check1[valid_test_input_index].source_hash,
+                       check1[valid_test_input_index].expected_hash, get_source_hash_length,
+                       TEST_CHECKPOINT_NUM(7));
+
+    /* Clone from an inactive source operation */
+    status = val->crypto_function(VAL_CRYPTO_HASH_CLONE, &source_operation, &target_operation);
+    TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(8));
+
+    /* Abort the hash operation */
+    status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &source_operation);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+
+    return VAL_STATUS_SUCCESS;
+}
+
+int32_t psa_hash_clone_with_active_target_operation(caller_security_t caller __UNUSED)
+{
+    int32_t                 status;
+    psa_hash_operation_t    source_operation;
+    psa_hash_operation_t    target_operation;
+
+    if (valid_test_input_index < 0)
+        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+
+    /* Initialize the PSA crypto library*/
+    status = val->crypto_function(VAL_CRYPTO_INIT);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
+
+    val->print(PRINT_TEST, "[Check %d] Test psa_hash_clone - on an active target operation\n",
+                                                                             g_test_count++);
+
+    memset(&source_operation, 0, sizeof(source_operation));
+    memset(&target_operation, 0, sizeof(target_operation));
+
+    /* Setting up the watchdog timer for each check */
+    status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
+    TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
+
+    /* Start a multipart hash operation */
+    status = val->crypto_function(VAL_CRYPTO_HASH_SETUP, &source_operation,
+                                  check1[valid_test_input_index].alg);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
+
+    /* Clone from an active source operation */
+    status = val->crypto_function(VAL_CRYPTO_HASH_CLONE, &source_operation, &target_operation);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
+
+    /* Try clonig to an active hash operation and expect an error */
+    status = val->crypto_function(VAL_CRYPTO_HASH_CLONE, &source_operation, &target_operation);
+    TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(5));
+
+    /* Abort the hash operation */
+    status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &source_operation);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
+
+    status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &target_operation);
+    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
     return VAL_STATUS_SUCCESS;
 }

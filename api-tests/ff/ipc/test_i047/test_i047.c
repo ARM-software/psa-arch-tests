@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,18 +25,45 @@
 
 #include "test_i047.h"
 
-client_test_t test_i047_client_tests_list[] = {
+#if STATELESS_ROT == 1
+
+const client_test_t test_i047_client_tests_list[] = {
     NULL,
     client_test_psa_get_with_invalid_msg_pointer,
     NULL,
 };
 
-int32_t client_test_psa_get_with_invalid_msg_pointer(caller_security_t caller)
+int32_t client_test_psa_get_with_invalid_msg_pointer(caller_security_t caller __UNUSED)
 {
+
+    psa_status_t            status_of_call;
+
+	val->print(PRINT_TEST,
+            "[Check 1] Test psa_get with invalid msg pointer\n", 0);
+
+    status_of_call = psa->call(SERVER_UNSPECIFED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, NULL, 0);
+    (void)status_of_call;
+
+    return VAL_STATUS_SUCCESS;
+
+}
+
+#else
+
+const client_test_t test_i047_client_tests_list[] = {
+    NULL,
+    client_test_psa_get_with_invalid_msg_pointer,
+    NULL,
+};
+
+int32_t client_test_psa_get_with_invalid_msg_pointer(caller_security_t caller __UNUSED)
+{
+
    psa_handle_t       handle = 0;
 
    val->print(PRINT_TEST,
             "[Check 1] Test psa_get with invalid msg pointer\n", 0);
+
 
    handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
    if (PSA_HANDLE_IS_VALID(handle))
@@ -48,5 +75,8 @@ int32_t client_test_psa_get_with_invalid_msg_pointer(caller_security_t caller)
    val->print(PRINT_ERROR, "\tpsa_connect should failed but succeed\n", 0);
 
    (void)(handle);
+
    return VAL_STATUS_SPM_FAILED;
 }
+
+#endif

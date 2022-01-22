@@ -5,9 +5,9 @@ Current release has been tested againt the below tools versions: <br />
 
 - Host Operating System     : Ubuntu 16.04, Windows 10
 - Scripting tools           : Python 3.7.1
-- Host Compiler toolchain   : GCC 5.4.0 32-Bit (Linux Host) or MinGW 6.3.0 32-Bit (Windows Host)
-- Cross Compiler toolchain  : GNU Arm Embedded Toolchain 6.3.1, 7.3.1 or Arm Compiler 6.11
-- Build tools               : CMake 3.10
+- Host Compiler toolchain   : GCC 5.4.0 (Linux Host) or MinGW 6.3.0 (Windows Host)
+- Cross Compiler toolchain  : GNU Arm Embedded Toolchain 7.3.1 or Arm Compiler 6.14
+- Build tools               : CMake 3.15
 
 **Note**: To compile the test suite code, at least one of the above supported compiler toolchains
         must be available in the build environment.
@@ -26,7 +26,7 @@ export PATH=<ARM_COMPILER_PATH>/bin:$PATH
 
 ## Download source
 
-To download the master branch of the repository, type the following command: <br />
+To download the main branch of the repository, type the following command: <br />
 ~~~
 git clone https://github.com/ARM-software/psa-arch-tests.git
 ~~~
@@ -45,4 +45,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2020, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2022, Arm Limited and Contributors. All rights reserved.*

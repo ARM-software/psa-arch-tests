@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -85,9 +85,8 @@
 #define VAL_MAX_TEST_PER_COMP                200
 #define VAL_FF_BASE                            0
 #define VAL_CRYPTO_BASE                        1
-#define VAL_PROTECTED_STORAGE_BASE             2
-#define VAL_INTERNAL_TRUSTED_STORAGE_BASE      3
-#define VAL_INITIAL_ATTESTATION_BASE           4
+#define VAL_STORAGE_BASE                       2
+#define VAL_INITIAL_ATTESTATION_BASE           3
 
 #define VAL_GET_COMP_NUM(test_id)      \
    ((test_id - (test_id % VAL_MAX_TEST_PER_COMP)) / VAL_MAX_TEST_PER_COMP)
@@ -214,6 +213,10 @@ typedef enum {
      * re-enter the same test and continue executing the same check function
      */
     BOOT_EXPECTED_CONT_TEST_EXEC       = 0x7,
+    /* Test expects reboot for secure/non-secure on second check of test . If reboot happens,
+     * re-enter the same test and execute the next check function
+     */
+    BOOT_EXPECTED_ON_SECOND_CHECK      = 0x8,
 } boot_state_t;
 
 typedef enum {

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 #include "test_c018.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_CRYPTO_BASE, 18)
-#define TEST_DESC "Testing crypto key derivation APIs\n"
+#define TEST_DESC "Testing crypto key derivation APIs | UT: psa_key_derivation_input_key\n"
 
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;
@@ -49,6 +49,7 @@ void test_entry(val_api_t *val_api, psa_api_t *psa_api)
     }
 
 test_exit:
+    crypto_common_exit_action();
     val->crypto_function(VAL_CRYPTO_FREE);
     val->test_exit();
 }

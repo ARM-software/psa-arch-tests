@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +26,7 @@ extern psa_api_t *psa;
 int32_t server_test_nspe_read_psa_rot_heap(void);
 int32_t server_test_nspe_write_psa_rot_heap(void);
 
-server_test_t test_i078_server_tests_list[] = {
+const server_test_t test_i078_server_tests_list[] = {
     NULL,
     server_test_nspe_read_psa_rot_heap,
     server_test_nspe_write_psa_rot_heap,

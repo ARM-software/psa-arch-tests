@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@
 #define TRANSITION_NS_TO_S(fn_ret, fn_name, ...) \
     __attribute__((section(".tbsa_nsc_entry_points"), naked)) \
     fn_ret fn_name ## _nsc(__VA_ARGS__) { \
-        asm volatile( \
+        __asm volatile( \
             "sg                   \n" \
             "push {r7}            \n" \
             "push {lr}            \n" \

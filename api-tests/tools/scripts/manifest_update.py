@@ -38,6 +38,8 @@ def update_manifest_file(manifest_dir_path):
 				if (re.findall('heap_size', line)):
 					continue
 				f_o.write(line)
+		f_i.close()
+		f_o.close()
 		shutil.move(file+".update", file)
 
 def argparse():

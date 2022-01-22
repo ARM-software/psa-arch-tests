@@ -25,6 +25,9 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../../tools/cmake)
 include("common/CMakeSettings")
 include("common/Utils")
 
+# Causes toolchain to be re-evaluated
+unset(ENV{CC})
+
 # Let the CMake look for C compiler
 project(TargetConfigGen LANGUAGES C)
 
@@ -63,8 +66,6 @@ add_executable(${PROJECT_NAME} ${TGT_CONFIG_SOURCE_C})
 foreach(include_path ${TARGET_HEADER_GEN_INCLUDE_PATHS})
 	target_include_directories(${PROJECT_NAME} PRIVATE ${include_path})
 endforeach()
-set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-m32 -w")
-set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-m32")
 
 # Adding target to tell we want OUTPUT_HEADER
 add_custom_target(

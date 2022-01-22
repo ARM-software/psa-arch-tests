@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -99,8 +99,8 @@ void test_payload(tbsa_val_api_t *val)
 
         /* Shouldn't come here */
         val->print(PRINT_ERROR, "\n\r\tFault didn't occur when HUK accessed from Non-secure world!", 0);
-        asm volatile ("DSB");
-        asm volatile ("ISB");
+        __asm volatile ("DSB");
+        __asm volatile ("ISB");
         val->system_reset(WARM_RESET);
     }
 }

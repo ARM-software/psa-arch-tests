@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +39,7 @@ void delay (uint32_t delay_cnt)
 {
     while(delay_cnt--)
     {
-        asm volatile("NOP");
+        __asm volatile("NOP");
     }
 }
 
@@ -196,8 +196,8 @@ void test_payload(tbsa_val_api_t *val)
                     if (val->err_check_set(TEST_CHECKPOINT_9, status)) {
                         goto clean_up;
                     }
-                    asm volatile("DSB");
-                    asm volatile("ISB");
+                    __asm volatile("DSB");
+                    __asm volatile("ISB");
 
                     /* Indicate the debugger about the transition to CLOSED state */
                     if (test_dbg_seq_write((uint32_t)(memory_desc->start), SEQ_CLOSED_STATE_READ)) {
@@ -226,8 +226,8 @@ void test_payload(tbsa_val_api_t *val)
                     if (val->err_check_set(TEST_CHECKPOINT_B, status)) {
                         goto clean_up;
                     }
-                    asm volatile("DSB");
-                    asm volatile("ISB");
+                    __asm volatile("DSB");
+                    __asm volatile("ISB");
 
                     /*Initialize the memory with known data*/
                     val->mem_write((uint32_t *)memory_desc->start, WORD, ~TEST_DATA);
@@ -245,8 +245,8 @@ void test_payload(tbsa_val_api_t *val)
                     if (val->err_check_set(TEST_CHECKPOINT_C, status)) {
                         goto clean_up;
                     }
-                    asm volatile("DSB");
-                    asm volatile("ISB");
+                    __asm volatile("DSB");
+                    __asm volatile("ISB");
 
                     /* Indicate the debugger about the transition to CLOSED state */
                     if (test_dbg_seq_write((uint32_t)(memory_desc->start), SEQ_CLOSED_STATE_WRITE)) {
@@ -272,8 +272,8 @@ void test_payload(tbsa_val_api_t *val)
                     if (val->err_check_set(TEST_CHECKPOINT_E, status)) {
                         goto clean_up;
                     }
-                    asm volatile("DSB");
-                    asm volatile("ISB");
+                    __asm volatile("DSB");
+                    __asm volatile("ISB");
                 }
                 instance++;
             } while (instance < GET_NUM_INSTANCE(memory_desc));

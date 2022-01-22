@@ -123,7 +123,7 @@ def generate_source():
 			o_f.write("\tfprintf(fp, \"#define _%s_H_\\n\");\n\n" %(temp_out_file[:temp_out_file.find('.')].upper()))
 			if section_name:
 				o_f.write("\tfprintf(fp, \"__attribute__((section(\\\"%s\\\")))\\n\");\n" %(section_name))
-			o_f.write("\tfprintf(fp, \"const uint32_t static %s[] = {\\n\");\n" %(table_name))
+			o_f.write("\tfprintf(fp, \"static const uint32_t %s[] = {\\n\");\n" %(table_name))
 			o_f.write("\tfprintf(fp, \"0x%x\", \'T\');\n")
 			o_f.write("\tfprintf(fp, \"%x\", \'B\');\n")
 			o_f.write("\tfprintf(fp, \"%x\", \'S\');\n")

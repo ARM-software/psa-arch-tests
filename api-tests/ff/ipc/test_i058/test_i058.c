@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,13 +25,74 @@
 
 #include "test_i058.h"
 
-client_test_t test_i058_client_tests_list[] = {
+#if STATELESS_ROT == 1
+
+const client_test_t test_i058_client_tests_list[] = {
     NULL,
     client_test_psa_doorbell_signal,
     NULL,
 };
 
-int32_t client_test_psa_doorbell_signal(caller_security_t caller)
+int32_t client_test_psa_doorbell_signal(caller_security_t caller __UNUSED)
+{
+   int32_t            status = VAL_STATUS_SUCCESS;
+#ifndef NONSECURE_TEST_BUILD
+   psa_signal_t       signals = 0;
+#endif
+
+   val->print(PRINT_TEST,
+            "[Check 1] Test PSA_DOORBELL signal\n", 0);
+   psa->call(SERVER_UNSPECIFED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, NULL, 0);
+
+#ifndef NONSECURE_TEST_BUILD
+   /* Wait for doorball notification */
+   signals = psa_wait(PSA_DOORBELL, PSA_BLOCK);
+
+   /* Is this doorbell signal? */
+   if ((signals & PSA_DOORBELL) == 0)
+   {
+       status = VAL_STATUS_INVALID_HANDLE;
+       val->print(PRINT_ERROR, "\tpsa_wait didn't receive doorbell signal\n", 0);
+   }
+
+   /*
+    * Wait for doorball notification again to check -
+    * Doorbell should remain asserted until psa_clear is called.
+    */
+   signals = psa_wait(PSA_DOORBELL, PSA_BLOCK);
+
+   /* Is this doorbell signal? */
+   if ((signals & PSA_DOORBELL) == 0)
+   {
+       status = VAL_STATUS_INVALID_HANDLE;
+       val->print(PRINT_ERROR, "\tDoorbell signal cleared without calling psa_clear\n", 0);
+   }
+
+   /* Clear the doorbell signal */
+   psa_clear();
+
+   /* Is doorbell signal cleared? */
+   signals = psa_wait(PSA_DOORBELL, PSA_POLL);
+   if ((signals & PSA_DOORBELL) != 0)
+   {
+       status = VAL_STATUS_INVALID_HANDLE;
+       val->print(PRINT_ERROR, "\tpsa_clear didn't clear doorbell signal\n", 0);
+   }
+#endif
+
+   psa->call(SERVER_UNSPECIFED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, NULL, 0);
+   return status;
+}
+
+#else
+
+const client_test_t test_i058_client_tests_list[] = {
+    NULL,
+    client_test_psa_doorbell_signal,
+    NULL,
+};
+
+int32_t client_test_psa_doorbell_signal(caller_security_t caller __UNUSED)
 {
    int32_t            status = VAL_STATUS_SUCCESS;
    psa_handle_t       handle = 0;
@@ -88,3 +149,5 @@ int32_t client_test_psa_doorbell_signal(caller_security_t caller)
    psa->close(handle);
    return status;
 }
+
+#endif

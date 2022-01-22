@@ -97,7 +97,7 @@ static int get_item_in_map(QCBORDecodeContext *decode_context,
 }
 
 static int parse_unprotected_headers(QCBORDecodeContext *decode_context,
-                                     struct q_useful_buf_c *child)
+                                     struct q_useful_buf_c *child __UNUSED)
 {
     struct items_to_get_t   item_list[3];
 
@@ -430,6 +430,7 @@ int32_t val_attestation_function(int type, ...)
     va_end(valist);
     return status;
 #else
+    (void)type;
     return VAL_STATUS_ERROR;
 #endif /* INITIAL_ATTESTATION */
 }

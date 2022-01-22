@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,7 +33,7 @@ void *realloc(void *ptr, size_t size);
 
 int32_t server_test_dynamic_mem_alloc_fn(void);
 
-server_test_t test_i067_server_tests_list[] = {
+const server_test_t test_i067_server_tests_list[] = {
     NULL,
     server_test_dynamic_mem_alloc_fn,
     NULL,

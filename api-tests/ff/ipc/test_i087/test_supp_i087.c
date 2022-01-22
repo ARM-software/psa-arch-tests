@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,101 @@ int32_t server_test_sp_write_other_sp_mmio(void);
 
 #define DATA_VALUE 0x5467
 
-server_test_t test_i087_server_tests_list[] = {
+#if STATELESS_ROT == 1
+
+const server_test_t test_i087_server_tests_list[] = {
+    NULL,
+    server_test_sp_read_other_sp_mmio,
+    server_test_sp_write_other_sp_mmio,
+    NULL,
+};
+
+static int32_t get_mmio_addr(addr_t *addr)
+{
+   memory_desc_t           *memory_desc;
+   int32_t                 status = VAL_STATUS_SUCCESS;
+
+   /* Get APP-ROT MMIO address */
+   status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
+                                  MEMORY_SERVER_PARTITION_MMIO, 0),
+                                  (uint8_t **)&memory_desc,
+                                  (uint32_t *)sizeof(memory_desc_t));
+   if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
+   {
+       return status;
+   }
+
+   *addr = memory_desc->start;
+   return VAL_STATUS_SUCCESS;
+}
+
+static int32_t send_secure_partition_address(addr_t *addr)
+{
+    int32_t         status = VAL_STATUS_SUCCESS;
+    psa_msg_t       msg = {0};
+
+    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
+    {
+        psa->reply(msg.handle, -2);
+        return status;
+    }
+
+    val->print(PRINT_DEBUG, "\tServer SP: Passing 0x%x to Client SP\n", (int)*addr);
+
+    /* Send Application RoT mmio address */
+    psa->write(msg.handle, 0, (void *)addr, sizeof(addr_t));
+    psa->reply(msg.handle, PSA_SUCCESS);
+
+    return VAL_STATUS_SUCCESS;
+}
+
+int32_t server_test_sp_read_other_sp_mmio(void)
+{
+    int32_t         status = VAL_STATUS_SUCCESS;
+    addr_t          app_rot_addr;
+
+    status = get_mmio_addr(&app_rot_addr);
+    if (VAL_ERROR(status))
+        return status;
+
+    return send_secure_partition_address(&app_rot_addr);
+}
+
+int32_t server_test_sp_write_other_sp_mmio(void)
+{
+    addr_t          app_rot_addr;
+    int32_t         status = VAL_STATUS_SUCCESS;
+
+
+    status = get_mmio_addr(&app_rot_addr);
+    if (VAL_ERROR(status))
+        return status;
+
+    /* Initialise mmio address */
+    *(uint32_t *)app_rot_addr = (uint32_t)DATA_VALUE;
+    status = send_secure_partition_address(&app_rot_addr);
+    if (VAL_ERROR(status))
+        return status;
+
+    /* Reached here means there could be write succeed or ignored */
+    if (*(uint32_t *)app_rot_addr == (uint32_t)DATA_VALUE)
+        return VAL_STATUS_SUCCESS;
+
+    val->print(PRINT_ERROR, "\tExpected write to fault but it didn't\n", 0);
+
+    /* Resetting boot.state to catch unwanted reboot */
+    if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
+    {
+        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        return VAL_STATUS_ERROR;
+    }
+    return VAL_STATUS_SUCCESS;
+}
+
+#else
+
+const server_test_t test_i087_server_tests_list[] = {
     NULL,
     server_test_sp_read_other_sp_mmio,
     server_test_sp_write_other_sp_mmio,
@@ -143,3 +237,5 @@ int32_t server_test_sp_write_other_sp_mmio(void)
     }
     return VAL_STATUS_SUCCESS;
 }
+
+#endif

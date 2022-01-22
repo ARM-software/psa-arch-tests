@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,5 +47,7 @@ set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 foreach(_LNG IN ITEMS "C" "ASM")
 	set(CMAKE_${_LNG}_COMPILER ${_C_TOOLCHAIN_PATH})
+	set(CMAKE_C_FLAGS	"-g -Wall -Werror -Werror -std=c99")
 	message(STATUS "[PSA] : ${_LNG}  compiler used '${CMAKE_${_LNG}_COMPILER}'")
 endforeach()
+add_definitions(-DMISSING_CRYPTO_1_0=1)

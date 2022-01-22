@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,20 +19,21 @@
 #include "val_target.h"
 #include "test_c015.h"
 #include "test_data.h"
-#include "val_crypto.h"
 
-client_test_t test_c015_crypto_list[] = {
+const client_test_t test_c015_crypto_list[] = {
     NULL,
     psa_hash_abort_test,
     psa_hash_abort_before_operation_finish,
     NULL,
 };
 
-static int g_test_count = 1;
+extern  uint32_t g_test_count;
 
-int32_t psa_hash_abort_test(caller_security_t caller)
+static int32_t  valid_test_input_index = -1;
+
+int32_t psa_hash_abort_test(caller_security_t caller __UNUSED)
 {
-    int                     num_checks = sizeof(check1)/sizeof(check1[0]);
+    int32_t                 num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
     psa_hash_operation_t    operation;
 
@@ -68,20 +69,22 @@ int32_t psa_hash_abort_test(caller_security_t caller)
         status = val->crypto_function(VAL_CRYPTO_HASH_ABORT, &operation);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(5));
 
+        if (valid_test_input_index < 0)
+            valid_test_input_index = i;
+
     }
 
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_hash_abort_before_operation_finish(caller_security_t caller)
+int32_t psa_hash_abort_before_operation_finish(caller_security_t caller __UNUSED)
 {
     psa_hash_operation_t    operation;
-    char                    input = 0xbd;
-    size_t                  input_length = 1;
-    psa_algorithm_t         alg = PSA_ALG_SHA_256;
-    char                    hash[HASH_64B];
-    size_t                  hash_length, hash_size = sizeof(hash);
+    size_t                  expected_hash_length;
     int32_t                 status;
+
+    if (valid_test_input_index < 0)
+        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -96,11 +99,15 @@ int32_t psa_hash_abort_before_operation_finish(caller_security_t caller)
     TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
     /* Start a multipart hash operation */
-    status = val->crypto_function(VAL_CRYPTO_HASH_SETUP, &operation, alg);
+    status = val->crypto_function(VAL_CRYPTO_HASH_SETUP, &operation,
+                                  check1[valid_test_input_index].alg);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
     /* Add a message fragment to a multipart hash operation */
-    status = val->crypto_function(VAL_CRYPTO_HASH_UPDATE, &operation, &input, input_length);
+    status = val->crypto_function(VAL_CRYPTO_HASH_UPDATE,
+                                  &operation,
+                                  check1[valid_test_input_index].input,
+                                  check1[valid_test_input_index].input_length);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
     /* Abort a hash operation */
@@ -108,8 +115,11 @@ int32_t psa_hash_abort_before_operation_finish(caller_security_t caller)
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
     /* Finish the calculation of the hash of a message */
-    status = val->crypto_function(VAL_CRYPTO_HASH_FINISH, &operation, hash, hash_size,
-                                  &hash_length);
+    status = val->crypto_function(VAL_CRYPTO_HASH_FINISH,
+                                  &operation,
+                                  check1[valid_test_input_index].hash,
+                                  check1[valid_test_input_index].hash_size,
+                                  &expected_hash_length);
     TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(6));
 
     return VAL_STATUS_SUCCESS;

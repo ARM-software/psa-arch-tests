@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,21 +19,16 @@
 #include "val_target.h"
 #include "test_c022.h"
 #include "test_data.h"
-#include "val_crypto.h"
 
-
-client_test_t test_c022_crypto_list[] = {
+const client_test_t test_c022_crypto_list[] = {
     NULL,
     psa_key_derivation_abort_test,
     NULL,
 };
 
-static int         g_test_count = 1;
-static uint8_t     output[BUFFER_SIZE];
-
-int32_t psa_key_derivation_abort_test(caller_security_t caller)
+int32_t psa_key_derivation_abort_test(caller_security_t caller __UNUSED)
 {
-    int32_t                         status;
+    int32_t                         status, i;
     psa_key_derivation_operation_t  func = psa_key_derivation_operation_init();
     psa_key_derivation_operation_t  init = PSA_KEY_DERIVATION_OPERATION_INIT;
     psa_key_derivation_operation_t  zero;
@@ -48,7 +43,8 @@ int32_t psa_key_derivation_abort_test(caller_security_t caller)
     status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
     TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-    val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
+    i = 1;
+    val->print(PRINT_TEST, "[Check %d] ", i++);
     val->print(PRINT_TEST, "Test psa_key_derivation_abort\n", 0);
 
     status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &func);
@@ -61,7 +57,7 @@ int32_t psa_key_derivation_abort_test(caller_security_t caller)
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
     /* Read some data from a key derivation operation with no data in the operation */
-    status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_OUTPUT_BYTES, &func, output,
+    status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_OUTPUT_BYTES, &func, expected_output,
              BUFFER_SIZE);
     TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(6));
 

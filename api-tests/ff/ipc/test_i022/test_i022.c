@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,13 +25,30 @@
 
 #include "test_i022.h"
 
-client_test_t test_i022_client_tests_list[] = {
+#if STATELESS_ROT == 1
+
+const client_test_t test_i022_client_tests_list[] = {
     NULL,
     client_test_psa_reply_with_invalid_handle,
     NULL,
 };
 
-int32_t client_test_psa_reply_with_invalid_handle(caller_security_t caller)
+int32_t client_test_psa_reply_with_invalid_handle(caller_security_t caller __UNUSED)
+{
+   val->print(PRINT_TEST, "[Check 1] Testing psa_reply with invalid handle\n", 0);
+
+   return VAL_STATUS_SPM_FAILED;
+}
+
+#else
+
+const client_test_t test_i022_client_tests_list[] = {
+    NULL,
+    client_test_psa_reply_with_invalid_handle,
+    NULL,
+};
+
+int32_t client_test_psa_reply_with_invalid_handle(caller_security_t caller __UNUSED)
 {
    psa_handle_t       handle = 0;
 
@@ -45,3 +62,5 @@ int32_t client_test_psa_reply_with_invalid_handle(caller_security_t caller)
    (void)(handle);
    return VAL_STATUS_SPM_FAILED;
 }
+
+#endif

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,13 +25,13 @@
 
 #include "test_i009.h"
 
-client_test_t test_i009_client_tests_list[] = {
+const client_test_t test_i009_client_tests_list[] = {
     NULL,
     client_test_unspecified_dependent_sid,
     NULL,
 };
 
-int32_t client_test_unspecified_dependent_sid(caller_security_t caller)
+int32_t client_test_unspecified_dependent_sid(caller_security_t caller __UNUSED)
 {
    psa_handle_t       handle = 0;
 

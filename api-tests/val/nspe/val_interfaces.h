@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,7 @@
 /* typedef's */
 typedef struct {
     val_status_t     (*print)                     (print_verbosity_t verbosity,
-                                                   char *string, int32_t data);
+                                                   const char *string, int32_t data);
     val_status_t     (*set_status)                (uint32_t status);
     uint32_t         (*get_status)                (void);
     void             (*test_init)                 (uint32_t test_num,  char8_t *desc,
@@ -33,8 +33,9 @@ typedef struct {
     void             (*test_exit)                 (void);
     val_status_t     (*err_check_set)             (uint32_t checkpoint, val_status_t status);
     val_status_t     (*target_get_config)         (cfg_id_t cfg_id, uint8_t **data, uint32_t *size);
-    val_status_t     (*execute_non_secure_tests)  (uint32_t test_num, client_test_t *tests_list,
-                                                                                bool_t server_hs);
+    val_status_t     (*execute_non_secure_tests)  (uint32_t test_num,
+                                                   const client_test_t *tests_list,
+                                                   bool_t server_hs);
     val_status_t     (*switch_to_secure_client)   (uint32_t test_num);
     val_status_t     (*execute_secure_test_func)  (psa_handle_t *handle, test_info_t test_info,
                                                    uint32_t sid);
@@ -57,8 +58,7 @@ typedef struct {
     val_status_t     (*set_boot_flag)             (boot_state_t state);
     val_status_t     (*get_boot_flag)             (boot_state_t *state);
     int32_t          (*crypto_function)           (int type, ...);
-    uint32_t         (*its_function)              (int type, ...);
-    uint32_t         (*ps_function)               (int type, ...);
+    int32_t          (*storage_function)          (int type, ...);
     int32_t          (*attestation_function)      (int type, ...);
 } val_api_t;
 
@@ -81,6 +81,40 @@ typedef struct {
     test_id_t     test_id;
     test_fptr_t   entry_addr;
 } val_test_info_t;
+
+typedef enum {
+    VAL_TEST_IDX0    = 0x0,
+    VAL_TEST_IDX1    = 0x1,
+    VAL_TEST_IDX2    = 0x2,
+    VAL_TEST_IDX3    = 0x3,
+    VAL_TEST_IDX4    = 0x4,
+    VAL_TEST_IDX5    = 0x5,
+    VAL_TEST_IDX6    = 0x6,
+    VAL_TEST_IDX7    = 0x7,
+    VAL_TEST_IDX8    = 0x8,
+    VAL_TEST_IDX9    = 0x9,
+    VAL_TEST_IDX10   = 0xA,
+    VAL_TEST_IDX11   = 0xB,
+    VAL_TEST_IDX12   = 0xC,
+    VAL_TEST_IDX13   = 0xD,
+    VAL_TEST_IDX14   = 0xE,
+    VAL_TEST_IDX15   = 0xF,
+    VAL_TEST_IDX16   = 0x10,
+    VAL_TEST_IDX17   = 0x11,
+    VAL_TEST_IDX18   = 0x12,
+    VAL_TEST_IDX19   = 0x13,
+    VAL_TEST_IDX20   = 0x14,
+    VAL_TEST_IDX21   = 0x15,
+    VAL_TEST_IDX22   = 0x16,
+    VAL_TEST_IDX23   = 0x17,
+    VAL_TEST_IDX24   = 0x18,
+    VAL_TEST_IDX25   = 0x19,
+    VAL_TEST_IDX26   = 0x1A,
+    VAL_TEST_IDX27   = 0x1B,
+    VAL_TEST_IDX28   = 0x1C,
+    VAL_TEST_IDX29   = 0x1D,
+    VAL_TEST_IDX30   = 0x1E,
+} val_test_index_t;
 
 #include "test_entry_fn_declare_list.inc"
 

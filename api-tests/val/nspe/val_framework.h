@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +32,7 @@ void         val_test_init(uint32_t test_num, char8_t *desc, uint32_t test_bitfi
 void         val_test_exit(void);
 val_status_t val_get_last_run_test_id(test_id_t *test_id);
 val_status_t val_execute_non_secure_tests(uint32_t test_num,
-                                          client_test_t *tests_list,
+                                          const client_test_t *tests_list,
                                           bool_t server_hs);
 val_status_t val_switch_to_secure_client(uint32_t test_num);
 val_status_t val_execute_secure_test_func(psa_handle_t *handle,

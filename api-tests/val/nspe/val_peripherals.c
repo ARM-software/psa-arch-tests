@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,25 +56,13 @@ val_status_t val_uart_init(void)
               - data     : Value for format specifier
     @return   - val_status_t
 **/
-val_status_t val_print(print_verbosity_t verbosity, char *string, int32_t data)
+val_status_t val_print(print_verbosity_t verbosity, const char *string, int32_t data)
 {
     if ((is_uart_init_done == 0) || (verbosity < VERBOSE))
     {
        return VAL_STATUS_SUCCESS;
     }
     return pal_print_ns(string, data);
-}
-
-/**
-    @brief    - This API will read from slave address via SPI
-    @param    - addr : Slave address
-                data : value read from Slave address
-                len  : length of data to be read in bytes
-    @return   - error status
-**/
-val_status_t val_spi_read(addr_t addr, uint8_t *data, uint32_t len)
-{
-        return pal_spi_read(addr, data, len);
 }
 
 /* Watchdog APIs */
@@ -169,7 +157,6 @@ val_status_t val_wd_timer_disable(void)
 val_status_t val_wd_reprogram_timer(wd_timeout_type_t timeout_type)
 {
     val_status_t    status = VAL_STATUS_SUCCESS;
-
 #ifdef WATCHDOG_AVAILABLE
     /* Disable watchdog Timer */
     val_wd_timer_disable();
@@ -187,6 +174,8 @@ val_status_t val_wd_reprogram_timer(wd_timeout_type_t timeout_type)
     {
         return status;
     }
+#else
+	(void)timeout_type; // Argument unused if WATCHDOG_AVAILABLE is not defined
 #endif
 
     return status;

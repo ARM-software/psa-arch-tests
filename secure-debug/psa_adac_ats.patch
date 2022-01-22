@@ -1,0 +1,241 @@
+diff --git a/ports/demo/demo-discovery.c b/ports/demo/demo-discovery.c
+index aab117a..a7a0f5d 100644
+--- a/ports/demo/demo-discovery.c
++++ b/ports/demo/demo-discovery.c
+@@ -88,24 +88,31 @@
+     ED25519_VAL ED448_VAL SM2SM3_VAL HMAC_VAL CMAC_VAL
+
+ uint8_t discovery_template[] = {
+-        // @+00 (6 bytes) psa_auth_version: 1.0
+-        0x01, 0x00, 0x02, 0x00, 0x01, 0x00,
+-        // @+06 (6 bytes) vendor_id: {0x04, 0x3B} => 0x023B ("ARM Ltd.")
+-        0x02, 0x00, 0x02, 0x00, 0x04, 0x3B,
+-        // @+12 (8 bytes) soc_class: [0x00, 0x00, 0x00, 0x00]
+-        0x03, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,
+-        // @+20 (20 bytes) soc_id: [0x00] * 16
+-        0x04, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00,
+-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++        // @+00 (12 bytes) psa_auth_version: 1.0
++        0x00, 0x00, 0x01, 0x00, 0x02, 0x00, 0x00, 0x00,
++        0x01, 0x00, 0x00, 0x00,
++        // @+12 (12 bytes) vendor_id: {0x04, 0x3B} => 0x023B ("ARM Ltd.")
++        0x00, 0x00, 0x02, 0x00, 0x02, 0x00, 0x00, 0x00,
++        0x04, 0x3B, 0x00, 0x00,
++        // @+24 (12 bytes) soc_class: [0x00, 0x00, 0x00, 0x00]
++        0x00, 0x00, 0x03, 0x00, 0x04, 0x00, 0x00, 0x00,
+         0x00, 0x00, 0x00, 0x00,
+-        // @+40 (6 bytes) psa_lifecycle: PSA_LIFECYCLE_SECURED
+-        0x08, 0x00, 0x02, 0x00, 0x00, 0x30,
+-        // @+46 (6 bytes) token_formats: [{0x00, 0x02} (token_psa_debug)]
+-        0x00, 0x01, 0x02, 0x00, 0x00, 0x02,
+-        // @+52 (6 bytes) cert_formats: [{0x01, 0x02} (cert_psa_debug)]
+-        0x01, 0x01, 0x02, 0x00, 0x01, 0x02,
+-        // @+58 (4 + X bytes) cryptosystems: [...]
+-        0x02, 0x01, CRYPTO_CNT, 0x00, CRYPTO_VALS
++        // @+36 (24 bytes) soc_id: [0x00] * 16
++        0x00, 0x00, 0x04, 0x00, 0x10, 0x00, 0x00, 0x00,
++        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++        // @+60 (12 bytes) psa_lifecycle: PSA_LIFECYCLE_SECURED
++        0x00, 0x00, 0x08, 0x00, 0x02, 0x00, 0x00, 0x00,
++        0x00, 0x30, 0x00, 0x00,
++        // @+72 (12 bytes) token_formats: [{0x00, 0x02} (token_psa_debug)]
++        0x00, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00,
++        0x00, 0x02, 0x00, 0x00,
++        // @+84 (12 bytes) cert_formats: [{0x01, 0x02} (cert_psa_debug)]
++        0x00, 0x00, 0x01, 0x01, 0x02, 0x00, 0x00, 0x00,
++        0x01, 0x02, 0x00, 0x00,
++        // @+96 (8 + X bytes) cryptosystems: [...]
++        0x00, 0x00, 0x02, 0x01, CRYPTO_CNT, 0x00, 0x00, 0x00,
++        CRYPTO_VALS
+ };
+
+ size_t discovery_template_len = sizeof(discovery_template);
+diff --git a/ports/platforms/transports/unix_socket.c b/ports/platforms/transports/unix_socket.c
+index 359a8c4..7ad11ff 100644
+--- a/ports/platforms/transports/unix_socket.c
++++ b/ports/platforms/transports/unix_socket.c
+@@ -54,7 +54,7 @@ static int message_receive(int fd, uint8_t buffer[], size_t max, size_t *size) {
+         }
+     }
+
+-    PSA_ADAC_LOG_DUMP("msg", "receive", buffer, 4 + p->data_count * 4);
++    PSA_ADAC_LOG_DUMP("msg", "receive", buffer, sizeof(request_packet_t) + p->data_count * 4);
+
+     return 0;
+ }
+diff --git a/ports/targets/native/autotest.c b/ports/targets/native/autotest.c
+index 8817825..ad185d5 100644
+--- a/ports/targets/native/autotest.c
++++ b/ports/targets/native/autotest.c
+@@ -111,7 +111,7 @@ void run_test(char *chain_file, char *key_file, uint8_t type) {
+             return;
+         }
+         psa_adac_sign_token(challenge->challenge_vector, sizeof(challenge->challenge_vector),
+-                            key_type, NULL, 0, &token, &token_size, handle, NULL, 0);
++                            key_type, NULL, 0, &token, &token_size, NULL, handle, NULL, 0);
+         psa_destroy_key(handle);
+     } else if ((type == CMAC_AES) || (type == HMAC_SHA256)) {
+         if (0 != load_secret_key(key_file, key_type, &key, &key_size)) {
+@@ -119,7 +119,7 @@ void run_test(char *chain_file, char *key_file, uint8_t type) {
+             return;
+         }
+         psa_adac_sign_token(challenge->challenge_vector, sizeof(challenge->challenge_vector),
+-                            key_type, NULL, 0, &token, &token_size, 0, key, key_size);
++                            key_type, NULL, 0, &token, &token_size, NULL, 0, key, key_size);
+     }
+     response_packet_release(response);
+
+diff --git a/ports/targets/native/client.c b/ports/targets/native/client.c
+index 2316a87..740be99 100755
+--- a/ports/targets/native/client.c
++++ b/ports/targets/native/client.c
+@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
+
+
+     if (PSA_SUCCESS == psa_adac_sign_token(challenge->challenge_vector, sizeof(challenge->challenge_vector),
+-                                           key_type, NULL, 0, &token, &token_size, handle, key, key_size)) {
++                                           key_type, NULL, 0, &token, &token_size, NULL, handle, key, key_size)) {
+         response_packet_release(response);
+         PSA_ADAC_LOG_DUMP("client", "token", token, token_size);
+     } else {
+diff --git a/ports/targets/native/psa_sdm.c b/ports/targets/native/psa_sdm.c
+index 2d775c1..d5e47ea 100755
+--- a/ports/targets/native/psa_sdm.c
++++ b/ports/targets/native/psa_sdm.c
+@@ -178,7 +178,7 @@ SDM_EXTERN SDMReturnCode SDM_Authenticate(SDMHandle handle, const SDMAuthenticat
+     config->callbacks->updateProgress("signing token", 40, config->refcon);
+
+     if (PSA_SUCCESS == psa_adac_sign_token(challenge->challenge_vector, sizeof(challenge->challenge_vector),
+-                                           key_type, NULL, 0, &token, &token_size, key_handle, NULL, 0)) {
++                                           key_type, NULL, 0, &token, &token_size, NULL, key_handle, NULL, 0)) {
+         response_packet_release(response);
+         PSA_ADAC_LOG_DUMP("client", "token", token, token_size);
+     } else {
+diff --git a/ports/targets/native/selftest.c b/ports/targets/native/selftest.c
+index 14d09d1..a1084e9 100755
+--- a/ports/targets/native/selftest.c
++++ b/ports/targets/native/selftest.c
+@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
+     }
+
+     if (PSA_SUCCESS == psa_adac_sign_token(challenge.challenge_vector, sizeof(challenge.challenge_vector),
+-                                           key_type, NULL, 0, &token, &token_size, handle, NULL, 0)) {
++                                           key_type, NULL, 0, &token, &token_size, NULL, handle, NULL, 0)) {
+         // PSA_ADAC_LOG_DUMP("client", "token", token, token_size);
+
+         if (PSA_SUCCESS != psa_adac_verify_token_signature(token + 4, token_size - 4,
+diff --git a/psa-adac/core/include/psa_adac.h b/psa-adac/core/include/psa_adac.h
+index c965f76..0bf80be 100644
+--- a/psa-adac/core/include/psa_adac.h
++++ b/psa-adac/core/include/psa_adac.h
+@@ -20,6 +20,17 @@
+
+ #define ROUND_TO_WORD(x) (((size_t)x + 3) & ~0x03UL)
+
++/** \brief Version
++ *
++ * Current version numbers for certificate and token format.
++ */
++enum _adac_versions {
++    SDP_CERT_MAJOR = 1,
++    SDP_CERT_MINOR = 0,
++    SDP_TOKEN_MAJOR = 1,
++    SDP_TOKEN_MINOR = 0,
++};
++
+ /** \brief Key options
+  *
+  */
+@@ -124,7 +135,7 @@ typedef struct {
+     uint8_t usage;
+     uint16_t _reserved; //!< Must be set to zero.
+     uint16_t lifecycle;
+-    uint16_t custom_constraint;
++    uint16_t oem_constraint;
+     uint32_t extensions_bytes;
+     uint32_t soc_class;
+     uint8_t soc_id[16];
+@@ -144,6 +155,7 @@ typedef struct {
+
+ #define CHALLENGE_SIZE 32
+ #define MAX_EXTENSIONS 16
++#define PERMISSION_BITS 128
+
+ /** \brief Authentication challenge
+  *
+diff --git a/psa-adac/sda/src/psa_adac_sda.c b/psa-adac/sda/src/psa_adac_sda.c
+index f57f65c..d5e030c 100644
+--- a/psa-adac/sda/src/psa_adac_sda.c
++++ b/psa-adac/sda/src/psa_adac_sda.c
+@@ -365,7 +365,6 @@ int authentication_handle(authentication_context_t *auth_ctx) {
+                 (void) authenticator_request_packet_release(auth_ctx, request);
+                 response = authenticator_response_packet_build(auth_ctx, SDP_SUCCESS, NULL, 0);
+                 ret = authenticator_send_response(auth_ctx, response);
+-                done = 1;
+                 break;
+
+             default:
+@@ -380,8 +379,12 @@ int authentication_handle(authentication_context_t *auth_ctx) {
+             PSA_ADAC_LOG_ERR("auth", "Error sending response: %04x\n", ret);
+         }
+
+-        if ((auth_ctx->state == AUTH_SUCCESS) || (auth_ctx->state == AUTH_FAILURE)) {
+-            done = 1;
++        if ((auth_ctx->state == AUTH_SUCCESS)) {
++            PSA_ADAC_LOG_INFO("auth", "Authentication is a success\n");
++            auth_ctx->state = AUTH_INIT;
++        } else if (auth_ctx->state == AUTH_FAILURE) {
++            PSA_ADAC_LOG_INFO("auth", "Authentication is a failure\n");
++            auth_ctx->state = AUTH_INIT;
+         }
+     }
+
+diff --git a/psa-adac/sdm/include/psa_adac_sdm.h b/psa-adac/sdm/include/psa_adac_sdm.h
+index b15c630..616ef62 100644
+--- a/psa-adac/sdm/include/psa_adac_sdm.h
++++ b/psa-adac/sdm/include/psa_adac_sdm.h
+@@ -31,9 +31,9 @@ int load_trust_chain(const char *chain_file, uint8_t **chain, size_t *chain_size
+ int load_trust_rotpk(const char *chain_file, psa_algorithm_t alg, uint8_t *rotpk,
+                      size_t buffer_size, size_t *rotpk_size, uint8_t *rotpk_type);
+
+-psa_status_t psa_adac_sign_token(uint8_t challenge[], size_t challenge_size, uint8_t signature_type, uint8_t exts[],
+-                                 size_t exts_size, uint8_t *fragment[], size_t *fragment_size, psa_key_handle_t handle,
+-                                 uint8_t *key, size_t key_size);
++psa_status_t psa_adac_sign_token(uint8_t challenge[], size_t challenge_size, uint8_t signature_type,
++                                 uint8_t exts[], size_t exts_size, uint8_t *fragment[], size_t *fragment_size,
++                                 uint8_t *req_perms, psa_key_handle_t handle, uint8_t *key, size_t key_size);
+
+ /**@}*/
+
+diff --git a/psa-adac/sdm/src/sdm_token.c b/psa-adac/sdm/src/sdm_token.c
+index 7d048d7..01df4f4 100644
+--- a/psa-adac/sdm/src/sdm_token.c
++++ b/psa-adac/sdm/src/sdm_token.c
+@@ -82,9 +82,9 @@ psa_status_t psa_adac_mac_sign(psa_algorithm_t algo, const uint8_t *inputs[], si
+     return r;
+ }
+
+-psa_status_t psa_adac_sign_token(uint8_t challenge[], size_t challenge_size, uint8_t signature_type, uint8_t exts[],
+-                                 size_t exts_size, uint8_t *fragment[], size_t *fragment_size, psa_key_handle_t handle,
+-                                 uint8_t *key, size_t key_size) {
++psa_status_t psa_adac_sign_token(uint8_t challenge[], size_t challenge_size, uint8_t signature_type,
++                                 uint8_t exts[], size_t exts_size, uint8_t *fragment[], size_t *fragment_size,
++                                 uint8_t *req_perms, psa_key_handle_t handle,  uint8_t *key, size_t key_size) {
+     uint8_t hash[PSA_HASH_MAX_SIZE], *sig, *ext_hash, *_fragment;
+     size_t token_size, hash_size, sig_size, body_size, tbs_size, ext_hash_size;
+     psa_algorithm_t hash_algo, sig_algo;
+@@ -243,8 +243,13 @@ psa_status_t psa_adac_sign_token(uint8_t challenge[], size_t challenge_size, uin
+
+     token_header_t *token = (token_header_t *) (_fragment + sizeof(psa_tlv_t));
+     // memset(token, 0, token_size);
++    token->format_version.minor = SDP_TOKEN_MINOR;
++    token->format_version.major = SDP_TOKEN_MAJOR;
+     token->signature_type = signature_type;
+     token->extensions_bytes = exts_size;
++    if(req_perms != NULL)
++        memcpy((void*)(token->requested_permissions), req_perms, PERMISSION_BITS/8);
++
+     if (exts_size > 0) {
+         // FIXME: Support PSA_ALG_CMAC
+         psa_adac_hash(hash_algo, exts, exts_size, ext_hash, ext_hash_size, &hash_size);

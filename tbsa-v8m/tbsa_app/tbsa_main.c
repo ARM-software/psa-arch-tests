@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,6 +71,6 @@ void tbsa_main (void)
 
 exit:
     while(1) {
-        asm volatile("WFI");
+        __asm volatile("WFI");
     }
 }

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@
 #include "val_target.h"
 #include "test_c001.h"
 
-client_test_t test_c001_crypto_list[] = {
+const client_test_t test_c001_crypto_list[] = {
     NULL,
     psa_generate_random_without_init_test,
     psa_crypto_init_test,
@@ -27,7 +27,7 @@ client_test_t test_c001_crypto_list[] = {
     NULL,
 };
 
-int32_t psa_generate_random_without_init_test(caller_security_t caller)
+int32_t psa_generate_random_without_init_test(caller_security_t caller __UNUSED)
 {
     uint8_t         output[GENERATE_SIZE];
     int32_t         status;
@@ -37,14 +37,14 @@ int32_t psa_generate_random_without_init_test(caller_security_t caller)
     /* Generate random bytes */
     status = val->crypto_function(VAL_CRYPTO_GENERATE_RANDOM, output, GENERATE_SIZE);
     if (status == PSA_SUCCESS)
-        return RESULT_SKIP(VAL_STATUS_INIT_ALREADY_DONE);
+        return VAL_STATUS_SUCCESS;
     else
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(1));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(3));
 
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t psa_crypto_init_test(caller_security_t caller)
+int32_t psa_crypto_init_test(caller_security_t caller __UNUSED)
 {
     int32_t        status;
 
@@ -57,7 +57,7 @@ int32_t psa_crypto_init_test(caller_security_t caller)
     return VAL_STATUS_SUCCESS;
 }
 
-int32_t multiple_psa_crypto_init_test(caller_security_t caller)
+int32_t multiple_psa_crypto_init_test(caller_security_t caller __UNUSED)
 {
     int32_t         i, status;
 
@@ -66,7 +66,7 @@ int32_t multiple_psa_crypto_init_test(caller_security_t caller)
     {
         /* Initialize the PSA crypto library*/
         status = val->crypto_function(VAL_CRYPTO_INIT);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(2));
     }
 
     return VAL_STATUS_SUCCESS;

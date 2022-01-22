@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,22 +15,26 @@
  * limitations under the License.
 **/
 
-#include "val_crypto.h"
+#include "test_crypto_common.h"
 
 typedef struct {
     char                    test_desc[75];
-    psa_key_type_t          key_type;
-    size_t                  attr_bits;
-    psa_key_usage_t         usage;
-    psa_algorithm_t         key_alg;
-    psa_key_id_t            key_id;
-    psa_key_lifetime_t      key_lifetime;
+    psa_key_type_t          type;
+    size_t                  bits;
+    psa_key_usage_t         usage_flags;
+    psa_algorithm_t         alg;
+    psa_key_id_t            id;
     psa_key_lifetime_t      lifetime;
 } test_data;
 
-static test_data check1[] = {
-{"Test set/get key attributes\n", PSA_KEY_TYPE_AES, BYTES_TO_BITS(AES_16B_KEY_SIZE),
- PSA_KEY_USAGE_ENCRYPT | PSA_KEY_USAGE_DECRYPT, PSA_ALG_CCM, 0x1234,
- PSA_KEY_LIFETIME_PERSISTENT
+static const test_data check1[] = {
+{
+    .test_desc   = "Test psa_key_attributes_set_get key attributes\n",
+    .type        = PSA_KEY_TYPE_AES,
+    .bits        = BYTES_TO_BITS(AES_16B_KEY_SIZE),
+    .usage_flags = PSA_KEY_USAGE_ENCRYPT | PSA_KEY_USAGE_DECRYPT,
+    .alg         = PSA_ALG_CCM,
+    .id          = 0x1234,
+    .lifetime    = PSA_KEY_LIFETIME_PERSISTENT
 },
 };

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,25 +15,34 @@
  * limitations under the License.
 **/
 
-#include "val_crypto.h"
+#include "test_crypto_common.h"
 
 typedef struct {
     char                    test_desc[75];
-    psa_algorithm_t         key_alg;
+    psa_algorithm_t         alg;
     size_t                  capacity;
     psa_status_t            expected_status;
 } test_data;
 
-static test_data check1[] = {
-{"Test psa_key_derivation_set_get_capacity - Less than operation's capacity\n",
- PSA_ALG_HKDF(PSA_ALG_SHA_256), 42, PSA_SUCCESS
+static const test_data check1[] = {
+{
+    .test_desc       = "Test psa_key_derivation_set_get_capacity - < operation's capacity\n",
+    .alg             = PSA_ALG_HKDF(PSA_ALG_SHA_256),
+    .capacity        = 42,
+    .expected_status = PSA_SUCCESS
 },
 
-{"Test psa_key_derivation_set_get_capacity - Equal to operation's capacity\n",
- PSA_ALG_HKDF(PSA_ALG_SHA_256), 8160, PSA_SUCCESS
+{
+    .test_desc       = "Test psa_key_derivation_set_get_capacity - = operation's capacity\n",
+    .alg             = PSA_ALG_HKDF(PSA_ALG_SHA_256),
+    .capacity        = 8160,
+    .expected_status = PSA_SUCCESS
 },
 
-{"Test psa_key_derivation_set_get_capacity - More than operation's capacity\n",
- PSA_ALG_HKDF(PSA_ALG_SHA_256), 10000, PSA_ERROR_INVALID_ARGUMENT
+{
+    .test_desc       = "Test psa_key_derivation_set_get_capacity - > operation's capacity\n",
+    .alg             = PSA_ALG_HKDF(PSA_ALG_SHA_256),
+    .capacity        = 10000,
+    .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
 };

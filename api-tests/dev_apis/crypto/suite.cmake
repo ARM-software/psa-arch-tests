@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,6 +33,10 @@ endforeach()
 
 add_definitions(${CC_OPTIONS})
 add_definitions(${AS_OPTIONS})
+add_definitions(-DMISSING_CRYPTO_1_0=0)
+
+# append common crypto file to list of source collected
+list(APPEND SUITE_CC_SOURCE ${PSA_SUITE_DIR}/common/test_crypto_common.c)
 add_library(${PSA_TARGET_TEST_COMBINE_LIB} STATIC ${SUITE_CC_SOURCE} ${SUITE_AS_SOURCE})
 
 # Test related Include directories
@@ -51,6 +55,8 @@ target_include_directories(${PSA_TARGET_TEST_COMBINE_LIB} PRIVATE
 	${CMAKE_CURRENT_BINARY_DIR}
 	${PSA_ROOT_DIR}/val/common
 	${PSA_ROOT_DIR}/val/nspe
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common
-	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto
+	${PSA_ROOT_DIR}/platform/targets/common/nspe
+	${PSA_ROOT_DIR}/platform/targets/common/nspe/crypto
+	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe
+	${PSA_SUITE_DIR}/common/
 )

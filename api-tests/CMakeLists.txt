@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,20 +28,41 @@ find_package(Git REQUIRED)
 
 get_filename_component(PSA_ROOT_DIR . ABSOLUTE)
 
-list(APPEND CMAKE_MODULE_PATH ${PSA_ROOT_DIR}/tools/cmake)
-include("common/Utils")
+include(${PSA_ROOT_DIR}/tools/cmake/common/Utils.cmake)
 include(${PSA_ROOT_DIR}/tools/cmake/common/CMakeSettings.cmake)
 include(${PSA_ROOT_DIR}/tools/cmake/common/CMakeExternal.cmake)
 
+if(NOT DEFINED TFM_PROFILE)
+	message(STATUS "[PSA] : Building Default profile")
+list(APPEND PSA_SUITES
+        "IPC"
+        "CRYPTO"
+        "INTERNAL_TRUSTED_STORAGE"
+        "PROTECTED_STORAGE"
+        "STORAGE"
+        "INITIAL_ATTESTATION"
+)
+else()
+
+if("${TFM_PROFILE}" STREQUAL "profile_small")
+# list of supported suites
+list(APPEND PSA_SUITES
+	"CRYPTO"
+	"INTERNAL_TRUSTED_STORAGE"
+	"INITIAL_ATTESTATION"
+)
+else()
 # list of supported suites
 list(APPEND PSA_SUITES
 	"IPC"
 	"CRYPTO"
-	"PROTECTED_STORAGE"
 	"INTERNAL_TRUSTED_STORAGE"
+	"PROTECTED_STORAGE"
+	"STORAGE"
 	"INITIAL_ATTESTATION"
 )
-
+endif()
+endif()
 # list of ipc files required
 list(APPEND PSA_IPC_FILES
 	"psa/client.h"
@@ -69,6 +90,12 @@ list(APPEND PSA_INTERNAL_TRUSTED_STORAGE_FILES
 	"psa/internal_trusted_storage.h"
 )
 
+# list of storage files required
+list(APPEND PSA_STORAGE_FILES
+	${PSA_INTERNAL_TRUSTED_STORAGE_FILES}
+	${PSA_PROTECTED_STORAGE_FILES}
+)
+
 # list of initial_attestation files required
 list(APPEND PSA_INITIAL_ATTESTATION_FILES
 	"psa/initial_attestation.h"
@@ -80,6 +107,15 @@ list(APPEND PSA_TOOLCHAIN_SUPPORT
         GNUARM
         ARMCLANG
         HOST_GCC
+		GCC_LINUX
+		INHERIT
+)
+
+# list of supported CROSS_COMPILE toolchains
+list(APPEND CROSS_COMPILE_TOOLCHAIN_SUPPORT
+        GNUARM
+		ARMCLANG
+		INHERIT
 )
 
 # list of suported CPU arch
@@ -87,13 +123,58 @@ list(APPEND PSA_CPU_ARCH_SUPPORT
 	armv8m_ml
 	armv8m_bl
 	armv7m
+	armv8a
 )
 
 # list of VERBOSE options
 list(APPEND PSA_VERBOSE_OPTIONS 1 2 3 4 5)
 
 # list of PLATFORM_PSA_ISOLATION_LEVEL options
+if("${TFM_PROFILE}" STREQUAL "profile_medium")
+list(APPEND PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS 1 2)
+else()
 list(APPEND PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS 1 2 3)
+endif()
+
+#list of INCLUDE_PANIC_TESTS options
+list(APPEND PSA_INCLUDE_PANIC_TESTS_OPTIONS 0 1)
+
+# list of available spec version
+if("${SUITE}" STREQUAL "STORAGE" OR ${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE" OR ${SUITE} STREQUAL "PROTECTED_STORAGE")
+list(APPEND PSA_SPEC_VERSION
+	1.0-BETA2
+	1.0
+)
+elseif("${SUITE}" STREQUAL "CRYPTO")
+list(APPEND PSA_SPEC_VERSION
+        1.0-BETA1
+        1.0-BETA2
+        1.0-BETA3
+)
+elseif("${SUITE}" STREQUAL "INITIAL_ATTESTATION")
+list(APPEND PSA_SPEC_VERSION
+        1.0-BETA0
+        1.0.0
+        1.0.1
+        1.0.2
+)
+elseif("${SUITE}" STREQUAL "IPC")
+list(APPEND PSA_SPEC_VERSION
+        1.0
+        1.1
+)
+endif()
+
+#list of values available for connection based
+if(${SUITE} STREQUAL "IPC")
+list(APPEND PSA_STATELESS_ROT 0 1)
+endif()
+
+#list of TESTS_COVERAGE available options
+list(APPEND PSA_TESTS_COVERAGE_OPTIONS
+		"ALL"
+        "PASS"
+)
 
 message(STATUS "[PSA] : ----------Process input arguments- start-------------")
 
@@ -109,7 +190,7 @@ string(TOLOWER ${SUITE} SUITE_LOWER)
 # Check for valid targets
 _get_sub_dir_list(PSA_TARGET_LIST ${PSA_ROOT_DIR}/platform/targets)
 if(NOT ${TARGET} IN_LIST PSA_TARGET_LIST)
-	message(FATAL_ERROR "[PSA] : Error: Unspported value for -DTARGET=, supported targets are : ${PSA_TARGET_LIST}")
+	message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DTARGET=${TARGET}, supported targets are : ${PSA_TARGET_LIST}")
 else()
     message(STATUS "[PSA] : TARGET is set to ${TARGET}")
 endif()
@@ -130,7 +211,7 @@ endif()
 
 # Check for valid suite cmake argument passed
 if(NOT ${SUITE} IN_LIST PSA_SUITES)
-	message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DSUITE=, select one from supported suites which are : ${PSA_SUITES}")
+	message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DSUITE=${SUITE}, select one from supported suites which are : ${PSA_SUITES}")
 else()
     message(STATUS "[PSA] : SUITE is set to ${SUITE}")
 endif()
@@ -146,12 +227,15 @@ endif()
 set(PSA_TARGET_PAL_NSPE_LIB		pal_nspe)
 set(PSA_TARGET_VAL_NSPE_LIB		val_nspe)
 set(PSA_TARGET_TEST_COMBINE_LIB		test_combine)
-set(PSA_TARGET_DRIVER_PARTITION_LIB	driver_partition)
-set(PSA_TARGET_CLIENT_PARTITION_LIB	client_partition)
-set(PSA_TARGET_SERVER_PARTITION_LIB	server_partition)
+set(PSA_TARGET_DRIVER_PARTITION_LIB	tfm_psa_rot_partition_driver_partition)
+set(PSA_TARGET_CLIENT_PARTITION_LIB	tfm_app_rot_partition_client_partition)
+set(PSA_TARGET_SERVER_PARTITION_LIB	tfm_app_rot_partition_server_partition)
 if(${SUITE} STREQUAL "IPC")
 	set(PSA_SUITE_DIR		${PSA_ROOT_DIR}/ff/${SUITE_LOWER})
 	set(PSA_SUITE_OUT_DIR		${CMAKE_CURRENT_BINARY_DIR}/ff/${SUITE_LOWER})
+elseif((${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE") OR (${SUITE} STREQUAL "PROTECTED_STORAGE"))
+	set(PSA_SUITE_DIR		${PSA_ROOT_DIR}/dev_apis/storage)
+	set(PSA_SUITE_OUT_DIR		${CMAKE_CURRENT_BINARY_DIR}/dev_apis/storage)
 else()
 	set(PSA_SUITE_DIR		${PSA_ROOT_DIR}/dev_apis/${SUITE_LOWER})
 	set(PSA_SUITE_OUT_DIR		${CMAKE_CURRENT_BINARY_DIR}/dev_apis/${SUITE_LOWER})
@@ -163,9 +247,70 @@ set(TGT_CONFIG_SOURCE_C			${CMAKE_CURRENT_BINARY_DIR}/targetConfigGen.c)
 set(OUTPUT_HEADER			target_database.h)
 set(DATABASE_TABLE_NAME			target_database)
 set(DATABASE_TABLE_SECTION_NAME		"NOSECTION")
-set(TARGET_HEADER_GEN_INCLUDE_PATHS     "${PSA_ROOT_DIR}/val/nspe|${PSA_ROOT_DIR}/val/common|${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/common|${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/crypto")
-set(TESTSUITE_DB			${PSA_SUITE_DIR}/testsuite.db)
-set(PSA_TESTLIST_FILE			${CMAKE_CURRENT_BINARY_DIR}/testlist.txt)
+set(TARGET_HEADER_GEN_INCLUDE_PATHS     "${PSA_ROOT_DIR}/val/nspe|${PSA_ROOT_DIR}/val/common|${PSA_ROOT_DIR}/platform/targets/common/nspe|${PSA_ROOT_DIR}/platform/targets/common/nspe/crypto|${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe")
+if(NOT DEFINED SPEC_VERSION)
+	if(${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE")
+		set(TESTSUITE_DB			${PSA_SUITE_DIR}/its_testsuite.db)
+	elseif((${SUITE} STREQUAL "PROTECTED_STORAGE") OR (${SUITE} STREQUAL "STORAGE"))
+		set(TESTSUITE_DB			${PSA_SUITE_DIR}/ps_testsuite.db)
+	else()
+		set(TESTSUITE_DB			${PSA_SUITE_DIR}/testsuite.db)
+	endif()
+else()
+	if(${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE")
+		if(${SPEC_VERSION} STREQUAL "1.0-BETA2")
+                	set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/its_1.0-beta2_testsuite.db)
+	        endif()
+		if(${SPEC_VERSION} STREQUAL "1.0")
+                	set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/its_1.0_testsuite.db)
+	        endif()
+	elseif((${SUITE} STREQUAL "PROTECTED_STORAGE") OR (${SUITE} STREQUAL "STORAGE"))
+		if(${SPEC_VERSION} STREQUAL "1.0-BETA2")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/ps_1.0-beta2_testsuite.db)
+                endif()
+                if(${SPEC_VERSION} STREQUAL "1.0")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/ps_1.0_testsuite.db)
+                endif()
+	elseif(${SUITE} STREQUAL "CRYPTO")
+                if(${SPEC_VERSION} STREQUAL "1.0-BETA1")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0-beta1_testsuite.db)
+                endif()
+                if(${SPEC_VERSION} STREQUAL "1.0-BETA2")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0-beta2_testsuite.db)
+                endif()
+                if(${SPEC_VERSION} STREQUAL "1.0-BETA3")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0-beta3_testsuite.db)
+                endif()
+        elseif(${SUITE} STREQUAL "INITIAL_ATTESTATION")
+                if(${SPEC_VERSION} STREQUAL "1.0-BETA0")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0-beta0_testsuite.db)
+                endif()
+                if(${SPEC_VERSION} STREQUAL "1.0.0")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0.0_testsuite.db)
+                endif()
+                if(${SPEC_VERSION} STREQUAL "1.0.1")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0.1_testsuite.db)
+                endif()
+                if(${SPEC_VERSION} STREQUAL "1.0.2")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0.2_testsuite.db)
+                endif()
+        elseif(${SUITE} STREQUAL "IPC")
+                if(${SPEC_VERSION} STREQUAL "1.1")
+			if(DEFINED STATELESS_ROT_TESTS)
+				if(${STATELESS_ROT_TESTS} EQUAL 1)
+					set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/stateless_rot_testsuite.db)
+				else()
+					set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/testsuite.db)
+				endif()
+			else()
+                                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/testsuite.db)
+			endif()
+		else()
+			set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/testsuite.db)
+                endif()
+	endif()
+endif()
+set(PSA_TESTLIST_FILE			${CMAKE_CURRENT_BINARY_DIR}/${SUITE_LOWER}_testlist.txt)
 set(PSA_TEST_ENTRY_LIST_INC		${CMAKE_CURRENT_BINARY_DIR}/test_entry_list.inc)
 set(PSA_TEST_ENTRY_FUN_DECLARE_INC	${CMAKE_CURRENT_BINARY_DIR}/test_entry_fn_declare_list.inc)
 set(PSA_CLIENT_TEST_LIST_DELCARE_INC	${CMAKE_CURRENT_BINARY_DIR}/client_tests_list_declare.inc)
@@ -208,7 +353,7 @@ if(${TOOLCHAIN} STREQUAL "ARMCLANG" OR ${TOOLCHAIN} STREQUAL "GNUARM")
     else()
         # Check for CPU architecture
         if(NOT ${CPU_ARCH} IN_LIST PSA_CPU_ARCH_SUPPORT)
-	        message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DCPU_ARCH=, supported CPU arch are : ${PSA_CPU_ARCH_SUPPORT}")
+	        message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DCPU_ARCH=${CPU_ARCH}, supported CPU arch are : ${PSA_CPU_ARCH_SUPPORT}")
         endif()
     endif()
     message(STATUS "[PSA] : CPU_ARCH is set to ${CPU_ARCH}")
@@ -220,20 +365,24 @@ if(NOT DEFINED VERBOSE)
         message(STATUS "[PSA] : Defaulting VERBOSE to ${VERBOSE}")
 else()
 	if(NOT ${VERBOSE} IN_LIST PSA_VERBOSE_OPTIONS)
-		message(FATAL_ERROR "[PSA] : Error: Unspported value for -DVERBOSE=, supported values are : ${PSA_VERBOSE_OPTIONS}")
+		message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DVERBOSE=${VERBOSE}, supported values are : ${PSA_VERBOSE_OPTIONS}")
 	endif()
     message(STATUS "[PSA] : VERBOSE is set to ${VERBOSE}")
 endif()
 
 # Check for PLATFORM_PSA_ISOLATION_LEVEL
 if(NOT DEFINED PLATFORM_PSA_ISOLATION_LEVEL)
+	if("${TFM_PROFILE}" STREQUAL "profile_medium")
+	set(PLATFORM_PSA_ISOLATION_LEVEL 2 CACHE INTERNAL "Default PLATFORM_PSA_ISOLATION_LEVEL value" FORCE)
+	else()
 	set(PLATFORM_PSA_ISOLATION_LEVEL 3 CACHE INTERNAL "Default PLATFORM_PSA_ISOLATION_LEVEL value" FORCE)
+	endif()
 	if(${SUITE} STREQUAL "IPC")
         message(STATUS "[PSA] : Defaulting PLATFORM_PSA_ISOLATION_LEVEL to ${PLATFORM_PSA_ISOLATION_LEVEL}")
 	endif()
 else()
 	if(NOT ${PLATFORM_PSA_ISOLATION_LEVEL} IN_LIST PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS)
-		message(FATAL_ERROR "[PSA] : Error: Unspported value for -DPLATFORM_PSA_ISOLATION_LEVEL=, supported values are : ${PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS}")
+		message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DPLATFORM_PSA_ISOLATION_LEVEL=${PLATFORM_PSA_ISOLATION_LEVEL}, supported values are : ${PLATFORM_PSA_ISOLATION_LEVEL_OPTIONS}")
 	endif()
 	if(${SUITE} STREQUAL "IPC")
 		message(STATUS "[PSA] : PLATFORM_PSA_ISOLATION_LEVEL is set to ${PLATFORM_PSA_ISOLATION_LEVEL}")
@@ -245,6 +394,9 @@ if(NOT DEFINED INCLUDE_PANIC_TESTS)
 	set(INCLUDE_PANIC_TESTS 0 CACHE INTERNAL "Default INCLUDE_PANIC_TESTS value" FORCE)
         message(STATUS "[PSA] : Defaulting INCLUDE_PANIC_TESTS to ${INCLUDE_PANIC_TESTS}")
 else()
+	if(NOT ${INCLUDE_PANIC_TESTS} IN_LIST PSA_INCLUDE_PANIC_TESTS_OPTIONS)
+		message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DINCLUDE_PANIC_TESTS=${INCLUDE_PANIC_TESTS}, supported values are : ${PSA_INCLUDE_PANIC_TESTS_OPTIONS}")
+	endif()
 	if(INCLUDE_PANIC_TESTS EQUAL 1)
 		message(STATUS "[PSA] : "
 		"INCLUDE_PANIC_TESTS set to 1, therefore including PSA APIs panic tests into the regression,\n"
@@ -275,18 +427,99 @@ if(NOT DEFINED SP_HEAP_MEM_SUPP)
         message(STATUS "[PSA] : Defaulting SP_HEAP_MEM_SUPP to ${SP_HEAP_MEM_SUPP}")
 endif()
 
-if(NOT DEFINED TEST_COMBINE_ARCHIVE)
-	#Default option is to create archive
-	set(TEST_COMBINE_ARCHIVE 1 CACHE INTERNAL "Default TEST_COMBINE_ARCHIVE value" FORCE)
-        message(STATUS "[PSA] : Defaulting TEST_COMBINE_ARCHIVE to ${TEST_COMBINE_ARCHIVE}")
+if(NOT DEFINED SUITE_TEST_RANGE)
+	set(SUITE_TEST_RANGE_MIN None)
+	set(SUITE_TEST_RANGE_MAX None)
 else()
-    message(STATUS "[PSA] : TEST_COMBINE_ARCHIVE is set to ${TEST_COMBINE_ARCHIVE}")
+	list(LENGTH SUITE_TEST_RANGE SUITE_TEST_RANGE_LENGTH)
+	if(${SUITE_TEST_RANGE_LENGTH} GREATER "2")
+		message(FATAL_ERROR "[PSA] : -DSUITE_TEST_RANGE=<...> value error! accepts two "
+                                             " numbers in quotes separated with ';'")
+	endif()
+	if(${SUITE_TEST_RANGE_LENGTH} EQUAL "2")
+		list(GET SUITE_TEST_RANGE 0 SUITE_TEST_RANGE_MIN)
+		list(GET SUITE_TEST_RANGE 1 SUITE_TEST_RANGE_MAX)
+		message(STATUS "[PSA] : Testing (${SUITE_TEST_RANGE_MIN}, ${SUITE_TEST_RANGE_MAX}) of ${SUITE} suite")
+	endif()
+	if(${SUITE_TEST_RANGE_LENGTH} EQUAL "1")
+		set(SUITE_TEST_RANGE_MIN ${SUITE_TEST_RANGE})
+		set(SUITE_TEST_RANGE_MAX ${SUITE_TEST_RANGE})
+		message(STATUS "[PSA] : Testing ${SUITE_TEST_RANGE_MIN} of ${SUITE} suite")
+	endif()
+endif()
+
+if(NOT DEFINED SPEC_VERSION)
+	message(STATUS "[PSA] : Default spec version")
+else()
+	if(NOT ${SPEC_VERSION} IN_LIST PSA_SPEC_VERSION)
+                message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DSPEC_VERSION=${SPEC_VERSION}, supported values are : ${PSA_SPEC_VERSION} for ${SUITE}")
+	else()
+		message(STATUS "[PSA] : Testing ${SUITE} for spec version ${SPEC_VERSION}")
+	endif()
+endif()
+
+if(DEFINED STATELESS_ROT_TESTS)
+	if(NOT ${STATELESS_ROT_TESTS} IN_LIST PSA_STATELESS_ROT)
+                 message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DSTATELESS_ROT_TESTS=${STATELESS_ROT_TESTS}, supported values are : ${PSA_STATELESS_ROT}")
+        elseif(${STATELESS_ROT_TESTS} EQUAL 1)
+                 message(STATUS "[PSA] : Testing ${SUITE} for stateless rot")
+        elseif(${STATELESS_ROT_TESTS} EQUAL 0)
+                 message(STATUS "[PSA] : Testing ${SUITE} for connection based")
+        endif()
+
+	if(NOT DEFINED SPEC_VERSION)
+                message(FATAL_ERROR "[PSA] : Error: SPEC_VERSION is require for STATELESS_ROT_TESTS.")
+	elseif(${SUITE} STREQUAL "IPC")
+		if(${SPEC_VERSION} STREQUAL "1.0")
+			message(FATAL_ERROR "[PSA] : Error: STATELESS_ROT_TESTS is only valid for SPEC_VERSION=1.1.")
+		elseif(${SPEC_VERSION} STREQUAL "1.1")
+			add_definitions(-DSPEC_VERSION=11)
+			if(${STATELESS_ROT_TESTS} EQUAL 1)
+	                        add_definitions(-DSTATELESS_ROT=1)
+			elseif(${STATELESS_ROT_TESTS} EQUAL 0)
+	                        add_definitions(-DSTATELESS_ROT=0)
+			endif()
+		endif()
+	else()
+                message(FATAL_ERROR "[PSA] : Error: STATELESS_ROT_TESTS is only applicable to IPC Test Suite.")
+	endif()
+else()
+	add_definitions(-DSTATELESS_ROT=0)
+	if(DEFINED SPEC_VERSION)
+		if(${SUITE} STREQUAL "IPC")
+                	if(${SPEC_VERSION} STREQUAL "1.0")
+                        	add_definitions(-DSPEC_VERSION=10)
+	                endif()
+        	        if(${SPEC_VERSION} STREQUAL "1.1")
+        	                add_definitions(-DSPEC_VERSION=11)
+        	        endif()
+		endif()
+	endif()
+endif()
+
+if(NOT DEFINED TESTS_COVERAGE)
+	#By default all tests are included
+	set(TESTS_COVERAGE "ALL" CACHE INTERNAL "Default TESTS_COVERAGE value" FORCE)
+        message(STATUS "[PSA] : Defaulting TESTS_COVERAGE to ${TESTS_COVERAGE}")
+else()
+	if(NOT ${TESTS_COVERAGE} IN_LIST PSA_TESTS_COVERAGE_OPTIONS)
+		message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DTESTS_COVERAGE=${TESTS_COVERAGE}, supported values are : ${PSA_TESTS_COVERAGE_OPTIONS}")
+	endif()
+	if(TESTS_COVERAGE STREQUAL ALL)
+                message(STATUS "[PSA] : "
+                "TESTS_COVERAGE set to ALL, therefore all tests are included.")
+        endif()
+	if(TESTS_COVERAGE STREQUAL PASS)
+		message(STATUS "[PSA] : "
+		"TESTS_COVERAGE set to PASS, therefore known failure tests are not included.")
+		add_definitions(-DTESTS_COVERAGE)
+	endif()
 endif()
 
 message(STATUS "[PSA] : ----------Process input arguments- complete-------------")
 
 
-if((${SUITE} STREQUAL "INITIAL_ATTESTATION") AND (NOT EXISTS ${PSA_TARGET_QCBOR}))
+if((${SUITE} STREQUAL "INITIAL_ATTESTATION") AND (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}))
 # Clone QCBOR and move to specified tag
 execute_process(COMMAND ${GIT_EXECUTABLE} clone ${PSA_QCBOR_GIT_REPO_LINK} ${PSA_TARGET_QCBOR}
 	RESULT_VARIABLE ${PSA_TARGET_QCBOR}_clone_result
@@ -323,16 +556,22 @@ execute_process(COMMAND ${PYTHON_EXECUTABLE} ${PSA_TESTLIST_GENERATOR}
 					${SUITE_LOWER}
 					${TESTSUITE_DB}
 					${INCLUDE_PANIC_TESTS}
+					${TESTS_COVERAGE}
 					${PSA_TESTLIST_FILE}
 					${PSA_TEST_ENTRY_LIST_INC}
 					${PSA_TEST_ENTRY_FUN_DECLARE_INC}
 					${PSA_CLIENT_TEST_LIST_DELCARE_INC}
 					${PSA_CLIENT_TEST_LIST_INC}
 					${PSA_SERVER_TEST_LIST_DECLARE_INC}
-					${PSA_SERVER_TEST_LIST})
+					${PSA_SERVER_TEST_LIST}
+					${SUITE_TEST_RANGE_MIN}
+					${SUITE_TEST_RANGE_MAX})
 
 # Creating CMake list variable from file
 file(READ ${PSA_TESTLIST_FILE} PSA_TEST_LIST)
+if(NOT PSA_TEST_LIST)
+	message(FATAL_ERROR "[PSA] : Invalid test number!")
+endif()
 string(REGEX REPLACE "\n" ";" PSA_TEST_LIST "${PSA_TEST_LIST}")
 
 add_custom_target(
@@ -376,9 +615,14 @@ add_custom_target(
 
 # Check for supported toolchain/s
 if(${TOOLCHAIN} IN_LIST PSA_TOOLCHAIN_SUPPORT)
-        include(${PSA_ROOT_DIR}/tools/cmake/compiler/${TOOLCHAIN}.cmake)
+	if (DEFINED CROSS_COMPILE)
+		if(NOT (${TOOLCHAIN} IN_LIST CROSS_COMPILE_TOOLCHAIN_SUPPORT))
+			message(FATAL_ERROR "[PSA] : Error: CROSS_COMPILE not supported for this toolchain, supported toolchain are : ${CROSS_COMPILE_TOOLCHAIN_SUPPORT}")
+		endif()
+	endif()
+	include(${PSA_ROOT_DIR}/tools/cmake/compiler/${TOOLCHAIN}.cmake)
 else()
-        message(FATAL_ERROR "[PSA] : Error: Unspported value for -DTOOLCHAIN=, supported toolchain are : ${PSA_TOOLCHAIN_SUPPORT}")
+	message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DTOOLCHAIN=${TOOLCHAIN}, supported toolchain are : ${PSA_TOOLCHAIN_SUPPORT}")
 endif()
 
 # Global macro to identify the PSA test suite cmake build
@@ -386,7 +630,14 @@ add_definitions(-DPSA_CMAKE_BUILD)
 add_definitions(-D${SUITE})
 add_definitions(-DVERBOSE=${VERBOSE})
 add_definitions(-DPLATFORM_PSA_ISOLATION_LEVEL=${PLATFORM_PSA_ISOLATION_LEVEL})
-
+add_definitions(-D${TARGET})
+if("${TFM_PROFILE}" STREQUAL "profile_small")
+	message(STATUS "[PSA] : Building SMALL profile")
+	add_definitions(-DTF_M_PROFILE_SMALL)
+elseif("${TFM_PROFILE}" STREQUAL "profile_medium")
+	message(STATUS "[PSA] : Building MEDIUM profile")
+	add_definitions(-DTF_M_PROFILE_MEDIUM)
+endif()
 if(${SP_HEAP_MEM_SUPP} EQUAL 1)
 	add_definitions(-DSP_HEAP_MEM_SUPP)
 endif()

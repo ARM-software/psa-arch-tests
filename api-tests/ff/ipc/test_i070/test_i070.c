@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,13 +25,13 @@
 
 #include "test_i070.h"
 
-client_test_t test_i070_client_tests_list[] = {
+const client_test_t test_i070_client_tests_list[] = {
     NULL,
     client_test_write_to_const_data,
     NULL,
 };
 
-int32_t client_test_write_to_const_data(caller_security_t caller)
+int32_t client_test_write_to_const_data(caller_security_t caller __UNUSED)
 {
   const char *string = "This text should be in RO space";
   char       *p;

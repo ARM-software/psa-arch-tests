@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,64 +15,268 @@
  * limitations under the License.
 **/
 
-#include "val_crypto.h"
+#include "test_crypto_common.h"
+
+#define DERIVATION_INPUT_CNT    3
+
+typedef struct {
+    psa_key_derivation_step_t  step;
+    const uint8_t             *data;
+    size_t                     data_length;
+} key_derivation_input_t;
 
 typedef struct {
     char                        test_desc[75];
-    psa_key_handle_t            key_handle;
-    psa_key_type_t              key_type;
-    uint8_t                     key_data[34];
-    uint32_t                    key_length;
-    size_t                      output_size;
-    psa_key_usage_t             usage;
-    psa_algorithm_t             key_alg;
-    psa_key_derivation_step_t   step;
+    psa_key_type_t              type;
+    psa_key_usage_t             usage_flags;
+    psa_algorithm_t             alg;
     size_t                      capacity;
-    uint8_t                     data[16];
+    const uint8_t              *data;
     size_t                      data_length;
+    key_derivation_input_t      derv_inputs[DERIVATION_INPUT_CNT];
+    uint8_t                    *output;
+    size_t                      output_length;
     psa_status_t                expected_status;
 } test_data;
 
-static test_data check1[] = {
-{"Test psa_key_derivation_output_bytes - Key\n", 1, PSA_KEY_TYPE_DERIVE,
-{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
- 0x5F, 0xC9, 0x77},
- AES_16B_KEY_SIZE, 42, PSA_KEY_USAGE_DERIVE,
- PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
- PSA_KEY_DERIVATION_INPUT_SECRET, 42, {0}, 0,
- PSA_SUCCESS
+static const test_data check1[] = {
+{
+    .test_desc       = "Test psa_key_derivation_output_bytes - HKDF\n",
+    .type            = PSA_KEY_TYPE_DERIVE,
+    .usage_flags     = PSA_KEY_USAGE_DERIVE,
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+    .capacity        = 42,
+    .data            = input_bytes_data,
+    .data_length     = INPUT_BYTES_DATA_LEN,
+    .derv_inputs     = {
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_SALT,
+                         .data        = input_salt,
+                         .data_length = INPUT_SALT_LEN
+                        },
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_SECRET,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_INFO,
+                         .data        = input_info,
+                         .data_length = INPUT_INFO_LEN
+                        }
+                       },
+    .output          = expected_output,
+    .output_length   = 42,
+    .expected_status = PSA_SUCCESS
 },
 
-{"Test psa_key_derivation_output_bytes - Info\n", 2, PSA_KEY_TYPE_DERIVE,
-{0}, 0, 42, 0, PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
- PSA_KEY_DERIVATION_INPUT_INFO, 42, "This is the info", 16,
- PSA_SUCCESS
+{
+    .test_desc       = "Test psa_key_derivation_output_bytes - optional salt\n",
+    .type            = PSA_KEY_TYPE_DERIVE,
+    .usage_flags     = PSA_KEY_USAGE_DERIVE,
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+    .capacity        = 42,
+    .data            = input_bytes_data,
+    .data_length     = INPUT_BYTES_DATA_LEN,
+    .derv_inputs     = {
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_SECRET,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_INFO,
+                         .data        = input_info,
+                         .data_length = INPUT_INFO_LEN
+                        },
+                        {
+                         .step        = 0,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                       },
+    .output          = expected_output,
+    .output_length   = 42,
+    .expected_status = PSA_SUCCESS
 },
 
-{"Test psa_key_derivation_output_bytes - Salt\n", 3, PSA_KEY_TYPE_DERIVE,
-{0}, 0, 42, 0, PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
- PSA_KEY_DERIVATION_INPUT_SALT, 42, "This is the info", 16,
- PSA_ERROR_BAD_STATE
+{
+    .test_desc       = "Test psa_key_derivation_output_bytes - capacity < output_length\n",
+    .type            = PSA_KEY_TYPE_DERIVE,
+    .usage_flags     = PSA_KEY_USAGE_DERIVE,
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+    .capacity        = 42,
+    .data            = input_bytes_data,
+    .data_length     = INPUT_BYTES_DATA_LEN,
+    .derv_inputs     = {
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_SALT,
+                         .data        = input_salt,
+                         .data_length = INPUT_SALT_LEN
+                        },
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_SECRET,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_INFO,
+                         .data        = input_info,
+                         .data_length = INPUT_INFO_LEN
+                        }
+                       },
+    .output          = expected_output,
+    .output_length   = 43,
+    .expected_status = PSA_ERROR_INSUFFICIENT_DATA
 },
 
-{"Test psa_key_derivation_output_bytes - Label\n", 4, PSA_KEY_TYPE_DERIVE,
-{0}, 0, 42, 0, PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
- PSA_KEY_DERIVATION_INPUT_LABEL, 42, "This is the info", 16,
- PSA_ERROR_BAD_STATE
+{
+    .test_desc       = "Test psa_key_derivation_output_bytes - missing info\n",
+    .type            = PSA_KEY_TYPE_DERIVE,
+    .usage_flags     = PSA_KEY_USAGE_DERIVE,
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+    .capacity        = 42,
+    .data            = input_bytes_data,
+    .data_length     = INPUT_BYTES_DATA_LEN,
+    .derv_inputs     = {
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_SALT,
+                         .data        = input_salt,
+                         .data_length = INPUT_SALT_LEN
+                        },
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_SECRET,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                        {
+                         .step        = 0,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                       },
+    .output          = expected_output,
+    .output_length   = 42,
+    .expected_status = PSA_ERROR_BAD_STATE
 },
 
-{"Test psa_key_derivation_output_bytes - Seed\n", 5, PSA_KEY_TYPE_DERIVE,
-{0}, 0, 42, 0, PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
- PSA_KEY_DERIVATION_INPUT_SEED, 42, "This is the info", 16,
- PSA_ERROR_BAD_STATE
+{
+    .test_desc       = "Test psa_key_derivation_output_bytes - missing salt/secret/info\n",
+    .type            = PSA_KEY_TYPE_DERIVE,
+    .usage_flags     = PSA_KEY_USAGE_DERIVE,
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
+    .capacity        = 42,
+    .data            = input_bytes_data,
+    .data_length     = INPUT_BYTES_DATA_LEN,
+    .derv_inputs     = {
+                        {
+                         .step        = 0,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                        {
+                         .step        = 0,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                        {
+                         .step        = 0,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                       },
+    .output          = expected_output,
+    .output_length   = 42,
+    .expected_status = PSA_ERROR_BAD_STATE
 },
 
-{"Test psa_key_derivation_output_bytes - Greater Capacity than available\n", 6, PSA_KEY_TYPE_DERIVE,
-{0x49, 0x8E, 0xC7, 0x7D, 0x01, 0x95, 0x0D, 0x94, 0x2C, 0x16, 0xA5, 0x3E, 0x99,
- 0x5F, 0xC9, 0x77},
- AES_16B_KEY_SIZE, BUFFER_SIZE, PSA_KEY_USAGE_DERIVE,
- PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
- PSA_KEY_DERIVATION_INPUT_SECRET, 42, {0}, 0,
- PSA_ERROR_INSUFFICIENT_DATA,
+{
+    .test_desc       = "Test psa_key_derivation_output_bytes - TLS12_PRF\n",
+    .type            = PSA_KEY_TYPE_DERIVE,
+    .usage_flags     = PSA_KEY_USAGE_DERIVE,
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_TLS12_PRF(PSA_ALG_SHA_256)),
+    .capacity        = 42,
+    .data            = input_bytes_data,
+    .data_length     = INPUT_BYTES_DATA_LEN,
+    .derv_inputs     = {
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_SEED,
+                         .data        = input_seed,
+                         .data_length = INPUT_SEED_LEN
+                        },
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_SECRET,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_LABEL,
+                         .data        = input_label,
+                         .data_length = INPUT_LABEL_LEN
+                        },
+                       },
+    .output          = expected_output,
+    .output_length   = 42,
+    .expected_status = PSA_SUCCESS
+},
+
+{
+    .test_desc       = "Test psa_key_derivation_output_bytes - capacity < output_length\n",
+    .type            = PSA_KEY_TYPE_DERIVE,
+    .usage_flags     = PSA_KEY_USAGE_DERIVE,
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_TLS12_PRF(PSA_ALG_SHA_256)),
+    .capacity        = 42,
+    .data            = input_bytes_data,
+    .data_length     = INPUT_BYTES_DATA_LEN,
+    .derv_inputs     = {
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_SEED,
+                         .data        = input_seed,
+                         .data_length = INPUT_SEED_LEN
+                        },
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_SECRET,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_LABEL,
+                         .data        = input_label,
+                         .data_length = INPUT_LABEL_LEN
+                        },
+                       },
+    .output          = expected_output,
+    .output_length   = 43,
+    .expected_status = PSA_ERROR_INSUFFICIENT_DATA
+},
+
+{
+    .test_desc       = "Test psa_key_derivation_output_bytes - missing seed/secret/label\n",
+    .type            = PSA_KEY_TYPE_DERIVE,
+    .usage_flags     = PSA_KEY_USAGE_DERIVE,
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_TLS12_PRF(PSA_ALG_SHA_256)),
+    .capacity        = 42,
+    .data            = input_bytes_data,
+    .data_length     = INPUT_BYTES_DATA_LEN,
+    .derv_inputs     = {
+                        {
+                         .step        = 0,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                        {
+                         .step        = 0,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                        {
+                         .step        = 0,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                       },
+    .output          = expected_output,
+    .output_length   = 42,
+    .expected_status = PSA_ERROR_BAD_STATE
 },
 };

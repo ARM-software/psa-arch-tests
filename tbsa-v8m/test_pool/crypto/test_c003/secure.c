@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,8 +48,8 @@ void hard_fault_esr (unsigned long *sf_args)
     g_val->print(PRINT_DEBUG, "\n\r\tHardFault triggered when HUK was accessed from"
                  "non-Trusted world", 0);
 
-    asm volatile("DSB");
-    asm volatile("ISB");
+    __asm volatile("DSB");
+    __asm volatile("ISB");
 
     g_val->system_reset(WARM_RESET);
 
@@ -59,16 +59,16 @@ void hard_fault_esr (unsigned long *sf_args)
 __attribute__((naked))
 void HF_Handler(void)
 {
-    asm volatile("mrs r0, control_ns \n"
-                 "mov r1, #0x2       \n"
-                 "and r0, r1         \n"
-                 "cmp r0, r1         \n"
-                 "beq _psp_ns        \n"
-                 "mrs r0, msp_ns     \n"
-                 "b hard_fault_esr \n"
-                 "_psp_ns:           \n"
-                 "mrs r0, psp_ns     \n"
-                 "b hard_fault_esr \n");
+    __asm volatile("mrs r0, control_ns \n"
+                   "mov r1, #0x2       \n"
+                   "and r0, r1         \n"
+                   "cmp r0, r1         \n"
+                   "beq _psp_ns        \n"
+                   "mrs r0, msp_ns     \n"
+                   "b hard_fault_esr \n"
+                   "_psp_ns:           \n"
+                   "mrs r0, psp_ns     \n"
+                   "b hard_fault_esr \n");
 }
 
 void test_payload(tbsa_val_api_t *val)

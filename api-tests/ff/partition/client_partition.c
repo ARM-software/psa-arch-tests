@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -97,11 +97,15 @@ void client_main(void)
         /* Server_partition requests client to connect to SERVER_SECURE_CONNECT_ONLY_SID */
         else if (signals & PSA_DOORBELL)
         {
+#if STATELESS_ROT == 1
+            psa_call(SERVER_SECURE_CONNECT_ONLY_HANDLE, PSA_IPC_CALL, NULL, 0, NULL, 0);
+#else
             if (psa_connect(SERVER_SECURE_CONNECT_ONLY_SID, SERVER_SECURE_CONNECT_ONLY_VERSION)
                 != PSA_ERROR_CONNECTION_REFUSED)
             {
                val_print(PRINT_ERROR, "psa_connect failed \n", 0);
             }
+#endif
             psa_clear();
         }
         else

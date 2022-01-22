@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,7 @@ extern psa_api_t psa_api;
 /* globals */
 test_status_buffer_t    g_status_buffer;
 
+#ifdef IPC
 /**
  * @brief Connect to given sid
    @param  -sid : RoT service id
@@ -37,7 +38,7 @@ test_status_buffer_t    g_status_buffer;
  */
 val_status_t val_ipc_connect(uint32_t sid, uint32_t version, psa_handle_t *handle )
 {
-    *handle = pal_ipc_connect(sid, version);
+    *handle = psa_connect(sid, version);
 
     if (*handle > 0)
         return VAL_STATUS_SUCCESS;
@@ -66,7 +67,7 @@ val_status_t val_ipc_call(psa_handle_t handle,
 {
     psa_status_t call_status = PSA_SUCCESS;
 
-    call_status = pal_ipc_call(handle, type, in_vec, in_len, out_vec, out_len);
+    call_status = psa_call(handle, type, in_vec, in_len, out_vec, out_len);
 
     if (call_status != PSA_SUCCESS)
     {
@@ -85,8 +86,10 @@ val_status_t val_ipc_call(psa_handle_t handle,
  */
 void val_ipc_close(psa_handle_t handle)
 {
-    pal_ipc_close(handle);
+    psa_close(handle);
 }
+#endif
+
 /**
     @brief    - This function executes given list of tests from non-secure sequentially
                 This covers non-secure to secure IPC API scenario
@@ -95,17 +98,21 @@ void val_ipc_close(psa_handle_t handle)
     @param    - server_hs  : Initiate a server handshake
     @return   - val_status_t
 **/
-val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *tests_list,
+val_status_t val_execute_non_secure_tests(uint32_t test_num, const client_test_t *tests_list,
                                           bool_t server_hs)
 {
     val_status_t          status = VAL_STATUS_SUCCESS;
     val_status_t          test_status = VAL_STATUS_SUCCESS;
     boot_t                boot;
-    psa_handle_t          handle;
     uint32_t              i = 1;
+#ifdef IPC
+    psa_handle_t          handle;
     test_info_t           test_info;
 
     test_info.test_num = test_num;
+#else
+   (void)test_num;
+#endif
 
     status = val_get_boot_flag(&boot.state);
     if (VAL_ERROR(status))
@@ -115,7 +122,8 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
     }
 
     if (boot.state == BOOT_NOT_EXPECTED || boot.state == BOOT_EXPECTED_REENTER_TEST
-        || boot.state == BOOT_EXPECTED_CONT_TEST_EXEC)
+        || boot.state == BOOT_EXPECTED_CONT_TEST_EXEC
+        || boot.state == BOOT_EXPECTED_ON_SECOND_CHECK)
     {
         while (tests_list[i] != NULL)
         {
@@ -124,10 +132,18 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
              * consider previous run pass and jump to second test function
              * of the same test if available.
              */
+
             if ((boot.state ==  BOOT_EXPECTED_REENTER_TEST) && (i == 1))
             {
                 val_print(PRINT_DEBUG, "[Check 1] PASSED\n", 0);
                 i++;
+                continue;
+            }
+
+            if ((boot.state ==  BOOT_EXPECTED_ON_SECOND_CHECK) && (i == 1))
+            {
+                val_print(PRINT_DEBUG, "[Check 2] PASSED\n", 0);
+                i = i + 2 ;
                 continue;
             }
 
@@ -142,13 +158,19 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
 
             if (i == 1)
                 val_print(PRINT_TEST,"[Info] Executing tests from non-secure\n", 0);
-
+#ifdef IPC
             if (server_hs == TRUE)
             {
                 /* Handshake with server tests */
                 test_info.block_num = i;
+#if STATELESS_ROT == 1
+                status = val_execute_secure_test_func(&handle, test_info,
+                                                                SERVER_TEST_DISPATCHER_HANDLE);
+                handle = (int32_t)SERVER_TEST_DISPATCHER_HANDLE;
+#else
                 status = val_execute_secure_test_func(&handle, test_info,
                                                 SERVER_TEST_DISPATCHER_SID);
+#endif
                 if (VAL_ERROR(status))
                 {
                     val_set_status(RESULT_FAIL(status));
@@ -160,16 +182,16 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
                     val_print(PRINT_DEBUG, "[Check %d] START\n", i);
                 }
             }
-
+#endif
             /* Execute client tests */
             test_status = tests_list[i](CALLER_NONSECURE);
-
+#ifdef IPC
             if (server_hs == TRUE)
             {
                 /* Retrive Server test status */
                 status = val_get_secure_test_result(&handle);
             }
-
+#endif
             status = test_status ? test_status:status;
             if (IS_TEST_SKIP(status))
             {
@@ -206,6 +228,8 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, client_test_t *test
    }
    return status;
 }
+
+#ifdef IPC
 /**
     @brief    - This function is used to switch to client_partition.c
                 where client tests will be executed to cover secure to secure
@@ -242,6 +266,12 @@ val_status_t val_switch_to_secure_client(uint32_t test_num)
             val_print(PRINT_DEBUG, "[Check 1] PASSED\n", 0);
        }
 
+       if (boot.state ==  BOOT_EXPECTED_ON_SECOND_CHECK)
+       {
+            test_info.block_num = test_info.block_num + 2;
+            val_print(PRINT_DEBUG, "[Check 2] PASSED\n", 0);
+       }
+
        status = val_set_boot_flag(BOOT_NOT_EXPECTED);
        if (VAL_ERROR(status))
        {
@@ -249,7 +279,12 @@ val_status_t val_switch_to_secure_client(uint32_t test_num)
        }
 
        /* switch to secure client */
+#if STATELESS_ROT == 1
+       status = val_execute_secure_test_func(&handle, test_info, CLIENT_TEST_DISPATCHER_HANDLE);
+       handle = (int32_t)CLIENT_TEST_DISPATCHER_HANDLE;
+#else
        status = val_execute_secure_test_func(&handle, test_info, CLIENT_TEST_DISPATCHER_SID);
+#endif
        if (VAL_ERROR(status))
        {
            goto exit;
@@ -290,25 +325,38 @@ exit:
     @param    - sid        : RoT service to be connected. Partition dispatcher sid
     @return   - val_status_t
 **/
-val_status_t val_execute_secure_test_func(psa_handle_t *handle, test_info_t test_info, uint32_t sid)
+val_status_t val_execute_secure_test_func(__attribute__((unused)) psa_handle_t *handle,
+		                                           test_info_t test_info, uint32_t sid)
 {
     uint32_t        test_data;
     val_status_t    status = VAL_STATUS_SUCCESS;
     psa_status_t    status_of_call = PSA_SUCCESS;
+#if STATELESS_ROT == 1
+    test_data = ((uint32_t)(test_info.test_num) | ((uint32_t)(test_info.block_num) << BLOCK_NUM_POS)
+                        | ((uint32_t)(TEST_EXECUTE_FUNC) << ACTION_POS));
+    psa_invec data[1] = { {&test_data, sizeof(test_data)} };
 
-    *handle = pal_ipc_connect(sid, 1);
+    status_of_call = psa_call(sid, 0, data, 1, NULL, 0);
+    if (status_of_call != PSA_SUCCESS)
+    {
+    	status = VAL_STATUS_CALL_FAILED;
+        val_print(PRINT_ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
+    }
+    return status;
+#else
+    *handle = psa_connect(sid, 1);
     if (*handle > 0)
     {
         test_data = ((uint32_t)(test_info.test_num) |((uint32_t)(test_info.block_num) << BLOCK_NUM_POS)
                     | ((uint32_t)(TEST_EXECUTE_FUNC) << ACTION_POS));
         psa_invec data[1] = {{&test_data, sizeof(test_data)}};
 
-        status_of_call = pal_ipc_call(*handle, 0, data, 1, NULL, 0);
+        status_of_call = psa_call(*handle, 0, data, 1, NULL, 0);
         if (status_of_call != PSA_SUCCESS)
         {
             status = VAL_STATUS_CALL_FAILED;
             val_print(PRINT_ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
-            pal_ipc_close(*handle);
+            psa_close(*handle);
         }
     }
     else
@@ -318,6 +366,7 @@ val_status_t val_execute_secure_test_func(psa_handle_t *handle, test_info_t test
     }
 
     return status;
+#endif
 }
 
 /**
@@ -337,17 +386,18 @@ val_status_t val_get_secure_test_result(psa_handle_t *handle)
     psa_outvec resp = {&status, sizeof(status)};
     psa_invec data[1] = {{&test_data, sizeof(test_data)}};
 
-    status_of_call = pal_ipc_call(*handle, 0, data, 1, &resp, 1);
+    status_of_call = psa_call(*handle, 0, data, 1, &resp, 1);
     if (status_of_call != PSA_SUCCESS)
     {
         status = VAL_STATUS_CALL_FAILED;
         val_print(PRINT_ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
     }
-
-    pal_ipc_close(*handle);
+#if STATELESS_ROT != 1
+    psa_close(*handle);
+#endif
     return status;
 }
-
+#endif
 
 /**
     @brief    - Parses input status for a given test and
@@ -367,31 +417,31 @@ uint32_t val_report_status(void)
     {
         case TEST_START:
             state = TEST_FAIL;
-            val_print(PRINT_ALWAYS, "TEST RESULT: FAILED (Error Code=0x%x)\n",
+            val_print(PRINT_ALWAYS, "\nTEST RESULT: FAILED (Error Code=0x%x)\n",
                                                     VAL_STATUS_INIT_FAILED);
             break;
 
         case TEST_END:
             state = TEST_PASS;
-            val_print(PRINT_ALWAYS, "TEST RESULT: PASSED \n", 0);
+            val_print(PRINT_ALWAYS, "\nTEST RESULT: PASSED\n", 0);
             break;
 
         case TEST_FAIL:
-            val_print(PRINT_ALWAYS, "TEST RESULT: FAILED (Error Code=0x%x) \n", status);
+            val_print(PRINT_ALWAYS, "\nTEST RESULT: FAILED (Error Code=0x%x)\n", status);
             break;
 
         case TEST_SKIP:
             state = TEST_SKIP;
-            val_print(PRINT_ALWAYS, "TEST RESULT: SKIPPED (Skip Code=0x%x)\n", status);
+            val_print(PRINT_ALWAYS, "\nTEST RESULT: SKIPPED (Skip Code=0x%x)\n", status);
             break;
 
         case TEST_PENDING:
-            val_print(PRINT_ALWAYS, "TEST RESULT: SIM ERROR (Error Code=0x%x)\n", status);
+            val_print(PRINT_ALWAYS, "\nTEST RESULT: SIM ERROR (Error Code=0x%x)\n", status);
             break;
 
         default:
             state = TEST_FAIL;
-            val_print(PRINT_ALWAYS, "TEST RESULT: FAILED(Error Code=0x%x)\n", VAL_STATUS_INVALID);
+            val_print(PRINT_ALWAYS, "\nTEST RESULT: FAILED(Error Code=0x%x)\n", VAL_STATUS_INVALID);
             break;
 
     }
@@ -554,7 +604,8 @@ val_status_t val_get_last_run_test_id(test_id_t *test_id)
                                     BOOT_EXPECTED_S,
                                     BOOT_EXPECTED_BUT_FAILED,
                                     BOOT_EXPECTED_REENTER_TEST,
-                                    BOOT_EXPECTED_CONT_TEST_EXEC
+                                    BOOT_EXPECTED_CONT_TEST_EXEC,
+                                    BOOT_EXPECTED_ON_SECOND_CHECK
                                     };
 
     status = val_get_boot_flag(&boot.state);
@@ -565,7 +616,7 @@ val_status_t val_get_last_run_test_id(test_id_t *test_id)
 
     val_print(PRINT_INFO, "\n\tboot.state=0x%x", boot.state);
 
-    for (i = 0; i < (sizeof(boot_state)/sizeof(boot_state[0])); i++)
+    for (i = 0; i < (int)(sizeof(boot_state)/sizeof(boot_state[0])); i++)
     {
         if (boot.state == boot_state[i])
         {

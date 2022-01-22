@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,9 +24,10 @@
 
 extern val_api_t *val;
 extern psa_api_t *psa;
-extern client_test_t test_c014_crypto_list[];
+extern const client_test_t test_c014_crypto_list[];
 
 int32_t psa_hash_finish_test(caller_security_t caller);
 int32_t psa_hash_finish_inactive_operation_handle(caller_security_t caller);
 int32_t psa_hash_finish_invalid_hash_buffer_size(caller_security_t caller);
+extern void crypto_common_exit_action(void);
 #endif /* _TEST_C014_CLIENT_TESTS_H_ */

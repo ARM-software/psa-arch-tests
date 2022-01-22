@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,13 +25,13 @@
 
 #include "test_i020.h"
 
-client_test_t test_i020_client_tests_list[] = {
+const client_test_t test_i020_client_tests_list[] = {
     NULL,
     client_test_psa_reply_with_invalid_connect_status_code,
     NULL,
 };
 
-int32_t client_test_psa_reply_with_invalid_connect_status_code(caller_security_t caller)
+int32_t client_test_psa_reply_with_invalid_connect_status_code(caller_security_t caller __UNUSED)
 {
    int32_t            status = VAL_STATUS_SUCCESS;
    psa_handle_t       handle = 0;

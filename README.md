@@ -14,7 +14,7 @@ For more information, visit the PSA webpage [here](https://developer.arm.com/pro
 PSA APIs reference header files are located at [api-specs](api-specs/) directory.
 
 ### PSA Functional API Certification
-The [PSA Dev API tests](api-tests/dev_apis) are the basis for getting the PSA Functional API Certification. For more information on the certification program, see [psacertified.org](https://www.psacertified.org/functional-api-certification/) 
+The [PSA Functional API tests](api-tests/dev_apis) are the basis for getting the PSA Functional API Certification. For more information on the certification program, see [psacertified.org](https://www.psacertified.org/functional-api-certification/) 
 
 ## GitHub branch
   - For functional API certification, use the release branch and pick the appropriate release tag.
@@ -34,6 +34,8 @@ The test suite for this specification is located in the tbsa-v8m directory of th
 ### PSA APIs
 The test suite for this specification is located in the api-tests directory of this repository. See [PSA APIs Tests Readme](api-tests/README.md) file for more details.
 
+### Secure Debug
+The test suite for this specification is located in the secure-debug directory of this repository. See [Secure Debug Readme](secure-debug/README.md) file for more details.
 
 ## License
 
@@ -49,4 +51,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2021, Arm Limited and Contributors. All rights reserved.*

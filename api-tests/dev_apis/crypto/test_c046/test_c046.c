@@ -1,6 +1,5 @@
-
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,21 +20,23 @@
 #include "test_c046.h"
 #include "test_data.h"
 
-client_test_t test_c046_crypto_list[] = {
+const client_test_t test_c046_crypto_list[] = {
     NULL,
     psa_mac_compute_test,
     NULL,
 };
 
-static int           g_test_count = 1;
+extern  uint32_t g_test_count;
+
 static uint8_t       data[BUFFER_SIZE];
 
-int32_t psa_mac_compute_test(caller_security_t caller)
+int32_t psa_mac_compute_test(caller_security_t caller __UNUSED)
 {
     int                   num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t               i, status;
     size_t                length;
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
+    psa_key_id_t          key;
 
     if (num_checks == 0)
     {
@@ -64,11 +65,11 @@ int32_t psa_mac_compute_test(caller_security_t caller)
 
         /* Import the key data into the key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].key_data,
-                 check1[i].key_length, &check1[i].key_handle);
+                 check1[i].key_length, &key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Calculate the MAC (message authentication code) of a message */
-        status = val->crypto_function(VAL_CRYPTO_MAC_COMPUTE, check1[i].key_handle,
+        status = val->crypto_function(VAL_CRYPTO_MAC_COMPUTE, key,
                  check1[i].key_alg, check1[i].data, check1[i].data_size, data,
                  check1[i].mac_size, &length);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
@@ -76,7 +77,7 @@ int32_t psa_mac_compute_test(caller_security_t caller)
         if (check1[i].expected_status != PSA_SUCCESS)
         {
             /* Destroy the key */
-            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
             continue;
@@ -91,13 +92,13 @@ int32_t psa_mac_compute_test(caller_security_t caller)
         memset(data, 0, sizeof(data));
 
         /* Destroy the key */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, check1[i].key_handle);
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
         /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
 
-        status = val->crypto_function(VAL_CRYPTO_MAC_COMPUTE, check1[i].key_handle,
+        status = val->crypto_function(VAL_CRYPTO_MAC_COMPUTE, key,
                  check1[i].key_alg, check1[i].data, check1[i].data_size, data,
                  check1[i].mac_size, &length);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(9));

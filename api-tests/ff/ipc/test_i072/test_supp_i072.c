@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,69 @@ int32_t server_test_nspe_write_app_rot_variable(void);
 /* Application RoT data region */
 volatile uint32_t g_test_i072 = DATA_VALUE;
 
-server_test_t test_i072_server_tests_list[] = {
+#if STATELESS_ROT == 1
+
+const server_test_t test_i072_server_tests_list[] = {
+    NULL,
+    server_test_nspe_read_app_rot_variable,
+    server_test_nspe_write_app_rot_variable,
+    NULL,
+};
+
+static int32_t send_secure_partition_address(void)
+{
+    int32_t           status = VAL_STATUS_SUCCESS;
+    volatile uint32_t *addr = &g_test_i072;
+    psa_msg_t         msg = {0};
+
+    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
+    {
+        psa->reply(msg.handle, -2);
+        return status;
+    }
+
+    val->print(PRINT_DEBUG, "\tAPP-ROT: Passing 0x%x to NSPE\n", (int)&g_test_i072);
+
+    /* Send Application RoT data address - global variable */
+    psa->write(msg.handle, 0, (void *)&addr, sizeof(addr));
+    psa->reply(msg.handle, PSA_SUCCESS);
+
+    return VAL_STATUS_SUCCESS;
+}
+
+int32_t server_test_nspe_read_app_rot_variable(void)
+{
+    return send_secure_partition_address();
+}
+
+int32_t server_test_nspe_write_app_rot_variable(void)
+{
+    int32_t         status = VAL_STATUS_SUCCESS;
+
+
+    status = send_secure_partition_address();
+    if (VAL_ERROR(status))
+        return status;
+
+    /* Reached here means there could be write succeed or ignored */
+    if (g_test_i072 == DATA_VALUE)
+        return VAL_STATUS_SUCCESS;
+
+    val->print(PRINT_ERROR, "\tExpected write to fault but it didn't\n", 0);
+
+    /* Resetting boot.state to catch unwanted reboot */
+    if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
+    {
+        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        return VAL_STATUS_ERROR;
+    }
+    return VAL_STATUS_SUCCESS;
+}
+
+#else
+
+const server_test_t test_i072_server_tests_list[] = {
     NULL,
     server_test_nspe_read_app_rot_variable,
     server_test_nspe_write_app_rot_variable,
@@ -72,6 +134,7 @@ static int32_t send_secure_partition_address(void)
         return status;
     }
     psa->reply(msg.handle, PSA_SUCCESS);
+
     return VAL_STATUS_SUCCESS;
 }
 
@@ -114,3 +177,5 @@ int32_t server_test_nspe_write_app_rot_variable(void)
     }
     return VAL_STATUS_SUCCESS;
 }
+
+#endif

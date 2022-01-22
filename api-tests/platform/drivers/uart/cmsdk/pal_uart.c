@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,8 +31,8 @@ void pal_uart_cmsdk_init(uint32_t uart_base_addr)
     ((uart_t *) g_uart)->CTRL = CMSDK_UART_CTRL_TXEN_Msk;
     /* However, the UART resets to a BAUDDIV of 0, which is invalid. Set it to
     * the minimum valid number. */
-    ((uart_t *) g_uart)->BAUDDIV = 16;
-
+    /* Avoiding baud rate reconfiguration */
+    /* ((uart_t *) g_uart)->BAUDDIV = 16; */
 }
 
 /**
@@ -65,7 +65,7 @@ static void pal_uart_cmsdk_putc(uint8_t c)
     @param    - str      : Input String
               - data     : Value for format specifier
 **/
-void pal_cmsdk_print(char *str, int32_t data)
+void pal_cmsdk_print(const char *str, int32_t data)
 {
     int8_t  j, buffer[16];
     int8_t  i = 0, is_neg = 0, k = 2 * sizeof(data);

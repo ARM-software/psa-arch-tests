@@ -1,7 +1,6 @@
 # Ignore miscellaneous files
 cscope.*
 *.swp
-*.patch
 *~
 .project
 .cproject
@@ -9,3 +8,4 @@ cscope.*
 sbsa
 #Ignore build directory
 build/
+BUILD/

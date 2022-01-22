@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,39 +15,76 @@
  * limitations under the License.
 **/
 
-#include "val_crypto.h"
+#include "test_crypto_common.h"
 
 typedef struct {
     char                    test_desc[75];
-    size_t                  size;
+    uint8_t                *output;
+    size_t                  output_size;
     psa_status_t            expected_status;
 } test_data;
 
-static test_data check1[] = {
-{"Test psa_generate_random to get 0 Byte data\n", 0, PSA_SUCCESS
+static const test_data check1[] = {
+{
+    .test_desc       = "Test psa_generate_random to get 0 Byte data\n",
+    .output          = expected_output,
+    .output_size     = 0,
+    .expected_status = PSA_SUCCESS
 },
 
-{"Test psa_generate_random to get 16 Byte data\n", 16, PSA_SUCCESS
+{
+    .test_desc       = "Test psa_generate_random to get 16 Byte data\n",
+    .output          = expected_output,
+    .output_size     = 16,
+    .expected_status = PSA_SUCCESS
 },
 
-{"Test psa_generate_random to get 24 Byte data\n", 24, PSA_SUCCESS
+{
+    .test_desc       = "Test psa_generate_random to get 24 Byte data\n",
+    .output          = expected_output,
+    .output_size     = 24,
+    .expected_status = PSA_SUCCESS
 },
 
-{"Test psa_generate_random to get 32 Byte data\n", 32, PSA_SUCCESS
+{
+    .test_desc       = "Test psa_generate_random to get 32 Byte data\n",
+    .output          = expected_output,
+    .output_size     = 32,
+    .expected_status = PSA_SUCCESS
 },
 
-{"Test psa_generate_random to get 64 Byte data\n", 64, PSA_SUCCESS
+{
+    .test_desc       = "Test psa_generate_random to get 64 Byte data\n",
+    .output          = expected_output,
+    .output_size     = 64,
+    .expected_status = PSA_SUCCESS
 },
 
-{"Test psa_generate_random to get 128 Byte data\n", 128, PSA_SUCCESS
+{
+    .test_desc       = "Test psa_generate_random to get 128 Byte data\n",
+    .output          = expected_output,
+    .output_size     = 128,
+    .expected_status = PSA_SUCCESS
 },
 
-{"Test psa_generate_random to get 256 Byte data\n", 256, PSA_SUCCESS
+{
+    .test_desc       = "Test psa_generate_random to get 256 Byte data\n",
+    .output          = expected_output,
+    .output_size     = 256,
+    .expected_status = PSA_SUCCESS
 },
 
-{"Test psa_generate_random to get 512 Byte data\n", 512, PSA_SUCCESS
+{
+    .test_desc       = "Test psa_generate_random to get 512 Byte data\n",
+    .output          = expected_output,
+    .output_size     = 512,
+    .expected_status = PSA_SUCCESS
 },
 
-{"Test psa_generate_random to get 1000 Byte data\n", 100, PSA_SUCCESS
+{
+    .test_desc       = "Test psa_generate_random to get 1000 Byte data\n",
+    .output          = expected_output,
+    .output_size     = 1000,
+    .expected_status = PSA_SUCCESS
 },
 };

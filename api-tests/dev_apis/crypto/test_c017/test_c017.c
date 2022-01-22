@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,21 +19,19 @@
 #include "val_target.h"
 #include "test_c017.h"
 #include "test_data.h"
-#include "val_crypto.h"
 
-client_test_t test_c017_crypto_list[] = {
+const client_test_t test_c017_crypto_list[] = {
     NULL,
     psa_generate_random_test,
     NULL,
 };
 
-static int     g_test_count = 1;
-static uint8_t data[BUFFER_SIZE], changed[BUFFER_SIZE];
+static uint8_t changed[BUFFER_SIZE];
 
-int32_t psa_generate_random_test(caller_security_t caller)
+int32_t psa_generate_random_test(caller_security_t caller __UNUSED)
 {
-    int         num_checks = sizeof(check1)/sizeof(check1[0]);
-    uint32_t    i, j, run;
+    int32_t     i, num_checks = sizeof(check1)/sizeof(check1[0]);
+    uint32_t    j, run;
     uint8_t     trail[] = "don't overwrite me";
     int32_t     status;
 
@@ -49,11 +47,11 @@ int32_t psa_generate_random_test(caller_security_t caller)
 
     for (i = 0; i < num_checks; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
+        val->print(PRINT_TEST, "[Check %d] ", i+1);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
 
-        memset(data, 0, sizeof(data));
-        memcpy(data + check1[i].size, trail, sizeof(trail));
+        memset(check1[i].output, 0, BUFFER_SIZE);
+        memcpy(check1[i].output + check1[i].output_size, trail, sizeof(trail));
 
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
@@ -65,19 +63,20 @@ int32_t psa_generate_random_test(caller_security_t caller)
          */
         for (run = 0; run < 10; run++)
         {
-            memset(data, 0, check1[i].size);
+            memset(check1[i].output, 0, check1[i].output_size);
 
             /* Generate random bytes */
-            status = val->crypto_function(VAL_CRYPTO_GENERATE_RANDOM, data, check1[i].size);
+            status = val->crypto_function(VAL_CRYPTO_GENERATE_RANDOM, check1[i].output,
+                                          check1[i].output_size);
             TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(3));
 
             /* Check that no more than bytes have been overwritten */
-            status = memcmp(data + check1[i].size, trail, sizeof(trail));
+            status = memcmp(check1[i].output + check1[i].output_size, trail, sizeof(trail));
             TEST_ASSERT_EQUAL(status, 0, TEST_CHECKPOINT_NUM(4));
 
-            for (j = 0; j < check1[i].size; j++)
+            for (j = 0; j < check1[i].output_size; j++)
             {
-                if (data[j] != 0)
+                if (check1[i].output[j] != 0)
                     ++changed[j];
             }
         }
@@ -86,10 +85,8 @@ int32_t psa_generate_random_test(caller_security_t caller)
          * validates that psa_generate_random is overwriting every byte of
          * the output buffer.
          */
-        for (j = 0; j < check1[i].size; j++)
-        {
+        for (j = 0; j < check1[i].output_size; j++)
             TEST_ASSERT_NOT_EQUAL(changed[j], 0, TEST_CHECKPOINT_NUM(5));
-        }
     }
 
     return VAL_STATUS_SUCCESS;
