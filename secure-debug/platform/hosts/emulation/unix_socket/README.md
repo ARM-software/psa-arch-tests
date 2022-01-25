@@ -3,7 +3,7 @@
 
 ## Build steps for target image
 
-To generate the target image for the virtual target, follow the steps below:
+To generate the target image for the virtual target, follow these steps:
 ~~~
     cd psa-arch-tests/secure-debug/psa-adac
     make native

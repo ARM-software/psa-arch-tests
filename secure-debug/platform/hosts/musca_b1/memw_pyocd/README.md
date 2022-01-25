@@ -5,13 +5,13 @@
 
 Before executing the test suite on host, ensure that the following requirements are met:
 
-- Python 3.7.1 and above with pyOCD is installed
-- Debug probe is connected from the target to the host system via USB
+- Python 3.7.1 and above with pyOCD is installed.
+- Debug probe is connected from the target to the host system using a USB cable.
 - The target image is flashed onto the board.
 
 ## Build steps for target image
 
-The steps to build and flash the image for the musca-b1 hardware target are described in the psa-adac repository under the platforms/targets/musca-b1
+The steps to build and flash the image for the musca-b1 hardware target are described in the psa-adac repository in ports/targets/musca-b1/README.md.
 
 ## Build steps for host image
 
@@ -26,7 +26,7 @@ To build ADAC test suite, execute the following commands: <br/>
 
 ## Test Suite Execution
 
-We use UDP sockets to transmit and receive test information from the host to pyOCD. pyOCD is used for communication with the target board. The pyOCD script communicates with the board using a memory window based debug mailbox.
+Arm uses UDP sockets to transmit and receive test information from the host to pyOCD. pyOCD is used for communication with the target board. The pyOCD script communicates with the board using a memory window-based debug mailbox.
 To launch the pyOCD script, run the following in another terminal as shown:
 ~~~
 	cd platform/hosts/musca_b1/mem_pyocd

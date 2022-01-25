@@ -9,16 +9,18 @@ The [ADAC specification](https://developer.arm.com/documentation/den0101/0001) d
 
 ### ADAC test suite
 
-The ADAC test suite checks if a device-side implementation conforms to the behavior described in the ADAC specification. The tests are self-checking, portable C-based tests with directed stimulus. The tests are expected to run on the host platform only. The tests drive the commands from the host platform through the debug link and verify the response obtained from the target platform.
-
-The tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license allowing for external contribution.
+The ADAC test suite checks if a device-side implementation conforms to the behavior described in the ADAC specification. The tests:
+ - Are self-checking and portable, written in C with directed stimulus.
+ - Are expected to run on the host platform only.
+ - Drive the commands from the host platform through the debug link and verify the response obtained from the target platform.
+ - Are available as open source.
+ - And the corresponding abstraction layers are available with an Apache v2.0 license allowing for external contribution.
 
 ## Release details
  - Release Version - 0.8
- - Code Quality: Beta <br />
-   The suite is in development. This indicates that the suite contains tests that have not been validated on any hardware platform. You can suggest enhancements and point out errors.
+ - Code Quality: Beta <br/>
 
- - The ADAC tests are written for version Beta of the ADAC specification.
+ - The ADAC tests are written for version beta of the ADAC specification.
  - This test suite is not a substitute for design verification.
 
 ## Layers
@@ -32,19 +34,19 @@ These tests are written on top of VAL and PAL.
 
 The abstraction layers provide platform information and runtime environment to enable execution of the tests.
 
-In this release, PAL implementation for the 'emulation' target uses Unix sockets as the link layer to send commands and receive responses. We have also added support for executing the test suite on the 'Musca-b1' hardware board by adding a 'musca_b1' target which uses memory window protocol as the link layer.
+In this release, PAL implementation for the 'emulation' target uses Unix sockets as the link layer to send commands and receive responses. Arm also provides support for executing the test suite on the 'Musca-b1' hardware board by adding a 'musca_b1' target which uses memory window protocol as the link layer.
 
-You can also write your own abstraction layer implementations to allow ADAC tests to be run in other host platforms and support the debug link layer.
+You can also write your own abstraction layer implementations to allow ADAC tests to run on other host platforms and support the debug link layer.
 
 ## Scenarios
 
-The mapping of the rules in the specification to the test cases and the steps followed in the tests are mentioned in the [Scenario document](docs/psa_adac_scenarios.md) present in the docs/ folder.
+The mapping of the rules to the test cases and the steps followed in the tests are mentioned in the [Scenario document](docs/psa_adac_scenarios.md) present in the docs/ folder.
 
 ## Getting started
 
 
-Follow the instructions in the subsequent sections to get a copy of the source code on your local machine and build the tests. <br />
-See [Arm Authenticated Debug Access Control Test Suite User guide](docs/Arm_Authenticated_Debug_Access_Control_Test_Suite_User_Guide.pdf) document to get details on the steps involved in porting the test suite to your platform.
+Follow the instructions in the subsequent sections to get a copy of the source code on your local machine and build the tests. <br/>
+See [Arm Authenticated Debug Access Control Test Suite User guide](docs/Arm_Authenticated_Debug_Access_Control_Test_Suite_User_Guide.pdf) to get details on the steps involved in porting the test suite to your platform.
 This test suite is provided as a separate directory within the psa-arch-tests repository.
 
 ### Prerequisites
@@ -54,7 +56,7 @@ Before starting the test suite build, ensure that the following requirements are
 - Host Operating System: Ubuntu 16.04.4, RHEL 7, Windows 10
 - Scripting tools: Python 3.7.1
 - Other open-source tools: GNUARM 6.3.1, GCC 5.4.0 32-Bit (Linux Host), MinGW 6.3.0 32-Bit (Windows Host)
-                           CMake 3.1 or later
+                           CMake 3.10 or later
 
 
 ## Download source
@@ -62,18 +64,18 @@ To download the main branch of the repository, type the following command:
 
 	git clone https://github.com/ARM-software/psa-arch-tests.git
 
-To download the main branch of the psa-adac repository, type the following command:
+To download the main branch of the psa-adac repository, navigate to the secure debug directory and type the following command:
 
 	git clone git@github.com:ARMmbed/psa-adac.git
 
 Note:
-    To obtain the access to the psa-adac repository and some of its dependent submodules, Arm Licensees may contact Arm through their partner managers.
+    To receive access to the psa-adac repository and some of its dependent submodules, Arm licensees may contact Arm through their partner managers.
 
 
 ## Porting steps
 
-See the [Porting Guide](docs/porting_guide_adac_host.md) document for porting steps for your host platform.
-See the [User Guide](docs/Arm_Authenticated_Debug_Access_Control_Test_Suite_User_Guide.pdf) document in the docs folder for additional details.
+See the [Porting Guide](docs/porting_guide_adac_host.md) for porting steps for your host platform.
+See the [User Guide](docs/Arm_Authenticated_Debug_Access_Control_Test_Suite_User_Guide.pdf) in the docs/ folder for additional details.
 
 ## Build steps
 
@@ -102,7 +104,7 @@ To build ADAC test suite for a given host platform, execute the following comman
 ~~~
 
 Note:
-    It is recommended to build different build configurations in separate directories. Refer to the host-platform specific README for information about additional build options.
+    Arm recommends running different build configurations in separate directories. Refer to the host-platform specific README for information on additional build options.
 
 ### Build output
 
@@ -111,16 +113,13 @@ The following ADAC test suite build outputs are available under host build direc
 	- psa_adac_test executable
 	- val and platform layer libraries
 
-## Test Suite Execution
-
-This release provides a reference implementation of ADAC target which communicates with the host platform using Unix sockets.
-For running the test suite on the emulation platform, refer to this [Readme](platform/hosts/emulation/unix_socket/README.md).
-For running the test suite on the Musca-b1 hardware platform, refer to this [Readme](platform/hosts/musca_b1/mem_pyocd/README.md).
+For running the test suite on the emulation platform, see the [Readme](platform/hosts/emulation/unix_socket/README.md).<br/>
+For running the test suite on the Musca-b1 hardware platform, see the [Readme](platform/hosts/musca_b1/memw_pyocd/README.md).<br/>
 
 Note:
  - See the psa-adac directory for information on other target platforms.
  - The keys and the certificate credentials for a supported cryptosystem can be generated using the tools provided in the psa-adac repository.
- - The test suite is designed to run once per supported cryptosystem. You must ensure that the device must be provisioned with the correct certificates installed in the device's RoT.
+ - The test suite is designed to run once per supported cryptosystem. Ensure that the device must be provisioned with the correct certificates installed in the device's RoT.
 
 ## Security implication
 
@@ -128,8 +127,8 @@ ADAC test suite may run at higher privilege level. An attacker can utilize these
 
 ## License
 
-Arm ADAC Architecture test suite is distributed under Apache v2.0 License.
-The psa-adac code repository is distributed under BSD-3-Clause License.
+Arm ADAC Architecture test suite is distributed under Apache v2.0 license.
+The psa-adac code repository is distributed under BSD-3-Clause license.
 
 ## Feedback, contributions, and support
 
