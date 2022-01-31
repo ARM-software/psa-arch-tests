@@ -18,6 +18,8 @@
 #include "pal_common.h"
 #include "pal_nvmem.h"
 
+#include "nrf_wdt.h"
+
 /**
     @brief    - This function initializes the UART
     @param    - uart base addr
@@ -51,9 +53,8 @@ int pal_print_ns(const char *str, int32_t data)
 **/
 int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
 {
-    (void)base_addr;
-    pal_timer_init_ns(time_us * timer_tick_us);
-    return PAL_STATUS_SUCCESS;
+    (void)timer_tick_us;
+    return nrf_wdt_init(base_addr, time_us);
 }
 
 /**
@@ -63,10 +64,7 @@ int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick
 **/
 int pal_wd_timer_enable_ns(addr_t base_addr)
 {
-    (void)base_addr;
-    pal_timer_start_ns();
-    return PAL_STATUS_SUCCESS;
-
+    return nrf_wdt_enable(base_addr);
 }
 
 /**
@@ -76,9 +74,7 @@ int pal_wd_timer_enable_ns(addr_t base_addr)
 **/
 int pal_wd_timer_disable_ns(addr_t base_addr)
 {
-    (void)base_addr;
-    pal_timer_stop_ns();
-    return PAL_STATUS_SUCCESS;
+    return nrf_wdt_disable(base_addr);
 }
 
 /**

@@ -35,6 +35,7 @@ else()
 		# driver files will be compiled as part of NSPE
 		${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/pal_driver_intf.c
 		${PSA_ROOT_DIR}/platform/drivers/nvmem/pal_nvmem.c
+		${PSA_ROOT_DIR}/platform/drivers/watchdog/nrf/nrf_wdt.c
 	)
 endif()
 
@@ -79,6 +80,7 @@ target_include_directories(${PSA_TARGET_PAL_NSPE_LIB} PRIVATE
 	${PSA_ROOT_DIR}/platform/targets/common/nspe/internal_trusted_storage
 	${PSA_ROOT_DIR}/platform/targets/common/nspe/initial_attestation
 	${PSA_ROOT_DIR}/platform/drivers/nvmem
+	${PSA_ROOT_DIR}/platform/drivers/watchdog/nrf/
 	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe
 )
 
