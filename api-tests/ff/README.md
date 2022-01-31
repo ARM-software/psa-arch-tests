@@ -23,13 +23,14 @@ This test suite is not a substitute for design verification. To review the test 
 For more information on architecture test suite specification, refer to the [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf) document.
 
 ## This release
- - Code Quality : REL v1.3
+ - Code Quality : REL v1.4
  - This release contains the PSA-FF tests that are written for the PSA FF 1.1 Extensions specification.
 
 ##  Release Tags
 
 | Release version | Release tag  | PSA FF specification version |
 |-----------------|---------------|----------------|
+| REL v1.4 | [v22.01_API1.4_ADAC_BETA](https://github.com/ARM-software/psa-arch-tests/tree/v22.01_API1.4_ADAC_BETA/api-tests/ff) | 1.1-Alpha0 |
 | REL v1.3 | [v21.10_API1.3_ADAC_ALPHA-1](https://github.com/ARM-software/psa-arch-tests/tree/v21.10_API1.3_ADAC_ALPHA-1/api-tests/ff) | 1.1-Alpha0 |
 | REL v1.2 | [v21.07_API1.2_ADAC_ALPHA](https://github.com/ARM-software/psa-arch-tests/tree/v21.07_API1.2_ADAC_ALPHA/api-tests/ff) | 1.1-Alpha0 |
 | REL v1.1 | [v20.11_API1.1](https://github.com/ARM-software/psa-arch-tests/tree/v20.11_API1.1/api-tests/ff) | 1.0 |
@@ -162,4 +163,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2021, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2022, Arm Limited and Contributors. All rights reserved.*

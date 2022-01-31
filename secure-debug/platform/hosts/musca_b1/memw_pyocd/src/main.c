@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2022 Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,43 +15,42 @@
  * limitations under the License.
 **/
 
+// Client side implementation of UDP client-server model
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "pal_interfaces.h"
-#include "unix_msg.h"
+#include "platform.h"
+
+#define PORT     7777
 
 int32_t val_entry(void);
 
-/**
-    @brief    - PSA C main function, used for generating host-side test binaries.
-    @param    - argc    : the number of command line arguments.
-                argv    : array containing command line arguments.
-    @return   - error status
-**/
 extern uint8_t buffer[4096];
 uint8_t buffer[4096];
 char *key_file, *chain_file;
 
+// Driver code
 int main(int argc, char *argv[])
 {
-    if (argc < 4) {
-        printf("Usage:\n\tpsa_adac_test <keyfile> <chainfile> <socket>\n\n");
+	char *hostname;
+	int portno;
+    udp_socket_desc_t sock_desc;
+
+    if (argc < 5) {
+		printf("Usage:\n\tpsa_adac_test <keyfile> <chainfile> <hostname> <port>\n\n");
         exit(-1);
     }
 
     key_file = argv[1];
     chain_file = argv[2];
-    char *socket_path = argv[3];
-    int fd;
+    sock_desc.hostname = argv[3];
+    sock_desc.port_num = atoi(argv[4]);
 
-    fd = unix_socket_client(socket_path);
-    if (-1 == fd)
-        exit(-1);
+    msg_interface_init((void *) &sock_desc, buffer, sizeof(buffer));
 
-    msg_interface_init((void *) &fd, buffer, sizeof(buffer));
-
-    return val_entry();
-
+    val_entry();
     msg_interface_free(NULL);
+
     return 0;
 }

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -136,7 +136,7 @@ const client_test_t test_i076_client_tests_list[] = {
     NULL,
 };
 
-static int32_t get_secure_partition_address(__attribute__((unused)) psa_handle_t *handle,
+static int32_t get_secure_partition_address(psa_handle_t *handle,
                                             addr_t *addr,
                                             driver_test_fn_id_t test_fn_id)
 {

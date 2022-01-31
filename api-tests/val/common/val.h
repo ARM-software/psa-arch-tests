@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -213,6 +213,10 @@ typedef enum {
      * re-enter the same test and continue executing the same check function
      */
     BOOT_EXPECTED_CONT_TEST_EXEC       = 0x7,
+    /* Test expects reboot for secure/non-secure on second check of test . If reboot happens,
+     * re-enter the same test and execute the next check function
+     */
+    BOOT_EXPECTED_ON_SECOND_CHECK      = 0x8,
 } boot_state_t;
 
 typedef enum {

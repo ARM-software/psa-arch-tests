@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -122,7 +122,8 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, const client_test_t
     }
 
     if (boot.state == BOOT_NOT_EXPECTED || boot.state == BOOT_EXPECTED_REENTER_TEST
-        || boot.state == BOOT_EXPECTED_CONT_TEST_EXEC)
+        || boot.state == BOOT_EXPECTED_CONT_TEST_EXEC
+        || boot.state == BOOT_EXPECTED_ON_SECOND_CHECK)
     {
         while (tests_list[i] != NULL)
         {
@@ -131,10 +132,18 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, const client_test_t
              * consider previous run pass and jump to second test function
              * of the same test if available.
              */
+
             if ((boot.state ==  BOOT_EXPECTED_REENTER_TEST) && (i == 1))
             {
                 val_print(PRINT_DEBUG, "[Check 1] PASSED\n", 0);
                 i++;
+                continue;
+            }
+
+            if ((boot.state ==  BOOT_EXPECTED_ON_SECOND_CHECK) && (i == 1))
+            {
+                val_print(PRINT_DEBUG, "[Check 2] PASSED\n", 0);
+                i = i + 2 ;
                 continue;
             }
 
@@ -255,6 +264,12 @@ val_status_t val_switch_to_secure_client(uint32_t test_num)
        {
             test_info.block_num++;
             val_print(PRINT_DEBUG, "[Check 1] PASSED\n", 0);
+       }
+
+       if (boot.state ==  BOOT_EXPECTED_ON_SECOND_CHECK)
+       {
+            test_info.block_num = test_info.block_num + 2;
+            val_print(PRINT_DEBUG, "[Check 2] PASSED\n", 0);
        }
 
        status = val_set_boot_flag(BOOT_NOT_EXPECTED);
@@ -589,7 +604,8 @@ val_status_t val_get_last_run_test_id(test_id_t *test_id)
                                     BOOT_EXPECTED_S,
                                     BOOT_EXPECTED_BUT_FAILED,
                                     BOOT_EXPECTED_REENTER_TEST,
-                                    BOOT_EXPECTED_CONT_TEST_EXEC
+                                    BOOT_EXPECTED_CONT_TEST_EXEC,
+                                    BOOT_EXPECTED_ON_SECOND_CHECK
                                     };
 
     status = val_get_boot_flag(&boot.state);

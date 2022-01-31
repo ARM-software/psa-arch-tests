@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,6 +38,10 @@ int32_t server_test_psa_doorbell_signal(void)
     int32_t                 status = VAL_STATUS_SUCCESS;
     psa_msg_t               msg = {0};
 
+    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    val->err_check_set(TEST_CHECKPOINT_NUM(201), status);
+    psa_reply(msg.handle, PSA_SUCCESS);
+
     if (msg.client_id > 0)
     {
         /* Doorbell signal to client partititon */
@@ -49,7 +53,9 @@ int32_t server_test_psa_doorbell_signal(void)
         val->print(PRINT_ERROR, "Caller is from non-secure\n", 0);
     }
 
+    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
     val->err_check_set(TEST_CHECKPOINT_NUM(202), status);
+    psa_reply(msg.handle, PSA_SUCCESS);
     return status;
 }
 

@@ -15,18 +15,28 @@
  * limitations under the License.
 **/
 
-#ifndef _VAL_ENTRY_H_
-#define _VAL_ENTRY_H_
+#ifndef PSA_ADAC_HOST_PLATFORM_H
+#define PSA_ADAC_HOST_PLATFORM_H
 
-#include "val.h"
+#include <stdint.h>
+#include <stddef.h>
 
-#define PSA_ACS_MAJOR_VER    0
-#define PSA_ACS_MINOR_VER    8
-
-/**
-    @brief    - PSA Test Suite C main function, does VAL init and calls test dispatcher
-    @param    - None
-    @return   - int32_t
-**/
-extern int32_t val_entry(void);
+#ifdef PSA_ADAC_PLATFORM_CONFIG_FILE
+#include PSA_ADAC_PLATFORM_CONFIG_FILE
+#else
+#include <psa_adac_platform.h>
 #endif
+
+#ifndef PSA_ADAC_PLATFORM_BANNER
+#define PSA_ADAC_PLATFORM_BANNER "PSA ADAC "
+#endif
+
+void platform_init(void);
+void psa_adac_platform_init(void);
+
+typedef struct {
+    char *hostname;
+    int port_num;
+} udp_socket_desc_t;
+
+#endif //PSA_HOST_ADAC_PLATFORM_H

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,9 +35,11 @@ const client_test_t test_i063_client_tests_list[] = {
 
 int32_t client_test_psa_wait_signal_mask(caller_security_t caller __UNUSED)
 {
-
-
    val->print(PRINT_TEST, "[Check 1] Test psa_wait signal mask\n", 0);
+
+   psa->call(SERVER_UNSPECIFED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, NULL, 0);
+
+   psa->call(SERVER_RELAX_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, NULL, 0);
 
    return VAL_STATUS_SUCCESS;
 }

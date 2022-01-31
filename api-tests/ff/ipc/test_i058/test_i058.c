@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,6 +42,7 @@ int32_t client_test_psa_doorbell_signal(caller_security_t caller __UNUSED)
 
    val->print(PRINT_TEST,
             "[Check 1] Test PSA_DOORBELL signal\n", 0);
+   psa->call(SERVER_UNSPECIFED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, NULL, 0);
 
 #ifndef NONSECURE_TEST_BUILD
    /* Wait for doorball notification */
@@ -79,6 +80,7 @@ int32_t client_test_psa_doorbell_signal(caller_security_t caller __UNUSED)
    }
 #endif
 
+   psa->call(SERVER_UNSPECIFED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, NULL, 0);
    return status;
 }
 

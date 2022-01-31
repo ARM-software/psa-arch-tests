@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -497,7 +497,7 @@ void driver_test_isolation_psa_rot_data_wr(psa_msg_t *msg)
     psa_write(msg->handle, 0, (void *) &addr, sizeof(addr_t));
 
     /* Setting boot.state before test check */
-    if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_S))
+    if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_ON_SECOND_CHECK))
     {
        val_print_sf("\tFailed to set boot flag before check\n", 0);
        psa_reply(msg->handle, -2);
@@ -553,7 +553,7 @@ void driver_test_isolation_psa_rot_stack_wr(psa_msg_t *msg)
     psa_write(msg->handle, 0, (void *) &addr, sizeof(addr_t));
 
     /* Setting boot.state before test check */
-    if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_S))
+    if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_ON_SECOND_CHECK))
     {
        val_print_sf("\tFailed to set boot flag before check\n", 0);
        psa_reply(msg->handle, -2);
@@ -614,14 +614,14 @@ void driver_test_isolation_psa_rot_heap_wr(psa_msg_t *msg)
 
     /* Send PSA RoT heap address */
     psa_write(msg->handle, 0, (void *) &buffer, BUFFER_SIZE);
-    psa_reply(msg->handle, PSA_SUCCESS);
 
     /* Setting boot.state before test check */
-    if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_S))
+    if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_ON_SECOND_CHECK))
     {
        val_print_sf("\tFailed to set boot flag before check\n", 0);
        psa_reply(msg->handle, -2);
     }
+    psa_reply(msg->handle, PSA_SUCCESS);
 
     /* Process second call request */
     if (VAL_ERROR(process_call_request(DRIVER_TEST_SIGNAL, msg)))
@@ -683,14 +683,14 @@ void driver_test_isolation_psa_rot_mmio_wr(psa_msg_t *msg)
     /* Send PSA RoT mmio address */
     memset((uint8_t *)&psa_rot_mmio_addr, (uint8_t)DATA_VALUE, sizeof(addr_t));
     psa_write(msg->handle, 0, (void *) &psa_rot_mmio_addr, sizeof(addr_t));
-    psa_reply(msg->handle, PSA_SUCCESS);
 
     /* Setting boot.state before test check */
-    if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_S))
+    if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_ON_SECOND_CHECK))
     {
-       val_print_sf("\tFailed to set boot flag before check\n", 0);
-       psa_reply(msg->handle, -2);
+        val_print_sf("\tFailed to set boot flag before check\n", 0);
+        psa_reply(msg->handle, -2);
     }
+   psa_reply(msg->handle, PSA_SUCCESS);
 
     /* Process second call request */
     if (VAL_ERROR(process_call_request(DRIVER_TEST_SIGNAL, msg)))

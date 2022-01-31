@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2022 Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -124,11 +124,7 @@ int response_packet_release(response_packet_t *packet)
 
 int msg_interface_init(void *ctx, uint8_t buffer[], size_t buffer_size)
 {
-    if (ctx == NULL)
-        return -1;
-    else
-        pal_msg_interface_init(ctx);
-
+    pal_msg_interface_init(ctx);
     return static_buffer_msg_init(buffer, buffer_size);
 }
 

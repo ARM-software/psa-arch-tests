@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021 Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2022 Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@ int32_t val_entry(void)
     /* Compliance header print */
     if (test_id == VAL_INVALID_TEST_ID)
     {
-        val_print(PRINT_ALWAYS, "\n***** PSA Architecture Test Suite - Version %d.",
+        val_print(PRINT_ALWAYS, "\n***** PSA ADAC Architecture Test Suite - Version %d.",
                                                                          PSA_ACS_MAJOR_VER);
         val_print(PRINT_ALWAYS, "%d *****\n", PSA_ACS_MINOR_VER);
     }
@@ -55,9 +55,3 @@ exit:
 
     return status;
 }
-
-//int main()
-//{
-//	val_entry();
-//	return 0;
-//}

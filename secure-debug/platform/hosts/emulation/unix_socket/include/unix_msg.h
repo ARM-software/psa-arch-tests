@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021 Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2022 Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,23 +15,27 @@
  * limitations under the License.
 **/
 
-#ifndef PSA_ADAC_PLATFORM_H
-#define PSA_ADAC_PLATFORM_H
+#ifndef PSA_ADAC_UNIX_MSG_H
+#define PSA_ADAC_UNIX_MSG_H
 
 #include <stdint.h>
-#include <stddef.h>
+#include <stdbool.h>
 
-#ifdef PSA_ADAC_PLATFORM_CONFIG_FILE
-#include PSA_ADAC_PLATFORM_CONFIG_FILE
-#else
-#include <psa_adac_platform.h>
-#endif
+#if !defined(_MSC_VER)
+#include <sys/types.h>
+#else // !defined(_MSC_VER)
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#endif // !defined(_MSC_VER)
 
-#ifndef PSA_ADAC_PLATFORM_BANNER
-#define PSA_ADAC_PLATFORM_BANNER "PSA ADAC "
-#endif
+bool unix_socket_init(void);
 
-void platform_init(void);
-void psa_adac_platform_init(void);
+int unix_socket_server(const char *path);
+int unix_socket_client(const char *path);
 
-#endif //PSA_ADAC_PLATFORM_H
+void unix_socket_close(int fd);
+
+ssize_t nwrite(int fd, const uint8_t *buf, size_t count);
+ssize_t nread(int fd, uint8_t *buf, size_t count);
+
+#endif //PSA_ADAC_UNIX_MSG_H

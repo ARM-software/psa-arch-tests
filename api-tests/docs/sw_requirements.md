@@ -26,7 +26,7 @@ export PATH=<ARM_COMPILER_PATH>/bin:$PATH
 
 ## Download source
 
-To download the master branch of the repository, type the following command: <br />
+To download the main branch of the repository, type the following command: <br />
 ~~~
 git clone https://github.com/ARM-software/psa-arch-tests.git
 ~~~
@@ -45,4 +45,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2021, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2022, Arm Limited and Contributors. All rights reserved.*

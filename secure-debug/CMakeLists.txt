@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2021, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2021-2022, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,19 +27,17 @@ get_filename_component(PSA_ROOT_DIR . ABSOLUTE)
 include(${PSA_ROOT_DIR}/tools/cmake/common/Utils.cmake)
 
 set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_EXTENSIONS Off)
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_EXTENSIONS Off)
 
-if(DEFINED RDDI_LIB)
-    if(WIN32)
-        set(DEPENDS_LIB_PATH ${CMAKE_SOURCE_DIR}/depends/rddi/win_32-x86_64)
-    else()
-        set(DEPENDS_LIB_PATH ${CMAKE_SOURCE_DIR}/depends/rddi/linux-x86_64)
-    endif()
+# Check for LINK_LAYER
+if(NOT DEFINED LINK_LAYER_COMM)
+	set(LINK_LAYER_COMM unix_socket)
+    message(STATUS "[PSA] : Link layer not specified. Defaulting to ${LINK_LAYER_COMM}")
 endif()
 
-set(DEPENDS_INC_PATH ${CMAKE_SOURCE_DIR}/platform/hosts/${TARGET}/include)
+set(DEPENDS_INC_PATH ${CMAKE_SOURCE_DIR}/platform/hosts/${TARGET}/${LINK_LAYER_COMM}/include)
+if (NOT EXISTS ${DEPENDS_INC_PATH})
+    Message(FATAL_ERROR "Link layer ${LINK_LAYER_COMM} not supported for target ${TARGET}.")
+endif()
 
 if(NOT DEFINED PSA_ADAC_ROOT)
     get_filename_component(PSA_ADAC_ROOT ${CMAKE_SOURCE_DIR}/psa-adac ABSOLUTE)
@@ -95,6 +93,7 @@ if(NOT ${TARGET} IN_LIST PSA_TARGET_LIST)
 	message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DTARGET=${TARGET}, supported targets are : ${PSA_TARGET_LIST}")
 else()
     message(STATUS "[PSA] : TARGET is set to ${TARGET}")
+    message(STATUS "[PSA] : LINK_LAYER is set to ${LINK_LAYER_COMM}")
 endif()
 
 # Check for the presence of required test suite directories
@@ -188,13 +187,8 @@ add_definitions(-D${TARGET})
 
 # Build PAL LIB
 include(${CMAKE_SOURCE_DIR}/platform/common/pal.cmake)
-if(DEFINED RDDI_LIB)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/platform/csapbcom)
-    set(ADAC_HOST_PAL_LIB    csapbcom)
-else()
-    add_subdirectory(${CMAKE_SOURCE_DIR}/platform/hosts/${TARGET} platform_stdc)
-    target_link_libraries(${ADAC_HOST_PAL_LIB} platform_stdc)
-endif()
+add_subdirectory(${CMAKE_SOURCE_DIR}/platform/hosts/${TARGET}/${LINK_LAYER_COMM} platform_host)
+target_link_libraries(${ADAC_HOST_PAL_LIB} platform_host)
 
 # Generate VAL LIB
 include(${CMAKE_SOURCE_DIR}/val/val.cmake)

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -99,7 +99,7 @@ int32_t client_test_sp_write_other_sp_stack(caller_security_t caller __UNUSED)
        return VAL_STATUS_ERROR;
 
    /* Setting boot.state before test check */
-   if (val->set_boot_flag(BOOT_EXPECTED_NS))
+   if (val->set_boot_flag(BOOT_EXPECTED_ON_SECOND_CHECK))
    {
        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
        return VAL_STATUS_ERROR;
@@ -196,7 +196,7 @@ int32_t client_test_sp_write_other_sp_stack(caller_security_t caller __UNUSED)
        return VAL_STATUS_ERROR;
 
    /* Setting boot.state before test check */
-   if (val->set_boot_flag(BOOT_EXPECTED_NS))
+   if (val->set_boot_flag(BOOT_EXPECTED_ON_SECOND_CHECK))
    {
        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
        return VAL_STATUS_ERROR;
