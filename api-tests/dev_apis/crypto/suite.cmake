@@ -33,7 +33,9 @@ endforeach()
 
 add_definitions(${CC_OPTIONS})
 add_definitions(${AS_OPTIONS})
-add_definitions(-DMISSING_CRYPTO_1_0=0)
+
+set(MISSING_CRYPTO_1_0 0 CACHE INTERNAL "Disable calls to crypto functions missing from Mbed TLS 2.x")
+add_definitions(-DMISSING_CRYPTO_1_0=${MISSING_CRYPTO_1_0})
 
 # append common crypto file to list of source collected
 list(APPEND SUITE_CC_SOURCE ${PSA_SUITE_DIR}/common/test_crypto_common.c)

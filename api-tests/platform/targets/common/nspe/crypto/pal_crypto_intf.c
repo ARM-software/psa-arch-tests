@@ -270,7 +270,6 @@ int32_t pal_crypto_function(int type, va_list valist)
 			cipher_operation         =  va_arg(valist, psa_cipher_operation_t *);
 			return psa_cipher_abort(cipher_operation);
 			break;
-#if MISSING_CRYPTO_1_0 == 0
 		case PAL_CRYPTO_CIPHER_DECRYPT:
 			key                      = va_arg(valist, psa_key_id_t);
 			alg                      = va_arg(valist, psa_algorithm_t);
@@ -287,7 +286,6 @@ int32_t pal_crypto_function(int type, va_list valist)
 									  output_size,
 									  p_output_length);
 			break;
-#endif
 		case PAL_CRYPTO_CIPHER_DECRYPT_SETUP:
 			cipher_operation         = va_arg(valist, psa_cipher_operation_t *);
 			key                      = va_arg(valist, psa_key_id_t);
@@ -296,7 +294,6 @@ int32_t pal_crypto_function(int type, va_list valist)
 											key,
 											alg);
 			break;
-#if MISSING_CRYPTO_1_0 == 0
 		case PAL_CRYPTO_CIPHER_ENCRYPT:
 			key                      = va_arg(valist, psa_key_id_t);
 			alg                      = va_arg(valist, psa_algorithm_t);
@@ -313,7 +310,6 @@ int32_t pal_crypto_function(int type, va_list valist)
 									  output_size,
 									  p_output_length);
 			break;
-#endif
 		case PAL_CRYPTO_CIPHER_ENCRYPT_SETUP:
 			cipher_operation         = va_arg(valist, psa_cipher_operation_t *);
 			key                      = va_arg(valist, psa_key_id_t);
@@ -705,7 +701,6 @@ int32_t pal_crypto_function(int type, va_list valist)
 								  input,
 								  input_length);
 			break;
-#if MISSING_CRYPTO_1_0 == 0
 		case PAL_CRYPTO_MAC_VERIFY:
 			key                      = va_arg(valist, psa_key_id_t);
 			alg                      = va_arg(valist, psa_algorithm_t);
@@ -720,7 +715,6 @@ int32_t pal_crypto_function(int type, va_list valist)
 								  input1,
 								  input_length1);
 			break;
-#endif
 		case PAL_CRYPTO_MAC_VERIFY_FINISH:
 			mac_operation            = va_arg(valist, psa_mac_operation_t *);
 			input                    = va_arg(valist, const uint8_t *);
