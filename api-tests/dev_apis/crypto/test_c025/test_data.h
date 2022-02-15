@@ -34,7 +34,7 @@ typedef struct {
     const uint8_t          *expected_plaintext;
     size_t                  plaintext_size;
     size_t                  expected_plaintext_length;
-    psa_status_t            expected_status;
+    psa_status_t            expected_status[2];
 } test_data;
 
 static const test_data check1[] = {
@@ -57,7 +57,7 @@ static const test_data check1[] = {
     .expected_plaintext         = plaintext,
     .plaintext_size             = BUFFER_SIZE,
     .expected_plaintext_length  = 23,
-    .expected_status            = PSA_SUCCESS
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
 },
 
 {
@@ -77,7 +77,7 @@ static const test_data check1[] = {
     .expected_plaintext         = plaintext,
     .plaintext_size             = BUFFER_SIZE,
     .expected_plaintext_length  = 24,
-    .expected_status            = PSA_SUCCESS
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
 },
 
 {
@@ -97,7 +97,7 @@ static const test_data check1[] = {
     .expected_plaintext         = plaintext,
     .plaintext_size             = BUFFER_SIZE,
     .expected_plaintext_length  = 24,
-    .expected_status            = PSA_SUCCESS
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
 },
 
 {
@@ -117,7 +117,7 @@ static const test_data check1[] = {
     .expected_plaintext         = plaintext,
     .plaintext_size             = BUFFER_SIZE,
     .expected_plaintext_length  = 24,
-    .expected_status            = PSA_SUCCESS
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
 },
 
 {
@@ -137,7 +137,7 @@ static const test_data check1[] = {
     .expected_plaintext         = plaintext,
     .plaintext_size             = BUFFER_SIZE,
     .expected_plaintext_length  = 0,
-    .expected_status            = PSA_SUCCESS
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
 },
 #endif
 #endif
@@ -161,7 +161,7 @@ static const test_data check1[] = {
     .expected_plaintext         = plaintext,
     .plaintext_size             = BUFFER_SIZE,
     .expected_plaintext_length  = 24,
-    .expected_status            = PSA_SUCCESS
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
 },
 #endif
 #endif
@@ -185,7 +185,7 @@ static const test_data check1[] = {
     .expected_plaintext         = NULL,
     .plaintext_size             = 0,
     .expected_plaintext_length  = 0,
-    .expected_status            = PSA_ERROR_NOT_SUPPORTED
+    .expected_status            = {PSA_ERROR_NOT_SUPPORTED, PSA_ERROR_INVALID_ARGUMENT}
 },
 
 {
@@ -205,7 +205,7 @@ static const test_data check1[] = {
     .expected_plaintext         = NULL,
     .plaintext_size             = 0,
     .expected_plaintext_length  = 0,
-    .expected_status            = PSA_ERROR_NOT_PERMITTED
+    .expected_status            = {PSA_ERROR_NOT_PERMITTED, PSA_ERROR_NOT_PERMITTED}
 },
 
 {
@@ -225,7 +225,7 @@ static const test_data check1[] = {
     .expected_plaintext         = plaintext,
     .plaintext_size             = 23,
     .expected_plaintext_length  = 24,
-    .expected_status            = PSA_ERROR_BUFFER_TOO_SMALL
+    .expected_status            = {PSA_ERROR_BUFFER_TOO_SMALL, PSA_ERROR_BUFFER_TOO_SMALL}
 },
 
 {
@@ -245,7 +245,7 @@ static const test_data check1[] = {
     .expected_plaintext         = plaintext,
     .plaintext_size             = BUFFER_SIZE,
     .expected_plaintext_length  = 24,
-    .expected_status            = PSA_ERROR_INVALID_ARGUMENT
+    .expected_status            = {PSA_ERROR_INVALID_ARGUMENT, PSA_ERROR_INVALID_ARGUMENT}
 },
 
 {
@@ -265,7 +265,7 @@ static const test_data check1[] = {
     .expected_plaintext         = plaintext,
     .plaintext_size             = BUFFER_SIZE,
     .expected_plaintext_length  = 24,
-    .expected_status            = PSA_ERROR_INVALID_SIGNATURE
+    .expected_status            = {PSA_ERROR_INVALID_SIGNATURE, PSA_ERROR_INVALID_SIGNATURE}
 },
 
 {
@@ -285,7 +285,7 @@ static const test_data check1[] = {
     .expected_plaintext         = plaintext,
     .plaintext_size             = BUFFER_SIZE,
     .expected_plaintext_length  = 24,
-    .expected_status            = PSA_ERROR_INVALID_SIGNATURE
+    .expected_status            = {PSA_ERROR_INVALID_SIGNATURE, PSA_ERROR_INVALID_SIGNATURE}
 },
 
 {
@@ -305,7 +305,7 @@ static const test_data check1[] = {
     .expected_plaintext         = plaintext,
     .plaintext_size             = BUFFER_SIZE,
     .expected_plaintext_length  = 24,
-    .expected_status            = PSA_ERROR_INVALID_ARGUMENT
+    .expected_status            = {PSA_ERROR_INVALID_ARGUMENT, PSA_ERROR_INVALID_ARGUMENT}
 },
 #endif
 #endif
