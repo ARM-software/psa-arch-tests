@@ -142,10 +142,10 @@ static const test_data check1[] = {
 #endif
 
 #ifdef ARCH_TEST_CIPHER_MODE_CTR
-#ifdef ARCH_TEST_ARC4
+#ifdef ARCH_TEST_DES
 {
     .test_desc       = "Test psa_cipher_decrypt_setup - incompatible key ARC4\n",
-    .type            = PSA_KEY_TYPE_ARC4,
+    .type            = PSA_KEY_TYPE_DES,
     .data            = key_data,
     .data_length     = AES_16B_KEY_SIZE,
     .usage_flags     = PSA_KEY_USAGE_DECRYPT,
