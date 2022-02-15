@@ -23,9 +23,9 @@
 #include "val_service_defs.h"
 #endif
 
-#include "test_l088.h"
+#include "test_i088.h"
 
-const client_test_t test_l088_client_tests_list[] = {
+const client_test_t test_i088_client_tests_list[] = {
     NULL,
     client_test_psa_rot_lifecycle_state,
     NULL,

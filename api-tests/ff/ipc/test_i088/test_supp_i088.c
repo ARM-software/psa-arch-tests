@@ -25,7 +25,7 @@ extern psa_api_t *psa;
 
 int32_t server_test_psa_rot_lifecycle_state(void);
 
-const server_test_t test_l088_server_tests_list[] = {
+const server_test_t test_i088_server_tests_list[] = {
     NULL,
     server_test_psa_rot_lifecycle_state,
     NULL,

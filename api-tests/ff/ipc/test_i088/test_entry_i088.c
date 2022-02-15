@@ -17,7 +17,7 @@
 
 #include "val_interfaces.h"
 #include "val_target.h"
-#include "test_l088.h"
+#include "test_i088.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_FF_BASE, 88)
 #define TEST_DESC "Testing psa_rot_lifecycle_state API\n"
