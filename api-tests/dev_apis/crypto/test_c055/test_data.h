@@ -54,22 +54,8 @@ static const test_data check1[] = {
     .data            = key_data,
     .data_length     = AES_16B_KEY_SIZE,
     .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
-    .alg             = PSA_ALG_CCM,
+    .alg             = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
     .setup_alg       = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
-    .nonce           = nonce,
-    .nonce_length    = 13,
-    .operation_state = 1,
-    .expected_status = PSA_SUCCESS
-},
-
-{
-    .test_desc       = "Test psa_aead_set_nonce - Encrypt - CCM - Default Tag length\n",
-    .type            = PSA_KEY_TYPE_AES,
-    .data            = key_data,
-    .data_length     = AES_16B_KEY_SIZE,
-    .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
-    .alg             = PSA_ALG_CCM,
-    .setup_alg       = PSA_ALG_AEAD_WITH_DEFAULT_LENGTH_TAG(PSA_ALG_CCM),
     .nonce           = nonce,
     .nonce_length    = 13,
     .operation_state = 1,
@@ -85,7 +71,7 @@ static const test_data check1[] = {
     .alg             = PSA_ALG_CCM,
     .setup_alg       = PSA_ALG_CCM,
     .nonce           = nonce,
-    .nonce_length    = PSA_AEAD_NONCE_LENGTH(PSA_KEY_TYPE_AES, PSA_ALG_CCM) - 1,
+    .nonce_length    = 6,
     .operation_state = 1,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
@@ -99,7 +85,7 @@ static const test_data check1[] = {
     .alg             = PSA_ALG_CCM,
     .setup_alg       = PSA_ALG_CCM,
     .nonce           = nonce,
-    .nonce_length    = (PSA_AEAD_NONCE_LENGTH(PSA_KEY_TYPE_AES, PSA_ALG_CCM))*5,
+    .nonce_length    = 14,
     .operation_state = 1,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
@@ -156,22 +142,8 @@ static const test_data check1[] = {
     .data            = key_data,
     .data_length     = AES_16B_KEY_SIZE,
     .usage_flags     = PSA_KEY_USAGE_DECRYPT,
-    .alg             = PSA_ALG_CCM,
+    .alg             = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
     .setup_alg       = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
-    .nonce           = nonce,
-    .nonce_length    = 13,
-    .operation_state = 1,
-    .expected_status = PSA_SUCCESS
-},
-
-{
-    .test_desc       = "Test psa_aead_set_nonce - Decrypt - CCM - Default Tag length\n",
-    .type            = PSA_KEY_TYPE_AES,
-    .data            = key_data,
-    .data_length     = AES_16B_KEY_SIZE,
-    .usage_flags     = PSA_KEY_USAGE_DECRYPT,
-    .alg             = PSA_ALG_CCM,
-    .setup_alg       = PSA_ALG_AEAD_WITH_DEFAULT_LENGTH_TAG(PSA_ALG_CCM),
     .nonce           = nonce,
     .nonce_length    = 13,
     .operation_state = 1,
@@ -187,7 +159,7 @@ static const test_data check1[] = {
     .alg             = PSA_ALG_CCM,
     .setup_alg       = PSA_ALG_CCM,
     .nonce           = nonce,
-    .nonce_length    = PSA_AEAD_NONCE_LENGTH(PSA_KEY_TYPE_AES, PSA_ALG_CCM) - 1,
+    .nonce_length    = 6,
     .operation_state = 1,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
@@ -201,7 +173,7 @@ static const test_data check1[] = {
     .alg             = PSA_ALG_CCM,
     .setup_alg       = PSA_ALG_CCM,
     .nonce           = nonce,
-    .nonce_length    = (PSA_AEAD_NONCE_LENGTH(PSA_KEY_TYPE_AES, PSA_ALG_CCM))*5,
+    .nonce_length    = 14,
     .operation_state = 1,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },

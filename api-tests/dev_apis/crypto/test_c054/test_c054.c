@@ -96,7 +96,16 @@ int32_t psa_aead_generate_nonce_test(caller_security_t caller __UNUSED)
                                               check1[i].setup_alg);
             }
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
+
+            /* Declare the lengths of the message and additional data for AEAD */
+            status = val->crypto_function(VAL_CRYPTO_AEAD_SET_LENGTHS,
+                                          &operation,
+                                          0,
+                                          0);
+
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
         }
+
 
         /* Generate a random nonce for an authenticated encryption operation */
         status = val->crypto_function(VAL_CRYPTO_AEAD_GENERATE_NONCE,
@@ -104,19 +113,19 @@ int32_t psa_aead_generate_nonce_test(caller_security_t caller __UNUSED)
                                       check1[i].nonce,
                                       check1[i].nonce_size,
                                       &nonce_length);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(5));
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
 
         if (check1[i].expected_status != PSA_SUCCESS)
         {
             /* Abort the AEAD operation */
             status = val->crypto_function(VAL_CRYPTO_AEAD_ABORT,
                                           &operation);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
             /* Destroy the key */
             status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY,
                                           key);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
             /* Reset the key attributes */
             val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES,
@@ -129,7 +138,7 @@ int32_t psa_aead_generate_nonce_test(caller_security_t caller __UNUSED)
         for (j = 0; j < (int32_t)nonce_length; j++)
             nonce_sum += check1[i].nonce[j];
 
-        TEST_ASSERT_NOT_EQUAL(nonce_sum, 0, TEST_CHECKPOINT_NUM(8));
+        TEST_ASSERT_NOT_EQUAL(nonce_sum, 0, TEST_CHECKPOINT_NUM(9));
 
         /* Generate a random nonce on an ongoing operation should be an error */
         status = val->crypto_function(VAL_CRYPTO_AEAD_GENERATE_NONCE,
@@ -137,17 +146,17 @@ int32_t psa_aead_generate_nonce_test(caller_security_t caller __UNUSED)
                                       check1[i].nonce,
                                       check1[i].nonce_size,
                                       &nonce_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE,  TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE,  TEST_CHECKPOINT_NUM(10));
 
         /* Abort the AEAD operation */
         status = val->crypto_function(VAL_CRYPTO_AEAD_ABORT,
                                       &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
 
         /* Destroy the key */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY,
                                       key);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
 
         /* Reset the key attributes */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES,
