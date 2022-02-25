@@ -70,7 +70,10 @@ int32_t psa_aead_decrypt_test(caller_security_t caller __UNUSED)
                                       check1[i].ciphertext, check1[i].ciphertext_length,
                                       check1[i].plaintext, check1[i].plaintext_size,
                                       &expected_plaintext_length);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
+        TEST_ASSERT_DUAL(status,
+                         check1[i].expected_status[0],
+                         check1[i].expected_status[1],
+                         TEST_CHECKPOINT_NUM(4));
 
         if (check1[i].expected_status != PSA_SUCCESS)
         {

@@ -34,7 +34,7 @@ typedef struct {
     const uint8_t          *expected_ciphertext;
     size_t                  ciphertext_size;
     size_t                  expected_ciphertext_length;
-    psa_status_t            expected_status;
+    psa_status_t            expected_status[2];
 } test_data;
 
 static const test_data check1[] = {
@@ -57,7 +57,7 @@ static const test_data check1[] = {
     .expected_ciphertext        = aead_ciphertext_1,
     .ciphertext_size            = BUFFER_SIZE,
     .expected_ciphertext_length = AEAD_CIPHERTEXT_LEN_1,
-    .expected_status            = PSA_SUCCESS
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
 },
 
 {
@@ -77,7 +77,7 @@ static const test_data check1[] = {
     .expected_ciphertext        = aead_ciphertext_2,
     .ciphertext_size            = BUFFER_SIZE,
     .expected_ciphertext_length = AEAD_CIPHERTEXT_LEN_2,
-    .expected_status            = PSA_SUCCESS
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
 },
 
 {
@@ -97,7 +97,7 @@ static const test_data check1[] = {
     .expected_ciphertext        = aead_ciphertext_3,
     .ciphertext_size            = BUFFER_SIZE,
     .expected_ciphertext_length = AEAD_CIPHERTEXT_LEN_3,
-    .expected_status            = PSA_SUCCESS
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
 },
 
 {
@@ -117,7 +117,7 @@ static const test_data check1[] = {
     .expected_ciphertext        = aead_ciphertext_4,
     .ciphertext_size            = BUFFER_SIZE,
     .expected_ciphertext_length = AEAD_CIPHERTEXT_LEN_4,
-    .expected_status            = PSA_SUCCESS
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
 },
 
 {
@@ -137,7 +137,7 @@ static const test_data check1[] = {
     .expected_ciphertext        = aead_ciphertext_5,
     .ciphertext_size            = BUFFER_SIZE,
     .expected_ciphertext_length = AEAD_CIPHERTEXT_LEN_5,
-    .expected_status            = PSA_SUCCESS
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
 },
 #endif
 #endif
@@ -161,7 +161,7 @@ static const test_data check1[] = {
     .expected_ciphertext        = aead_ciphertext_6,
     .ciphertext_size            = BUFFER_SIZE,
     .expected_ciphertext_length = AEAD_CIPHERTEXT_LEN_6,
-    .expected_status            = PSA_SUCCESS
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
 },
 #endif
 #endif
@@ -185,7 +185,7 @@ static const test_data check1[] = {
     .expected_ciphertext        = NULL,
     .ciphertext_size            = 0,
     .expected_ciphertext_length = 0,
-    .expected_status            = PSA_ERROR_NOT_SUPPORTED
+    .expected_status            = {PSA_ERROR_NOT_SUPPORTED, PSA_ERROR_INVALID_ARGUMENT}
 },
 
 {
@@ -205,7 +205,7 @@ static const test_data check1[] = {
     .expected_ciphertext        = NULL,
     .ciphertext_size            = 0,
     .expected_ciphertext_length = 0,
-    .expected_status            = PSA_ERROR_NOT_PERMITTED
+    .expected_status            = {PSA_ERROR_NOT_PERMITTED, PSA_ERROR_NOT_PERMITTED}
 },
 
 {
@@ -225,7 +225,7 @@ static const test_data check1[] = {
     .expected_ciphertext        = aead_ciphertext_2,
     .ciphertext_size            = AEAD_CIPHERTEXT_LEN_2-1,
     .expected_ciphertext_length = AEAD_CIPHERTEXT_LEN_2,
-    .expected_status            = PSA_ERROR_BUFFER_TOO_SMALL
+    .expected_status            = {PSA_ERROR_BUFFER_TOO_SMALL, PSA_ERROR_BUFFER_TOO_SMALL}
 },
 
 {
@@ -245,7 +245,7 @@ static const test_data check1[] = {
     .expected_ciphertext        = aead_ciphertext_2,
     .ciphertext_size            = BUFFER_SIZE,
     .expected_ciphertext_length = AEAD_CIPHERTEXT_LEN_2,
-    .expected_status            = PSA_ERROR_INVALID_ARGUMENT
+    .expected_status            = {PSA_ERROR_INVALID_ARGUMENT, PSA_ERROR_INVALID_ARGUMENT}
 },
 
 {
@@ -265,7 +265,7 @@ static const test_data check1[] = {
     .expected_ciphertext        = aead_ciphertext_2,
     .ciphertext_size            = BUFFER_SIZE,
     .expected_ciphertext_length = AEAD_CIPHERTEXT_LEN_2,
-    .expected_status            = PSA_ERROR_INVALID_ARGUMENT
+    .expected_status            = {PSA_ERROR_INVALID_ARGUMENT, PSA_ERROR_INVALID_ARGUMENT}
 },
 #endif
 #endif
