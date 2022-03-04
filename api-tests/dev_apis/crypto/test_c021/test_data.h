@@ -132,7 +132,7 @@ static const test_data check1[] = {
  PSA_KEY_DERIVATION_INPUT_SECRET, 256, {0}, 0,
  PSA_KEY_TYPE_RSA_KEY_PAIR, 2048, PSA_KEY_USAGE_EXPORT,
  PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
- PSA_ERROR_INVALID_ARGUMENT
+ PSA_ERROR_NOT_SUPPORTED
 },
 
 {"Test psa_key_derivation_output_key - Invalid key size\n", PSA_KEY_TYPE_DERIVE,
