@@ -289,6 +289,15 @@
 #define ARCH_TEST_HKDF
 
 /**
+ * \def ARCH_TEST_TLS12_PRF
+ *
+ * Enable the TLS-1.2 PRF algorithm (RFC 5246).
+ *
+ * Requires: ARCH_TEST_HASH
+*/
+#define ARCH_TEST_TLS12_PRF
+
+/**
  * \def ARCH_TEST_xMAC
  *
  * Enable the xMAC (Cipher/Hash/G-based Message Authentication Code) mode for block
