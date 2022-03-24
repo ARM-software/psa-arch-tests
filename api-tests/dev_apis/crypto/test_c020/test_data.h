@@ -40,6 +40,7 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
+#ifdef ARCH_TEST_HKDF
 {
     .test_desc       = "Test psa_key_derivation_output_bytes - HKDF\n",
     .type            = PSA_KEY_TYPE_DERIVE,
@@ -189,7 +190,9 @@ static const test_data check1[] = {
     .output_length   = 42,
     .expected_status = PSA_ERROR_BAD_STATE
 },
+#endif /* ARCH_TEST_HKDF */
 
+#ifdef ARCH_TEST_TLS12_PRF
 {
     .test_desc       = "Test psa_key_derivation_output_bytes - TLS12_PRF\n",
     .type            = PSA_KEY_TYPE_DERIVE,
@@ -279,4 +282,5 @@ static const test_data check1[] = {
     .output_length   = 42,
     .expected_status = PSA_ERROR_BAD_STATE
 },
+#endif /* ARCH_TEST_TLS12_PRF */
 };
