@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -84,7 +84,7 @@ int32_t psa_aead_encrypt_test(caller_security_t caller __UNUSED)
                          check1[i].expected_status[1],
                          TEST_CHECKPOINT_NUM(4));
 
-        if (check1[i].expected_status != PSA_SUCCESS)
+        if ((check1[i].expected_status[0] != PSA_SUCCESS) && (check1[i].expected_status[1] != PSA_SUCCESS))
         {
             /* Destroy the key */
             status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
