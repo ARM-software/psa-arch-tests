@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -222,7 +222,7 @@ set(PSA_TARGET_GENERATE_DATABASE_PRE	psa_generate_database_prerequisite)
 set(PSA_TARGET_GENERATE_DATABASE	psa_generate_database)
 set(PSA_TARGET_GENERATE_DATABASE_POST	psa_generate_database_cleanup)
 if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
-	set(PSA_TARGET_QCBOR		psa_qcbor)
+	set(PSA_TARGET_QCBOR		${CMAKE_CURRENT_BINARY_DIR}/psa_qcbor	CACHE PATH "Location of Q_CBOR sources.")
 endif()
 set(PSA_TARGET_PAL_NSPE_LIB		pal_nspe)
 set(PSA_TARGET_VAL_NSPE_LIB		val_nspe)
@@ -318,7 +318,7 @@ set(PSA_CLIENT_TEST_LIST_INC		${CMAKE_CURRENT_BINARY_DIR}/client_tests_list.inc)
 set(PSA_SERVER_TEST_LIST_DECLARE_INC	${CMAKE_CURRENT_BINARY_DIR}/server_tests_list_declare.inc)
 set(PSA_SERVER_TEST_LIST		${CMAKE_CURRENT_BINARY_DIR}/server_tests_list.inc)
 if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
-	set(PSA_QCBOR_INCLUDE_PATH      ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/inc)
+	set(PSA_QCBOR_INCLUDE_PATH      ${PSA_TARGET_QCBOR}/inc)
 endif()
 
 # Validity check for required files for a given suite
@@ -519,20 +519,20 @@ endif()
 message(STATUS "[PSA] : ----------Process input arguments- complete-------------")
 
 
-if((${SUITE} STREQUAL "INITIAL_ATTESTATION") AND (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}))
+if((${SUITE} STREQUAL "INITIAL_ATTESTATION") AND (NOT EXISTS ${PSA_TARGET_QCBOR}))
 # Clone QCBOR and move to specified tag
 execute_process(COMMAND ${GIT_EXECUTABLE} clone ${PSA_QCBOR_GIT_REPO_LINK} ${PSA_TARGET_QCBOR}
-	RESULT_VARIABLE ${PSA_TARGET_QCBOR}_clone_result
+	RESULT_VARIABLE qcbor_clone_result
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-if(${PSA_TARGET_QCBOR}_clone_result)
+if(qcbor_clone_result)
 	message(FATAL_ERROR "git clone failed for ${PSA_QCBOR_GIT_REPO_LINK}")
 endif()
 
-if(NOT ${PSA_TARGET_QCBOR}_clone_result)
+if(NOT qcbor_clone_result)
 execute_process(COMMAND ${GIT_EXECUTABLE} checkout -q "${PSA_QCBOR_GIT_REPO_TAG}"
-	RESULT_VARIABLE ${PSA_TARGET_QCBOR}_checkout_result
-	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR})
-if(${PSA_TARGET_QCBOR}_checkout_result)
+	RESULT_VARIABLE qcbor_checkout_result
+	WORKING_DIRECTORY ${PSA_TARGET_QCBOR})
+if(qcbor_checkout_result)
 	message(FATAL_ERROR "git checkout failed for Repo : ${PSA_QCBOR_GIT_REPO_LINK}, Tag : ${PSA_QCBOR_GIT_REPO_TAG}")
 endif()
 endif()

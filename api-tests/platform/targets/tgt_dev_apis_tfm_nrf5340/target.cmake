@@ -58,10 +58,10 @@ if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
 	list(APPEND PAL_SRC_C_NSPE
 		${PSA_ROOT_DIR}/platform/targets/common/nspe/initial_attestation/pal_attestation_intf.c
 		${PSA_ROOT_DIR}/platform/targets/common/nspe/initial_attestation/pal_attestation_crypto.c
-                ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/src/UsefulBuf.c
-                ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/src/ieee754.c
-                ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/src/qcbor_decode.c
-                ${CMAKE_CURRENT_BINARY_DIR}/${PSA_TARGET_QCBOR}/src/qcbor_encode.c
+                ${PSA_TARGET_QCBOR}/src/UsefulBuf.c
+                ${PSA_TARGET_QCBOR}/src/ieee754.c
+                ${PSA_TARGET_QCBOR}/src/qcbor_decode.c
+                ${PSA_TARGET_QCBOR}/src/qcbor_encode.c
 	)
 endif()
 
