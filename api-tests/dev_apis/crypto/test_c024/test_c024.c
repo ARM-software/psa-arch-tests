@@ -84,7 +84,8 @@ int32_t psa_aead_encrypt_test(caller_security_t caller __UNUSED)
                          check1[i].expected_status[1],
                          TEST_CHECKPOINT_NUM(4));
 
-        if ((check1[i].expected_status[0] != PSA_SUCCESS) && (check1[i].expected_status[1] != PSA_SUCCESS))
+        if ((check1[i].expected_status[0] != PSA_SUCCESS) &&
+            (check1[i].expected_status[1] != PSA_SUCCESS))
         {
             /* Destroy the key */
             status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
