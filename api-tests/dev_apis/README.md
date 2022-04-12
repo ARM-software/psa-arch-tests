@@ -80,6 +80,7 @@ To build the test suite for your target platform, execute the following commands
 -   -DCOMPILER_NAME=<compiler_name> Compiler name to be use for selecting compiler. Supported values are gcc. By defualt it will take gcc if not specified.
      Note: -DCOMPILER_NAME only applicable for linux i.e. -DTOOLCHAIN=GCC_LINUX and DTARGET=tgt_dev_apis_linux.
 -   -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>" is an additional directory to be included into the compiler search path.You must provide Functional APIs header files implementation to the test suite build system using this option. For example, to compile Crypto tests, the include path must point to the path where **psa/crypto.h** is located in your build system. Bydefault, PSA_INCLUDE_PATHS accepts absolute path. However, relative path can be provided using below format:<br />
+-   -DPSA_TARGET_QCBOR=<path for pre-fetched cbor folder, this is option used where no network connectivity is possible during the build:<br />
 ```
     -DPSA_INCLUDE_PATHS=`readlink -f <relative_include_path>`
 ```

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -85,6 +85,7 @@ typedef struct {
                                               size_t out_len);
   void         (*ipc_close)                  (psa_handle_t handle);
   val_status_t (*set_boot_flag)              (boot_state_t state);
+  val_status_t (*set_test_data)             (int32_t nvm_index, int32_t test_data);
   val_status_t (*target_get_config)          (cfg_id_t cfg_id, uint8_t **data, uint32_t *size);
   val_status_t (*process_connect_request)    (psa_signal_t sig, psa_msg_t *msg);
   val_status_t (*process_call_request)       (psa_signal_t sig, psa_msg_t *msg);

@@ -123,7 +123,7 @@
 
 #define TEST_ASSERT_EQUAL(arg1, arg2, checkpoint)                                   \
     do {                                                                            \
-        if ((arg1) == PAL_STATUS_UNSUPPORTED_FUNC)                                  \
+    	if ((arg1) == PAL_STATUS_UNSUPPORTED_FUNC)                                  \
         {                                                                           \
             return RESULT_SKIP(VAL_STATUS_UNSUPPORTED);                             \
         }                                                                           \
@@ -138,7 +138,7 @@
 
 #define TEST_ASSERT_DUAL(arg1, status1, status2, checkpoint)                        \
     do {                                                                            \
-        if ((arg1) == PAL_STATUS_UNSUPPORTED_FUNC)                                  \
+    	if ((arg1) == PAL_STATUS_UNSUPPORTED_FUNC)                                  \
         {                                                                           \
             return RESULT_SKIP(VAL_STATUS_UNSUPPORTED);                             \
         }                                                                           \
@@ -161,7 +161,7 @@
 
 #define TEST_ASSERT_NOT_EQUAL(arg1, arg2, checkpoint)                               \
     do {                                                                            \
-        if ((arg1) == PAL_STATUS_UNSUPPORTED_FUNC)                                  \
+    	if ((arg1) == PAL_STATUS_UNSUPPORTED_FUNC)                                  \
         {                                                                           \
             return RESULT_SKIP(VAL_STATUS_UNSUPPORTED);                             \
         }                                                                           \
@@ -185,7 +185,7 @@
 
 #define TEST_ASSERT_RANGE(arg1, range1, range2, checkpoint)                         \
     do {                                                                            \
-        if ((arg1) == PAL_STATUS_UNSUPPORTED_FUNC)                                  \
+    	if ((arg1) == PAL_STATUS_UNSUPPORTED_FUNC)                                  \
         {                                                                           \
             return RESULT_SKIP(VAL_STATUS_UNSUPPORTED);                             \
         }                                                                           \

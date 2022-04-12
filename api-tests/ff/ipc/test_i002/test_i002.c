@@ -259,6 +259,21 @@ int32_t client_test_spm_concurrent_connect_limit(caller_security_t caller __UNUS
 
    val->print(PRINT_TEST, "[Check 7] Test connect limit\n", 0);
 
+   if(caller == CALLER_SECURE)
+   {
+	   status = val->set_test_data(NV_TEST_DATA1, 7);
+	   if (VAL_ERROR(status))
+	   {
+		   return VAL_STATUS_ERROR;
+	   }
+
+	   status = val->set_boot_flag(BOOT_EXPECTED_S);
+	   if (VAL_ERROR(status))
+	   {
+		   return VAL_STATUS_ERROR;
+	   }
+   }
+
    /* Execute psa_connect in a loop until it returns
     * PSA_ERROR_CONNECTION_REFUSED OR PSA_ERROR_CONNECTION_BUSY
     */

@@ -21,7 +21,7 @@
 (START)
 
 test_i001
-test_i002
+test_i002, panic_test
 test_i003
 test_i004, panic_test
 test_i005, panic_test

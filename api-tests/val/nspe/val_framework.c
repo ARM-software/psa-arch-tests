@@ -271,44 +271,56 @@ val_status_t val_switch_to_secure_client(uint32_t test_num)
             test_info.block_num = test_info.block_num + 2;
             val_print(PRINT_DEBUG, "[Check 2] PASSED\n", 0);
        }
+    }
+    else
+    {
+	  /*
+	   * Reboot have been expected by test in previous s run,
+	   * consider previous run pass and jump to next appropriate test function
+	   * of the same test if available.
+	   */
+       int32_t test_data = 0;
+ 	   status = val_get_test_data(NV_TEST_DATA1, &test_data);
+ 	   if (VAL_ERROR(status))
+ 	   {
+ 		   return VAL_STATUS_ERROR;
+ 	   }
+	   test_info.block_num = test_data + 1;
+	   val_print(PRINT_DEBUG, "[Check %d] PASSED\n", test_data);
+    }
 
-       status = val_set_boot_flag(BOOT_NOT_EXPECTED);
-       if (VAL_ERROR(status))
-       {
-           goto exit;
-       }
+    status = val_set_boot_flag(BOOT_NOT_EXPECTED);
+    if (VAL_ERROR(status))
+    {
+	   goto exit;
+    }
+
 
        /* switch to secure client */
 #if STATELESS_ROT == 1
-       status = val_execute_secure_test_func(&handle, test_info, CLIENT_TEST_DISPATCHER_HANDLE);
-       handle = (int32_t)CLIENT_TEST_DISPATCHER_HANDLE;
+   status = val_execute_secure_test_func(&handle, test_info, CLIENT_TEST_DISPATCHER_HANDLE);
+   handle = (int32_t)CLIENT_TEST_DISPATCHER_HANDLE;
 #else
-       status = val_execute_secure_test_func(&handle, test_info, CLIENT_TEST_DISPATCHER_SID);
+   status = val_execute_secure_test_func(&handle, test_info, CLIENT_TEST_DISPATCHER_SID);
 #endif
-       if (VAL_ERROR(status))
-       {
-           goto exit;
-       }
-
-       /* Retrive secure client test status */
-       status = val_get_secure_test_result(&handle);
-       if (IS_TEST_SKIP(status))
-       {
-            val_set_status(status);
-            return status;
-       }
-       if (VAL_ERROR(status))
-       {
-           goto exit;
-       }
-       return status;
-   }
-   else
+   if (VAL_ERROR(status))
    {
-       /* If we are here means, we are in third run of this test */
-       val_print(PRINT_DEBUG, "[Check 1] PASSED\n", 0);
-       return VAL_STATUS_SUCCESS;
+	   goto exit;
    }
+
+   /* Retrive secure client test status */
+   status = val_get_secure_test_result(&handle);
+   if (IS_TEST_SKIP(status))
+   {
+		val_set_status(status);
+		return status;
+   }
+   if (VAL_ERROR(status))
+   {
+	   goto exit;
+   }
+   return status;
+
 
 exit:
    val_set_status(RESULT_FAIL(status));
@@ -707,3 +719,44 @@ val_status_t val_get_boot_flag(boot_state_t *state)
    *state = boot.state;
    return status;
 }
+
+/**
+    @brief    - This function sets the test specific data
+                NVMEM location
+    @param    - nvm index
+    @param    - nvm testdata
+    @return   - val_status_t
+**/
+val_status_t val_set_test_data(int32_t nvm_index, int32_t test_data)
+{
+   val_status_t     status;
+
+   status = val_nvmem_write(VAL_NVMEM_OFFSET(nvm_index), &test_data, sizeof(int32_t));
+   if (VAL_ERROR(status))
+   {
+       val_print(PRINT_ERROR, "\tval_nvmem_write failed for test data. Error=0x%x\n", status);
+       return status;
+   }
+   return status;
+}
+
+/**
+    @brief    - This function gets the test specific data
+                NVMEM location
+    @param    - nvm index
+    @param    - nvm testdata
+    @return   - val_status_t
+**/
+val_status_t val_get_test_data(int32_t nvm_index, int32_t *test_data)
+{
+   val_status_t     status;
+
+   status = val_nvmem_read(VAL_NVMEM_OFFSET(nvm_index), test_data, sizeof(int32_t));
+   if (VAL_ERROR(status))
+   {
+       val_print(PRINT_ERROR, "\tval_nvmem_read failed for test data. Error=0x%x\n", status);
+       return status;
+   }
+   return status;
+}
+

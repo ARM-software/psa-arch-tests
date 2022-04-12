@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,6 +57,8 @@ const val_api_t val_api = {
     .wd_reprogram_timer        = val_wd_reprogram_timer,
     .set_boot_flag             = val_set_boot_flag,
     .get_boot_flag             = val_get_boot_flag,
+	.set_test_data             = val_set_test_data,
+	.get_test_data             = val_get_test_data,
     .crypto_function           = val_crypto_function,
     .storage_function          = val_storage_function,
     .attestation_function      = val_attestation_function,

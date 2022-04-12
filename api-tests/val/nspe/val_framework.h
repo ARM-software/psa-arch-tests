@@ -49,4 +49,6 @@ val_status_t val_ipc_call(psa_handle_t handle,
 void         val_ipc_close(psa_handle_t handle);
 val_status_t val_set_boot_flag(boot_state_t state);
 val_status_t val_get_boot_flag(boot_state_t *state);
+val_status_t val_set_test_data(int32_t nvm_index, int32_t test_data);
+val_status_t val_get_test_data(int32_t nvm_index, int32_t *test_data);
 #endif

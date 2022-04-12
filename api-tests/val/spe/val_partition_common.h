@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,6 +54,7 @@ __UNUSED STATIC_DECLARE val_status_t val_get_secure_test_result(psa_handle_t *ha
 __UNUSED STATIC_DECLARE val_status_t val_err_check_set(uint32_t checkpoint, val_status_t status);
 __UNUSED STATIC_DECLARE val_status_t val_nvmem_write(uint32_t offset, void *buffer, int size);
 __UNUSED STATIC_DECLARE val_status_t val_set_boot_flag(boot_state_t state);
+__UNUSED STATIC_DECLARE val_status_t val_set_test_data(int32_t nvm_index, int32_t test_data);
 
 __UNUSED static val_api_t val_api = {
     .print                     = val_print,
@@ -64,6 +65,7 @@ __UNUSED static val_api_t val_api = {
     .ipc_call                  = val_ipc_call,
     .ipc_close                 = val_ipc_close,
     .set_boot_flag             = val_set_boot_flag,
+	.set_test_data             = val_set_test_data,
     .target_get_config         = val_target_get_config,
     .process_connect_request   = val_process_connect_request,
     .process_call_request      = val_process_call_request,
@@ -569,4 +571,26 @@ STATIC_DECLARE val_status_t val_set_boot_flag(boot_state_t state)
    }
    return status;
 }
+
+/**
+    @brief    - This function sets the test specific data
+                NVMEM location
+    @param    - nvm index
+    @param    - nvm testdata
+    @return   - val_status_t
+**/
+STATIC_DECLARE val_status_t val_set_test_data(int32_t nvm_index, int32_t test_data)
+{
+   val_status_t     status;
+
+   status = val_nvmem_write(VAL_NVMEM_OFFSET(nvm_index), &test_data, sizeof(int32_t));
+   if (VAL_ERROR(status))
+   {
+       val_print(PRINT_ERROR, "\tval_nvmem_write failed for test data. Error=0x%x\n", status);
+       return status;
+   }
+   return status;
+}
+
+
 #endif

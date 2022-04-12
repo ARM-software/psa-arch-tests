@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,6 +57,8 @@ typedef struct {
     val_status_t     (*wd_reprogram_timer)        (wd_timeout_type_t timeout_type);
     val_status_t     (*set_boot_flag)             (boot_state_t state);
     val_status_t     (*get_boot_flag)             (boot_state_t *state);
+    val_status_t     (*get_test_data)             (int32_t nvm_index, int32_t *test_data);
+    val_status_t     (*set_test_data)             (int32_t nvm_index, int32_t test_data);
     int32_t          (*crypto_function)           (int type, ...);
     int32_t          (*storage_function)          (int type, ...);
     int32_t          (*attestation_function)      (int type, ...);
