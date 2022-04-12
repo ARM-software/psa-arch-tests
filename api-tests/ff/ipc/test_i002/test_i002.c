@@ -261,12 +261,6 @@ int32_t client_test_spm_concurrent_connect_limit(caller_security_t caller __UNUS
 
    if (caller == CALLER_SECURE)
    {
-	   status = val->set_test_data(NV_TEST_DATA1, 7);
-	   if (VAL_ERROR(status))
-	   {
-		   return VAL_STATUS_ERROR;
-	   }
-
 	   status = val->set_boot_flag(BOOT_EXPECTED_S);
 	   if (VAL_ERROR(status))
 	   {

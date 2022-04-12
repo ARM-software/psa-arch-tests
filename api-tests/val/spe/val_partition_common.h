@@ -359,7 +359,12 @@ STATIC_DECLARE val_status_t val_execute_secure_tests(test_info_t test_info, clie
         {
             val_print(PRINT_DEBUG, "[Check %d] START\n", i);
         }
-
+        /* keep track of the test block numbers, helps when the panic happened */
+    	status = val_set_test_data(NV_TEST_DATA1, i);
+    	if (VAL_ERROR(status))
+    	{
+    	   return VAL_STATUS_ERROR;
+    	}
         /* Execute client tests */
         test_status = tests_list[i](CALLER_SECURE);
 

@@ -96,6 +96,8 @@ int32_t client_test_psa_drop_connection(caller_security_t caller)
 
        val->print(PRINT_DEBUG, "\tReceived PSA_ERROR_PROGRAMMER_ERROR\n", 0);
 
+       psa->close(handle);
+       
        /* If this call returns PSA_ERROR_PROGRAMMER_ERROR,
         * when a valid connection handle was provided, then
         * all subsequent calls to psa_call() with the same connection
@@ -109,7 +111,16 @@ int32_t client_test_psa_drop_connection(caller_security_t caller)
            "\tCall should have returned PSA_ERROR_PROGRAMMER_ERROR. Status = 0x%x\n",
            status_of_call);
        }
-       psa->close(handle);
+
+       status_of_call =  psa->call(handle, PSA_IPC_CALL, NULL, 0, NULL, 0);
+       if (status_of_call != PSA_ERROR_PROGRAMMER_ERROR)
+       {
+           status = VAL_STATUS_SPM_FAILED;
+           val->print(PRINT_ERROR,
+           "\tCall should have returned PSA_ERROR_PROGRAMMER_ERROR. Status = 0x%x\n",
+           status_of_call);
+       }
+
        return status;
    }
 
