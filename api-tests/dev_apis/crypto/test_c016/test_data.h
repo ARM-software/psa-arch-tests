@@ -140,6 +140,7 @@ static const test_data check1[] = {
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 #ifdef ARCH_TEST_RSA_2048
+#ifndef ARCH_TEST_SKIP_RSA_2048_GEN_KEY
 {
     .test_desc       = "Test psa_generate_key with RSA 2048 Public key\n",
     .type            = PSA_KEY_TYPE_RSA_PUBLIC_KEY,
@@ -152,6 +153,7 @@ static const test_data check1[] = {
                         PSA_EXPORT_PUBLIC_KEY_MAX_SIZE))},
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
+#endif
 #endif
 #endif
 
