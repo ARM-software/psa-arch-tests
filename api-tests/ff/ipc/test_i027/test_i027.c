@@ -96,8 +96,9 @@ int32_t client_test_psa_drop_connection(caller_security_t caller)
 
        val->print(PRINT_DEBUG, "\tReceived PSA_ERROR_PROGRAMMER_ERROR\n", 0);
 
+       /* close the handle after receving the programmer error*/
        psa->close(handle);
-       
+
        /* If this call returns PSA_ERROR_PROGRAMMER_ERROR,
         * when a valid connection handle was provided, then
         * all subsequent calls to psa_call() with the same connection
