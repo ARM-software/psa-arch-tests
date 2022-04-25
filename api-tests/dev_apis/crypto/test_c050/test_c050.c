@@ -135,10 +135,10 @@ int32_t psa_sign_message_negative_test(caller_security_t caller __UNUSED)
     status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
     TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-    val->print(PRINT_TEST, "[Check %d] Test psa_sign_hash - Invalid key handle\n",
+    val->print(PRINT_TEST, "[Check %d] Test psa_sign_message - Invalid key handle\n",
                                                                             g_test_count++);
-    /* Sign a hash or short message with a private key */
-    status = val->crypto_function(VAL_CRYPTO_SIGN_HASH,
+    /* Sign a message with a private key */
+    status = val->crypto_function(VAL_CRYPTO_SIGN_MESSAGE,
                                   key,
                                   check1[valid_test_input_index].sign_alg,
                                   check1[valid_test_input_index].input,
@@ -148,10 +148,10 @@ int32_t psa_sign_message_negative_test(caller_security_t caller __UNUSED)
                                   &get_signature_length);
     TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));
 
-    val->print(PRINT_TEST, "[Check %d] Test psa_sign_hash - Zero as key handle\n",
+    val->print(PRINT_TEST, "[Check %d] Test psa_sign_message - Zero as key handle\n",
                                                                             g_test_count++);
-    /* Sign a hash or short message with a private key */
-    status = val->crypto_function(VAL_CRYPTO_SIGN_HASH,
+    /* Sign message with a private key */
+    status = val->crypto_function(VAL_CRYPTO_SIGN_MESSAGE,
                                   0,
                                   check1[valid_test_input_index].sign_alg,
                                   check1[valid_test_input_index].input,
