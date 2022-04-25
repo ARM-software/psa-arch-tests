@@ -112,9 +112,10 @@ int32_t psa_cipher_finish_test(caller_security_t caller __UNUSED)
 
         if (check1[i].usage_flags == PSA_KEY_USAGE_ENCRYPT)
         {
-			/* Check if the output length matches the expected length */
-			TEST_ASSERT_EQUAL(get_update_output_length + get_finish_output_length, check1[i].expected_output_length,
-							  TEST_CHECKPOINT_NUM(11));
+		/* Check if the output length matches the expected length */
+		TEST_ASSERT_EQUAL(get_update_output_length + get_finish_output_length,
+					check1[i].expected_output_length,
+					TEST_CHECKPOINT_NUM(11));
         }
         else
         {
