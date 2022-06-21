@@ -40,7 +40,7 @@ void test_entry(val_api_t *val_api, psa_api_t *psa_api)
     }
 
     /* Execute list of tests available in test[num]_client_tests_list from Non-secure side*/
-    status = val->execute_non_secure_tests(TEST_NUM, test_i005_client_tests_list, TRUE);
+    status = val->execute_non_secure_tests(TEST_NUM, test_i005_client_tests_list, FALSE);
     if (VAL_ERROR(status))
     {
         goto test_exit;
