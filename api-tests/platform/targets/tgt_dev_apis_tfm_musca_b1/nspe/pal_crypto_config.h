@@ -268,8 +268,10 @@
 #define ARCH_TEST_SHA256
 #ifndef TF_M_PROFILE_SMALL
 #ifndef TF_M_PROFILE_MEDIUM
+#ifdef CC312_LEGACY_DRIVER_API_ENABLED
 #define ARCH_TEST_SHA384
 #define ARCH_TEST_SHA512
+#endif
 #endif
 #endif
 //#define ARCH_TEST_SHA512_224
