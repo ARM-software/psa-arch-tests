@@ -641,6 +641,9 @@ endif()
 if(${SP_HEAP_MEM_SUPP} EQUAL 1)
 	add_definitions(-DSP_HEAP_MEM_SUPP)
 endif()
+if(${CC312_LEGACY_DRIVER_API_ENABLED})
+	add_definitions(-DCC312_LEGACY_DRIVER_API_ENABLED)
+endif()
 
 # Build PAL NSPE LIB
 include(${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cmake)
