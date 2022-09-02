@@ -168,7 +168,7 @@ static const test_data check1[] = {
     .output                 = expected_output,
     .output_size            = BUFFER_SIZE,
     .expected_output        = ciphertext_3,
-    .expected_output_length = 16,
+    .expected_output_length = 8,
     .expected_status        = PSA_SUCCESS
 },
 #endif
@@ -188,7 +188,7 @@ static const test_data check1[] = {
     .output                 = expected_output,
     .output_size            = BUFFER_SIZE,
     .expected_output        = ciphertext_4,
-    .expected_output_length = 0,
+    .expected_output_length = 8,
     .expected_status        = PSA_SUCCESS
 },
 #endif
@@ -208,7 +208,7 @@ static const test_data check1[] = {
     .output                 = expected_output,
     .output_size            = BUFFER_SIZE,
     .expected_output        = ciphertext_5,
-    .expected_output_length = 0,
+    .expected_output_length = 8,
     .expected_status        = PSA_SUCCESS
 },
 #endif
@@ -250,7 +250,7 @@ static const test_data check1[] = {
     .output                 = expected_output,
     .output_size            = BUFFER_SIZE,
     .expected_output        = plaintext,
-    .expected_output_length = 0,
+    .expected_output_length = 16,
     .expected_status        = PSA_SUCCESS
 },
 
@@ -289,7 +289,7 @@ static const test_data check1[] = {
     .output                 = expected_output,
     .output_size            = BUFFER_SIZE,
     .expected_output        = plaintext,
-    .expected_output_length = 0,
+    .expected_output_length = 16,
     .expected_status        = PSA_SUCCESS
 },
 
@@ -327,7 +327,7 @@ static const test_data check1[] = {
     .output                 = expected_output,
     .output_size            = BUFFER_SIZE,
     .expected_output        = plaintext,
-    .expected_output_length = 0,
+    .expected_output_length = 16,
     .expected_status        = PSA_SUCCESS
 },
 
@@ -341,11 +341,11 @@ static const test_data check1[] = {
     .iv                     = iv,
     .iv_length              = 16,
     .input                  = ciphertext_2,
-    .input_length           = 16,
+    .input_length           = 15,
     .output                 = expected_output,
     .output_size            = BUFFER_SIZE,
     .expected_output        = plaintext,
-    .expected_output_length = 0,
+    .expected_output_length = 15,
     .expected_status        = PSA_SUCCESS
 },
 #endif
@@ -367,7 +367,7 @@ static const test_data check1[] = {
     .output                 = expected_output,
     .output_size            = BUFFER_SIZE,
     .expected_output        = plaintext,
-    .expected_output_length = 0,
+    .expected_output_length = 8,
     .expected_status        = PSA_SUCCESS
 },
 #endif
@@ -387,7 +387,7 @@ static const test_data check1[] = {
     .output                 = expected_output,
     .output_size            = BUFFER_SIZE,
     .expected_output        = plaintext,
-    .expected_output_length = 0,
+    .expected_output_length = 8,
     .expected_status        = PSA_SUCCESS
 },
 #endif
@@ -407,7 +407,7 @@ static const test_data check1[] = {
     .output                 = expected_output,
     .output_size            = BUFFER_SIZE,
     .expected_output        = plaintext,
-    .expected_output_length = 0,
+    .expected_output_length = 8,
     .expected_status        = PSA_SUCCESS
 },
 #endif
