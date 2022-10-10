@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -150,7 +150,7 @@ static int parse_protected_headers(struct q_useful_buf_c protected_headers,
 static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
                                    struct q_useful_buf_c completed_challenge)
 {
-    int i, count = 0;
+    int i, count = 0,sw_comp_count=0,index=0;
     int status = VAL_ATTEST_SUCCESS;
 
     /* Parse each claim and validate their data type */
@@ -199,54 +199,57 @@ static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
                 if (item.uDataType != QCBOR_TYPE_ARRAY)
                     return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
 
+                sw_comp_count = item.val.uCount;
                 sw_component_present = 1;
-                status = QCBORDecode_GetNext(decode_context, &item);
-                if (status != VAL_ATTEST_SUCCESS)
-                    continue;
-
-                count = item.val.uCount;
-                for (i = 0; i <= count; i++)
+                for (index = 0; index<sw_comp_count; index++)
                 {
-                    mandaroty_sw_components |= 1 << item.label.int64;
+                    status = QCBORDecode_GetNext(decode_context, &item);
+                    if (status != VAL_ATTEST_SUCCESS)
+                       continue;
 
-                    if (item.label.int64 == EAT_CBOR_SW_COMPONENT_MEASUREMENT)
+                    count = item.val.uCount;
+                    for (i = 0; i <= count; i++)
                     {
-                         if (item.uDataType != QCBOR_TYPE_BYTE_STRING)
-                            return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
-                    }
-                    else if (item.label.int64 == EAT_CBOR_SW_COMPONENT_MEASUREMENT_DESC)
-                    {
-                        if (item.uDataType != QCBOR_TYPE_TEXT_STRING)
-                            return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
-                    }
-                    else if (item.label.int64 == EAT_CBOR_SW_COMPONENT_VERSION)
-                    {
-                        if (item.uDataType != QCBOR_TYPE_TEXT_STRING)
-                            return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
-                    }
-                    else if (item.label.int64 == EAT_CBOR_SW_COMPONENT_SIGNER_ID)
-                    {
-                        if (item.uDataType != QCBOR_TYPE_BYTE_STRING)
-                            return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
-                    }
-                    else if (item.label.int64 == EAT_CBOR_SW_COMPONENT_EPOCH)
-                    {
-                        if (item.uDataType != QCBOR_TYPE_INT64)
-                            return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
-                    }
-                    else if (item.label.int64 == EAT_CBOR_SW_COMPONENT_TYPE)
-                    {
-                        if (item.uDataType != QCBOR_TYPE_TEXT_STRING)
-                            return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
-                    }
+                        mandaroty_sw_components |= 1 << item.label.int64;
+                        if (item.label.int64 == EAT_CBOR_SW_COMPONENT_MEASUREMENT)
+                        {
+                           if (item.uDataType != QCBOR_TYPE_BYTE_STRING)
+                              return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
+                        }
+                        else if (item.label.int64 == EAT_CBOR_SW_COMPONENT_MEASUREMENT_DESC)
+                        {
+                            if (item.uDataType != QCBOR_TYPE_TEXT_STRING)
+                                return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
+                        }
+                        else if (item.label.int64 == EAT_CBOR_SW_COMPONENT_VERSION)
+                        {
+                            if (item.uDataType != QCBOR_TYPE_TEXT_STRING)
+                               return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
+                        }
+                        else if (item.label.int64 == EAT_CBOR_SW_COMPONENT_SIGNER_ID)
+                        {
+                            if (item.uDataType != QCBOR_TYPE_BYTE_STRING)
+                               return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
+                        }
+                        else if (item.label.int64 == EAT_CBOR_SW_COMPONENT_EPOCH)
+                        {
+                             if (item.uDataType != QCBOR_TYPE_INT64)
+                               return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
+                        }
+                        else if (item.label.int64 == EAT_CBOR_SW_COMPONENT_TYPE)
+                        {
+                            if (item.uDataType != QCBOR_TYPE_TEXT_STRING)
+                               return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
+                        }
 
-                    if (i < count)
-                    {
-                        status = QCBORDecode_GetNext(decode_context, &item);
-                        if (status != VAL_ATTEST_SUCCESS)
-                            return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
-                    }
-                }
+                        if (i < count)
+                        {
+                            status = QCBORDecode_GetNext(decode_context, &item);
+                            if (status != VAL_ATTEST_SUCCESS)
+                               return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
+                        }
+                    }/*for (i = 0; i <= count; i++)*/
+                }/*for (index = 0; index<sw_comp_count; index++)*/
 
             }
         }
