@@ -150,7 +150,7 @@ static int parse_protected_headers(struct q_useful_buf_c protected_headers,
 static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
                                    struct q_useful_buf_c completed_challenge)
 {
-    int i, count = 0,sw_comp_count=0,index=0;
+    int i, count = 0, sw_comp_count = 0, index = 0;
     int status = VAL_ATTEST_SUCCESS;
 
     /* Parse each claim and validate their data type */
@@ -201,7 +201,7 @@ static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
 
                 sw_comp_count = item.val.uCount;
                 sw_component_present = 1;
-                for (index = 0; index<sw_comp_count; index++)
+                for (index = 0; index < sw_comp_count; index++)
                 {
                     status = QCBORDecode_GetNext(decode_context, &item);
                     if (status != VAL_ATTEST_SUCCESS)
@@ -210,9 +210,11 @@ static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
                     count = item.val.uCount;
                     for (i = 0; i <= count; i++)
                     {
-                        mandaroty_sw_components |= 1 << item.label.int64;
+                        //mandaroty_sw_components |= 1 << item.label.int64;
                         if (item.label.int64 == EAT_CBOR_SW_COMPONENT_MEASUREMENT)
                         {
+                           if(0 == index)
+                        	   mandaroty_sw_components |= 1 << item.label.int64;
                            if (item.uDataType != QCBOR_TYPE_BYTE_STRING)
                               return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
                         }
@@ -248,8 +250,8 @@ static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
                             if (status != VAL_ATTEST_SUCCESS)
                                return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
                         }
-                    }/*for (i = 0; i <= count; i++)*/
-                }/*for (index = 0; index<sw_comp_count; index++)*/
+                    } /*for (i = 0; i <= count; i++)*/
+                } /*for (index = 0; index<sw_comp_count; index++)*/
 
             }
         }
@@ -390,6 +392,7 @@ int32_t val_initial_attest_verify_token(uint8_t *challenge, size_t challenge_siz
     {
         if ((mandaroty_sw_components & MANDATORY_SW_COMP) != MANDATORY_SW_COMP)
             return VAL_ATTEST_TOKEN_NOT_ALL_MANDATORY_CLAIMS;
+        mandaroty_sw_components = 0;
     }
     else if ((mandatory_claims & MANDATORY_CLAIM_NO_SW_COMP) != MANDATORY_CLAIM_NO_SW_COMP)
     {
