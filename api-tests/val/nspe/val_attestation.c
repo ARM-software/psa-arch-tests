@@ -213,7 +213,7 @@ static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
                         //mandaroty_sw_components |= 1 << item.label.int64;
                         if (item.label.int64 == EAT_CBOR_SW_COMPONENT_MEASUREMENT)
                         {
-                           if(0 == index)
+                           if (index == 0)
                         	   mandaroty_sw_components |= 1 << item.label.int64;
                            if (item.uDataType != QCBOR_TYPE_BYTE_STRING)
                               return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
