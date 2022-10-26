@@ -4,25 +4,24 @@
 
 ## Introduction
 
-The Platform Security Architecture (PSA) is a holistic set of threat models, security analyses, hardware and firmware architecture specifications, and an open source firmware reference implementation. PSA provides a recipe, based on industry best practice, that allows security to be consistently designed in, at both a hardware and firmware level.
+This test suite is one of a set of resources provided by Arm that can help organizations develop products that meet the security requirements of PSA Certified on Arm-based platforms. The PSA Certified scheme provides a framework and methodology that helps silicon manufacturers, system software providers and OEMs to develop more secure products. Arm resources that support PSA Certified range from threat models, standard architectures that simplify development and increase portability, and open-source partnerships that provide ready-to-use software. You can read more about PSA Certified here at [https://www.psacertified.org](www.psacertified.org) and find more Arm resources here at [https://developer.arm.com/platform-security-resources](developer.arm.com/platform-security-resources).
 
+For more information, visit the [PSA webpage](https://developer.arm.com/products/architecture/platform-security-architecture)
 
-For more information, visit the PSA webpage [here](https://developer.arm.com/products/architecture/platform-security-architecture)
+### PSA Certified APIs specifications
 
-### PSA APIs specifications
+API reference header files can be found on the [PSA API github site](https://github.com/Arm-software/psa-api).
 
-PSA APIs reference header files are located at [api-specs](api-specs/) directory.
-
-### PSA Functional API Certification
-The [PSA Functional API tests](api-tests/dev_apis) are the basis for getting the PSA Functional API Certification. For more information on the certification program, see [psacertified.org](https://www.psacertified.org/functional-api-certification/) 
+### PSA Certified API Compliance
+The [PSA Certified API tests](api-tests/dev_apis) are the basis for validating compliance with PSA Certified APIs. For more information on the certification program, see [psacertified.org](https://www.psacertified.org/functional-api-certification/) 
 
 ## GitHub branch
-  - For functional API certification, use the release branch and pick the appropriate release tag.
+  - For API certification, use the release branch and pick the appropriate release tag.
   - To get the latest version of the code with bug fixes and new features, use the master branch.
   
 ## Architecture test suite
 
-The current implementation of the Architecture test suite contains tests for following PSA specifications. Arm licensees may contact their partner manager to obtain a copy of this specification. <br />
+The current implementation of the Architecture test suite contains tests for following PSA Certified specifications. Arm licensees may contact their partner manager to obtain a copy of this specification. <br />
 
 Future versions of the test suite will be enhanced to include tests for other specifications of the Platform Security Architecture.
 
@@ -51,4 +50,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2021, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2022, Arm Limited and Contributors. All rights reserved.*

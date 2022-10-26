@@ -9,13 +9,13 @@ For more information, visit the [PSA Webpage](https://developer.arm.com/products
 
 ## Architecture test suite
 
-The current implementation of the architecture test suite contains tests for PSA Firmware Framework and PSA Functional APIs specifications. The tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license, allowing external contribution.
+The current implementation of the architecture test suite contains tests for PSA Firmware Framework and PSA Certified APIs specifications. The tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license, allowing external contribution.
 
 ### PSA Firmware Framework (PSA-FF)
 The test suite for this specification is located in the **ff** directory of this repository. See the [PSA Firmware Framework README](ff/README.md) file for more details.
 
-### PSA Functional APIs
-The test suite for this specification is located in the **dev_apis** directory of this repository. See the [PSA Functional APIs README](dev_apis/README.md) file for more details.
+### PSA Certified APIs
+The test suite for this specification is located in the **dev_apis** directory of this repository. See the [PSA Certified APIs README](dev_apis/README.md) file for more details.
 
 ## License
 

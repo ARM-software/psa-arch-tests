@@ -1,13 +1,13 @@
 
-# PSA Functional APIs Architecture Test Suite
+# PSA Certified APIs Architecture Test Suite
 
-## PSA Functional APIs
+## PSA Certified APIs
 
-PSA defines security service APIs for application developers. Some of these services are Crypto, Attestation, and Secure storage. For more information on API specifications, refer to the [PSA Functional APIs Specifications](../../api-specs/).
+PSA defines security service APIs for application developers. Some of these services are Crypto, Attestation, and Secure storage. For more information on API specifications, refer to the [PSA Certified APIs Specifications](https://arm-software.github.io/psa-api/).
 
 ## Architecture test suite
 
-The architecture test suite is a set of examples of the invariant behaviors that are specified in the PSA Functional APIs specifications. Use this suite to verify whether these behaviors are implemented correctly in your system. This  suite contains self-checking and portable C-based tests with directed stimulus. These tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license, allowing external contribution.
+The architecture test suite is a set of examples of the invariant behaviors that are specified in the PSA Certified APIs specifications. Use this suite to verify whether these behaviors are implemented correctly in your system. This  suite contains self-checking and portable C-based tests with directed stimulus. These tests are available as open source. The tests and the corresponding abstraction layers are available with an Apache v2.0 license, allowing external contribution.
 
 This test suite is not a substitute for design verification. To review the test logs, Arm licensees can contact Arm directly through their partner managers.
 
@@ -15,20 +15,20 @@ For more information on the architecture test suite framework and methodology to
 
 ## This release
  - Code Quality : REL v1.4
- - This release contains following PSA Functional APIs tests: <br />
+ - This release contains following API tests: <br />
 
 | Test Category            | Specification Version                |
 |--------------------------|--------------------------------------|
-| Crypto                   | [PSA Crypto API 1.0.1](../../api-specs/crypto/v1.0.1/doc/)     |
-| Storage (PS and ITS)     | [PSA Storage API 1.0.0](../../api-specs/storage/v1.0/doc/) |
-| Attestation              | [PSA Attestation API 1.0.2](../../api-specs/attestation/v1.0.2/doc/)  |
+| Crypto                   | [Crypto API 1.0.1](https://arm-software.github.io/psa-api/crypto/)     |
+| Storage (PS and ITS)     | [Storage API 1.0.0](https://arm-software.github.io/psa-api/storage/) |
+| Attestation              | [Attestation API 1.0.2](https://arm-software.github.io/psa-api/attestation/)  |
 
 
 ##  Release Tags
 
- - For PSA Functional API certification, use release tag from below table:
+ - For API certification, use release tag from below table:
 
-| Release version | Release tag  | PSA Crypto API | PSA Storage API | PSA Attestation API |
+| Release version | Release tag  | Crypto API | Storage API | Attestation API |
 |-----------------|---------------|----------------|-----------------|---------------------|
 | REL v1.4 | [v22.01_API1.4_ADAC_BETA](https://github.com/ARM-software/psa-arch-tests/tree/v22.01_API1.4_ADAC_BETA/api-tests/dev_apis) | 1.0.1  | 1.0.0 | 1.0.2 |
 | REL v1.3 | [v21.10_API1.3_ADAC_ALPHA-1](https://github.com/ARM-software/psa-arch-tests/tree/v21.10_API1.3_ADAC_ALPHA-1/api-tests/dev_apis) | 1.0.0  | 1.0.0 | 1.0.2 |
@@ -49,7 +49,7 @@ Follow the instructions in the subsequent sections to get a copy of the source c
 
 ### Porting steps
 
-Refer to the [PSA Functional APIs Test Suite Porting Guide](../docs/porting_guide_dev_apis.md) document for porting steps.
+Refer to the [PSA Certified APIs Test Suite Porting Guide](../docs/porting_guide_dev_apis.md) document for porting steps.
 
 ### Build steps
 
@@ -71,7 +71,7 @@ To build the test suite for your target platform, execute the following commands
 -   -DSUITE=<suite_name> is the test suite name. Supported values are CRYPTO, INITIAL_ATTESTATION, STORAGE(INTERNAL_TRUSTED_STORAGE and PROTECTED_STORAGE), INTERNAL_TRUSTED_STORAGE and PROTECTED_STORAGE .<br />
 -   -DVERBOSE=<verbose_level>. Print verbosity level. Default is 3. Supported print levels are 1(INFO & above), 2(DEBUG & above), 3(TEST & above), 4(WARN & ERROR) and 5(ERROR).
 -   -DBUILD=<BUILD_DIR> : To select the build directory to keep output files. Default is BUILD/ inside current directory.
--   -DWATCHDOG_AVAILABLE=<0|1>: Test harness may require to access watchdog timer to recover system hang. 0 means skip watchdog programming in the test suite and 1 means program the watchdog. Default is 1. Note, watchdog must be available for the tests which check the PSA API behaviour on the system reset.
+-   -DWATCHDOG_AVAILABLE=<0|1>: Test harness may require to access watchdog timer to recover system hang. 0 means skip watchdog programming in the test suite and 1 means program the watchdog. Default is 1. Note, watchdog must be available for the tests which check the API behaviour on the system reset.
 -   -DSUITE_TEST_RANGE="<test_start_number>;<test_end_number>" is to select range of tests for build. All tests under -DSUITE are considered by default if not specified.
 -   -DTFM_PROFILE=<profile_small/profile_medium> is to work with TFM defined Pofile Small/Medium definitions. Supported values are profile_small and profile_medium. Unless specified Default Profile is used.
 -   -DSPEC_VERSION=<spec_version> is test suite specification version. Which will build for given specified spec_version. Supported values for CRYPTO test suite are 1.0-BETA1, 1.0-BETA2, 1.0-BETA3 , for INITIAL_ATTESATATION test suite are 1.0-BETA0, 1.0.0, 1.0.1, 1.0.2, for STORAGE, INTERNAL_TRUSTED_STORAGE, PROTECTED_STORAGE test suite are 1.0-BETA2, 1.0 . Default is empty. <br/>
@@ -79,7 +79,7 @@ To build the test suite for your target platform, execute the following commands
      For every spec version corresponds test list will be in spec_version_testsuite.db file in api-tests/dev_apis/test_suite_name/ folder.
 -   -DCOMPILER_NAME=<compiler_name> Compiler name to be use for selecting compiler. Supported values are gcc. By defualt it will take gcc if not specified.
      Note: -DCOMPILER_NAME only applicable for linux i.e. -DTOOLCHAIN=GCC_LINUX and DTARGET=tgt_dev_apis_linux.
--   -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>" is an additional directory to be included into the compiler search path.You must provide Functional APIs header files implementation to the test suite build system using this option. For example, to compile Crypto tests, the include path must point to the path where **psa/crypto.h** is located in your build system. Bydefault, PSA_INCLUDE_PATHS accepts absolute path. However, relative path can be provided using below format:<br />
+-   -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>" is an additional directory to be included into the compiler search path.You must provide API header files implementation to the test suite build system using this option. For example, to compile Crypto tests, the include path must point to the path where **psa/crypto.h** is located in your build system. Bydefault, PSA_INCLUDE_PATHS accepts absolute path. However, relative path can be provided using below format:<br />
 -   -DPSA_TARGET_QCBOR=<path for pre-fetched cbor folder, this is option used where no network connectivity is possible during the build:<br />
 ```
     -DPSA_INCLUDE_PATHS=`readlink -f <relative_include_path>`
@@ -103,7 +103,7 @@ Building the test suite generates the following NSPE binaries:<br />
 
 ### Integrating the libraries into your target platform
 
-1. Integrate **val_nspe.a**, **pal_nspe.a**, and **test_combine.a** libraries with your Non-secure OS so that these libraries get access to the PSA Functional APIs. For example, Crypto tests require access to PSA Crypto APIs. This forms an NSPE binary.
+1. Integrate **val_nspe.a**, **pal_nspe.a**, and **test_combine.a** libraries with your Non-secure OS so that these libraries get access to the APIs. For example, Crypto tests require access to Crypto APIs. This forms an NSPE binary.
 2. Load the NSPE binary to the Non-secure memory.
 3. Build your SPE binary and load into the Secure memory.
 
@@ -118,7 +118,7 @@ For details on test suite integration, refer to the **Integrating the test suite
 
 ## Security implication
 
-PSA API test suite may run at higher privilege level. An attacker can utilize these tests as a means to elevate privilege which can potentially reveal the platform secure attests. To prevent such security vulnerabilities into the production system, it is strongly recommended that PSA API test suite is run on development platforms. If it is run on production system, make sure system is scrubbed after running the test suite.
+The API test suite may run at higher privilege level. An attacker can utilize these tests as a means to elevate privilege which can potentially reveal the platform secure attests. To prevent such security vulnerabilities into the production system, it is strongly recommended that the API test suite is run on development platforms. If it is run on production system, make sure system is scrubbed after running the test suite.
 
 ## License
 
