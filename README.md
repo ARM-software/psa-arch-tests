@@ -10,7 +10,7 @@ For more information, visit the [PSA webpage](https://developer.arm.com/products
 
 ### PSA Certified APIs specifications
 
-API reference header files can be found on the [PSA API github site](https://github.com/Arm-software/psa-api).
+API reference header files can be found on the [PSA API github site](https://github.com/ARM-software/psa-api/tree/main/headers).
 
 ### PSA Certified API Compliance
 The [PSA Certified API tests](api-tests/dev_apis) are the basis for validating compliance with PSA Certified APIs. For more information on the certification program, see [psacertified.org](https://www.psacertified.org/functional-api-certification/) 
