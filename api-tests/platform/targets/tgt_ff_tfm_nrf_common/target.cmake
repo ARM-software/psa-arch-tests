@@ -62,7 +62,7 @@ if((${SUITE} STREQUAL "CRYPTO") OR
    (${SUITE} STREQUAL "PROTECTED_STORAGE") OR
    (${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE") OR
    (${SUITE} STREQUAL "INITIAL_ATTESTATION"))
-	message(FATAL_ERROR "For Functional API - use -DTARGET=tgt_dev_apis_tfm_nrf instead")
+	message(FATAL_ERROR "For PSA API - use -DTARGET=tgt_dev_apis_tfm_nrf instead")
 endif()
 
 # Create NSPE library
