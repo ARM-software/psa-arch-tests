@@ -72,4 +72,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2019-2020, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2019-2022, Arm Limited and Contributors. All rights reserved.*

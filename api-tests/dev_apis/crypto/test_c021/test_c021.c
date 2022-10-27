@@ -151,7 +151,8 @@ int32_t psa_key_derivation_output_key_test(caller_security_t caller __UNUSED)
         /*  Derive a key from an ongoing key derivation operation */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_OUTPUT_KEY, &derv_attributes,
                                       &operation, &keys[SLOT_1]);
-        TEST_ASSERT_DUAL(status, check1[i].expected_status[0], check1[i].expected_status[1], TEST_CHECKPOINT_NUM(14));
+        TEST_ASSERT_DUAL(status, check1[i].expected_status[0], check1[i].expected_status[1],\
+                         TEST_CHECKPOINT_NUM(14));
 
         {
             status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
