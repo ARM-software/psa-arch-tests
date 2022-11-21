@@ -96,15 +96,6 @@
 extern int tfm_log_printf(const char *, ...);
 extern int32_t tfm_platform_system_reset(void);
 
-/* Initialize the timer with the given number of ticks. */
-extern void pal_timer_init_ns(uint32_t ticks);
-
-/* Start the timer. */
-extern void pal_timer_start_ns(void);
-
-/* Stop and reset the timer. */
-extern void pal_timer_stop_ns(void);
-
 /* Get the address of a free, word-aligned, 1K memory area. */
 extern uint32_t pal_nvmem_get_addr(void);
 
