@@ -9,7 +9,7 @@ Current release has been tested againt the below tools versions: <br />
 - Cross Compiler toolchain  : GNU Arm Embedded Toolchain 7.3.1 or Arm Compiler 6.14
 - Build tools               : CMake 3.15
 
-**Note**: To compile the test suite code, at least one of the above supported compiler toolchains
+**Note**: To compile the test suite code, The Host Compiler Toolchain and at least one of the above supported compiler toolchain
         must be available in the build environment.
 
 ### Setting up a shell to enable compiler toolchain after installation
