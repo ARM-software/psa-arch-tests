@@ -65,6 +65,9 @@
 #define ARCH_TEST_ECC_CURVE_SECP384R1
 #endif
 #endif
+/* curves of size <255 are obsolete algorithms, should be disabled. */
+#undef ARCH_TEST_ECC_CURVE_SECP192R1
+#undef ARCH_TEST_ECC_CURVE_SECP224R1
 
 /**
  * \def ARCH_TEST_AES
@@ -268,6 +271,7 @@
 #define ARCH_TEST_SHA256
 #ifndef TF_M_PROFILE_SMALL
 #ifndef TF_M_PROFILE_MEDIUM
+/* disable the 384,512 as CC312 driver do not support it*/
 #ifdef CC312_LEGACY_DRIVER_API_ENABLED
 #define ARCH_TEST_SHA384
 #define ARCH_TEST_SHA512

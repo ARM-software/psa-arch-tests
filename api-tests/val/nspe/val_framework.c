@@ -24,6 +24,9 @@
 
 extern val_api_t val_api;
 extern psa_api_t psa_api;
+#ifdef TGT_DEV_APIS_TFM_AN521
+extern int intermediate_boot;
+#endif
 
 /* globals */
 test_status_buffer_t    g_status_buffer;
@@ -641,7 +644,10 @@ val_status_t val_get_last_run_test_id(test_id_t *test_id)
     val_status_t    status;
     test_count_t    test_count;
     boot_t          boot;
-    int             i = 0, intermediate_boot = 0;
+    int             i = 0;
+#ifndef TGT_DEV_APIS_TFM_AN521
+    int intermediate_boot = 0;
+#endif
     boot_state_t    boot_state[] = {BOOT_NOT_EXPECTED,
                                     BOOT_EXPECTED_NS,
                                     BOOT_EXPECTED_S,
