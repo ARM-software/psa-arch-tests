@@ -92,10 +92,13 @@ int32_t psa_key_derivation_input_key_test(caller_security_t caller __UNUSED)
 
         if (check1[i].expected_status != PSA_SUCCESS)
         {
+            val->print(PRINT_TEST, "Aborting", 0);
             /* Abort the key derivation operation */
             status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &operation);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
             continue;
         }
 

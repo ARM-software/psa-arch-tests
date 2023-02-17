@@ -153,6 +153,12 @@ int32_t psa_key_derivation_output_key_test(caller_security_t caller __UNUSED)
                                       &operation, &keys[SLOT_1]);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(14));
 
+        if (check1[i].expected_status == PSA_SUCCESS)
+        {
+            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, keys[SLOT_1]);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(15));
+        }
+
         {
             status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(15));
@@ -179,6 +185,8 @@ int32_t psa_key_derivation_output_key_test(caller_security_t caller __UNUSED)
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_OUTPUT_KEY, &derv_attributes,
                                       &operation, &keys[SLOT_2]);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(19));
+
+
 
     }
     return VAL_STATUS_SUCCESS;
