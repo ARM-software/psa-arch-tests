@@ -98,7 +98,7 @@ int32_t psa_key_derivation_key_agreement_test(caller_security_t caller __UNUSED)
 
         /* Destroy a key and restore the slot to its default state */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
         if (valid_test_input_index < 0)
             valid_test_input_index = i;

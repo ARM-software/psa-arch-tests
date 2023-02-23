@@ -80,27 +80,27 @@ int32_t psa_export_key_test(caller_security_t caller __UNUSED)
         if (check1[i].expected_status != PSA_SUCCESS)
         {
             status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
             continue;
         }
 
         /* Check the attributes of the exported key */
         TEST_ASSERT_EQUAL(expected_data_length, check1[i].expected_data_length,
-                          TEST_CHECKPOINT_NUM(5));
+                          TEST_CHECKPOINT_NUM(6));
 
         TEST_ASSERT_MEMCMP(check1[i].expected_data, check1[i].data, expected_data_length,
-                                                     TEST_CHECKPOINT_NUM(6));
+                                                     TEST_CHECKPOINT_NUM(7));
 
         /* Destroy the key handle and check if export key fails */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
         status = val->crypto_function(VAL_CRYPTO_EXPORT_KEY,
                                       key,
                                       check1[i].expected_data,
                                       check1[i].data_size,
                                       &expected_data_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(8));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(9));
     }
 
     return VAL_STATUS_SUCCESS;

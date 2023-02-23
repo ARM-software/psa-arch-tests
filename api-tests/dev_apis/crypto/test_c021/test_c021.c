@@ -158,19 +158,19 @@ int32_t psa_key_derivation_output_key_test(caller_security_t caller __UNUSED)
             (check1[i].expected_status[1] == PSA_SUCCESS))
             {
                 status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, keys[SLOT_1]);
-                TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(20));
+                TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(15));
 
             }
         {
             status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(15));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(16));
         }
 
         if ((check1[i].expected_status[0] != PSA_SUCCESS) &&
             (check1[i].expected_status[1] != PSA_SUCCESS))
         {
             status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &operation);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(16));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(17));
 
             continue;
         }
@@ -178,16 +178,16 @@ int32_t psa_key_derivation_output_key_test(caller_security_t caller __UNUSED)
         /* Read some key from a key derivation operation with no data in the operation */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_OUTPUT_KEY, &derv_attributes,
                                       &operation, &keys[SLOT_2]);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INSUFFICIENT_DATA, TEST_CHECKPOINT_NUM(17));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INSUFFICIENT_DATA, TEST_CHECKPOINT_NUM(18));
 
         /* Abort the derivation operation */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(18));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(19));
 
         /* Expect bad state when derivation is called on an aborted operation */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_OUTPUT_KEY, &derv_attributes,
                                       &operation, &keys[SLOT_2]);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(19));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(20));
 
     }
     return VAL_STATUS_SUCCESS;
