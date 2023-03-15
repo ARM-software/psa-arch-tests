@@ -1,5 +1,6 @@
 /** @file
  * Copyright (c) 2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright 2023 NXP
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,6 +38,15 @@
 
 #define NVMEM_SIZE (1024)
 static uint8_t g_nvmem[NVMEM_SIZE];
+
+/* The custom test list is a buffer in which all enabled test names are concatenated.
+ * The test name template is <TEST_NAME_PREFIX><id><TEST_NAME_SUFFIX>, where <id>
+ * is the test identifier.
+ */
+#define TEST_NAME_PREFIX "test_"
+#define TEST_NAME_SUFFIX ";"
+
+char *g_custom_test_list = NULL;
 
 /**
     @brief    - Check that an nvmem access is within the bounds of the nvmem
@@ -197,4 +207,32 @@ void pal_terminate_simulation(void)
 int pal_system_reset(void)
 {
     return PAL_STATUS_UNSUPPORTED_FUNC;
+}
+
+/**
+ *   @brief    - Sets the custom test list buffer
+ *   @param    - custom_test_list : Custom test list buffer 
+     @return   - void
+**/
+void pal_set_custom_test_list(char *custom_test_list)
+{
+    g_custom_test_list = custom_test_list;
+}
+
+/**
+ *   @brief    - Tells if a test is enabled on platform
+ *   @param    - test_id : Test ID
+ *   @return   - TRUE/FALSE
+**/
+bool_t pal_is_test_enabled(test_id_t test_id)
+{
+    char test_id_str[16] = { 0 };
+
+    if (!g_custom_test_list)
+        return 1;
+
+    if (sprintf(test_id_str, "%s%d%s", TEST_NAME_PREFIX, test_id, TEST_NAME_SUFFIX) <= 0)
+        return 0;
+
+    return strstr(g_custom_test_list, test_id_str)?1:0;
 }
