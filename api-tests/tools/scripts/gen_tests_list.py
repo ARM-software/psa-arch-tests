@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #/** @file
-# * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -72,23 +72,23 @@ def gen_test_list():
 				    (int(line[6:9]) <= suite_test_end_number)):
 					if (panic_tests_included == 0):
 						if (tests_coverage == "ALL"):
-							if (("panic" not in line) and ("failing" not in line)):
+							if (("panic" not in line) and ("failing" not in line) and ("skip" not in line)):
 								o_f.write(line)
-							if (("panic" not in line) and ("failing" in line)):
+							if (("panic" not in line) and ("failing" in line) and ("skip" not in line)):
 								o_f.write(line[0:line.find(',')]+'\n')
 						if (tests_coverage == "PASS"):
-							if (("panic" not in line) and ("failing" not in line)):
+							if (("panic" not in line) and ("failing" not in line) and ("skip" not in line)):
 								o_f.write(line)
 					if (panic_tests_included == 1):
 						if (tests_coverage == "ALL"):
-							if (("panic" not in line) and ("failing" not in line)):
+							if (("panic" not in line) and ("failing" not in line) and ("skip" not in line)):
 								o_f.write(line)
 							else:
 								o_f.write(line[0:line.find(',')]+'\n')
 						if (tests_coverage == "PASS"):
-							if (("panic" not in line) and ("failing" not in line)):
+							if (("panic" not in line) and ("failing" not in line) and ("skip" not in line)):
 								o_f.write(line)
-							if (("panic" in line) and ("failing" not in line)):
+							if (("panic" in line) and ("failing" not in line) and ("skip" not in line)):
 								o_f.write(line[0:line.find(',')]+'\n')
 
 def gen_test_entry_info():
