@@ -86,6 +86,12 @@ To build the test suite for your target platform, execute the following commands
 ```
 -   -DTESTS_COVERAGE=<tests_coverage_value> is used to skip known failure tests by selecting value PASS. Supported values are ALL and PASS. ALL value will include all the tests and PASS value will skip the known failure tests and will include pass tests. Default is ALL.
 
+-   -DBESPOKE_SUITE_TESTS=<testsuite_db_file> should be placed in target specific directory, if this option is enabled, the mentioned database file will be picked up for compilation. if not default location database file will be used. This option is enabled only for CRYPTO suite at the moment.
+```
+    -DBESPOKE_SUITE_TESTS='testsuite.db'
+    The build system will look for the file in the target location (target=tgt_dev_apis_tfm_an521) : api-tests/platform/targets/tgt_dev_apis_tfm_an521/testsuite.db
+```
+
 To compile Crypto tests for **tgt_dev_apis_tfm_an521** platform, execute the following commands:
 ```
     cd api-tests
@@ -133,4 +139,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2022, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2023, Arm Limited and Contributors. All rights reserved.*
