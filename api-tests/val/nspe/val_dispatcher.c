@@ -60,6 +60,42 @@ __attribute__((unused)) static void val_print_api_version(void)
 #endif
 }
 
+static val_test_info_t g_test_list[] = {
+#include "test_entry_list.inc"
+                                  {VAL_INVALID_TEST_ID, NULL}
+                              };
+
+/**
+    @brief        - This function returns the IDs list of available tests
+    @param        - test_id_list : Buffer allocated by caller
+                  - size : Size of test_id_list
+    @return       - If test_id_list is NULL, the required size of test_id_list
+                    else if size is too small -1 
+                    else the actual size of test_id_list
+**/
+size_t val_get_test_list(uint32_t *test_id_list, size_t size)
+{
+
+    val_test_info_t *test_info = &g_test_list[0];
+    size_t test_list_size = sizeof(g_test_list)/sizeof(g_test_list[0]) - 1;
+
+    if (!test_id_list)
+        return test_list_size;
+
+    if (size < test_list_size)
+        return -1;
+
+    test_list_size = 0;
+
+    for(; test_info->test_id != VAL_INVALID_TEST_ID; test_info++)
+    {
+        *test_id_list++ = test_info->test_id;
+        test_list_size++;
+    }
+
+    return test_list_size;
+}
+
 /**
     @brief        - This function reads the test ELFs from RAM or secondary storage and loads into
                     system memory
@@ -69,11 +105,7 @@ __attribute__((unused)) static void val_print_api_version(void)
 **/
 val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
 {
-    val_test_info_t test_list[] = {
-#include "test_entry_list.inc"
-                                  {VAL_INVALID_TEST_ID, NULL}
-                                  };
-    val_test_info_t *test_info = &test_list[0];
+    val_test_info_t *test_info = &g_test_list[0];
 
     if (test_id_prev != VAL_INVALID_TEST_ID)
     {
