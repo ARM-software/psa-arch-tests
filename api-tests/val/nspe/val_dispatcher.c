@@ -89,7 +89,7 @@ val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
 
     for(; test_info->test_id != VAL_INVALID_TEST_ID; test_info++)
     {
-        if (pal_is_test_enabled(VAL_GET_TEST_NUM(test_info->test_id)))
+        if (pal_is_test_enabled(test_info->test_id))
         {
             *test_id = test_info->test_id;
             g_test_info_addr = (addr_t) test_info->entry_addr;
