@@ -590,7 +590,7 @@ ExternalProject_Add(
         DOWNLOAD_COMMAND ""
         UPDATE_COMMAND ""
         PATCH_COMMAND ""
-        BUILD_COMMAND ""
+        BUILD_ALWAYS TRUE
         SOURCE_DIR "${PSA_ROOT_DIR}/tools/scripts/target_cfg"
 	CMAKE_ARGS -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
 		-DOUT_DIR=${CMAKE_CURRENT_BINARY_DIR}
