@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,6 +33,11 @@ void pal_uart_cmsdk_init(uint32_t uart_base_addr)
     * the minimum valid number. */
     /* Avoiding baud rate reconfiguration */
     /* ((uart_t *) g_uart)->BAUDDIV = 16; */
+}
+
+void pal_uart_cmsdk_set_baudrate(uint32_t baudrate)
+{
+    ((uart_t *) g_uart)->BAUDDIV = baudrate;
 }
 
 /**

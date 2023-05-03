@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,11 +51,13 @@ foreach(_LNG IN ITEMS "C" "ASM")
 endforeach()
 
 if(${CPU_ARCH} STREQUAL armv7m)
-	set(TARGET_SWITCH "-march=armv7-m")
+    set(TARGET_SWITCH "-march=armv7-m")
 elseif(${CPU_ARCH} STREQUAL armv8m_ml)
-	set(TARGET_SWITCH "-march=armv8-m.main -mcmse")
+    set(TARGET_SWITCH "-march=armv8-m.main -mcmse")
 elseif(${CPU_ARCH} STREQUAL armv8m_bl)
-	set(TARGET_SWITCH "-march=armv8-m.base -mcmse")
+    set(TARGET_SWITCH "-march=armv8-m.base -mcmse")
+elseif(${CPU_ARCH} STREQUAL armv81m_ml)
+    set(TARGET_SWITCH "-march=armv8.1-m.main -mcmse")
 endif()
 
 set(CMAKE_C_FLAGS              "--target=arm-arm-none-eabi ${TARGET_SWITCH} -g -Wall -Werror -Wextra -fshort-enums -fshort-wchar -funsigned-char -fdata-sections -ffunction-sections -mno-unaligned-access -mfpu=none")

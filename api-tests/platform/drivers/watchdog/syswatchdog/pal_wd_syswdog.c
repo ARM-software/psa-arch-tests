@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2020-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,9 +54,9 @@ struct wdog_frame_reg_map_t {
 #define SYSWDOG_REGISTER_BIT_WIDTH          32u
 
 /* \brief Watchdog Control and Status register bit fields */
-#define SYSWDOG_CNTR_WCS_EN_OFF    0u    /*!< Control and Status register Watchdog Enable bit field offset */
-#define SYSWDOG_CNTR_WCS_WS0_OFF   1u    /*!< Control and Status register Watchdog Signal 0 bit field offset */
-#define SYSWDOG_CNTR_WCS_WS1_OFF   2u    /*!< Control and Status register Watchdog Signal 1 bit field offset */
+#define SYSWDOG_CNTR_WCS_EN_OFF    1u    /*!< Control and Status register Watchdog Enable bit field offset */
+#define SYSWDOG_CNTR_WCS_WS0_OFF   2u    /*!< Control and Status register Watchdog Signal 0 bit field offset */
+#define SYSWDOG_CNTR_WCS_WS1_OFF   4u    /*!< Control and Status register Watchdog Signal 1 bit field offset */
 
 /**
     @brief           - Initializes an hardware watchdog timer
