@@ -10,12 +10,12 @@ The reason for each failing test is listed here in this file.
 
 | Test | Fail description                                                                | Github issue |
 |------|---------------------------------------------------------------------------------| ------------ |
-|test_c016 | This test will pass with the mbed TLS 3.1.0, TF-M 1.5.0 is not using mbed TLS 3.1.0. So the test is failing. | https://jira.arm.com/browse/PJ03206-534 |
-|test_c026 | psa_sign_message not supported | https://jira.arm.com/browse/IOTPSW-4275 |
-|test_c027 | psa_mac_update not supported | https://jira.arm.com/browse/IOTPSW-4275 |
-|test_c028 | PSA_KEY_USAGE_SIGN_MESSAGE not found | https://jira.arm.com/browse/IOTPSW-4275 |
-|test_c029 | PSA_KEY_USAGE_VERIFY_MESSAGE not supported | https://jira.arm.com/browse/IOTPSW-4275 |
-|test_c030 | PSA_KEY_USAGE_VERIFY_MESSAGE not supported | https://jira.arm.com/browse/IOTPSW-4275 |
+|test_c016 | This test will pass with the mbed TLS 3.1.0, TF-M 1.5.0 is not using mbed TLS 3.1.0. So the test is failing. |  |
+|test_c026 | psa_sign_message not supported | |
+|test_c027 | psa_mac_update not supported |  |
+|test_c028 | PSA_KEY_USAGE_SIGN_MESSAGE not found |  |
+|test_c029 | PSA_KEY_USAGE_VERIFY_MESSAGE not supported |  |
+|test_c030 | PSA_KEY_USAGE_VERIFY_MESSAGE not supported |  |
 |test_c052 | psa_aead_encrypt_setup is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
 |test_c053 | psa_aead_decrypt_setup is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
 |test_c054 | psa_aead_generate_nonce is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
@@ -26,8 +26,8 @@ The reason for each failing test is listed here in this file.
 |test_c059 | psa_aead_finish is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
 |test_c060 | psa_aead_abort is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
 |test_c061 | psa_aead_verify is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
-|test_c062 | psa_hash_suspend is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://jira.arm.com/browse/IOTPSW-4100 |
-|test_c063 | psa_hash_resume is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://jira.arm.com/browse/IOTPSW-4100 |
+|test_c062 | psa_hash_suspend is unimplemented in TFM/mbed-crypto. So the test has not been verified. |  |
+|test_c063 | psa_hash_resume is unimplemented in TFM/mbed-crypto. So the test has not been verified. |  |
 
 ## License
 
@@ -35,4 +35,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2021-2022, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2021-2023, Arm Limited and Contributors. All rights reserved.*

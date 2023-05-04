@@ -384,21 +384,6 @@
  * Enable ECC support for asymmetric API.
 */
 //#define ARCH_TEST_ECC_ASYMMETRIC_API_SUPPORT
-
-/**
- * \def ARCH_TEST_HASH_SUSPEND
- *
- * Enable has suspend.
-*/
-//#define ARCH_TEST_HASH_SUSPEND
-
-/**
- * \def ARCH_TEST_HASH_RESUME
- *
- * Enable has resume.
-*/
-//#define ARCH_TEST_HASH_RESUME
-
 #include "pal_crypto_config_check.h"
 
 #endif /* _PAL_CRYPTO_CONFIG_H_ */

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,22 +17,6 @@
 
 #ifndef _PAL_CONFIG_H_
 #define _PAL_CONFIG_H_
-
-#include "pal_crypto_config.h"
-#include "pal_storage_config.h"
-#include "pal_attestation_config.h"
-
-#define TARGET_SPECIFIC_TYPES
-
-#ifdef TARGET_SPECIFIC_TYPES
-/* typedef's */
-typedef uint8_t             bool_t;
-typedef uintptr_t           addr_t;
-typedef uint32_t            test_id_t;
-typedef uint32_t            block_id_t;
-typedef char                char8_t;
-typedef uint32_t            cfg_id_t;
-#endif
 
 /* Define PSA test suite dependent macros for non-cmake build */
 #if !defined(PSA_CMAKE_BUILD)
@@ -59,10 +43,8 @@ typedef uint32_t            cfg_id_t;
 /* Version of crypto spec used in attestation */
 #define CRYPTO_VERSION_BETA3
 
-#ifndef PLATFORM_HAS_ATTEST_PK
 /* Use hardcoded public key */
 #define PLATFORM_OVERRIDE_ATTEST_PK
-#endif
 
 /*
  * Include of PSA defined Header files
@@ -84,26 +66,6 @@ typedef uint32_t            cfg_id_t;
  * Partition manifest parse build tool must provide the implementation of this file.
 */
 #include "psa_manifest/pid.h"
-#endif
-
-#ifdef CRYPTO
-/* psa/crypto.h: Contains the PSA Crypto API elements */
-#include "psa/crypto.h"
-#endif
-
-#if defined(INTERNAL_TRUSTED_STORAGE) || defined(STORAGE)
-/* psa/internal_trusted_storage.h: Contains the PSA ITS API elements */
-#include "psa/internal_trusted_storage.h"
-#endif
-
-#if defined(PROTECTED_STORAGE) || defined(STORAGE)
-/* psa/protected_storage.h: Contains the PSA PS API elements */
-#include "psa/protected_storage.h"
-#endif
-
-#ifdef INITIAL_ATTESTATION
-/* psa/initial_attestation.h: Contains the PSA Initial Attestation API elements */
-#include "psa/initial_attestation.h"
 #endif
 
 #endif /* _PAL_CONFIG_H_ */
