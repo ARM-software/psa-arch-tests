@@ -66,6 +66,8 @@ Since the test suite is agnostic to various system targets, you must port the fo
 | 12 | uint32_t pal_compute_hash(int32_t cose_alg_id, struct q_useful_buf buffer_for_hash, struct q_useful_buf_c *hash, struct q_useful_buf_c protected_headers, struct q_useful_buf_c payload);                                                                | Computes hash for the requested data                       | cose_alg_id    : Algorithm ID<br/>buffer_for_hash  : Temp buffer for calculating hash<br/><br/>hash  : Pointer to store the hash<br/> buffer_for_hash  : Temp buffer for calculating hash<br/>protected_headers : data to be hashed<br/>payload  : Payload data<br/>                             |
 | 13 | uint32_t pal_crypto_pub_key_verify(int32_t cose_algorithm_id, struct q_useful_buf_c token_hash, struct q_useful_buf_c signature);                                                                | Function call to verify the signature using the public key              | cose_algorithm_id    : Algorithm ID<br/>token_hash  : Data that needs to be verified<br/>signature  : Signature to be verified against<br/>                             |
 | 14 | int pal_system_reset(void) | Resets the system | None |
+| 15 | pal_set_custom_test_list(char *custom_test_list); | Sets the custom test list buffer | custom_test_list : Custom test list buffer<br/>                             |
+| 16 | pal_is_test_enabled(test_id_t test_id); | Tells if a test is enabled on platform | test_id : Test ID<br/>                             |
 
 ## License
 Arm PSA test suite is distributed under Apache v2.0 License.

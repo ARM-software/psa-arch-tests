@@ -1,5 +1,6 @@
 #/** @file
 # * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+# * Copyright 2023 NXP
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -648,6 +649,7 @@ if(${CC312_LEGACY_DRIVER_API_ENABLED})
 endif()
 
 # Build PAL NSPE LIB
+include(${PSA_ROOT_DIR}/platform/targets/common/nspe/pal_nspe.cmake)
 include(${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cmake)
 # Build VAL NSPE LIB
 #add_definitions(-DVAL_NSPE_BUILD)

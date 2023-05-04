@@ -1,5 +1,6 @@
 /** @file
  * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright 2023 NXP
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -126,4 +127,18 @@ void pal_terminate_simulation(void);
  *   @return   - SUCCESS/FAILURE
 **/
 int pal_system_reset(void);
+
+/**
+ *   @brief    - Sets the custom test list buffer
+ *   @param    - custom_test_list : Custom test list buffer 
+     @return   - void
+**/
+void pal_set_custom_test_list(char *custom_test_list);
+
+/**
+ *   @brief    - Tells if a test is enabled on platform
+ *   @param    - test_id : Test ID
+ *   @return   - TRUE/FALSE
+**/
+bool_t pal_is_test_enabled(test_id_t test_id);
 #endif
