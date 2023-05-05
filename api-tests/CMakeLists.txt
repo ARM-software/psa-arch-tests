@@ -1,6 +1,7 @@
 #/** @file
 # * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
+# * Copyright 2023 NXP
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
 # * you may not use this file except in compliance with the License.
@@ -122,6 +123,7 @@ list(APPEND CROSS_COMPILE_TOOLCHAIN_SUPPORT
 list(APPEND PSA_CPU_ARCH_SUPPORT
 	armv8m_ml
 	armv8m_bl
+	armv81m_ml
 	armv7m
 	armv8a
 )
@@ -597,7 +599,7 @@ ExternalProject_Add(
         DOWNLOAD_COMMAND ""
         UPDATE_COMMAND ""
         PATCH_COMMAND ""
-        BUILD_COMMAND ""
+        BUILD_ALWAYS TRUE
         SOURCE_DIR "${PSA_ROOT_DIR}/tools/scripts/target_cfg"
 	CMAKE_ARGS -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
 		-DOUT_DIR=${CMAKE_CURRENT_BINARY_DIR}
@@ -654,6 +656,7 @@ if(${CC312_LEGACY_DRIVER_API_ENABLED})
 endif()
 
 # Build PAL NSPE LIB
+include(${PSA_ROOT_DIR}/platform/targets/common/nspe/pal_nspe.cmake)
 include(${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cmake)
 # Build VAL NSPE LIB
 #add_definitions(-DVAL_NSPE_BUILD)

@@ -1,5 +1,6 @@
 /** @file
  * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright 2023 NXP
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,6 +60,42 @@ __attribute__((unused)) static void val_print_api_version(void)
 #endif
 }
 
+static val_test_info_t g_test_list[] = {
+#include "test_entry_list.inc"
+                                  {VAL_INVALID_TEST_ID, NULL}
+                              };
+
+/**
+    @brief        - This function returns the IDs list of available tests
+    @param        - test_id_list : Buffer allocated by caller
+                  - size : Size of test_id_list
+    @return       - If test_id_list is NULL, the required size of test_id_list
+                    else if size is too small -1 
+                    else the actual size of test_id_list
+**/
+size_t val_get_test_list(uint32_t *test_id_list, size_t size)
+{
+
+    val_test_info_t *test_info = &g_test_list[0];
+    size_t test_list_size = sizeof(g_test_list)/sizeof(g_test_list[0]) - 1;
+
+    if (!test_id_list)
+        return test_list_size;
+
+    if (size < test_list_size)
+        return -1;
+
+    test_list_size = 0;
+
+    for(; test_info->test_id != VAL_INVALID_TEST_ID; test_info++)
+    {
+        *test_id_list++ = test_info->test_id;
+        test_list_size++;
+    }
+
+    return test_list_size;
+}
+
 /**
     @brief        - This function reads the test ELFs from RAM or secondary storage and loads into
                     system memory
@@ -68,37 +105,33 @@ __attribute__((unused)) static void val_print_api_version(void)
 **/
 val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
 {
-    int             i;
-    val_test_info_t test_list[] = {
-#include "test_entry_list.inc"
-                                  {VAL_INVALID_TEST_ID, NULL}
-                                  };
+    val_test_info_t *test_info = &g_test_list[0];
 
-    for (i = 0; i < (int)(sizeof(test_list)/sizeof(test_list[0])); i++)
+    if (test_id_prev != VAL_INVALID_TEST_ID)
     {
-        if (test_id_prev == VAL_INVALID_TEST_ID)
+        for(; test_info->test_id != VAL_INVALID_TEST_ID; test_info++)
         {
-            *test_id = test_list[i].test_id;
-            g_test_info_addr = (addr_t) test_list[i].entry_addr;
-            return VAL_STATUS_SUCCESS;
+            if (test_info->test_id == test_id_prev)
+            {
+                test_info++;
+                break;
+            }
         }
-        else if (test_id_prev == test_list[i].test_id)
+    }
+
+    for(; test_info->test_id != VAL_INVALID_TEST_ID; test_info++)
+    {
+        if (pal_is_test_enabled(test_info->test_id))
         {
-            *test_id = test_list[i+1].test_id;
-            g_test_info_addr = (addr_t) test_list[i+1].entry_addr;
-            return VAL_STATUS_SUCCESS;
-        }
-        else if (test_list[i].test_id == VAL_INVALID_TEST_ID)
-        {
-            val_print(PRINT_DEBUG, "\n\nNo more valid tests found. Exiting.", 0);
-            *test_id = VAL_INVALID_TEST_ID;
+            *test_id = test_info->test_id;
+            g_test_info_addr = (addr_t) test_info->entry_addr;
             return VAL_STATUS_SUCCESS;
         }
     }
 
+    val_print(PRINT_DEBUG, "\n\nNo more valid tests found. Exiting.", 0);
     *test_id = VAL_INVALID_TEST_ID;
-    val_print(PRINT_ERROR, "\n\nError: No more valid tests found. Exiting.", 0);
-    return VAL_STATUS_LOAD_ERROR;
+    return VAL_STATUS_SUCCESS;
 }
 
 /**
