@@ -1,7 +1,7 @@
 #/** @file
 # * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
-# * Copyright 2023 NXP
 # * SPDX-License-Identifier : Apache-2.0
+# * Copyright 2023 NXP
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
 # * you may not use this file except in compliance with the License.
@@ -255,9 +255,16 @@ if(NOT DEFINED SPEC_VERSION)
 		set(TESTSUITE_DB			${PSA_SUITE_DIR}/its_testsuite.db)
 	elseif((${SUITE} STREQUAL "PROTECTED_STORAGE") OR (${SUITE} STREQUAL "STORAGE"))
 		set(TESTSUITE_DB			${PSA_SUITE_DIR}/ps_testsuite.db)
+	elseif(${SUITE} STREQUAL "CRYPTO")
+		if(DEFINED BESPOKE_SUITE_TESTS)
+			set(TESTSUITE_DB			${PSA_ROOT_DIR}/platform/targets/${TARGET}/${BESPOKE_SUITE_TESTS})
+		else()
+			set(TESTSUITE_DB			${PSA_SUITE_DIR}/testsuite.db)
+		endif()
 	else()
 		set(TESTSUITE_DB			${PSA_SUITE_DIR}/testsuite.db)
 	endif()
+	message(STATUS "[PSA] : Selected test database file :  ${TESTSUITE_DB}")
 else()
 	if(${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE")
 		if(${SPEC_VERSION} STREQUAL "1.0-BETA2")
