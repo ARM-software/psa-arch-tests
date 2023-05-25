@@ -26,7 +26,7 @@ typedef struct {
 } test_data;
 
 
-static test_data check1[] = {
+static const test_data check1[] = {
 {"Test psa_initial_attestation_get_token with Challenge 32\n",
  PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32, PSA_INITIAL_ATTEST_CHALLENGE_SIZE_32, TOKEN_SIZE, PSA_SUCCESS
 },
