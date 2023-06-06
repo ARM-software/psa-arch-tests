@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,7 +48,7 @@ void test_entry(val_api_t *val_api)
     size_t type_id_size, i, j;
 
     // Send discovery packet with no requested type ID.
-    request = request_packet_build(SDP_DISCOVERY_CMD, NULL, 0);
+    request = request_packet_build(ADAC_DISCOVERY_CMD, NULL, 0);
     if (request == NULL) {
         val->err_check_set(TEST_CHECKPOINT_NUM(1), VAL_STATUS_CONNECTION_FAILED);
         goto test_end;
@@ -152,7 +152,7 @@ static val_status_t check_adac_token_support(uint8_t *value, size_t size)
     for (i = 0; i < payload_bytes; i += 2)
     {
         payload = (*(uint16_t *)(value + i));
-        if (payload == TOKEN_ADAC)
+        if (payload == PSA_BINARY_TOKEN)
             return VAL_STATUS_SUCCESS;
     }
 
@@ -168,7 +168,7 @@ static val_status_t check_adac_cert_support(uint8_t *value, size_t size)
     for (i = 0; i < payload_bytes; i += 2)
     {
         payload = (*(uint16_t *)(value + i));
-        if (payload == CERT_ADAC)
+        if (payload == PSA_BINARY_CRT)
             return VAL_STATUS_SUCCESS;
     }
 

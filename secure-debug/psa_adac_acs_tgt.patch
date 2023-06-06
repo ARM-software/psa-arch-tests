@@ -1,0 +1,22 @@
+diff --git a/psa-adac/sda/src/psa_adac_sda.c b/psa-adac/sda/src/psa_adac_sda.c
+index d7786cc..0c5a0c1 100644
+--- a/psa-adac/sda/src/psa_adac_sda.c
++++ b/psa-adac/sda/src/psa_adac_sda.c
+@@ -395,7 +395,7 @@ int authentication_handle(authentication_context_t *auth_ctx) {
+                 (void) authenticator_request_packet_release(auth_ctx, request);
+                 response = authenticator_response_packet_build(auth_ctx, ADAC_SUCCESS, NULL, 0);
+                 ret = authenticator_send_response(auth_ctx, response);
+-                done = 1;
++                //done = 1;
+                 break;
+ 
+             case ADAC_LCS_CHANGE_CMD:
+@@ -417,7 +417,7 @@ int authentication_handle(authentication_context_t *auth_ctx) {
+         }
+ 
+         if ((auth_ctx->state == AUTH_SUCCESS) || (auth_ctx->state == AUTH_FAILURE)) {
+-            done = 1;
++            //done = 1;
+         }
+     }
+ 

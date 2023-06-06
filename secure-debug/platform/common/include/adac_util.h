@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,27 +28,6 @@ typedef struct {
     uint8_t *data;
     size_t size;
 } adac_command_frame_t;
-
-typedef enum {
-    NULL_TYPE             = 0x0000,
-    ADAC_AUTH_VERSION     = 0x0001,
-    VENDOR_ID             = 0x0002,
-    SOC_CLASS             = 0x0003,
-    SOC_ID                = 0x0004,
-    TARGET_IDENTITY       = 0x0005,
-    HW_PERMISSIONS_FIXED  = 0x0006,
-    HW_PERMISSIONS_MASK   = 0x0007,
-    PSA_LIFECYCLE         = 0x0008,
-    SW_PARTITION_ID       = 0x0009,
-    SDA_ID                = 0x000a,
-    TOKEN_FORMATS         = 0x0100,
-    CERT_FORMATS          = 0x0101,
-    CRYPTOSYSTEMS         = 0x0102,
-    TOKEN_ADAC            = 0x0200,
-    CERT_ADAC             = 0x0201,
-    ROT_META              = 0x0202,
-    VENDOR_TYPE_ID0       = 0x8000
-} adac_type_id_t;
 
 typedef enum {
     UNKNOWN                   = 0x0000,

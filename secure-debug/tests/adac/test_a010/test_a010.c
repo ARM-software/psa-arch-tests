@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2022 Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,14 +60,14 @@ void test_entry(val_api_t *val_api)
     }
     key_type = detect_cryptosystem(exts, exts_count);
 
-    ret = psa_adac_issue_command(SDP_DISCOVERY_CMD, request, NULL, 0);
+    ret = psa_adac_issue_command(ADAC_DISCOVERY_CMD, request, NULL, 0);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(3), VAL_STATUS_WRITE_FAILED);
         goto test_end;
     }
 
     response = psa_adac_await_response();
-    ret = psa_adac_parse_response(SDP_DISCOVERY_CMD, response);
+    ret = psa_adac_parse_response(ADAC_DISCOVERY_CMD, response);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(4), VAL_STATUS_READ_FAILED);
         goto test_end;
@@ -91,14 +91,14 @@ void test_entry(val_api_t *val_api)
         goto test_end;
     }
 
-    ret = psa_adac_issue_command(SDP_AUTH_START_CMD, request, NULL, 0);
+    ret = psa_adac_issue_command(ADAC_AUTH_START_CMD, request, NULL, 0);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(6), VAL_STATUS_WRITE_FAILED);
         goto test_end;
     }
 
     response = psa_adac_await_response();
-    ret = psa_adac_parse_response(SDP_AUTH_START_CMD, response);
+    ret = psa_adac_parse_response(ADAC_AUTH_START_CMD, response);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(7), VAL_STATUS_READ_FAILED);
         goto test_end;
@@ -127,7 +127,7 @@ void test_entry(val_api_t *val_api)
     }
 
 	val->print(PRINT_INFO, "Sending token\n", 0);
-    ret = psa_adac_issue_command(SDP_AUTH_RESPONSE_CMD, request, (uint8_t *)token, token_size);
+    ret = psa_adac_issue_command(ADAC_AUTH_RESPONSE_CMD, request, (uint8_t *)token, token_size);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(10), VAL_STATUS_WRITE_FAILED);
         goto test_end;
@@ -135,13 +135,13 @@ void test_entry(val_api_t *val_api)
 
 	val->print(PRINT_INFO, "Receiving token_authentication response\n", 0);
     response = psa_adac_await_response();
-    ret = psa_adac_parse_response(SDP_AUTH_RESPONSE_CMD, response);
+    ret = psa_adac_parse_response(ADAC_AUTH_RESPONSE_CMD, response);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(11), VAL_STATUS_READ_FAILED);
         goto test_end;
     }
 
-    if (response->status == SDP_SUCCESS)
+    if (response->status == ADAC_SUCCESS)
 	    val->print(PRINT_INFO, "Target unlocked successfully\n", 0);
     else
         val->err_check_set(TEST_CHECKPOINT_NUM(12), VAL_STATUS_ERROR);

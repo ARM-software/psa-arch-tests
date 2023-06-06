@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2022 Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,14 +44,14 @@ void test_entry(val_api_t *val_api)
     request_packet_t *request;
     response_packet_t *response;
 
-    ret = psa_adac_issue_command(SDP_AUTH_START_CMD, request, NULL, 0);
+    ret = psa_adac_issue_command(ADAC_AUTH_START_CMD, request, NULL, 0);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(1), VAL_STATUS_WRITE_FAILED);
         goto test_end;
     }
 
     response = psa_adac_await_response();
-    ret = psa_adac_parse_response(SDP_AUTH_START_CMD, response);
+    ret = psa_adac_parse_response(ADAC_AUTH_START_CMD, response);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(2), VAL_STATUS_READ_FAILED);
         goto test_end;
@@ -64,14 +64,14 @@ void test_entry(val_api_t *val_api)
     for (i = 0; i < CHALLENGE_SIZE; i++)
         challenge1[i] = *(vect+i);
 
-    ret = psa_adac_issue_command(SDP_AUTH_START_CMD, request, NULL, 0);
+    ret = psa_adac_issue_command(ADAC_AUTH_START_CMD, request, NULL, 0);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(3), VAL_STATUS_WRITE_FAILED);
         goto test_end;
     }
 
     response = psa_adac_await_response();
-    ret = psa_adac_parse_response(SDP_AUTH_START_CMD, response);
+    ret = psa_adac_parse_response(ADAC_AUTH_START_CMD, response);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(4), VAL_STATUS_READ_FAILED);
         goto test_end;

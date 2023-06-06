@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2022 Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,7 +50,7 @@ void test_entry(val_api_t *val_api)
     // Send discovery packet with no requested type ID.
     type_id_ptr = NULL;
     type_id_size = 0;
-    ret = psa_adac_issue_command(SDP_DISCOVERY_CMD, request, type_id_ptr, type_id_size);
+    ret = psa_adac_issue_command(ADAC_DISCOVERY_CMD, request, type_id_ptr, type_id_size);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(1), VAL_STATUS_WRITE_FAILED);
         goto test_end;
@@ -89,7 +89,7 @@ void test_entry(val_api_t *val_api)
     // Send discovery request packet with a subset of requested type ID.
     type_id_ptr = (uint8_t *)type_id_list;
     type_id_size = (tlv_entries/2) * sizeof(uint16_t);
-    ret = psa_adac_issue_command(SDP_DISCOVERY_CMD, request, type_id_ptr, type_id_size);
+    ret = psa_adac_issue_command(ADAC_DISCOVERY_CMD, request, type_id_ptr, type_id_size);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(4), VAL_STATUS_WRITE_FAILED);
         goto test_end;
@@ -101,7 +101,7 @@ void test_entry(val_api_t *val_api)
         goto test_end;
     }
 
-    if (response->status == SDP_SUCCESS) {
+    if (response->status == ADAC_SUCCESS) {
         for (i = 0, j = 0; (i + 4) < (response->data_count * 4); j++) {
             tlv = (psa_tlv_t *) (((uint8_t *)response->data) + i);
             i += sizeof(psa_tlv_t) + ROUND_TO_WORD(tlv->length_in_bytes);
@@ -121,7 +121,7 @@ void test_entry(val_api_t *val_api)
     // Send discovery packet with a reverse order of requested type ID.
     type_id_ptr = (uint8_t *)type_id_list_rev;
     type_id_size = tlv_entries * sizeof(uint16_t);
-    ret = psa_adac_issue_command(SDP_DISCOVERY_CMD, request, type_id_ptr, type_id_size);
+    ret = psa_adac_issue_command(ADAC_DISCOVERY_CMD, request, type_id_ptr, type_id_size);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(8), VAL_STATUS_WRITE_FAILED);
         goto test_end;
@@ -133,7 +133,7 @@ void test_entry(val_api_t *val_api)
         goto test_end;
     }
 
-    if (response->status != SDP_SUCCESS)
+    if (response->status != ADAC_SUCCESS)
         val->err_check_set(TEST_CHECKPOINT_NUM(10), VAL_STATUS_ERROR);
 
     response_packet_release(response);

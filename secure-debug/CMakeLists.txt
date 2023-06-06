@@ -1,18 +1,19 @@
-#/** @file
-# * Copyright (c) 2021-2022, Arm Limited or its affiliates. All rights reserved.
-# * SPDX-License-Identifier : Apache-2.0
-# *
-# * Licensed under the Apache License, Version 2.0 (the "License");
-# * you may not use this file except in compliance with the License.
-# * You may obtain a copy of the License at
-# *
-# *  http://www.apache.org/licenses/LICENSE-2.0
-# *
-# * Unless required by applicable law or agreed to in writing, software
-# * distributed under the License is distributed on an "AS IS" BASIS,
-# * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# * See the License for the specific language governing permissions and
-# * limitations under the License.
+# @file
+# Copyright (c) 2021-2023, Arm Limited or its affiliates. All rights reserved.
+# SPDX-License-Identifier : Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 # Set the minimum required version of CMake for the project
 cmake_minimum_required(VERSION 3.10)
@@ -39,6 +40,11 @@ if (NOT EXISTS ${DEPENDS_INC_PATH})
     Message(FATAL_ERROR "Link layer ${LINK_LAYER_COMM} not supported for target ${TARGET}.")
 endif()
 
+set(PSA_ADAC_MBEDTLS_INCLUDE ${PSA_ROOT_DIR}/external/mbedtls/include)
+if (NOT EXISTS ${PSA_ADAC_MBEDTLS_INCLUDE})
+    Message(FATAL_ERROR "Does not exist: ${PSA_ADAC_MBEDTLS_INCLUDE}")
+endif()
+
 if(NOT DEFINED PSA_ADAC_ROOT)
     get_filename_component(PSA_ADAC_ROOT ${CMAKE_SOURCE_DIR}/psa-adac ABSOLUTE)
 endif()
@@ -49,10 +55,10 @@ include_directories (
     ${DEPENDS_INC_PATH}
     ${CMAKE_BINARY_DIR}
     ${PSA_ADAC_ROOT}/psa-adac/core/include
-    ${PSA_ADAC_ROOT}/ports/include
+    ${PSA_ADAC_MBEDTLS_INCLUDE}
     )
 
-set(MBEDTLS_CONFIG_FILE "${PSA_ADAC_ROOT}/ports/crypto/manager-crypto-config.h")
+set(MBEDTLS_CONFIG_FILE "${CMAKE_SOURCE_DIR}/crypto/manager-crypto-config.h")
 add_compile_options(-DMBEDTLS_CONFIG_FILE="${MBEDTLS_CONFIG_FILE}")
 if (UNIX)
     add_compile_options(-fPIC -fpic)
@@ -64,7 +70,7 @@ endif ()
 # Generate ADAC LIB
 add_subdirectory(${PSA_ADAC_ROOT}/psa-adac/core adac_core)
 add_subdirectory(${PSA_ADAC_ROOT}/psa-adac/sdm adac_sdm)
-add_subdirectory(${PSA_ADAC_ROOT}/ports/crypto/psa-crypto psa_adac_psa_crypto)
+add_subdirectory(${CMAKE_SOURCE_DIR}/crypto/psa-crypto psa_adac_psa_crypto)
 
 set(ADAC_LIBS psa_adac_sdm psa_adac_core psa_adac_psa_crypto mbedcrypto)
 
