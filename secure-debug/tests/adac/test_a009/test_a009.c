@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,14 +61,14 @@ void test_entry(val_api_t *val_api)
 
     key_type = detect_cryptosystem(exts, exts_count);
 
-    ret = psa_adac_issue_command(SDP_DISCOVERY_CMD, request, NULL, 0);
+    ret = psa_adac_issue_command(ADAC_DISCOVERY_CMD, request, NULL, 0);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(3), VAL_STATUS_WRITE_FAILED);
         goto test_end;
     }
 
     response = psa_adac_await_response();
-    ret = psa_adac_parse_response(SDP_DISCOVERY_CMD, response);
+    ret = psa_adac_parse_response(ADAC_DISCOVERY_CMD, response);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(4), VAL_STATUS_READ_FAILED);
         goto test_end;
@@ -82,14 +82,14 @@ void test_entry(val_api_t *val_api)
 
     response_packet_release(response);
 
-    ret = psa_adac_issue_command(SDP_AUTH_START_CMD, request, NULL, 0);
+    ret = psa_adac_issue_command(ADAC_AUTH_START_CMD, request, NULL, 0);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(5), VAL_STATUS_WRITE_FAILED);
         goto test_end;
     }
 
     response = psa_adac_await_response();
-    ret = psa_adac_parse_response(SDP_AUTH_START_CMD, response);
+    ret = psa_adac_parse_response(ADAC_AUTH_START_CMD, response);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(6), VAL_STATUS_READ_FAILED);
         goto test_end;
@@ -106,36 +106,36 @@ void test_entry(val_api_t *val_api)
     // Modify scope limit constraints at host-side for soc_class
     for (i = 0; i < exts_count; i++) {
         current_extn = exts[i];
-        if (current_extn->type_id == CERT_ADAC) {
+        if (current_extn->type_id == PSA_BINARY_CRT) {
             payload = (uint8_t *)current_extn;
             payload_size = current_extn->length_in_bytes + sizeof(psa_tlv_t);
 
             header = (certificate_header_t *) (current_extn->value);
-            if (header->role != SDP_CRT_ROLE_ROOT) {
+            if (header->role != ADAC_CRT_ROLE_ROOT) {
                 leaf_cert = current_extn->value;
                 modify_soc_class_neutral(header, i);
             }
 
-            ret = psa_adac_issue_command(SDP_AUTH_RESPONSE_CMD, request, payload, payload_size);
+            ret = psa_adac_issue_command(ADAC_AUTH_RESPONSE_CMD, request, payload, payload_size);
             if (ret != PSA_SUCCESS) {
                 val->err_check_set(TEST_CHECKPOINT_NUM(7), VAL_STATUS_WRITE_FAILED);
                 goto test_end;
             }
 
             // Restore the tampered certificate value
-            if (header->role == SDP_CRT_ROLE_ROOT)
+            if (header->role == ADAC_CRT_ROLE_ROOT)
                 modify_soc_class_neutral(header, i);
 
             response = psa_adac_await_response();
-            ret = psa_adac_parse_response(SDP_AUTH_RESPONSE_CMD, response);
+            ret = psa_adac_parse_response(ADAC_AUTH_RESPONSE_CMD, response);
             if (ret != PSA_SUCCESS) {
                 val->err_check_set(TEST_CHECKPOINT_NUM(8), VAL_STATUS_READ_FAILED);
                 goto test_end;
             }
 
-            if (response->status == SDP_NEED_MORE_DATA) {
+            if (response->status == ADAC_NEED_MORE_DATA) {
                 response_packet_release(response);
-            } else if (response->status == SDP_FAILURE) {
+            } else if (response->status == ADAC_FAILURE) {
                 val->print(PRINT_INFO, "Inconsistent certificate chain rejected by target\n", 0);
                 break;
             } else {
@@ -151,7 +151,7 @@ void test_entry(val_api_t *val_api)
         goto test_end;
     }
 
-    if (response->status != SDP_FAILURE)
+    if (response->status != ADAC_FAILURE)
         val->err_check_set(TEST_CHECKPOINT_NUM(11), VAL_STATUS_ERROR);
 
     response_packet_release(response);

@@ -1,0 +1,13 @@
+diff --git a/psa-adac/sdm/src/psa_adac_sdm.c b/psa-adac/sdm/src/psa_adac_sdm.c
+index c993ee5..c1e0002 100644
+--- a/psa-adac/sdm/src/psa_adac_sdm.c
++++ b/psa-adac/sdm/src/psa_adac_sdm.c
+@@ -148,7 +148,7 @@ int import_private_key(const char *key_file, uint8_t *type, psa_key_handle_t *ha
+ 
+     mbedtls_pk_init(&pk);
+ 
+-    rc = mbedtls_pk_parse_keyfile(&pk, key_file, NULL);
++    rc = mbedtls_pk_parse_keyfile(&pk, key_file, NULL, NULL, NULL);
+     if (rc < 0) {
+         PSA_ADAC_LOG_ERR("sdm", "Error loading key file '%s'\n", key_file);
+         return rc;

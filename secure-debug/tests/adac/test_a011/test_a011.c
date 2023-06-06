@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2022 Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,7 +45,7 @@ void test_entry(val_api_t *val_api)
     size_t chain_size = 0, exts_count = 0, i, err_count;
 
     // Send discovery packet with no requested type ID.
-    request = request_packet_build(SDP_DISCOVERY_CMD, NULL, 0);
+    request = request_packet_build(ADAC_DISCOVERY_CMD, NULL, 0);
     if (request == NULL) {
         val->err_check_set(TEST_CHECKPOINT_NUM(1), VAL_STATUS_CONNECTION_FAILED);
         goto test_end;

@@ -1,0 +1,7 @@
+
+[submodule "secure-debug/psa-adac"]
+	path = secure-debug/psa-adac
+	url = https://git.trustedfirmware.org/shared/psa-adac.git
+[submodule "secure-debug/external/mbedtls"]
+	path = secure-debug/external/mbedtls
+	url = https://github.com/Mbed-TLS/mbedtls.git

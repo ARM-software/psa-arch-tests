@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021 Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,7 +76,7 @@ uint8_t detect_cryptosystem(psa_tlv_t *extns_list[], size_t extn_count)
 
     for (i = 0; i < extn_count; i++) {
         current_extn = extns_list[i];
-        if ((current_extn)->type_id == CERT_ADAC)
+        if ((current_extn)->type_id == PSA_BINARY_CRT)
             key_type = ((certificate_header_t *) current_extn->value)->key_type;
     }
     PSA_ADAC_LOG_INFO("host", "Cryptosystem detected: %d\n", key_type);
@@ -91,7 +91,7 @@ uint8_t get_certificate_role(psa_tlv_t *extns_list[], size_t extn_count)
 
     for (i = 0; i < extn_count; i++) {
         current_extn = extns_list[i];
-        if ((current_extn)->type_id == CERT_ADAC)
+        if ((current_extn)->type_id == PSA_BINARY_CRT)
             role_type = ((certificate_header_t *) current_extn->value)->role;
     }
     PSA_ADAC_LOG_INFO("host", "Certificate role: %d\n", role_type);
@@ -162,20 +162,23 @@ psa_status_t psa_adac_issue_command(uint32_t command, request_packet_t *packet,
     }
 
     switch (command) {
-    case SDP_DISCOVERY_CMD:
+    case ADAC_DISCOVERY_CMD:
         PSA_ADAC_LOG_INFO("host", "Sending discovery request\n");
         break;
-    case SDP_AUTH_START_CMD:
+    case ADAC_AUTH_START_CMD:
         PSA_ADAC_LOG_INFO("host", "Sending challenge request\n");
         break;
-    case SDP_AUTH_RESPONSE_CMD:
+    case ADAC_AUTH_RESPONSE_CMD:
         PSA_ADAC_LOG_INFO("host", "Sending authentication response\n");
         break;
-    case SDP_RESUME_BOOT_CMD:
+    case ADAC_RESUME_BOOT_CMD:
         PSA_ADAC_LOG_INFO("host", "Sending close session command\n");
         break;
-    case SDP_LOCK_DEBUG_CMD:
+    case ADAC_LOCK_DEBUG_CMD:
         PSA_ADAC_LOG_INFO("host", "Sending lock debug request\n");
+        break;
+    case ADAC_LCS_CHANGE_CMD:
+        PSA_ADAC_LOG_INFO("host", "Sending LCS change command\n");
         break;
     default:
         if (command & 0x8000u)
@@ -216,7 +219,7 @@ psa_status_t psa_adac_parse_response(uint32_t command, response_packet_t *packet
     }
 
     switch (command) {
-    case SDP_DISCOVERY_CMD:
+    case ADAC_DISCOVERY_CMD:
         PSA_ADAC_LOG_INFO("host", "Receiving discovery response...\n");
         for (i = 0; (i + 4) < (packet->data_count * 4);) {
             tlv = (psa_tlv_t *) (((uint8_t *)packet->data) + i);
@@ -225,7 +228,7 @@ psa_status_t psa_adac_parse_response(uint32_t command, response_packet_t *packet
             i += sizeof(psa_tlv_t) + ROUND_TO_WORD(tlv->length_in_bytes);
         }
         break;
-    case SDP_AUTH_START_CMD:
+    case ADAC_AUTH_START_CMD:
         PSA_ADAC_LOG_INFO("host", "Receiving challenge..\n");
         if (packet->data_count * 4 != sizeof(psa_auth_challenge_t)) {
             r = PSA_ERROR_GENERIC_ERROR;
@@ -233,9 +236,10 @@ psa_status_t psa_adac_parse_response(uint32_t command, response_packet_t *packet
         }
         challenge = (psa_auth_challenge_t *) packet->data;
         break;
-    case SDP_AUTH_RESPONSE_CMD:
-    case SDP_RESUME_BOOT_CMD:
-    case SDP_LOCK_DEBUG_CMD:
+    case ADAC_AUTH_RESPONSE_CMD:
+    case ADAC_RESUME_BOOT_CMD:
+    case ADAC_LOCK_DEBUG_CMD:
+    case ADAC_LCS_CHANGE_CMD:
         break;
     default:
         r = PSA_ERROR_NOT_SUPPORTED;
@@ -260,20 +264,20 @@ psa_status_t psa_adac_send_certificate(psa_tlv_t **extns_list, size_t extns_coun
             payload_size = current_extn->length_in_bytes + sizeof(psa_tlv_t);
 
             PSA_ADAC_LOG_INFO("host", "Sending Certificate..\n");
-            r = psa_adac_issue_command(SDP_AUTH_RESPONSE_CMD, request, payload, payload_size);
+            r = psa_adac_issue_command(ADAC_AUTH_RESPONSE_CMD, request, payload, payload_size);
             if (r != PSA_SUCCESS)
                 return r;
 
             response = psa_adac_await_response();
-            r = psa_adac_parse_response(SDP_AUTH_RESPONSE_CMD, response);
+            r = psa_adac_parse_response(ADAC_AUTH_RESPONSE_CMD, response);
             if (r != PSA_SUCCESS)
                 return r;
 
-            if (response->status == SDP_NEED_MORE_DATA)
+            if (response->status == ADAC_NEED_MORE_DATA)
                 response_packet_release(response);
         }
     }
-    if (response->status != SDP_NEED_MORE_DATA) {
+    if (response->status != ADAC_NEED_MORE_DATA) {
         PSA_ADAC_LOG_ERR("host", "Unexpected response status %x\n", response->status);
         r = PSA_ERROR_GENERIC_ERROR;
         return r;

@@ -13,12 +13,12 @@ For more information, visit the [PSA webpage](https://developer.arm.com/products
 API specifications are placed in [PSA API github site](https://github.com/ARM-software/psa-api/).
 
 ### PSA Certified API Compliance
-The [PSA Certified API tests](api-tests/dev_apis) are the basis for validating compliance with PSA Certified APIs. For more information on the certification program, see [psacertified.org](https://www.psacertified.org/functional-api-certification/) 
+The [PSA Certified API tests](api-tests/dev_apis) are the basis for validating compliance with PSA Certified APIs. For more information on the certification program, see [psacertified.org](https://www.psacertified.org/functional-api-certification/)
 
 ## GitHub branch
   - For API certification, use the release branch and pick the appropriate release tag.
   - To get the latest version of the code with bug fixes and new features, use the master branch.
-  
+
 ## Architecture test suite
 
 The current implementation of the Architecture test suite contains tests for following PSA Certified specifications. Arm licensees may contact their partner manager to obtain a copy of this specification. <br />
@@ -46,7 +46,7 @@ Arm PSA test suite is distributed under Apache v2.0 License.
  - For feedback, use the GitHub Issue Tracker that is associated with this repository.
  - For support, send an email to support-psa-arch-tests@arm.com with details.
  - Arm licensees can contact Arm directly through their partner managers.
- - Arm welcomes code contributions through GitHub pull requests. 
+ - Arm welcomes code contributions through GitHub pull requests.
 
 --------------
 
