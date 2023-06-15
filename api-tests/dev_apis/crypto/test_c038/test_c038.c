@@ -33,6 +33,8 @@ static int32_t  valid_test_input_index = -1;
 
 int32_t psa_cipher_abort_test(caller_security_t caller __UNUSED)
 {
+#if ((defined(ARCH_TEST_AES_128) && (defined(ARCH_TEST_CBC_NO_PADDING) || defined(ARCH_TEST_CBC_PKCS7) || defined(ARCH_TEST_CIPHER_MODE_CTR)))||\
+(defined(ARCH_TEST_CBC_NO_PADDING) && (defined(ARCH_TEST_DES_1KEY) || defined(ARCH_TEST_DES_2KEY) || defined(ARCH_TEST_DES_3KEY))))
     int32_t                 num_checks = sizeof(check1)/sizeof(check1[valid_test_input_index]);
     int32_t                 i, status;
     psa_cipher_operation_t  operation;
@@ -103,10 +105,16 @@ int32_t psa_cipher_abort_test(caller_security_t caller __UNUSED)
     }
 
     return VAL_STATUS_SUCCESS;
+#else
+    val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+    return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+#endif
 }
 
 int32_t psa_cipher_abort_before_update_test(caller_security_t caller __UNUSED)
 {
+#if ((defined(ARCH_TEST_AES_128) && (defined(ARCH_TEST_CBC_NO_PADDING) || defined(ARCH_TEST_CBC_PKCS7) || defined(ARCH_TEST_CIPHER_MODE_CTR)))||\
+(defined(ARCH_TEST_CBC_NO_PADDING) && (defined(ARCH_TEST_DES_1KEY) || defined(ARCH_TEST_DES_2KEY) || defined(ARCH_TEST_DES_3KEY))))
     size_t                  get_output_length;
     psa_key_id_t            key;
     psa_cipher_operation_t  operation;
@@ -168,4 +176,8 @@ int32_t psa_cipher_abort_before_update_test(caller_security_t caller __UNUSED)
     val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
 
     return VAL_STATUS_SUCCESS;
+#else
+    val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+    return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+#endif
 }

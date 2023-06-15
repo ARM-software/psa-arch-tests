@@ -30,6 +30,7 @@ extern  uint32_t g_test_count;
 
 int32_t psa_aead_set_lengths_test(caller_security_t caller __UNUSED)
 {
+#if ((defined(ARCH_TEST_CCM) || defined(ARCH_TEST_GCM)) && defined(ARCH_TEST_AES_128)) 
     int32_t               i, status;
     int32_t               num_checks = sizeof(check1)/sizeof(check1[0]);
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
@@ -127,4 +128,8 @@ int32_t psa_aead_set_lengths_test(caller_security_t caller __UNUSED)
     }
 
     return VAL_STATUS_SUCCESS;
+#else
+    val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+    return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+#endif
 }

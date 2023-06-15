@@ -32,6 +32,8 @@ static int32_t  valid_test_input_index = -1;
 
 int32_t psa_hash_suspend_test(caller_security_t caller __UNUSED)
 {
+#if (defined(ARCH_TEST_MD2) || defined(ARCH_TEST_MD4) || defined(ARCH_TEST_MD5) || defined(ARCH_TEST_RIPEMD160) || defined(ARCH_TEST_SHA1) || \
+defined(ARCH_TEST_SHA224) || defined(ARCH_TEST_SHA256) || defined(ARCH_TEST_SHA384) || defined(ARCH_TEST_SHA512))
     int32_t                 num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
     psa_hash_operation_t    operation;
@@ -104,10 +106,16 @@ int32_t psa_hash_suspend_test(caller_security_t caller __UNUSED)
     }
 
     return VAL_STATUS_SUCCESS;
+#else
+    val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+    return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+#endif
 }
 
 int32_t psa_hash_suspend_repeated_call(caller_security_t caller __UNUSED)
 {
+#if (defined(ARCH_TEST_MD2) || defined(ARCH_TEST_MD4) || defined(ARCH_TEST_MD5) || defined(ARCH_TEST_RIPEMD160) || defined(ARCH_TEST_SHA1) || \
+defined(ARCH_TEST_SHA224) || defined(ARCH_TEST_SHA256) || defined(ARCH_TEST_SHA384) || defined(ARCH_TEST_SHA512))
     psa_hash_operation_t    operation    = PSA_HASH_OPERATION_INIT;
     size_t                  expected_hash_state_length1;
     size_t                  expected_hash_state_length2;
@@ -172,4 +180,8 @@ int32_t psa_hash_suspend_repeated_call(caller_security_t caller __UNUSED)
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
     return VAL_STATUS_SUCCESS;
+#else
+    val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+    return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+#endif
 }

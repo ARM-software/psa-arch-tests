@@ -96,6 +96,7 @@ int32_t psa_raw_key_agreement_test(caller_security_t caller __UNUSED)
 
 int32_t psa_raw_key_agreement_negative_test(caller_security_t caller __UNUSED)
 {
+#if defined(ARCH_TEST_ECDH) && defined(ARCH_TEST_ECC_CURVE_SECP256R1)
     int                     num_checks = sizeof(check2)/sizeof(check2[0]);
     int32_t                 i, status;
     size_t                  output_length;
@@ -129,6 +130,9 @@ int32_t psa_raw_key_agreement_negative_test(caller_security_t caller __UNUSED)
                     output, check2[i].output_size, &output_length);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
     }
-
     return VAL_STATUS_SUCCESS;
+#else
+    val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+    return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+#endif
 }

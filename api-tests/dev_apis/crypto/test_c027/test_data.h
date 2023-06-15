@@ -30,6 +30,8 @@ typedef struct {
     psa_status_t            expected_status;
 } test_data;
 
+#if (defined(ARCH_TEST_HMAC) && (defined(ARCH_TEST_SHA256) || defined(ARCH_TEST_SHA512)) || \
+(defined(ARCH_TEST_AES_128) && defined(ARCH_TEST_CMAC)))
 static const test_data check1[] = {
 #ifdef ARCH_TEST_HMAC
 #ifdef ARCH_TEST_SHA256
@@ -95,3 +97,4 @@ static const test_data check1[] = {
 #endif
 #endif
 };
+#endif
