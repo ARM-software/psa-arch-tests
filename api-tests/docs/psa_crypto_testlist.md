@@ -1,4 +1,4 @@
-# PSA Crypto Testcase checklist 
+# PSA Crypto Testcase checklist
 
 
 
@@ -752,4 +752,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2019, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2023, Arm Limited and Contributors. All rights reserved.*

@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +26,7 @@ list(APPEND VAL_SRC_C_NSPE
 	${PSA_ROOT_DIR}/val/common/val_target.c
 	${PSA_ROOT_DIR}/val/nspe/val_attestation.c
 	${PSA_ROOT_DIR}/val/nspe/val_storage.c
+	${PSA_ROOT_DIR}/val/nspe/val_platform.c
 )
 
 # Create VAL NSPE library

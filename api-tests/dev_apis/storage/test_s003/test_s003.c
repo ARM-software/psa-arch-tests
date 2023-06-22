@@ -83,7 +83,7 @@ int32_t psa_sst_insufficient_space(storage_function_code_t fCode)
     }
 
     /* Check that it takes equal number of UIDs to fill up the storage each time */
-    for (i = 0; i < (NUM_ITERATIONS -1); i++)
+    for (i = 0; i < (NUM_ITERATIONS - 1); i++)
     {
         if (results[i] != results[i+1])
         {

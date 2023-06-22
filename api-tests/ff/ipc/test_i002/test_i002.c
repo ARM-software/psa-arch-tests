@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -221,11 +221,11 @@ int32_t client_test_identity(caller_security_t caller)
    handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
    if (!PSA_HANDLE_IS_VALID(handle))
    {
-       return(VAL_STATUS_INVALID_HANDLE);
+       return VAL_STATUS_INVALID_HANDLE;
    }
 
    psa_outvec resp[2] = {{&id_at_connect, sizeof(id_at_call)},
-                         {&id_at_call, sizeof(id_at_call)}};
+                         {&id_at_call, sizeof(id_at_call)} };
 
    status_of_call =  psa->call(handle, PSA_IPC_CALL, NULL, 0, resp, 2);
 
@@ -236,13 +236,13 @@ int32_t client_test_identity(caller_security_t caller)
    }
    /* For NSPE access, identity should be < 0 */
    else if ((caller == CALLER_NONSECURE) && ((id_at_connect != id_at_call)
-            || (id_at_connect >=0) || (id_at_call >=0)))
+            || (id_at_connect >= 0) || (id_at_call >= 0)))
    {
        status = VAL_STATUS_WRONG_IDENTITY;
    }
    /* For SPE access, identity should be > 0 */
    else if ((caller == CALLER_SECURE) && ((id_at_connect != id_at_call)
-            || (id_at_connect <=0) || (id_at_call <=0)))
+            || (id_at_connect <= 0) || (id_at_call <= 0)))
    {
        status = VAL_STATUS_WRONG_IDENTITY;
    }

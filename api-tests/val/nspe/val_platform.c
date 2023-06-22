@@ -1,7 +1,6 @@
 /** @file
  * Copyright (c) 2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
- * Copyright 2023 NXP
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +15,15 @@
  * limitations under the License.
 **/
 
-#include "pal_common.h"
 
-__attribute__((weak)) void pal_set_custom_test_list(char *custom_test_list)
-{
-	(void)custom_test_list;
+#include "val_platform.h"
 
-	return;
-}
-
-__attribute__((weak)) bool_t pal_is_test_enabled(test_id_t test_id)
-{
-	(void)test_id;
-
-	return 1;
-}
 
 /**
- *   @brief    - initialize anything relavent to a platform
- *               like any key initialization for crypto operations and etc
- *               this is optional Api to implement
- *   @return   - TRUE/FALSE
+    @brief    - any platform specific initialization,
+    @return   - val_status_t
 **/
-__attribute__((weak)) unsigned int pal_platform_init(void)
+val_status_t val_platform_init(void)
 {
-	return (unsigned int)PAL_STATUS_SUCCESS;
+    return pal_platform_init();
 }
