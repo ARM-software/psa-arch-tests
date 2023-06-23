@@ -53,7 +53,7 @@ extern uint8_t rsa_256_key_data[];
 
 extern uint8_t ec_key_data[];
 extern uint8_t ec_key_pair[];
-extern uint8_t ec_keypair[];
+extern uint8_t ec_keypair_deterministic[];
 
 extern uint8_t md2_hash[];
 extern uint8_t md4_hash[];

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,7 +74,7 @@ static const test_data check1[] = {
 {
     .test_desc        = "Test psa_verify_hash - ECDSA KEY_PAIR SECP256R1 SHA-256\n",
     .type             = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
-    .data             = ec_keypair,
+    .data             = ec_keypair_deterministic,
     .data_length      = 32,
     .usage_flags      = PSA_KEY_USAGE_VERIFY_HASH,
     .alg              = PSA_ALG_DETERMINISTIC_ECDSA(PSA_ALG_SHA_256),
