@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -194,7 +194,7 @@ int32_t psa_asymmetric_encrypt_negative_test(caller_security_t caller __UNUSED)
                                   check1[valid_test_input_index].output_size,
                                   &get_output_length);
     TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
-	
+
     return VAL_STATUS_SUCCESS;
 #else
     val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
