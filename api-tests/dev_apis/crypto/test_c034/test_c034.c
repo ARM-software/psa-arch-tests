@@ -28,6 +28,8 @@ const client_test_t test_c034_crypto_list[] = {
 
 int32_t psa_cipher_generate_iv_test(caller_security_t caller __UNUSED)
 {
+#if ((defined(ARCH_TEST_CIPHER_MODE_CTR) && (defined(ARCH_TEST_AES_128) || defined(ARCH_TEST_AES_192) || defined(ARCH_TEST_AES_256)))||\
+(defined(ARCH_TEST_CBC_AES_NO_PADDING) && (defined(ARCH_TEST_DES_1KEY) || defined(ARCH_TEST_DES_2KEY) || defined(ARCH_TEST_DES_3KEY))))
     int32_t                 i, num_checks = sizeof(check1)/sizeof(check1[0]);
     uint32_t                j, iv_sum;
     size_t                  expected_iv_length;
@@ -122,4 +124,8 @@ int32_t psa_cipher_generate_iv_test(caller_security_t caller __UNUSED)
     }
 
     return VAL_STATUS_SUCCESS;
+#else
+    val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+    return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+#endif
 }

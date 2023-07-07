@@ -31,6 +31,7 @@ typedef struct {
     psa_status_t            expected_status;
 } test_data;
 
+#if ((defined(ARCH_TEST_CCM) || defined(ARCH_TEST_GCM)) && defined(ARCH_TEST_AES_128))
 static const test_data check1[] = {
 #ifdef ARCH_TEST_AES_128
 #ifdef ARCH_TEST_CCM
@@ -210,3 +211,4 @@ static const test_data check1[] = {
 #endif
 #endif
 };
+#endif

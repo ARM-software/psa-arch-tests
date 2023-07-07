@@ -30,6 +30,8 @@ extern  uint32_t g_test_count;
 
 int32_t psa_mac_update_test(caller_security_t caller __UNUSED)
 {
+#if (defined(ARCH_TEST_HMAC) && (defined(ARCH_TEST_SHA256) || defined(ARCH_TEST_SHA512)) || \
+(defined(ARCH_TEST_AES_128) && defined(ARCH_TEST_CMAC)))
     int32_t               num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t               i, status;
     psa_mac_operation_t   operation = PSA_MAC_OPERATION_INIT;
@@ -128,4 +130,8 @@ int32_t psa_mac_update_test(caller_security_t caller __UNUSED)
     }
 
     return VAL_STATUS_SUCCESS;
+#else
+    val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+    return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+#endif
 }

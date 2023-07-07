@@ -33,6 +33,8 @@ static int32_t  valid_test_input_index = -1;
 
 int32_t psa_sign_message_test(caller_security_t caller __UNUSED)
 {
+#if (defined(ARCH_TEST_RSA_1024) ||\
+(defined(ARCH_TEST_SHA256) && (defined(ARCH_TEST_DETERMINISTIC_ECDSA) || defined(ARCH_TEST_ECC_CURVE_SECP256R1))))
     int32_t                 num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
     size_t                  get_signature_length;
@@ -116,10 +118,16 @@ int32_t psa_sign_message_test(caller_security_t caller __UNUSED)
     }
 
     return VAL_STATUS_SUCCESS;
+#else
+    val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+    return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+#endif
 }
 
 int32_t psa_sign_message_negative_test(caller_security_t caller __UNUSED)
 {
+#if (defined(ARCH_TEST_RSA_1024) ||\
+(defined(ARCH_TEST_SHA256) && (defined(ARCH_TEST_DETERMINISTIC_ECDSA) || defined(ARCH_TEST_ECC_CURVE_SECP256R1))))
     int32_t                 status;
     size_t                  get_signature_length;
     psa_key_id_t            key = 10;
@@ -162,4 +170,8 @@ int32_t psa_sign_message_negative_test(caller_security_t caller __UNUSED)
     TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
 
     return VAL_STATUS_SUCCESS;
+#else
+    val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+    return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+#endif
 }

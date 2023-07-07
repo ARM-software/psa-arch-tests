@@ -34,6 +34,8 @@ typedef struct {
     psa_status_t            expected_status;
 } test_data;
 
+#if (defined(ARCH_TEST_MD2) || defined(ARCH_TEST_MD4) || defined(ARCH_TEST_MD5) || defined(ARCH_TEST_RIPEMD160) || defined(ARCH_TEST_SHA1) || \
+defined(ARCH_TEST_SHA224) || defined(ARCH_TEST_SHA256) || defined(ARCH_TEST_SHA384) || defined(ARCH_TEST_SHA512))
 static const test_data check1[] = {
 #ifdef ARCH_TEST_HASH_RESUME
 #ifdef ARCH_TEST_MD2
@@ -261,3 +263,4 @@ static const test_data check1[] = {
 #endif
 #endif
 };
+#endif

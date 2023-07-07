@@ -35,6 +35,8 @@ typedef struct {
     psa_status_t            expected_status;
 } test_data;
 
+#if defined(ARCH_TEST_RSA_1024) || defined(ARCH_TEST_RSA_PKCS1V15_CRYPT)
+
 static const test_data check1[] = {
 #ifdef ARCH_TEST_RSA_1024
 #ifdef ARCH_TEST_RSA_PKCS1V15_CRYPT
@@ -215,3 +217,4 @@ static const test_data check1[] = {
 #endif
 #endif
 };
+#endif

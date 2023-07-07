@@ -31,6 +31,7 @@ extern  uint32_t g_test_count;
 
 int32_t psa_aead_abort_test(caller_security_t caller __UNUSED)
 {
+#if (defined(ARCH_TEST_AES_128) && (defined(ARCH_TEST_CCM) || defined(ARCH_TEST_GCM) || defined(ARCH_TEST_CHACHA20_POLY1305))) 
     int32_t               i, status;
     int32_t               num_checks = sizeof(check1)/sizeof(check1[0]);
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
@@ -111,10 +112,15 @@ int32_t psa_aead_abort_test(caller_security_t caller __UNUSED)
     }
 
     return VAL_STATUS_SUCCESS;
+#else
+    val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+    return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+#endif
 }
 
 int32_t psa_aead_abort_init_test(caller_security_t caller __UNUSED)
 {
+#if (defined(ARCH_TEST_AES_128) && (defined(ARCH_TEST_CCM) || defined(ARCH_TEST_GCM) || defined(ARCH_TEST_CHACHA20_POLY1305)))
     int32_t               i, status;
     psa_aead_operation_t  operation[] = {PSA_AEAD_OPERATION_INIT, psa_aead_operation_init(), {0} };
     int32_t               operation_count = sizeof(operation)/sizeof(operation[0]);
@@ -135,6 +141,10 @@ int32_t psa_aead_abort_init_test(caller_security_t caller __UNUSED)
     }
 
     return VAL_STATUS_SUCCESS;
+#else
+    val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+    return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+#endif
 }
 
 
