@@ -125,6 +125,7 @@ list(APPEND PSA_CPU_ARCH_SUPPORT
 	armv8m_bl
 	armv81m_ml
 	armv7m
+	armv7a
 	armv8a
 )
 

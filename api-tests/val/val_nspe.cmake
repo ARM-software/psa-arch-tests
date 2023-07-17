@@ -17,6 +17,7 @@
 
 # Listing all the sources from val
 list(APPEND VAL_SRC_C_NSPE
+	${PSA_ROOT_DIR}/val/nspe/val_platform.c
 	${PSA_ROOT_DIR}/val/nspe/val_entry.c
 	${PSA_ROOT_DIR}/val/nspe/val_dispatcher.c
 	${PSA_ROOT_DIR}/val/nspe/val_framework.c
