@@ -16,7 +16,7 @@
 #**/
 
 set(CMAKE_SYSTEM_NAME Generic)
-set(CMKE_SYSTEM_PROCESSOR ARM)
+set(CMAKE_SYSTEM_PROCESSOR ARM)
 
 set(_C_TOOLCHAIN_NAME arm-none-eabi-gcc)
 
@@ -58,6 +58,10 @@ elseif(${CPU_ARCH} STREQUAL armv8m_bl)
     set(TARGET_SWITCH "-march=armv8-m.base -mcmse")
 elseif(${CPU_ARCH} STREQUAL armv81m_ml)
     set(TARGET_SWITCH "-march=armv8.1-m.main -mcmse")
+elseif(${CPU_ARCH} STREQUAL armv7a)
+    set(TARGET_SWITCH "-march=armv7-a")
+elseif(${CPU_ARCH} STREQUAL armv8a)
+    set(TARGET_SWITCH "-march=armv8-a")
 endif()
 
 set(CMAKE_C_FLAGS          "${TARGET_SWITCH} -g -Wall -Werror -Wextra -fdata-sections -ffunction-sections -mno-unaligned-access")
