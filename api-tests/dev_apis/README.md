@@ -30,6 +30,7 @@ For more information on the architecture test suite framework and methodology to
 
 | Release version | Release tag  | Crypto API | Storage API | Attestation API |
 |-----------------|---------------|----------------|-----------------|---------------------|
+| REL v1.5 | [v23.06_API1.5_ADAC_EAC](https://github.com/ARM-software/psa-arch-tests/tree/v23.06_API1.5_ADAC_EAC/api-tests/dev_apis) | 1.0.1  | 1.0.0 | 1.0.2 |
 | REL v1.4 | [v22.01_API1.4_ADAC_BETA](https://github.com/ARM-software/psa-arch-tests/tree/v22.01_API1.4_ADAC_BETA/api-tests/dev_apis) | 1.0.1  | 1.0.0 | 1.0.2 |
 | REL v1.3 | [v21.10_API1.3_ADAC_ALPHA-1](https://github.com/ARM-software/psa-arch-tests/tree/v21.10_API1.3_ADAC_ALPHA-1/api-tests/dev_apis) | 1.0.0  | 1.0.0 | 1.0.2 |
 | REL v1.2 | [v21.07_API1.2_ADAC_ALPHA](https://github.com/ARM-software/psa-arch-tests/tree/v21.07_API1.2_ADAC_ALPHA/api-tests/dev_apis) | 1.0.0  | 1.0.0 | 1.0.2 |
