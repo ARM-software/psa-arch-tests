@@ -14,6 +14,7 @@ PSA Certified delivers compliance badges for both device-level vendors who want 
 
 The official name for those APIs is `PSA Certified APIs`. API specifications are placed in [PSA API github site](https://github.com/ARM-software/psa-api/).
 Other common ways to refer to those APIs are: `PSA APIs`, `PSA functional APIs`.
+
 `PSA Certified Crypto API` is often shortened to `Crypto API` in documentation.
 
 ## What is PSA Certified API compliance? How does it relate to PSA certification?
@@ -112,7 +113,7 @@ To pass Crypto API compliance tests you need to:
 
 - Download the compliance kit from this repository.
 - Possibly adapt the test suite to reflect which tests you want to pass or skip.
-- Run the tests on any compatible platform..
+- Run the tests on any compatible platform.
 - Send the logs to `psacertified@arm.com` and mention you want to apply for Crypto API compliance.
 
 It is possible to apply for Crypto API compliance even when implementing very restricted subsets of Crypto. For example, a hardware hash accelerator that offers compatible hash APIs could apply and obtain a PSA Certified API compliance badge that would only mention `crypto_hash`.
