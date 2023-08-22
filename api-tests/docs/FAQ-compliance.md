@@ -10,8 +10,6 @@ Crypto vendors may also be interested in adopting just the Crypto API part for t
 
 PSA Certified delivers compliance badges for both device-level vendors who want to check their compliance agains the whole API set, and Crypto compliance badges for crypto vendors who want to check their compliance against all or a subset of the Crypto API.
 
-
-
 ### How should those APIs be referred to?
 
 The official name for those APIs is `PSA Certified APIs`. API specifications are placed in [PSA API github site](https://github.com/ARM-software/psa-api/).
@@ -28,6 +26,11 @@ PSA API compliance aims at measuring adoption for the APIs, by delivering compli
 
 In summary: you can PSA-certify a product without implementing PSA Certified APIs, and you can implement PSA Certified APIs and seek the compliance badge without applying for PSA Certification.
 
+### Have the PSA Certified APIs been certified by PSA?
+
+No. PSA certification is about estimating the robustness of Root of Trust implementations. The PSA Certified initiative came to the conclusion that standardization of Root of Trust service APIs would be a helpful tool to help democratize security on as many devices as possible, and thus the PSA Certified APIs were born out of the PSA Certified initiative. They are part of the same initiative but serve different purposes.
+
+
 ### What is the PSA API compliance badge?
 
 The general API compliance badge is meant for Device vendors who provide access to their Root of Trust services through PSA APIs: Crypto, Secure Storage, and Attestation.
@@ -43,6 +46,7 @@ Once you get your badge, your product will be displayed on [PSA Certified produc
 ### What is the Crypto API compliance badge?
 
 The Crypto API compliance badge is meant for pure crypto players who provide access to their crypto software or hardware through PSA Certified Crypto APIs.
+
 Product examples include open-source and commercial crypto libraries, crypto hardware accelerators, secure elements, smart cards, TPM equivalents, TrustZone-based services, and anything that offers high-level cryptography services like hash, signature, or encryption.
 
 For pure crypto players, obtaining the Crypto API compliance badge is a way to communicate to their customers:
