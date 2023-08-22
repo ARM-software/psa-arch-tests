@@ -10,13 +10,13 @@ Crypto vendors may also be interested in adopting just the Crypto API part for t
 
 PSA Certified delivers compliance badges for both device-level vendors who want to check their compliance agains the whole API set, and Crypto compliance badges for crypto vendors who want to check their compliance against all or a subset of the Crypto API.
 
-### How should those APIs be referred to?
+## How should those APIs be referred to?
 
 The official name for those APIs is `PSA Certified APIs`. API specifications are placed in [PSA API github site](https://github.com/ARM-software/psa-api/).
 Other common ways to refer to those APIs are: `PSA APIs`, `PSA functional APIs`.
 `PSA Certified Crypto API` is often shortened to `Crypto API` in documentation.
 
-### What is PSA Certified API compliance? How does it relate to PSA certification?
+## What is PSA Certified API compliance? How does it relate to PSA certification?
 
 [PSA Certification](https://www.psacertified.org) aims at grading the robustness of Root of Trust implementations.
 
@@ -26,12 +26,12 @@ PSA API compliance aims at measuring adoption for the APIs, by delivering compli
 
 In summary: you can PSA-certify a product without implementing PSA Certified APIs, and you can implement PSA Certified APIs and seek the compliance badge without applying for PSA Certification.
 
-### Have the PSA Certified APIs been certified by PSA?
+## Have the PSA Certified APIs been certified by PSA?
 
 No. PSA certification is about estimating the robustness of Root of Trust implementations. The PSA Certified initiative came to the conclusion that standardization of Root of Trust service APIs would be a helpful tool to help democratize security on as many devices as possible, and thus the PSA Certified APIs were born out of the PSA Certified initiative. They are part of the same initiative but serve different purposes.
 
 
-### What is the PSA API compliance badge?
+## What is the PSA API compliance badge?
 
 The general API compliance badge is meant for Device vendors who provide access to their Root of Trust services through PSA APIs: Crypto, Secure Storage, and Attestation.
 
@@ -43,7 +43,7 @@ For device vendors, obtaining the API compliance badge is a way to communicate t
 
 Once you get your badge, your product will be displayed on [PSA Certified products](https://www.psacertified.org/certified-products/).
 
-### What is the Crypto API compliance badge?
+## What is the Crypto API compliance badge?
 
 The Crypto API compliance badge is meant for pure crypto players who provide access to their crypto software or hardware through PSA Certified Crypto APIs.
 
@@ -57,7 +57,7 @@ For pure crypto players, obtaining the Crypto API compliance badge is a way to c
 Ideally, it should be possible for developers to determine at a glance whether a crypto engine (hardware or software) has enough functionality to implement their use cases. This is exactly what the Crypto API compliance badge is trying to achieve.
 
 
-### Which high-level crypto services are included in the Crypto API compliance badge?
+## Which high-level crypto services are included in the Crypto API compliance badge?
 
 High-level crypto services describe the main operations offered by a crypto engine (hardware or software) like encrypt/decrypt, sign/verify, hash, generate random, and key derivation and agreement protocols. Most crypto use cases can be described by combining those high-level functions.
 
@@ -93,13 +93,13 @@ Functions that need to be implemented for each badge:
 
 This list is probably not exhaustive. Crypto vendors are expected to use common sense to determine which functions of a given subset are interesting for their own users.
 
-### What about crypto primitives like AES, RSA, SHA?
+## What about crypto primitives like AES, RSA, SHA?
 
 The API compliance badge only shows what kind of high-level crypto services are offered by compatible products. Low-level crypto primitives like AES, RSA, SHA, or specific elliptic curves are already always clearly announced by crypto vendors on their product datasheets. The API compliance badge is about functional compliance with a promise of portability, rather than about low-level crypto primitive support.
 
 The Crypto API part of the compliance kit expects a minimal set of crypto primitives to be present to pass test cases. See test cases for more details about which primitives are tested.
 
-### What is the process to obtain a PSA API compliance badge?
+## What is the process to obtain a PSA API compliance badge?
 
 To pass general PSA API compliance tests you need to:
 
@@ -117,11 +117,11 @@ To pass Crypto API compliance tests you need to:
 
 It is possible to apply for Crypto API compliance even when implementing very restricted subsets of Crypto. For example, a hardware hash accelerator that offers compatible hash APIs could apply and obtain a PSA Certified API compliance badge that would only mention `crypto_hash`.
 
-### How much does it cost to obtain a PSA API compliance badge?
+## How much does it cost to obtain a PSA API compliance badge?
 
 Nothing.
 
-### How long does it take to obtain a PSA API compliance badge?
+## How long does it take to obtain a PSA API compliance badge?
 
 Delivering a badge usually takes a few working days, please bear with us if any delays occur.
 
