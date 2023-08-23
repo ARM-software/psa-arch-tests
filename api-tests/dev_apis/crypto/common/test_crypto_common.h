@@ -44,79 +44,79 @@
 #define MIN(a, b) (((a) < (b))?(a):(b))
 #define MAX(a, b) (((a) > (b))?(a):(b))
 
-extern uint8_t key_data[];
+extern const uint8_t key_data[];
 
-extern uint8_t rsa_128_key_pair[];
-extern uint8_t rsa_128_key_data[];
-extern uint8_t rsa_256_key_pair[];
-extern uint8_t rsa_256_key_data[];
+extern const uint8_t rsa_128_key_pair[];
+extern const uint8_t rsa_128_key_data[];
+extern const uint8_t rsa_256_key_pair[];
+extern const uint8_t rsa_256_key_data[];
 
-extern uint8_t ec_key_data[];
-extern uint8_t ec_key_pair[];
-extern uint8_t ec_keypair_deterministic[];
+extern const uint8_t ec_key_data[];
+extern const uint8_t ec_key_pair[];
+extern const uint8_t ec_keypair_deterministic[];
 
-extern uint8_t md2_hash[];
-extern uint8_t md4_hash[];
-extern uint8_t md5_hash[];
-extern uint8_t ripemd_160_hash[];
-extern uint8_t sha_1_hash[];
-extern uint8_t sha_224_hash[];
-extern uint8_t sha_256_hash[];
-extern uint8_t sha_256_incorrect_hash[];
-extern uint8_t sha_384_hash[];
-extern uint8_t sha_512_hash[];
+extern const uint8_t md2_hash[];
+extern const uint8_t md4_hash[];
+extern const uint8_t md5_hash[];
+extern const uint8_t ripemd_160_hash[];
+extern const uint8_t sha_1_hash[];
+extern const uint8_t sha_224_hash[];
+extern const uint8_t sha_256_hash[];
+extern const uint8_t sha_256_incorrect_hash[];
+extern const uint8_t sha_384_hash[];
+extern const uint8_t sha_512_hash[];
 
-extern uint8_t ecdh_secp_256_r1_prv_key[];
-extern uint8_t ecdh_secp_256_r1_pub_key[];
-extern uint8_t ecdh_secp_384_r1_prv_key[];
-extern uint8_t ecdh_secp_384_r1_pub_key[];
+extern const uint8_t ecdh_secp_256_r1_prv_key[];
+extern const uint8_t ecdh_secp_256_r1_pub_key[];
+extern const uint8_t ecdh_secp_384_r1_prv_key[];
+extern const uint8_t ecdh_secp_384_r1_pub_key[];
 
-extern uint8_t nonce[];
-extern uint8_t additional_data[];
-extern uint8_t plaintext[];
-extern uint8_t aead_ciphertext_1[AEAD_CIPHERTEXT_LEN_1];
-extern uint8_t aead_ciphertext_2[AEAD_CIPHERTEXT_LEN_2];
-extern uint8_t aead_invalid_ciphertext_2[AEAD_CIPHERTEXT_LEN_2];
-extern uint8_t aead_ciphertext_3[AEAD_CIPHERTEXT_LEN_3];
-extern uint8_t aead_ciphertext_4[AEAD_CIPHERTEXT_LEN_4];
-extern uint8_t aead_ciphertext_5[AEAD_CIPHERTEXT_LEN_5];
-extern uint8_t aead_ciphertext_6[AEAD_CIPHERTEXT_LEN_6];
+extern const uint8_t nonce[];
+extern const uint8_t additional_data[];
+extern const uint8_t plaintext[];
+extern const uint8_t aead_ciphertext_1[AEAD_CIPHERTEXT_LEN_1];
+extern const uint8_t aead_ciphertext_2[AEAD_CIPHERTEXT_LEN_2];
+extern const uint8_t aead_invalid_ciphertext_2[AEAD_CIPHERTEXT_LEN_2];
+extern const uint8_t aead_ciphertext_3[AEAD_CIPHERTEXT_LEN_3];
+extern const uint8_t aead_ciphertext_4[AEAD_CIPHERTEXT_LEN_4];
+extern const uint8_t aead_ciphertext_5[AEAD_CIPHERTEXT_LEN_5];
+extern const uint8_t aead_ciphertext_6[AEAD_CIPHERTEXT_LEN_6];
 
-extern uint8_t hash_input;
-extern uint8_t input_bytes_data[INPUT_BYTES_DATA_LEN];
-extern uint8_t input_salt[INPUT_SALT_LEN];
-extern uint8_t input_info[INPUT_INFO_LEN];
-extern uint8_t input_seed[INPUT_SEED_LEN];
-extern uint8_t input_label[INPUT_LABEL_LEN];
+extern const uint8_t hash_input;
+extern const uint8_t input_bytes_data[INPUT_BYTES_DATA_LEN];
+extern const uint8_t input_salt[INPUT_SALT_LEN];
+extern const uint8_t input_info[INPUT_INFO_LEN];
+extern const uint8_t input_seed[INPUT_SEED_LEN];
+extern const uint8_t input_label[INPUT_LABEL_LEN];
 
-extern unsigned char iv[];
+extern const unsigned char iv[];
 
-extern unsigned char ciphertext_1[];
-extern unsigned char ciphertext_2[];
-extern unsigned char ciphertext_3[];
-extern unsigned char ciphertext_4[];
-extern unsigned char ciphertext_5[];
-extern unsigned char ciphertext_6[];
+extern const unsigned char ciphertext_1[];
+extern const unsigned char ciphertext_2[];
+extern const unsigned char ciphertext_3[];
+extern const unsigned char ciphertext_4[];
+extern const unsigned char ciphertext_5[];
+extern const unsigned char ciphertext_6[];
 
-extern uint8_t salt[];
-extern unsigned char ciphertext_7[];
-extern unsigned char ciphertext_8[];
-extern unsigned char ciphertext_9[];
+extern const uint8_t salt[];
+extern const unsigned char ciphertext_7[];
+extern const unsigned char ciphertext_8[];
+extern const unsigned char ciphertext_9[];
 
-extern uint8_t signature_1[];
-extern uint8_t signature_2[];
-extern uint8_t signature_2_invalid[];
-extern uint8_t signature_3[];
-extern uint8_t signature_4[];
-extern uint8_t signature_4_invalid[];
-extern uint8_t signature_5[];
-extern uint8_t signature_6[];
+extern const uint8_t signature_1[];
+extern const uint8_t signature_2[];
+extern const uint8_t signature_2_invalid[];
+extern const uint8_t signature_3[];
+extern const uint8_t signature_4[];
+extern const uint8_t signature_4_invalid[];
+extern const uint8_t signature_5[];
+extern const uint8_t signature_6[];
 
-extern uint8_t hmac_sha224[];
-extern uint8_t hmac_sha224_invalid[];
-extern uint8_t hmac_sha256[];
-extern uint8_t hmac_sha512[];
-extern uint8_t cmac_aes_128[];
+extern const uint8_t hmac_sha224[];
+extern const uint8_t hmac_sha224_invalid[];
+extern const uint8_t hmac_sha256[];
+extern const uint8_t hmac_sha512[];
+extern const uint8_t cmac_aes_128[];
 
 extern uint8_t expected_output[BUFFER_SIZE];
 
