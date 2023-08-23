@@ -4,7 +4,7 @@
 
 ## Introduction
 
-This test suite is one of a set of resources provided by Arm that can help organizations develop products that meet the security requirements of PSA Certified on Arm-based platforms. The PSA Certified scheme provides a framework and methodology that helps silicon manufacturers, system software providers and OEMs to develop more secure products. Arm resources that support PSA Certified range from threat models, standard architectures that simplify development and increase portability, and open-source partnerships that provide ready-to-use software. You can read more about PSA Certified here at [psacertified web](www.psacertified.org) and find more Arm resources here at [arm platform security resources](developer.arm.com/platform-security-resources).
+This test suite is one of a set of resources provided by Arm that can help organizations develop products that meet the security requirements of PSA Certified on Arm-based platforms. The PSA Certified scheme provides a framework and methodology that helps silicon manufacturers, system software providers and OEMs to develop more secure products. Arm resources that support PSA Certified range from threat models, standard architectures that simplify development and increase portability, and open-source partnerships that provide ready-to-use software. You can read more about PSA Certified here at [psacertified web](https://www.psacertified.org/) and find more Arm resources here at [arm platform security resources](https://www.arm.com/architecture/security-features).
 
 For more information, visit the [PSA webpage](https://developer.arm.com/products/architecture/platform-security-architecture)
 
