@@ -15,6 +15,8 @@ API specifications are placed in [PSA API github site](https://github.com/ARM-so
 ### PSA Certified API Compliance
 The [PSA Certified API tests](api-tests/dev_apis) are the basis for validating compliance with PSA Certified APIs. For more information on the certification program, see [psacertified.org](https://www.psacertified.org/functional-api-certification/)
 
+For more information about passing PSA Certified API compliance, what it means, what it requires, and how it relates to the PSA Certified initiative, please read the [Frequently Asked Questions about PSA Certified API compliance](api-tests/docs/FAQ-compliance.md).
+
 ## GitHub branch
   - For API certification, use the release branch and pick the appropriate release tag.
   - To get the latest version of the code with bug fixes and new features, use the master branch.
