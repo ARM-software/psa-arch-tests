@@ -28,12 +28,12 @@ const client_test_t test_c048_crypto_list[] = {
 
 extern  uint32_t g_test_count;
 
-static uint8_t    output[64];
-
 int32_t psa_cipher_encrypt_test(caller_security_t caller __UNUSED)
 {
 #if ((defined(ARCH_TEST_AES_128) && (defined(ARCH_TEST_CBC_NO_PADDING) || defined(ARCH_TEST_CBC_PKCS7) || defined(ARCH_TEST_CIPHER_MODE_CTR)))||\
 (defined(ARCH_TEST_CBC_NO_PADDING) && (defined(ARCH_TEST_DES_1KEY) || defined(ARCH_TEST_DES_2KEY) || defined(ARCH_TEST_DES_3KEY))))
+
+    uint8_t                 output[64];
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
     size_t                  output_length;
