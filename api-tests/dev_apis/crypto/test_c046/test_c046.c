@@ -28,10 +28,9 @@ const client_test_t test_c046_crypto_list[] = {
 
 extern  uint32_t g_test_count;
 
-static uint8_t       data[BUFFER_SIZE];
-
 int32_t psa_mac_compute_test(caller_security_t caller __UNUSED)
 {
+    uint8_t               data[BUFFER_SIZE];
     int                   num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t               i, status;
     size_t                length;

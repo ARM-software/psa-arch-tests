@@ -29,10 +29,9 @@ const client_test_t test_c043_crypto_list[] = {
 
 extern  uint32_t g_test_count;
 
-static uint8_t     output[SIZE_50B];
-
 int32_t psa_raw_key_agreement_test(caller_security_t caller __UNUSED)
 {
+    uint8_t                 output[SIZE_50B];
     int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
     size_t                  output_length;
@@ -97,6 +96,7 @@ int32_t psa_raw_key_agreement_test(caller_security_t caller __UNUSED)
 int32_t psa_raw_key_agreement_negative_test(caller_security_t caller __UNUSED)
 {
 #if defined(ARCH_TEST_ECDH) && defined(ARCH_TEST_ECC_CURVE_SECP256R1)
+    uint8_t                 output[SIZE_50B];
     int                     num_checks = sizeof(check2)/sizeof(check2[0]);
     int32_t                 i, status;
     size_t                  output_length;
