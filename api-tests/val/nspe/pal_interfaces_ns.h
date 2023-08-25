@@ -79,7 +79,7 @@ int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size);
  *               size    : Number of bytes
  *   @return   - SUCCESS/FAILURE
 **/
-int pal_nvmem_write_ns(addr_t base, uint32_t offset, void *buffer, int size);
+int pal_nvmem_write_ns(addr_t base, uint32_t offset, const void *buffer, int size);
 
 /**
  *   @brief    - This API will call the requested crypto function
