@@ -50,7 +50,7 @@ typedef struct {
     void             (*ipc_close)                 (psa_handle_t handle);
     val_status_t     (*get_secure_test_result)    (psa_handle_t *handle);
     val_status_t     (*nvmem_read)                (uint32_t offset, void *buffer, int size);
-    val_status_t     (*nvmem_write)               (uint32_t offset, void *buffer, int size);
+    val_status_t     (*nvmem_write)               (uint32_t offset, const void *buffer, int size);
     val_status_t     (*wd_timer_init)             (wd_timeout_type_t timeout_type);
     val_status_t     (*wd_timer_enable)           (void);
     val_status_t     (*wd_timer_disable)          (void);
