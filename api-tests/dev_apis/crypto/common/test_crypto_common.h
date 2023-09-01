@@ -41,8 +41,12 @@
 #define PSA_ERROR_PROGRAMMER_ERROR      ((psa_status_t)-129)
 
 /* min and max finding macro */
+#ifndef MIN
 #define MIN(a, b) (((a) < (b))?(a):(b))
+#endif
+#ifndef MAX
 #define MAX(a, b) (((a) > (b))?(a):(b))
+#endif
 
 extern const uint8_t key_data[];
 
