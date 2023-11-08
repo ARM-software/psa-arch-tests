@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -77,7 +77,7 @@ static const test_data check1[] = {
     .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
     .data            = input_bytes_data,
     .data_length     = INPUT_BYTES_DATA_LEN,
-    .step            = PSA_KEY_DERIVATION_STEP_INVALID,
+    .step            = SYS_ACS_KEY_DERIVATION_STEP_INVALID,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT,
 },
 };

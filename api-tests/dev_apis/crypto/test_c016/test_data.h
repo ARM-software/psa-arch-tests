@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -170,7 +170,7 @@ static const test_data check1[] = {
 {
     .test_desc       = "Test psa_generate_key with invalid usage flags\n",
     .type            = PSA_KEY_TYPE_AES,
-    .usage_flags     = PSA_KEY_USAGE_INVALID,
+    .usage_flags     = SYS_ACS_KEY_USAGE_INVALID,
     .alg             = PSA_ALG_CTR,
     .bits            = BYTES_TO_BITS(AES_16B_KEY_SIZE),
     .expected_range  = {AES_16B_KEY_SIZE, AES_16B_KEY_SIZE},

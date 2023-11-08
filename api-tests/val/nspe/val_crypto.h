@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,24 +47,11 @@
 #define OCCUPIED_KEY_SLOT               1
 #define MAX_KEY_SLOT                    32
 
-#define PSA_KEY_LIFETIME_INVALID        0xFFFFFFFF
-#define PSA_KEY_USAGE_INVALID           0xFFFFFFFF
-#define PSA_HASH_ALG_INVALID            0x02FFFFFF
-#define PSA_ALG_INVALID                 0xFFFFFFFF
-#define PSA_KEY_DERIVATION_STEP_INVALID 0x0000FFFF
-
-#define PSA_ALG_NONE ((psa_algorithm_t)0)
-#define PSA_KEY_ID_NULL ((psa_key_id_t)0)
-#if 0
-#define PSA_ALG_AEAD_WITH_DEFAULT_LENGTH_TAG(aead_alg) \
-        ((((aead_alg) & ~0x003f0000) == 0x05400100) ? PSA_ALG_CCM : \
-        (((aead_alg) & ~0x003f0000) == 0x05400200) ? PSA_ALG_GCM : \
-        (((aead_alg) & ~0x003f0000) == 0x05000500) ? PSA_ALG_CHACHA20_POLY1305 : \
-        PSA_ALG_NONE)
-
-#define PSA_ALG_AEAD_WITH_SHORTENED_TAG(aead_alg, tag_length) \
-		((psa_algorithm_t) (((aead_alg) & ~0x003f0000) | (((tag_length) & 0x3f) << 16)))
-#endif
+#define SYS_ACS_KEY_LIFETIME_INVALID        0xFFFFFFFF
+#define SYS_ACS_KEY_USAGE_INVALID           0xFFFFFFFF
+#define SYS_ACS_HASH_ALG_INVALID            0x02FFFFFF
+#define SYS_ACS_ALG_INVALID                 0xFFFFFFFF
+#define SYS_ACS_KEY_DERIVATION_STEP_INVALID 0x0000FFFF
 
 enum crypto_function_code {
     VAL_CRYPTO_AEAD_ABORT                        = 0x1,

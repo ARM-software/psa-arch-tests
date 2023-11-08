@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -146,13 +146,13 @@ static const test_data check1[] = {
 
 {
     .test_desc       = "Test psa_hash_setup with Invalid hash algorithm\n",
-    .alg             = PSA_HASH_ALG_INVALID,
+    .alg             = SYS_ACS_HASH_ALG_INVALID,
     .expected_status = PSA_ERROR_NOT_SUPPORTED,
 },
 
 {
     .test_desc       = "Test psa_hash_setup with Invalid algorithm\n",
-    .alg             = PSA_ALG_INVALID,
+    .alg             = SYS_ACS_ALG_INVALID,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT,
 },
 

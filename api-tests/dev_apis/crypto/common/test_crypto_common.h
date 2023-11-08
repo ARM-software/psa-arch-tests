@@ -38,8 +38,6 @@
 #define INPUT_SEED_LEN                 4
 #define INPUT_LABEL_LEN                5
 
-#define PSA_ERROR_PROGRAMMER_ERROR      ((psa_status_t)-129)
-
 /* min and max finding macro */
 #ifndef MIN
 #define MIN(a, b) (((a) < (b))?(a):(b))
