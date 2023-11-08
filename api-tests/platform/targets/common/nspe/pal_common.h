@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2020-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2020-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -89,12 +89,12 @@ typedef enum {
 #ifndef IPC
 
 #ifndef PSA_VERSION_NONE
-#define PSA_VERSION_NONE            (0)
+#define PSA_VERSION_NONE            (0u)
 #endif
 
 #ifndef PSA_SUCCESS
-#define PSA_SUCCESS                 (0)
 typedef int32_t psa_status_t;
+#define PSA_SUCCESS                 ((psa_status_t)0)
 #endif
 typedef int32_t psa_handle_t;
 
@@ -115,3 +115,4 @@ typedef struct psa_outvec {
 #endif /* IPC */
 
 #endif /* _PAL_COMMON_H_ */
+

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,13 +38,13 @@ static const test_data check1[] = {
 
 {
     .test_desc       = "Test psa_key_derivation_setup - bad key derivation algorithm\n",
-    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_HASH_ALG_INVALID),
+    .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, SYS_ACS_HASH_ALG_INVALID),
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
 
 {
     .test_desc       = "Test psa_key_derivation_setup - Invalid Algorithm\n",
-    .alg             = PSA_ALG_INVALID,
+    .alg             = SYS_ACS_ALG_INVALID,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT,
 },
 };
