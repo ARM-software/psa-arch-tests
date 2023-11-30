@@ -17,9 +17,6 @@
 
 #include "pal_attestation_crypto.h"
 
-/* this macro is missing from the psa_crypto.h file
- * this can be removed once the TFM fix available
- */
 #define PSA_ALG_MD4 ((psa_algorithm_t)0x02000002)
 
 static uint32_t         public_key_registered;
@@ -40,8 +37,11 @@ static psa_algorithm_t cose_hash_alg_id_to_psa(int32_t cose_hash_alg_id)
     case COSE_ALG_SHA256_PROPRIETARY:
         status = PSA_ALG_SHA_256;
         break;
-    default:
+    case PSA_ALG_MD4:
         status = PSA_ALG_MD4;
+        break;
+    default:
+        status = PSA_ALG_MD5;
         break;
     }
 
