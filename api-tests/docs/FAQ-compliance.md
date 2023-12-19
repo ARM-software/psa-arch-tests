@@ -87,8 +87,7 @@ Functions that need to be implemented for each badge:
 | `crypto_asym_sign` | `sign_hash`<br>`verify_hash`<br>`sign_message`<br>`verify_message`
 | `crypto_asym_crypt`  | `asymmetric_encrypt`<br>`asymmetric_decrypt`
 | `crypto_cipher` | `cipher_encrypt`<br>`cipher_decrypt`<br>`cipher_encrypt_setup`<br>`cipher_decrypt_setup`<br>`cipher_generate_iv`<br>`cipher_set_iv`<br>`cipher_update`<br>`cipher_finish`<br>`cipher_abort`
-| `crypto_aead` | `aead_encrypt`<br>`aead_decrypt`<br>
-optional<br>`aead_encrypt_setup`<br>`aead_decrypt_setup`<br>`aead_generate_nonce`<br>`aead_set_nonce`<br>`aead_set_lengths`<br>`aead_update_ad`<br>`aead_update`<br>`aead_finish`<br>`aead_abort`<br>`aead_verify`
+| `crypto_aead` | `aead_encrypt`<br>`aead_decrypt`<br><br>optional:<br>`aead_encrypt_setup`<br>`aead_decrypt_setup`<br>`aead_generate_nonce`<br>`aead_set_nonce`<br>`aead_set_lengths`<br>`aead_update_ad`<br>`aead_update`<br>`aead_finish`<br>`aead_abort`<br>`aead_verify`
 | `crypto_derivation`  | `key_derivation_setup`<br>`key_derivation_input_bytes`<br>`key_derivation_input_key`<br>`key_derivation_key_agreement`<br>`key_derivation_output_bytes`<br>`key_derivation_output_key`<br>`key_derivation_abort`<br>`key_derivation_set_get_capacity`
 | `crypto_agreement`   | `raw_key_agreement`
 | `crypto_rng`         | `generate_random`
