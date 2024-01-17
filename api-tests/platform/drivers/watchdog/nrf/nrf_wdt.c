@@ -17,6 +17,14 @@
 
 #include "nrf_wdt.h"
 
+/*
+ * This driver was initially written for nRF53, but it appears that
+ * the 53 WDT is binary compatible with 54L so we use it for 54L as
+ * well.
+ *
+ * Note that 91 and 53/54L WDT's are not binary compatible.
+ */
+
 #ifndef ARG_UNUSED
 #define ARG_UNUSED(x) (void)(x)
 #endif
@@ -24,9 +32,15 @@
 /* Simply encode the watchdog peripheral base address into the driver instead
  * of relying on the target configuration system.
  */
+#define NRF_WDT31_NS ((struct NRF_WDT_Type *)0x40109000)
 #define NRF_WDT0_NS ((struct NRF_WDT_Type *)0x50018000)
 
+#ifdef NRF54L15_ENGA_XXAA
+#define PSA_TEST_WDT_INSTANCE NRF_WDT31_NS
+#else
 #define PSA_TEST_WDT_INSTANCE NRF_WDT0_NS
+#endif
+
 /* Simply encode the timeout into the driver instead of using the target
  * configuration system.
  */
