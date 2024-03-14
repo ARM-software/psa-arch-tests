@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,6 +34,7 @@ int32_t pal_crypto_function(int type, va_list valist)
 {
     psa_algorithm_t                           alg;
     const uint8_t                            *input, *input1;
+    uint64_t                                  input_value;
     size_t                                    input_length, input_length1, bits;
     uint8_t                                  *output;
     size_t                                    output_size;
@@ -63,9 +64,10 @@ int32_t pal_crypto_function(int type, va_list valist)
     const uint8_t                            *additional_data;
     size_t                                    additional_data_length;
     psa_status_t                              status;
-#if MISSING_CRYPTO_1_0 == 0
     uint8_t                                  *output1;
     size_t                                   output_size1, *p_output_length1;
+#ifdef CRYPTO_1_1_0
+    const uint8_t                            *expected_output;
 #endif
 
 
@@ -119,7 +121,6 @@ int32_t pal_crypto_function(int type, va_list valist)
 									output_size,
 									p_output_length);
 			break;
-#if MISSING_CRYPTO_1_0 == 0
 		case PAL_CRYPTO_AEAD_ABORT:
 			aead_operation           = va_arg(valist, psa_aead_operation_t *);
 			return psa_aead_abort(aead_operation);
@@ -218,7 +219,6 @@ int32_t pal_crypto_function(int type, va_list valist)
 								   input,
 								   input_length);
 			break;
-#endif
 		case PAL_CRYPTO_AEAD_OPERATION_INIT:
 			aead_operation           = va_arg(valist, psa_aead_operation_t *);
 			aead_operation_temp      = psa_aead_operation_init();
@@ -512,16 +512,20 @@ int32_t pal_crypto_function(int type, va_list valist)
 				   sizeof(psa_hash_operation_t));
 			return 0;
 			break;
-#ifdef CRYPTO_1_0
 		case PAL_CRYPTO_HASH_RESUME:
+#ifdef ARCH_TEST_HASH_RESUME
 			hash_operation           = va_arg(valist, psa_hash_operation_t *);
 			input                    = va_arg(valist, const uint8_t *);
 			input_length             = va_arg(valist, size_t);
 			return psa_hash_resume(hash_operation,
 								   input,
 								   input_length);
+#else
+			return PAL_STATUS_UNSUPPORTED_FUNC;
+#endif
 			break;
 		case PAL_CRYPTO_HASH_SUSPEND:
+#ifdef ARCH_TEST_HASH_SUSPEND
 			hash_operation           = va_arg(valist, psa_hash_operation_t *);
 			output                   = va_arg(valist, uint8_t *);
 			output_size              = va_arg(valist, size_t);
@@ -530,8 +534,10 @@ int32_t pal_crypto_function(int type, va_list valist)
 									output,
 									output_size,
 									p_output_length);
-			break;
+#else
+			return PAL_STATUS_UNSUPPORTED_FUNC;
 #endif
+			break;
 		case PAL_CRYPTO_HASH_SETUP:
 			hash_operation           = va_arg(valist, psa_hash_operation_t *);
 			alg                      = va_arg(valist, psa_algorithm_t);
@@ -578,10 +584,11 @@ int32_t pal_crypto_function(int type, va_list valist)
 			return psa_key_derivation_abort(derivation_operation);
 			break;
 		case PAL_CRYPTO_KEY_DERIVATION_GET_CAPACITY:
-			c_derivation_operation   = va_arg(valist, const psa_key_derivation_operation_t *);
+                	c_derivation_operation   = va_arg(valist,
+	                                                 const psa_key_derivation_operation_t *);
 			p_output_length          = va_arg(valist, size_t *);
 			return psa_key_derivation_get_capacity(c_derivation_operation,\
-												   p_output_length);
+		        p_output_length);
 			break;
 		case PAL_CRYPTO_KEY_DERIVATION_INPUT_BYTES:
 			derivation_operation     = va_arg(valist, psa_key_derivation_operation_t *);
@@ -589,17 +596,25 @@ int32_t pal_crypto_function(int type, va_list valist)
 			input                    = va_arg(valist, const uint8_t *);
 			input_length             = va_arg(valist, size_t);
 			return psa_key_derivation_input_bytes(derivation_operation,
-												  step,
-												  input,
-												  input_length);
+		        step, input, input_length);
 			break;
+        case PAL_CRYPTO_KEY_DERIVATION_INPUT_INTEGER:
+#ifdef ARCH_TEST_PBKDF2
+            derivation_operation     = va_arg(valist, psa_key_derivation_operation_t *);
+            step                     = (psa_key_derivation_step_t)va_arg(valist, int);
+            input_value              = va_arg(valist, uint64_t);
+            return psa_key_derivation_input_integer(derivation_operation,
+                step, input_value);
+#else
+			return PAL_STATUS_UNSUPPORTED_FUNC;
+#endif
+            break;
 		case PAL_CRYPTO_KEY_DERIVATION_INPUT_KEY:
 			derivation_operation     = va_arg(valist, psa_key_derivation_operation_t *);
 			step                     = (psa_key_derivation_step_t)va_arg(valist, int);
 			key                      = va_arg(valist, psa_key_id_t);
 			return psa_key_derivation_input_key(derivation_operation,
-												step,
-												key);
+		        step, key);
 			break;
 		case PAL_CRYPTO_KEY_DERIVATION_KEY_AGREEMENT:
 			derivation_operation     = va_arg(valist, psa_key_derivation_operation_t *);
@@ -608,39 +623,48 @@ int32_t pal_crypto_function(int type, va_list valist)
 			input                    = va_arg(valist, const uint8_t *);
 			input_length             = va_arg(valist, size_t);
 			return psa_key_derivation_key_agreement(derivation_operation,
-													step,
-													key,
-													input,
-													input_length);
+			step, key, input, input_length);
 			break;
 		case PAL_CRYPTO_KEY_DERIVATION_OPERATION_INIT:
-			derivation_operation      = va_arg(valist, psa_key_derivation_operation_t *);
+			derivation_operation     = va_arg(valist, psa_key_derivation_operation_t *);
 			derivation_operation_temp = psa_key_derivation_operation_init();
 			memcpy((void *)derivation_operation, (void *)&derivation_operation_temp,
 				   sizeof(psa_key_derivation_operation_t));
 			return 0;
 			break;
 		case PAL_CRYPTO_KEY_DERIVATION_OUTPUT_BYTES:
-			derivation_operation     = va_arg(valist, psa_key_derivation_operation_t *);
-			output                   = va_arg(valist, uint8_t *);
+	                derivation_operation     = va_arg(valist, psa_key_derivation_operation_t *);
+                        output                   = va_arg(valist, uint8_t *);
 			output_length            = va_arg(valist, size_t);
 			return psa_key_derivation_output_bytes(derivation_operation,
-												   output,
-												   output_length);
+		        output, output_length);
 			break;
 		case PAL_CRYPTO_KEY_DERIVATION_OUTPUT_KEY:
 			c_attributes             = va_arg(valist, const psa_key_attributes_t *);
 			derivation_operation     = va_arg(valist, psa_key_derivation_operation_t *);
 			p_key                    = va_arg(valist, psa_key_id_t *);
 			return psa_key_derivation_output_key(c_attributes,
-												 derivation_operation,
-												 p_key);
+		        derivation_operation, p_key);
 			break;
+#ifdef CRYPTO_1_1_0
+        case PAL_CRYPTO_KEY_DERIVATION_VERIFY_BYTES:
+			derivation_operation     = va_arg(valist, psa_key_derivation_operation_t *);
+            expected_output          = va_arg(valist, const uint8_t *);
+            output_length            = va_arg(valist, size_t);
+            return psa_key_derivation_verify_bytes(derivation_operation,
+                expected_output, output_length);
+            break;
+        case PAL_CRYPTO_KEY_DERIVATION_VERIFY_KEY:
+			derivation_operation     = va_arg(valist, psa_key_derivation_operation_t *);
+            key                      = va_arg(valist, psa_key_id_t);
+            return psa_key_derivation_verify_key(derivation_operation,
+                key);
+            break;
+#endif
 		case PAL_CRYPTO_KEY_DERIVATION_SET_CAPACITY:
 			derivation_operation     = va_arg(valist, psa_key_derivation_operation_t *);
-			input_length             = va_arg(valist, size_t);
-			return psa_key_derivation_set_capacity(derivation_operation,
-												   input_length);
+		        input_length             = va_arg(valist, size_t);
+			return psa_key_derivation_set_capacity(derivation_operation, input_length);
 			break;
 		case PAL_CRYPTO_KEY_DERIVATION_SETUP:
 			derivation_operation     = va_arg(valist, psa_key_derivation_operation_t *);

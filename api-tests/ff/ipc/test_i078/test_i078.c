@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -172,8 +172,8 @@ static int32_t get_secure_partition_address(psa_handle_t *handle,
    }
 
    /* Execute driver function related to TEST_ISOLATION_PSA_ROT_DATA_RD */
-   psa_invec invec[1] = {{&test_fn_id, sizeof(test_fn_id)}};
-   psa_outvec outvec[1] = {{addr, sizeof(addr_t)}};
+   psa_invec invec[1] = {{&test_fn_id, sizeof(test_fn_id)} };
+   psa_outvec outvec[1] = {{addr, sizeof(addr_t)} };
    if (psa->call(*handle, PSA_IPC_CALL, invec, 1, outvec, 1) != PSA_SUCCESS)
    {
        val->print(PRINT_ERROR, "\tmsg request failed\n", 0);

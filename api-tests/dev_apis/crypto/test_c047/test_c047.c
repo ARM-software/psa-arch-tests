@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,7 +66,7 @@ int32_t psa_mac_verify_test(caller_security_t caller __UNUSED)
 
         /* Calculate the MAC of a message and compare it with a reference value */
         status = val->crypto_function(VAL_CRYPTO_MAC_VERIFY, key,
-                 check1[i].key_alg, check1[i].data, check1[i].data_size,
+                 check1[i].mac_alg, check1[i].data, check1[i].data_size,
                  check1[i].expected_mac, check1[i].mac_size);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
@@ -79,7 +79,7 @@ int32_t psa_mac_verify_test(caller_security_t caller __UNUSED)
 
         /* Calculate the MAC of a message on a destroyed key handle should be an error */
         status = val->crypto_function(VAL_CRYPTO_MAC_VERIFY, key,
-                 check1[i].key_alg, check1[i].data, check1[i].data_size,
+                 check1[i].mac_alg, check1[i].data, check1[i].data_size,
                  check1[i].expected_mac, check1[i].mac_size);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(6));
 

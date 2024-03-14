@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,7 +44,7 @@ int32_t client_test_psa_write_with_size_overflow(caller_security_t caller __UNUS
 
    psa_outvec resp = {&data, sizeof(data)};
 
-   status_of_call =  psa->call(SERVER_UNSPECIFED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, &resp, 1);
+   status_of_call =  psa->call(SERVER_UNSPECIFIED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, &resp, 1);
 
    /* Expectation is server test should hang and control shouldn't have come here */
    val->print(PRINT_ERROR, "\tCall should failed but succeed\n", 0);
@@ -73,7 +73,7 @@ int32_t client_test_psa_write_with_size_overflow(caller_security_t caller __UNUS
    val->print(PRINT_TEST,
             "[Check 1] Test psa_write with size overflow\n", 0);
 
-   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   handle = psa->connect(SERVER_UNSPECIFIED_VERSION_SID, SERVER_UNSPECIFIED_VERSION_VERSION);
    if (!PSA_HANDLE_IS_VALID(handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);

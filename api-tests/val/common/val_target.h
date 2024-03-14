@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,7 +92,7 @@ typedef struct _TARGET_CFG_HDR_ {
     uint32_t  version;
     /* Header Size */
     uint32_t  size;
-}target_cfg_hdr_t;
+} target_cfg_hdr_t;
 
 typedef enum {
     NOT_AVAILABLE   = 0x0,

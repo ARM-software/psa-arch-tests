@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -78,7 +78,7 @@ int32_t server_test_psa_skip_at_ipc_connect(void)
     psa->skip(msg.handle, 0, 0);
 
     /* Shouldn't have reached here */
-    val->print(PRINT_ERROR,"\tpsa_skip should failed but succeed\n", 0);
+    val->print(PRINT_ERROR, "\tpsa_skip should failed but succeed\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
     if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))

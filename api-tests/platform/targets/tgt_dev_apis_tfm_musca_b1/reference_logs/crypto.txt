@@ -79,7 +79,7 @@ TEST: 206 | DESCRIPTION: Testing crypto key management APIs
 [Check 1] Test psa_get_key_information 16 Byte AES
 [Check 2] Test psa_get_key_information 24 Byte AES
 [Check 3] Test psa_get_key_information 32 Byte AES
-[Check 4] Test psa_get_key_information wit DE¦[Check 5] Test psa_get_key_information with Triple DES 2-Key
+[Check 4] Test psa_get_key_information wit DEÂ¦[Check 5] Test psa_get_key_information with Triple DES 2-Key
 [Check 6] Test psa_get_key_information with Triple DES 3-Key
 [Check 7] Test psa_get_key_information with invalid key slot
 [Check 8] Test psa_get_key_information with zero key slot

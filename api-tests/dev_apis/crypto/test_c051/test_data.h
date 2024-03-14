@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,215 +15,154 @@
  * limitations under the License.
 **/
 
-#include "test_crypto_common.h"
+#include "val_crypto.h"
 
 typedef struct {
     char                    test_desc[75];
-    psa_key_type_t          type;
-    const uint8_t          *data;
-    size_t                  data_length;
-    psa_key_usage_t         usage_flags;
-    psa_algorithm_t         alg;
-    psa_algorithm_t         setup_alg;
-    const uint8_t          *input;
+    psa_key_type_t          key_type;
+    uint8_t                 key_data[32];
+    uint32_t                key_length;
+    psa_key_usage_t         usage;
+    psa_algorithm_t         key_alg;
+    uint8_t                 input[64];
     size_t                  input_length;
-    const uint8_t          *signature;
-    size_t                  signature_length;
+    size_t                  output_size;
+    uint8_t                 expected_output[32];
+    size_t                  expected_output_length;
     psa_status_t            expected_status;
 } test_data;
 
-#if ((defined(ARCH_TEST_RSA_1024) && (defined(ARCH_TEST_RSA_PKCS1V15_SIGN) || defined(ARCH_TEST_RSA_PKCS1V15_SIGN_RAW) || defined(ARCH_TEST_SHA256)))||\
-(defined(ARCH_TEST_SHA256) && (defined(ARCH_TEST_DETERMINISTIC_ECDSA) || defined(ARCH_TEST_ECC_CURVE_SECP256R1))))
-
+#if ((defined(ARCH_TEST_AES_128) && (defined(ARCH_TEST_CBC_NO_PADDING) || \
+      defined(ARCH_TEST_CBC_PKCS7) || defined(ARCH_TEST_CIPHER_MODE_CTR))) || \
+     (defined(ARCH_TEST_CBC_NO_PADDING) && (defined(ARCH_TEST_DES_1KEY) || \
+      defined(ARCH_TEST_DES_2KEY) || defined(ARCH_TEST_DES_3KEY))))
 static const test_data check1[] = {
-#ifdef ARCH_TEST_RSA_1024
-#ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
-{
-    .test_desc        = "Test psa_verify_message - RSA KEY_PAIR PKCS1V15 RAW\n",
-    .type             = PSA_KEY_TYPE_RSA_KEY_PAIR,
-    .data             = rsa_128_key_pair,
-    .data_length      = 610,
-    .usage_flags      = PSA_KEY_USAGE_VERIFY_MESSAGE,
-    .alg              = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
-    .input            = &hash_input,
-    .input_length     = sizeof(hash_input),
-    .signature        = signature_4,
-    .signature_length = 128,
-    .expected_status  = PSA_ERROR_INVALID_ARGUMENT
-},
-
-{
-    .test_desc        = "Test psa_verify_message - RSA Public Key PKCS1V15 RAW\n",
-    .type             = PSA_KEY_TYPE_RSA_PUBLIC_KEY,
-    .data             = rsa_128_key_data,
-    .data_length      = 140,
-    .usage_flags      = PSA_KEY_USAGE_VERIFY_MESSAGE,
-    .alg              = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
-    .input            = &hash_input,
-    .input_length     = sizeof(hash_input),
-    .signature        = signature_4,
-    .signature_length = 128,
-    .expected_status  = PSA_ERROR_INVALID_ARGUMENT
-},
-#endif
-
-#ifdef ARCH_TEST_RSA_PKCS1V15_SIGN
-#ifdef ARCH_TEST_SHA256
-{
-    .test_desc        = "Test psa_verify_message - RSA KEY_PAIR PKCS1V15 SHA-256\n",
-    .type             = PSA_KEY_TYPE_RSA_KEY_PAIR,
-    .data             = rsa_128_key_pair,
-    .data_length      = 610,
-    .usage_flags      = PSA_KEY_USAGE_VERIFY_MESSAGE,
-    .alg              = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
-    .input            = &hash_input,
-    .input_length     = sizeof(hash_input),
-    .signature        = NULL,
-    .signature_length = 0,
-    .expected_status  = PSA_ERROR_INVALID_SIGNATURE
-},
-#endif
-#endif
-#endif
-
-#ifdef ARCH_TEST_SHA256
-#ifdef ARCH_TEST_DETERMINISTIC_ECDSA
-#ifdef ARCH_TEST_ECC_CURVE_SECP256R1
-{
-    .test_desc        = "Test psa_verify_message - ECDSA KEY_PAIR SECP256R1 SHA-256\n",
-    .type             = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
-    .data             = ec_keypair_deterministic,
-    .data_length      = 32,
-    .usage_flags      = PSA_KEY_USAGE_VERIFY_MESSAGE,
-    .alg              = PSA_ALG_DETERMINISTIC_ECDSA(PSA_ALG_SHA_256),
-    .input            = &hash_input,
-    .input_length     = sizeof(hash_input),
-    .signature        = signature_6,
-    .signature_length = 64,
-    .expected_status  = PSA_SUCCESS
-},
-
-{
-    .test_desc        = "Test psa_verify_message - ECDSA Public Key SECP256R1 SHA-256\n",
-    .type             = PSA_KEY_TYPE_ECC_PUBLIC_KEY(PSA_ECC_FAMILY_SECP_R1),
-    .data             = ec_key_data,
-    .data_length      = 65,
-    .usage_flags      = PSA_KEY_USAGE_VERIFY_MESSAGE,
-    .alg              = PSA_ALG_DETERMINISTIC_ECDSA(PSA_ALG_SHA_256),
-    .input            = &hash_input,
-    .input_length     = sizeof(hash_input),
-    .signature        = signature_6,
-    .signature_length = 64,
-    .expected_status  = PSA_SUCCESS
-},
-#endif
-#endif
-#endif
-
-#ifdef ARCH_TEST_RSA_1024
-#ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
-{
-    .test_desc        = "Test psa_verify_message - Small output buffer\n",
-    .type             = PSA_KEY_TYPE_RSA_KEY_PAIR,
-    .data             = rsa_128_key_pair,
-    .data_length      = 610,
-    .usage_flags      = PSA_KEY_USAGE_VERIFY_MESSAGE,
-    .alg              = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
-    .input            = &hash_input,
-    .input_length     = sizeof(hash_input),
-    .signature        = signature_4,
-    .signature_length = 127,
-    .expected_status  = PSA_ERROR_INVALID_SIGNATURE
-},
-
-#ifdef ARCH_TEST_SHA256
-{
-    .test_desc        = "Test psa_verify_message - Invalid algorithm\n",
-    .type             = PSA_KEY_TYPE_RSA_KEY_PAIR,
-    .data             = rsa_128_key_pair,
-    .data_length      = 610,
-    .usage_flags      = PSA_KEY_USAGE_VERIFY_MESSAGE,
-    .alg              = PSA_ALG_SHA_256,
-    .input            = &hash_input,
-    .input_length     = sizeof(hash_input),
-    .signature        = signature_4,
-    .signature_length = 128,
-    .expected_status  = PSA_ERROR_INVALID_ARGUMENT
-},
-#endif
-
 #ifdef ARCH_TEST_AES_128
-{
-    .test_desc        = "Test psa_verify_message - Invalid key type (AES Key)\n",
-    .type             = PSA_KEY_TYPE_AES,
-    .data             = key_data,
-    .data_length      = AES_16B_KEY_SIZE,
-    .usage_flags      = PSA_KEY_USAGE_VERIFY_MESSAGE,
-    .alg              = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
-    .input            = &hash_input,
-    .input_length     = sizeof(hash_input),
-    .signature        = signature_4,
-    .signature_length = 128,
-    .expected_status  = PSA_ERROR_INVALID_ARGUMENT
+#ifdef ARCH_TEST_CBC_NO_PADDING
+{"Test psa_cipher_decrypt - Encrypt - AES CBC_NO_PADDING\n", PSA_KEY_TYPE_AES,
+{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
+ 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
+ PSA_KEY_USAGE_ENCRYPT, PSA_ALG_CBC_NO_PADDING,
+{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73,
+ 0x93, 0x17, 0x2a}, 32, SIZE_32B,
+{0xA0, 0x76, 0xEC, 0x9D, 0xFB, 0xE4, 0x7D, 0x52, 0xAF, 0xC3, 0x57, 0x33, 0x6F,
+ 0x20, 0x74, 0x3B}, 16, PSA_ERROR_NOT_PERMITTED
 },
 #endif
 
-{
-    .test_desc        = "Test psa_verify_message - Invalid usage\n",
-    .type             = PSA_KEY_TYPE_RSA_KEY_PAIR,
-    .data             = rsa_128_key_pair,
-    .data_length      = 610,
-    .usage_flags      = PSA_KEY_USAGE_ENCRYPT,
-    .alg              = PSA_ALG_DETERMINISTIC_ECDSA(PSA_ALG_SHA_256),
-    .input            = &hash_input,
-    .input_length     = sizeof(hash_input),
-    .signature        = signature_4,
-    .signature_length = 128,
-    .expected_status  = PSA_ERROR_NOT_PERMITTED
+#ifdef ARCH_TEST_CBC_NO_PADDING
+{"Test psa_cipher_decrypt - Decrypt - AES CBC_NO_PADDING\n", PSA_KEY_TYPE_AES,
+{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
+ 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
+ PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_NO_PADDING,
+{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+0xA0, 0x76, 0xEC, 0x9D, 0xFB, 0xE4, 0x7D, 0x52, 0xAF, 0xC3, 0x57, 0x33, 0x6F, 0x20, 0x74, 0x3B},
+32, SIZE_32B, {0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73,
+ 0x93, 0x17, 0x2a}, 16, PSA_SUCCESS
 },
 
-{
-    .test_desc        = "Test psa_verify_message - Wrong message size\n",
-    .type             = PSA_KEY_TYPE_RSA_KEY_PAIR,
-    .data             = rsa_128_key_pair,
-    .data_length      = 610,
-    .usage_flags      = PSA_KEY_USAGE_VERIFY_MESSAGE,
-    .alg              = PSA_ALG_RSA_PKCS1V15_SIGN_RAW,
-    .input            = &hash_input,
-    .input_length     = sizeof(hash_input)-1,
-    .signature        = signature_4,
-    .signature_length = 128,
-    .expected_status  = PSA_ERROR_INVALID_ARGUMENT
+{"Test psa_cipher_decrypt - Decrypt - AES CBC_NO_PADDING (Short input)\n", PSA_KEY_TYPE_AES,
+{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
+ 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
+ PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_NO_PADDING,
+{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+0x6b, 0xc1, 0xbe, 0xe2, 0x23}, 21, 16,
+{0x6b, 0xc1, 0xbe, 0xe2, 0x23}, 5, PSA_ERROR_INVALID_ARGUMENT
 },
 
-{
-    .test_desc        = "Test psa_verify_message - Wrong signature\n",
-    .type             = PSA_KEY_TYPE_RSA_KEY_PAIR,
-    .data             = rsa_128_key_pair,
-    .data_length      = 610,
-    .usage_flags      = PSA_KEY_USAGE_VERIFY_MESSAGE,
-    .alg              = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
-    .input            = &hash_input,
-    .input_length     = sizeof(hash_input),
-    .signature        = signature_4_invalid,
-    .signature_length = 128,
-    .expected_status  = PSA_ERROR_INVALID_SIGNATURE
+{"Test psa_cipher_decrypt - Decrypt - AES CBC_NO_PADDING\n", PSA_KEY_TYPE_AES,
+{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
+ 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
+ PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_NO_PADDING,
+{0xA0, 0x76, 0xEC, 0x9D, 0xFB, 0xE4, 0x7D, 0x52, 0xAF, 0xC3, 0x57, 0x33, 0x6F,
+ 0x20, 0x74, 0x3B, 0xA0, 0x76, 0xEC, 0x9D, 0xFB, 0xE4, 0x7D, 0x52, 0xAF, 0xC3, 0x57, 0x33, 0x6F,
+ 0x20, 0x74, 0x3B},
+ 32, 10,
+{0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73,
+ 0x93, 0x17, 0x2a}, 0, PSA_ERROR_BUFFER_TOO_SMALL
 },
 
-{
-    .test_desc        = "Test psa_verify_message - Wrong signature size\n",
-    .type             = PSA_KEY_TYPE_RSA_KEY_PAIR,
-    .data             = rsa_128_key_pair,
-    .data_length      = 610,
-    .usage_flags      = PSA_KEY_USAGE_VERIFY_MESSAGE,
-    .alg              = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
-    .input            = &hash_input,
-    .input_length     = sizeof(hash_input),
-    .signature        = signature_4,
-    .signature_length = 129,
-    .expected_status  = PSA_ERROR_INVALID_SIGNATURE
+#endif
+
+#ifdef ARCH_TEST_CBC_PKCS7
+{"Test psa_cipher_decrypt - Decrypt - AES CBC_PKCS7\n", PSA_KEY_TYPE_AES,
+{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
+ 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
+ PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_PKCS7, {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+ 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0xa0, 0x76, 0xec, 0x9d, 0xfb, 0xe4, 0x7d, 0x52, 0xaf,
+ 0xc3, 0x57, 0x33, 0x6f, 0x20, 0x74, 0x3b, 0xca, 0x7e, 0x8a, 0x15, 0xdc, 0x3c, 0x77, 0x64, 0x36,
+ 0x31, 0x42, 0x93, 0x03, 0x1c, 0xd4, 0xf3}, 48, SIZE_32B, {0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f,
+0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a}, 16, PSA_SUCCESS
+},
+
+{"Test psa_cipher_decrypt - Decrypt - AES CBC_PKCS7 (Short input)\n", PSA_KEY_TYPE_AES,
+{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
+ 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
+ PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_PKCS7,
+{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+0x62, 0x79, 0xb4, 0x9d, 0x7f, 0x7a, 0x8d, 0xd8, 0x7b, 0x68, 0x51, 0x75, 0xd4, 0x27, 0x6e, 0x24,
+0x62}, 32, PSA_CIPHER_DECRYPT_OUTPUT_MAX_SIZE(32), {0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f,
+0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17}, 17, PSA_ERROR_INVALID_PADDING
+},
+
+#endif
+
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
+{"Test psa_cipher_decrypt - Decrypt - AES CTR\n", PSA_KEY_TYPE_AES,
+{0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09,
+ 0xcf, 0x4f, 0x3c}, AES_16B_KEY_SIZE,
+ PSA_KEY_USAGE_DECRYPT, PSA_ALG_CTR,
+{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+0x8f, 0x94, 0x08, 0xfe, 0x80, 0xa8, 0x1d, 0x3e, 0x81, 0x3d, 0xa3, 0xc7, 0xb0, 0xb2, 0xbd, 0x32},
+32, PSA_CIPHER_DECRYPT_OUTPUT_MAX_SIZE(32), {0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9,
+0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a}, 16, PSA_SUCCESS
 },
 #endif
+
+#ifdef ARCH_TEST_CBC_NO_PADDING
+#ifdef ARCH_TEST_DES_1KEY
+{"Test psa_cipher_decrypt - Decrypt - DES CBC (nopad)\n", PSA_KEY_TYPE_DES,
+{0x01, 0x02, 0x04, 0x07, 0x08, 0x0b, 0x0d, 0x0e}, DES_8B_KEY_SIZE,
+ PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_NO_PADDING,
+{0x64, 0xf9, 0x17, 0xb0, 0x15, 0x2f, 0x8f, 0x05}, 8, SIZE_32B,
+{0xed, 0xa4, 0x01, 0x12, 0x39, 0xbc, 0x3a, 0xc9}, 0, PSA_SUCCESS
+},
+#endif
+
+#ifdef ARCH_TEST_DES_2KEY
+{"Test psa_cipher_decrypt - Decrypt - 2-key 3DE -CBC (nopad)\n", PSA_KEY_TYPE_DES,
+{0x01, 0x02, 0x04, 0x07, 0x08, 0x0b, 0x0d, 0x0e, 0xc1, 0xc2, 0xc4, 0xc7, 0xc8,
+ 0xcb, 0xcd, 0xce}, DES3_2B_KEY_SIZE,
+ PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_NO_PADDING,
+{0x5d, 0x06, 0x52, 0x42, 0x9c, 0x5b, 0x0a, 0xc7}, 8, SIZE_32B,
+{0xed, 0xa4, 0x01, 0x12, 0x39, 0xbc, 0x3a, 0xc9}, 0, PSA_SUCCESS
+},
+#endif
+
+#ifdef ARCH_TEST_DES_3KEY
+{"Test psa_cipher_decrypt - 3-key 3DE -CBC (nopad)\n", PSA_KEY_TYPE_DES,
+{0x01, 0x02, 0x04, 0x07, 0x08, 0x0b, 0x0d, 0x0e, 0xc1, 0xc2, 0xc4, 0xc7, 0xc8,
+ 0xcb, 0xcd, 0xce, 0x31, 0x32, 0x34, 0x37, 0x38, 0x3b, 0x3d, 0x3e}, DES3_3B_KEY_SIZE,
+ PSA_KEY_USAGE_DECRYPT, PSA_ALG_CBC_NO_PADDING,
+{0x81, 0x7c, 0xa7, 0xd6, 0x9b, 0x80, 0xd8, 0x6a}, 8, SIZE_32B,
+{0xed, 0xa4, 0x01, 0x12, 0x39, 0xbc, 0x3a, 0xc9}, 0, PSA_SUCCESS
+},
+
+#endif
+#endif
+
+#ifdef ARCH_TEST_ARIA
+{"Test psa_cipher_decrypt - Decrypt - AES ARIA\n", PSA_KEY_TYPE_ARIA,
+{0x00, 0x01, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c,
+0x0d, 0x0e, 0x0f}, AES_16B_KEY_SIZE, PSA_KEY_USAGE_DECRYPT|PSA_KEY_USAGE_ENCRYPT,
+PSA_ALG_CBC_NO_PADDING, {0xF3, 0xA1, 0x50, 0x19, 0x5A, 0xDE, 0x05, 0x54, 0x9D, 0x9B,
+0xCB, 0x91, 0xC2, 0x85, 0x24, 0x5C, 0x2B, 0x84, 0x5D, 0xE3, 0xD8, 0xE2, 0xB6, 0x90,
+0x21, 0x15, 0xA7, 0xFD, 0x85, 0x15, 0x72, 0x18}, 32, SIZE_32B, {0x00, 0x11, 0x22,
+0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff}, 16, PSA_SUCCESS
+},
+#endif
+
 #endif
 };
 #endif

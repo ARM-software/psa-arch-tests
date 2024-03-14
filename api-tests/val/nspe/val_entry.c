@@ -21,11 +21,6 @@
 #include "val_dispatcher.h"
 #include "val_platform.h"
 
-#ifdef TGT_DEV_APIS_TFM_AN521
-int intermediate_boot = 0;
-#define NVMEM_USED_SIZE 16
-#endif
-
 /**
     @brief    - PSA C main function, does VAL init and calls test dispatcher
     @param    - None
@@ -48,20 +43,6 @@ int32_t val_entry(void)
     {
         goto exit;
     }
-
-#ifdef TGT_DEV_APIS_TFM_AN521
-    int32_t         init_value[NVMEM_USED_SIZE] = {0};
-
-    if (!intermediate_boot)
-    {
-        status = val_nvmem_write(VAL_NVMEM_OFFSET(NV_BOOT), init_value, NVMEM_USED_SIZE);
-        if (VAL_ERROR(status))
-        {
-            val_print(PRINT_ERROR, "\n\tNVMEM initialization error", 0);
-            goto exit;
-        }
-    }
-#endif
 
     status = val_get_last_run_test_id(&test_id);
     if (VAL_ERROR(status))

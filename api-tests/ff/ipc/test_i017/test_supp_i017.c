@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +37,7 @@ int32_t server_test_partition_calling_its_own_rot_service(void)
     int32_t           status = VAL_STATUS_SUCCESS;
     psa_handle_t      handle = 0;
 
-    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);

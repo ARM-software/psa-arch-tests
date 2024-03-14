@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,8 @@
 #include "val_client_defs.h"
 #include "val_service_defs.h"
 
-#define val CONCAT(val,_server_sp)
-#define psa CONCAT(psa,_server_sp)
+#define val CONCAT(val, _server_sp)
+#define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
 

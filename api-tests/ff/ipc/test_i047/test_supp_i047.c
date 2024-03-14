@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -62,8 +62,8 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
     * VAL APIs to decide test status.
     */
 
-    signals = psa->wait(SERVER_UNSPECIFED_VERSION_SIGNAL, PSA_BLOCK);
-    if ((signals & SERVER_UNSPECIFED_VERSION_SIGNAL) == 0)
+    signals = psa->wait(SERVER_UNSPECIFIED_VERSION_SIGNAL, PSA_BLOCK);
+    if ((signals & SERVER_UNSPECIFIED_VERSION_SIGNAL) == 0)
     {
        val->print(PRINT_ERROR,
                 "psa_wait returned with invalid signal value = 0x%x\n", signals);
@@ -101,7 +101,7 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
     }
 
     /* psa_get with invalid msg pointer, call should panic */
-    psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, invalid_msg);
+    psa->get(SERVER_UNSPECIFIED_VERSION_SIGNAL, invalid_msg);
 
     /* shouldn't have reached here */
     val->print(PRINT_ERROR,
@@ -155,8 +155,8 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
     * VAL APIs to decide test status.
     */
 
-    signals = psa->wait(SERVER_UNSPECIFED_VERSION_SIGNAL, PSA_BLOCK);
-    if ((signals & SERVER_UNSPECIFED_VERSION_SIGNAL) == 0)
+    signals = psa->wait(SERVER_UNSPECIFIED_VERSION_SIGNAL, PSA_BLOCK);
+    if ((signals & SERVER_UNSPECIFIED_VERSION_SIGNAL) == 0)
     {
        val->print(PRINT_ERROR,
                 "psa_wait returned with invalid signal value = 0x%x\n", signals);
@@ -194,7 +194,7 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
     }
 
     /* psa_get with invalid msg pointer, call should panic */
-    psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, invalid_msg);
+    psa->get(SERVER_UNSPECIFIED_VERSION_SIGNAL, invalid_msg);
 
     /* shouldn't have reached here */
     val->print(PRINT_ERROR,

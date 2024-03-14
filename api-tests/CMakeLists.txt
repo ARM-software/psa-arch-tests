@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # * Copyright 2023 NXP
 # *
@@ -153,6 +153,9 @@ list(APPEND PSA_SPEC_VERSION
         1.0-BETA1
         1.0-BETA2
         1.0-BETA3
+		1.0.0
+		1.0.1
+		1.1.0
 )
 elseif("${SUITE}" STREQUAL "INITIAL_ATTESTATION")
 list(APPEND PSA_SPEC_VERSION
@@ -290,6 +293,15 @@ else()
                 endif()
                 if(${SPEC_VERSION} STREQUAL "1.0-BETA3")
                         set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0-beta3_testsuite.db)
+                endif()
+				if(${SPEC_VERSION} STREQUAL "1.0.0")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0.0_testsuite.db)
+                endif()
+				if(${SPEC_VERSION} STREQUAL "1.0.1")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.0.1_testsuite.db)
+                endif()
+				if(${SPEC_VERSION} STREQUAL "1.1.0")
+                        set(TESTSUITE_DB                        ${PSA_SUITE_DIR}/1.1.0_testsuite.db)
                 endif()
         elseif(${SUITE} STREQUAL "INITIAL_ATTESTATION")
                 if(${SPEC_VERSION} STREQUAL "1.0-BETA0")

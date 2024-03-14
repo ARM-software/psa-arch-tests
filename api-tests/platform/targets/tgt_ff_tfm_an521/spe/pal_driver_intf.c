@@ -1,5 +1,5 @@
  /** @file
-  * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+  * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
   * SPDX-License-Identifier : Apache-2.0
   *
   * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,7 @@ void pal_uart_init(uint32_t uart_base_addr)
 
 void pal_print(const char *str, int32_t data)
 {
-  pal_cmsdk_print(str,data);
+  pal_cmsdk_print(str, data);
 
 }
 
@@ -76,7 +76,7 @@ int pal_nvmem_read(addr_t base, uint32_t offset, void *buffer, int size)
 **/
 int pal_wd_timer_init(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
 {
-    return(pal_wd_cmsdk_init(base_addr,time_us, timer_tick_us));
+    return pal_wd_cmsdk_init(base_addr, time_us, timer_tick_us);
 
 }
 
@@ -87,7 +87,7 @@ int pal_wd_timer_init(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us
 **/
 int pal_wd_timer_enable(addr_t base_addr)
 {
-    return(pal_wd_cmsdk_enable(base_addr));
+    return pal_wd_cmsdk_enable(base_addr);
 }
 
 /**
@@ -97,7 +97,7 @@ int pal_wd_timer_enable(addr_t base_addr)
 **/
 int pal_wd_timer_disable(addr_t base_addr)
 {
-    return (pal_wd_cmsdk_disable(base_addr));
+    return pal_wd_cmsdk_disable(base_addr);
 }
 
 /**
@@ -107,7 +107,7 @@ int pal_wd_timer_disable(addr_t base_addr)
 **/
 int pal_wd_timer_is_enabled(addr_t base_addr)
 {
-    return (pal_wd_cmsdk_is_enabled(base_addr));
+    return pal_wd_cmsdk_is_enabled(base_addr);
 }
 
 /**

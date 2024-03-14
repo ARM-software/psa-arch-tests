@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,10 +34,11 @@ static int32_t  valid_test_input_index = -1;
 int32_t psa_key_derivation_input_key_test(caller_security_t caller __UNUSED)
 {
     int32_t                        i, status;
-    int32_t                        num_checks = sizeof(check1)/sizeof(check1[0]);
-    psa_key_derivation_operation_t operation  = PSA_KEY_DERIVATION_OPERATION_INIT;
-    psa_key_attributes_t           attributes = PSA_KEY_ATTRIBUTES_INIT;
+    int32_t                        num_checks    = sizeof(check1)/sizeof(check1[0]);
+    psa_key_derivation_operation_t operation     = PSA_KEY_DERIVATION_OPERATION_INIT;
+    psa_key_attributes_t           attributes    = PSA_KEY_ATTRIBUTES_INIT;
     psa_key_id_t                   key;
+    uint64_t                       integer_input = 0x01;
 
     if (num_checks == 0)
     {
@@ -85,39 +86,53 @@ int32_t psa_key_derivation_input_key_test(caller_security_t caller __UNUSED)
                  check1[i].setup_alg);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
+        if ((PSA_ALG_IS_PBKDF2_HMAC(check1[i].alg)) &&
+            (check1[i].step == PSA_KEY_DERIVATION_INPUT_PASSWORD))
+        {
+            /* Provide Cost as an input step prior to the Password for PBKDF2 algorithms. */
+            status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_INTEGER, &operation,
+                     PSA_KEY_DERIVATION_INPUT_COST, integer_input);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
+
+            /* Provide Salt as an input step prior to the Password for PBKDF2 algorithms. */
+            status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_BYTES, &operation,
+                     PSA_KEY_DERIVATION_INPUT_SALT, check1[i].data, check1[i].data_length);
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+        }
+
         /* Provide an input for key derivation or key agreement */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY, &operation,
                  check1[i].step, key);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(8));
 
         if (check1[i].expected_status != PSA_SUCCESS)
         {
             /* Abort the key derivation operation */
             status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &operation);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
             status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
             continue;
         }
 
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
 
         /* Provide an input for key derivation or key agreement */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY, &operation,
                  check1[i].step, key);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(10));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(12));
 
         /* Abort the key derivation operation */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(13));
 
         /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
                  check1[i].data_length, &key);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_NOT_SUPPORTED, TEST_CHECKPOINT_NUM(12));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_NOT_SUPPORTED, TEST_CHECKPOINT_NUM(14));
 
         if (valid_test_input_index < 0)
             valid_test_input_index = i;

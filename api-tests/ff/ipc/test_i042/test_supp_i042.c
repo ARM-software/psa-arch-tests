@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,7 +61,7 @@ int32_t server_test_psa_write_with_null_handle(void)
     * VAL APIs to decide test status.
     */
 
-    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
         psa->reply(msg.handle, -2);
@@ -135,7 +135,7 @@ int32_t server_test_psa_write_with_null_handle(void)
     * VAL APIs to decide test status.
     */
 
-    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
@@ -144,7 +144,7 @@ int32_t server_test_psa_write_with_null_handle(void)
 
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
         psa->reply(msg.handle, -2);
@@ -177,7 +177,7 @@ int32_t server_test_psa_write_with_null_handle(void)
     }
 
     val->err_check_set(TEST_CHECKPOINT_NUM(204), status);
-    status = ((val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    status = ((val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
                ? VAL_STATUS_ERROR : status);
     psa->reply(msg.handle, PSA_SUCCESS);
     return status;

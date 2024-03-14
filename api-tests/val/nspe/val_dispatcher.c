@@ -1,7 +1,7 @@
 /** @file
- * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
- * Copyright 2023 NXP
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
+ * Copyright 2023 NXP
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ static val_test_info_t g_test_list[] = {
     @param        - test_id_list : Buffer allocated by caller
                   - size : Size of test_id_list
     @return       - If test_id_list is NULL, the required size of test_id_list
-                    else if size is too small -1 
+                    else if size is too small -1
                     else the actual size of test_id_list
 **/
 size_t val_get_test_list(uint32_t *test_id_list, size_t size)
@@ -87,7 +87,7 @@ size_t val_get_test_list(uint32_t *test_id_list, size_t size)
 
     test_list_size = 0;
 
-    for(; test_info->test_id != VAL_INVALID_TEST_ID; test_info++)
+    for (; test_info->test_id != VAL_INVALID_TEST_ID; test_info++)
     {
         *test_id_list++ = test_info->test_id;
         test_list_size++;
@@ -109,7 +109,7 @@ val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
 
     if (test_id_prev != VAL_INVALID_TEST_ID)
     {
-        for(; test_info->test_id != VAL_INVALID_TEST_ID; test_info++)
+        for (; test_info->test_id != VAL_INVALID_TEST_ID; test_info++)
         {
             if (test_info->test_id == test_id_prev)
             {
@@ -119,7 +119,7 @@ val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
         }
     }
 
-    for(; test_info->test_id != VAL_INVALID_TEST_ID; test_info++)
+    for (; test_info->test_id != VAL_INVALID_TEST_ID; test_info++)
     {
         if (pal_is_test_enabled(test_info->test_id))
         {
@@ -166,7 +166,7 @@ void val_execute_test_fn(void)
     @param    - test_id  : Current Test ID
     @return   - Component name
 */
-char * val_get_comp_name(test_id_t test_id)
+char *val_get_comp_name(test_id_t test_id)
 {
     switch (VAL_GET_COMP_NUM(test_id))
     {
@@ -330,7 +330,7 @@ build. For PSA functional API certification, all tests must be run.\n", 0);
             return status;
         }
 
-   } while(1);
+   } while (1);
 
    status = val_nvmem_read(VAL_NVMEM_OFFSET(NV_TEST_CNT), &test_count, sizeof(test_count_t));
    if (VAL_ERROR(status))

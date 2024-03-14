@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,7 +56,7 @@ int32_t psa_aead_decrypt_test(caller_security_t caller __UNUSED)
         /* Setup the attributes for the key */
         val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE,        &attributes, check1[i].type);
         val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage_flags);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM,   &attributes, check1[i].alg);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM,   &attributes, check1[i].key_alg);
 
         /* Import the key data into the key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
@@ -64,7 +64,7 @@ int32_t psa_aead_decrypt_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
         /* Process an authenticated decryption operation */
-        status = val->crypto_function(VAL_CRYPTO_AEAD_DECRYPT, key, check1[i].alg,
+        status = val->crypto_function(VAL_CRYPTO_AEAD_DECRYPT, key, check1[i].aead_alg,
                                       check1[i].nonce, check1[i].nonce_length,
                                       check1[i].additional_data, check1[i].additional_data_length,
                                       check1[i].ciphertext, check1[i].ciphertext_length,
@@ -104,7 +104,7 @@ int32_t psa_aead_decrypt_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_EQUAL(status, PSA_ERROR_NOT_SUPPORTED, TEST_CHECKPOINT_NUM(9));
 
         /* Process an authenticated decryption operation on a destroyed key handle */
-        status = val->crypto_function(VAL_CRYPTO_AEAD_DECRYPT, key, check1[i].alg,
+        status = val->crypto_function(VAL_CRYPTO_AEAD_DECRYPT, key, check1[i].aead_alg,
                                       check1[i].nonce, check1[i].nonce_length,
                                       check1[i].additional_data, check1[i].additional_data_length,
                                       check1[i].ciphertext, check1[i].ciphertext_length,

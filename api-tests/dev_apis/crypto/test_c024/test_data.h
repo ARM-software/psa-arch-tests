@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,8 @@ typedef struct {
     const uint8_t          *data;
     size_t                  data_length;
     psa_key_usage_t         usage_flags;
-    psa_algorithm_t         alg;
+    psa_algorithm_t         key_alg;
+    psa_algorithm_t         aead_alg;
     const uint8_t          *nonce;
     size_t                  nonce_length;
     const uint8_t          *additional_data;
@@ -46,7 +47,8 @@ static const test_data check1[] = {
     .data                       = key_data,
     .data_length                = AES_16B_KEY_SIZE,
     .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
-    .alg                        = PSA_ALG_CCM,
+    .key_alg                    = PSA_ALG_CCM,
+    .aead_alg                   = PSA_ALG_CCM,
     .nonce                      = nonce,
     .nonce_length               = 13,
     .additional_data            = additional_data,
@@ -66,7 +68,8 @@ static const test_data check1[] = {
     .data                       = key_data,
     .data_length                = AES_16B_KEY_SIZE,
     .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
-    .alg                        = PSA_ALG_CCM,
+    .key_alg                    = PSA_ALG_CCM,
+    .aead_alg                   = PSA_ALG_CCM,
     .nonce                      = nonce,
     .nonce_length               = 13,
     .additional_data            = additional_data,
@@ -86,7 +89,8 @@ static const test_data check1[] = {
     .data                       = key_data,
     .data_length                = AES_16B_KEY_SIZE,
     .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
-    .alg                        = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
+    .key_alg                    = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
+    .aead_alg                   = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
     .nonce                      = nonce,
     .nonce_length               = 13,
     .additional_data            = additional_data,
@@ -101,12 +105,99 @@ static const test_data check1[] = {
 },
 
 {
+    .test_desc                  = "Test psa_aead_encrypt - CCM - AES (atleast Tag length=4)\n",
+    .type                       = PSA_KEY_TYPE_AES,
+    .data                       = key_data,
+    .data_length                = AES_16B_KEY_SIZE,
+    .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
+    .key_alg                    = PSA_ALG_AEAD_WITH_AT_LEAST_THIS_LENGTH_TAG(PSA_ALG_CCM, 4),
+    .aead_alg                   = PSA_ALG_CCM,
+    .nonce                      = nonce,
+    .nonce_length               = 13,
+    .additional_data            = additional_data,
+    .additional_data_length     = 8,
+    .plaintext                  = plaintext,
+    .plaintext_length           = 23,
+    .ciphertext                 = expected_output,
+    .expected_ciphertext        = aead_ciphertext_1,
+    .ciphertext_size            = BUFFER_SIZE,
+    .expected_ciphertext_length = AEAD_CIPHERTEXT_LEN_1,
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
+},
+
+{
+    .test_desc                  = "Test psa_aead_encrypt - (atleast length=4 on shortened Tag)\n",
+    .type                       = PSA_KEY_TYPE_AES,
+    .data                       = key_data,
+    .data_length                = AES_16B_KEY_SIZE,
+    .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
+    .key_alg                    = PSA_ALG_AEAD_WITH_AT_LEAST_THIS_LENGTH_TAG(PSA_ALG_CCM, 4),
+    .aead_alg                   = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
+    .nonce                      = nonce,
+    .nonce_length               = 13,
+    .additional_data            = additional_data,
+    .additional_data_length     = 32,
+    .plaintext                  = plaintext,
+    .plaintext_length           = 24,
+    .ciphertext                 = expected_output,
+    .expected_ciphertext        = aead_ciphertext_3,
+    .ciphertext_size            = BUFFER_SIZE,
+    .expected_ciphertext_length = AEAD_CIPHERTEXT_LEN_3,
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
+},
+
+{
+    .test_desc                  = "Test psa_aead_encrypt - CCM - AES (Tag length < min. length)\n",
+    .type                       = PSA_KEY_TYPE_AES,
+    .data                       = key_data,
+    .data_length                = AES_16B_KEY_SIZE,
+    .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
+    .key_alg                    = PSA_ALG_AEAD_WITH_AT_LEAST_THIS_LENGTH_TAG(PSA_ALG_CCM, 8),
+    .aead_alg                   = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
+    .nonce                      = nonce,
+    .nonce_length               = 13,
+    .additional_data            = additional_data,
+    .additional_data_length     = 32,
+    .plaintext                  = plaintext,
+    .plaintext_length           = 24,
+    .ciphertext                 = expected_output,
+    .expected_ciphertext        = aead_ciphertext_3,
+    .ciphertext_size            = BUFFER_SIZE,
+    .expected_ciphertext_length = AEAD_CIPHERTEXT_LEN_3,
+    .expected_status            = {PSA_ERROR_NOT_PERMITTED, PSA_ERROR_NOT_PERMITTED}
+},
+
+#ifdef ARCH_TEST_ARIA
+{
+    .test_desc                  = "Test psa_aead_encrypt - CCM - ARIA - 24 bytes Tag length = 4\n",
+    .type                       = PSA_KEY_TYPE_ARIA,
+    .data                       = key_data,
+    .data_length                = AES_16B_KEY_SIZE,
+    .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
+    .key_alg                    = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
+    .aead_alg                   = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 4),
+    .nonce                      = nonce,
+    .nonce_length               = 13,
+    .additional_data            = additional_data,
+    .additional_data_length     = 32,
+    .plaintext                  = plaintext,
+    .plaintext_length           = 24,
+    .ciphertext                 = expected_output,
+    .expected_ciphertext        = aead_aria_cipher_test,
+    .ciphertext_size            = BUFFER_SIZE,
+    .expected_ciphertext_length = AEAD_CIPHERTEXT_LEN_3,
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
+},
+#endif
+
+{
     .test_desc                  = "Test psa_aead_encrypt - CCM - AES - Zero additional data\n",
     .type                       = PSA_KEY_TYPE_AES,
     .data                       = key_data,
     .data_length                = AES_16B_KEY_SIZE,
     .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
-    .alg                        = PSA_ALG_CCM,
+    .key_alg                    = PSA_ALG_CCM,
+    .aead_alg                   = PSA_ALG_CCM,
     .nonce                      = nonce,
     .nonce_length               = 13,
     .additional_data            = NULL,
@@ -126,7 +217,8 @@ static const test_data check1[] = {
     .data                       = key_data,
     .data_length                = AES_16B_KEY_SIZE,
     .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
-    .alg                        = PSA_ALG_CCM,
+    .key_alg                    = PSA_ALG_CCM,
+    .aead_alg                   = PSA_ALG_CCM,
     .nonce                      = nonce,
     .nonce_length               = 13,
     .additional_data            = additional_data,
@@ -150,7 +242,8 @@ static const test_data check1[] = {
     .data                       = key_data,
     .data_length                = AES_16B_KEY_SIZE,
     .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
-    .alg                        = PSA_ALG_GCM,
+    .key_alg                    = PSA_ALG_GCM,
+    .aead_alg                   = PSA_ALG_GCM,
     .nonce                      = nonce,
     .nonce_length               = 12,
     .additional_data            = additional_data,
@@ -174,7 +267,8 @@ static const test_data check1[] = {
     .data                       = key_data,
     .data_length                = AES_16B_KEY_SIZE,
     .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
-    .alg                        = PSA_ALG_CFB,
+    .key_alg                    = PSA_ALG_CFB,
+    .aead_alg                   = PSA_ALG_CFB,
     .nonce                      = NULL,
     .nonce_length               = 0,
     .additional_data            = NULL,
@@ -194,7 +288,8 @@ static const test_data check1[] = {
     .data                       = key_data,
     .data_length                = AES_16B_KEY_SIZE,
     .usage_flags                = PSA_KEY_USAGE_DECRYPT,
-    .alg                        = PSA_ALG_CCM,
+    .key_alg                    = PSA_ALG_CCM,
+    .aead_alg                   = PSA_ALG_CCM,
     .nonce                      = NULL,
     .nonce_length               = 0,
     .additional_data            = NULL,
@@ -214,7 +309,8 @@ static const test_data check1[] = {
     .data                       = key_data,
     .data_length                = AES_16B_KEY_SIZE,
     .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
-    .alg                        = PSA_ALG_CCM,
+    .key_alg                    = PSA_ALG_CCM,
+    .aead_alg                   = PSA_ALG_CCM,
     .nonce                      = nonce,
     .nonce_length               = 13,
     .additional_data            = additional_data,
@@ -234,7 +330,8 @@ static const test_data check1[] = {
     .data                       = key_data,
     .data_length                = AES_16B_KEY_SIZE,
     .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
-    .alg                        = PSA_ALG_CCM,
+    .key_alg                    = PSA_ALG_CCM,
+    .aead_alg                   = PSA_ALG_CCM,
     .nonce                      = NULL,
     .nonce_length               = 0,
     .additional_data            = additional_data,
@@ -254,7 +351,8 @@ static const test_data check1[] = {
     .data                       = key_data,
     .data_length                = AES_16B_KEY_SIZE,
     .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
-    .alg                        = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 0),
+    .key_alg                    = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 0),
+    .aead_alg                   = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 0),
     .nonce                      = nonce,
     .nonce_length               = 13,
     .additional_data            = additional_data,

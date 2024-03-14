@@ -14,12 +14,12 @@ This test suite is not a substitute for design verification. To review the test 
 For more information on the architecture test suite framework and methodology to run the tests, refer to the [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf) document.
 
 ## This release
- - Code Quality : REL v1.4
+ - Code Quality : REL v1.6
  - This release contains following API tests: <br />
 
 | Test Category            | Specification Version                |
 |--------------------------|--------------------------------------|
-| Crypto                   | [Crypto API 1.0.1](https://arm-software.github.io/psa-api/crypto/)     |
+| Crypto                   | [Crypto API 1.1.0](https://arm-software.github.io/psa-api/crypto/)     |
 | Storage (PS and ITS)     | [Storage API 1.0.0](https://arm-software.github.io/psa-api/storage/) |
 | Attestation              | [Attestation API 1.0.2](https://arm-software.github.io/psa-api/attestation/)  |
 
@@ -30,6 +30,7 @@ For more information on the architecture test suite framework and methodology to
 
 | Release version | Release tag  | Crypto API | Storage API | Attestation API |
 |-----------------|---------------|----------------|-----------------|---------------------|
+| REL v1.6 | [v24.03_API1.6_CRYPTO_1.1.0](https://github.com/ARM-software/psa-arch-tests/tree/v24.03_API1.6_CRYPTO_1.1.0/api-tests/dev_apis) | 1.1.0  | 1.0.0 | 1.0.2 |
 | REL v1.5 | [v23.06_API1.5_ADAC_EAC](https://github.com/ARM-software/psa-arch-tests/tree/v23.06_API1.5_ADAC_EAC/api-tests/dev_apis) | 1.0.1  | 1.0.0 | 1.0.2 |
 | REL v1.4 | [v22.01_API1.4_ADAC_BETA](https://github.com/ARM-software/psa-arch-tests/tree/v22.01_API1.4_ADAC_BETA/api-tests/dev_apis) | 1.0.1  | 1.0.0 | 1.0.2 |
 | REL v1.3 | [v21.10_API1.3_ADAC_ALPHA-1](https://github.com/ARM-software/psa-arch-tests/tree/v21.10_API1.3_ADAC_ALPHA-1/api-tests/dev_apis) | 1.0.0  | 1.0.0 | 1.0.2 |
@@ -41,8 +42,13 @@ For more information on the architecture test suite framework and methodology to
 
 ## Test scenarios
 
-The mapping of the rules in the specification to the test cases and the steps followed in the tests are mentioned in the [Scenario Document](../docs/) that is present in the **docs/** folder.
+The mapping of the rules in the specification to the test cases and the steps followed in the tests are mentioned in the [Scenario Documents](../docs/) that is present in the **docs/** folder.
 
+| Scenario Documents | |
+|--------------------------|---------------------------------------------------------|
+| Crypto                   | [psa_crypto_testlist.md](../docs/psa_crypto_testlist.md) |
+| Storage (PS and ITS)     | [psa_storage_testlist.md](../docs/psa_storage_testlist.md) |
+| Attestation              | [psa_attestation_testlist.md](../docs/psa_attestation_testlist.md) |
 
 ## Getting started
 
@@ -66,25 +72,25 @@ To build the test suite for your target platform, execute the following commands
 <br />Options information:<br />
 
 -   -G"<generator_name>" : "Unix Makefiles" to generate Makefiles for Linux and Cygwin. "MinGW Makefiles" to generate Makefiles for cmd.exe on Windows  <br />
--   -DTARGET=<platform_name> is the same as the name of the target-specific directory created in the **platform/targets/** directory. The current release has been tested on **tgt_dev_apis_tfm_an521**, **tgt_dev_apis_tfm_musca_b1** and **tgt_dev_apis_tfm_musca_a** platforms. Refer [Test_failure analysis](../docs/test_failure_analysis.md) document to know the reason for any known test fail.<br />
--   -DTOOLCHAIN=<tool_chain> Compiler toolchain to be used for test suite compilation. Supported values are GNUARM (GNU Arm Embedded), ARMCLANG (ARM Compiler 6.x) , HOST_GCC and GCC_LINUX . Default is GNUARM.<br />
+-   -DTARGET=<platform_name> is the same as the name of the target-specific directory created in the **platform/targets/** directory. The current release has been tested on **tgt_dev_apis_tfm_an521** platform. Refer [Test_failure analysis](../docs/test_failure_analysis.md) document to know the reason for any known test fail.<br />
 -   -DCPU_ARCH=<cpu_architecture_version> is the Arm Architecture version name for which the tests should be compiled. Supported CPU arch are armv8m_ml, armv8m_bl, armv7m and armv8a. Default is empty. This option is unused when TOOLCHAIN type is HOST_GCC.<br />
 -   -DSUITE=<suite_name> is the test suite name. Supported values are CRYPTO, INITIAL_ATTESTATION, STORAGE(INTERNAL_TRUSTED_STORAGE and PROTECTED_STORAGE), INTERNAL_TRUSTED_STORAGE and PROTECTED_STORAGE .<br />
+-   -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>" is an additional directory to be included into the compiler search path.You must provide API header files implementation to the test suite build system using this option. For example, to compile Crypto tests, the include path must point to the path where **psa/crypto.h** is located in your build system. Bydefault, PSA_INCLUDE_PATHS accepts absolute path. However, relative path can be provided using below format:<br />
+```
+    -DPSA_INCLUDE_PATHS=`readlink -f <relative_include_path>`
+```
+-   -DTOOLCHAIN=<tool_chain> Compiler toolchain to be used for test suite compilation. Supported values are GNUARM (GNU Arm Embedded), ARMCLANG (ARM Compiler 6.x) , HOST_GCC and GCC_LINUX . Default is GNUARM.<br />
 -   -DVERBOSE=<verbose_level>. Print verbosity level. Default is 3. Supported print levels are 1(INFO & above), 2(DEBUG & above), 3(TEST & above), 4(WARN & ERROR) and 5(ERROR).
 -   -DBUILD=<BUILD_DIR> : To select the build directory to keep output files. Default is BUILD/ inside current directory.
 -   -DWATCHDOG_AVAILABLE=<0|1>: Test harness may require to access watchdog timer to recover system hang. 0 means skip watchdog programming in the test suite and 1 means program the watchdog. Default is 1. Note, watchdog must be available for the tests which check the API behaviour on the system reset.
 -   -DSUITE_TEST_RANGE="<test_start_number>;<test_end_number>" is to select range of tests for build. All tests under -DSUITE are considered by default if not specified.
--   -DTFM_PROFILE=<profile_small/profile_medium> is to work with TFM defined Pofile Small/Medium definitions. Supported values are profile_small and profile_medium. Unless specified Default Profile is used.
--   -DSPEC_VERSION=<spec_version> is test suite specification version. Which will build for given specified spec_version. Supported values for CRYPTO test suite are 1.0-BETA1, 1.0-BETA2, 1.0-BETA3 , for INITIAL_ATTESATATION test suite are 1.0-BETA0, 1.0.0, 1.0.1, 1.0.2, for STORAGE, INTERNAL_TRUSTED_STORAGE, PROTECTED_STORAGE test suite are 1.0-BETA2, 1.0 . Default is empty. <br/>
+-   -DTFM_PROFILE=<profile_small/profile_medium> is to work with TFM defined Profile Small/Medium definitions. Supported values are profile_small and profile_medium. Default profile is profile_large.
+-   -DSPEC_VERSION=<spec_version> is test suite specification version. Which will build for given specified spec_version. Supported values for CRYPTO test suite are 1.0-BETA1, 1.0-BETA2, 1.0-BETA3 , 1.0.0, 1.0.1, 1.1.0, for INITIAL_ATTESATATION test suite are 1.0-BETA0, 1.0.0, 1.0.1, 1.0.2, for STORAGE, INTERNAL_TRUSTED_STORAGE, PROTECTED_STORAGE test suite are 1.0-BETA2, 1.0 . Default is empty. <br />
      If -DSPEC_VERSION option is not given it will build for latest version of testsuite.
      For every spec version corresponds test list will be in spec_version_testsuite.db file in api-tests/dev_apis/test_suite_name/ folder.
--   -DCOMPILER_NAME=<compiler_name> Compiler name to be use for selecting compiler. Supported values are gcc. By defualt it will take gcc if not specified.
+-   -DCOMPILER_NAME=<compiler_name> Name to be used for selecting a compiler. It defaults to gcc. <br />
      Note: -DCOMPILER_NAME only applicable for linux i.e. -DTOOLCHAIN=GCC_LINUX and DTARGET=tgt_dev_apis_linux.
--   -DPSA_INCLUDE_PATHS="<include_path1>;<include_path2>;...;<include_pathn>" is an additional directory to be included into the compiler search path.You must provide API header files implementation to the test suite build system using this option. For example, to compile Crypto tests, the include path must point to the path where **psa/crypto.h** is located in your build system. Bydefault, PSA_INCLUDE_PATHS accepts absolute path. However, relative path can be provided using below format:<br />
--   -DPSA_TARGET_QCBOR=<path for pre-fetched cbor folder, this is option used where no network connectivity is possible during the build:<br />
-```
-    -DPSA_INCLUDE_PATHS=`readlink -f <relative_include_path>`
-```
+-   -DPSA_TARGET_QCBOR=< path > for pre-fetched cbor folder, this is option used where no network connectivity is possible during the build.<br />
 -   -DTESTS_COVERAGE=<tests_coverage_value> is used to skip known failure tests by selecting value PASS. Supported values are ALL and PASS. ALL value will include all the tests and PASS value will skip the known failure tests and will include pass tests. Default is ALL.
 
 -   -DBESPOKE_SUITE_TESTS=<testsuite_db_file> should be placed in target specific directory, if this option is enabled, the mentioned database file will be picked up for compilation. if not default location database file will be used. This option is enabled only for CRYPTO suite at the moment.
@@ -121,7 +127,7 @@ The following steps describe the execution flow before the test execution: <br /
 3. Upon booting firmware and Non-secure OS, the SUT boot software gives control to the test suite entry point **int32_t val_entry(void);** as an Non-secure application entry point returning test status code. <br />
 4. The tests are executed sequentially in a loop in the test_dispatcher function. <br />
 
-For details on test suite integration, refer to the **Integrating the test suite with the SUT** section of [Validation Methodology](../docs/Arm_PSA_APIs_Arch_Test_Validation_Methodology.pdf).
+For details on test suite integration, refer to the **Integrating the test suite with the SUT** section of [Validation Methodology](../docs/Arm_PSA-M_Functional_API_Test_Suite_Validation_Methodology.pdf).
 
 ## Security implication
 
@@ -140,4 +146,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2023, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2024, Arm Limited and Contributors. All rights reserved.*

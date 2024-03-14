@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,169 +19,94 @@
 
 typedef struct {
     char                    test_desc[75];
+    psa_key_type_t          type;
+    const uint8_t          *data;
+    size_t                  data_length;
+    psa_key_usage_t         usage_flags;
     psa_algorithm_t         alg;
-    const uint8_t          *input;
-    size_t                  input_length;
-    uint8_t                *hash_state;
-    size_t                  hash_state_size;
-    size_t                  hash_state_length;
-    uint32_t                operation_state;
+    psa_algorithm_t         setup_alg;
     psa_status_t            expected_status;
 } test_data;
 
-#if (defined(ARCH_TEST_MD2) || defined(ARCH_TEST_MD4) || defined(ARCH_TEST_MD5) || defined(ARCH_TEST_RIPEMD160) || defined(ARCH_TEST_SHA1) || \
-defined(ARCH_TEST_SHA224) || defined(ARCH_TEST_SHA256) || defined(ARCH_TEST_SHA384) || defined(ARCH_TEST_SHA512))
+#if (defined(ARCH_TEST_AES_128) && (defined(ARCH_TEST_CCM) || defined(ARCH_TEST_GCM) || \
+defined(ARCH_TEST_CHACHA20_POLY1305)))
 static const test_data check1[] = {
-#ifdef ARCH_TEST_HASH_SUSPEND
-#ifdef ARCH_TEST_MD2
+#ifdef ARCH_TEST_AES_128
+#ifdef ARCH_TEST_CCM
 {
-    .test_desc         = "Test psa_hash_suspend - MD2\n",
-    .alg               = PSA_ALG_MD2,
-    .input             = &hash_input,
-    .input_length      = sizeof(hash_input),
-    .hash_state        = expected_output,
-    .hash_state_size   = BUFFER_SIZE,
-    .hash_state_length = 16,
-    .operation_state   = 1,
-    .expected_status   = PSA_SUCCESS,
+    .test_desc       = "Test psa_aead_abort - Encrypt - CCM - AES\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
+    .alg             = PSA_ALG_CCM,
+    .setup_alg       = PSA_ALG_CCM,
+    .expected_status = PSA_SUCCESS
 },
 #endif
 
-#ifdef ARCH_TEST_MD4
+#ifdef ARCH_TEST_GCM
 {
-    .test_desc         = "Test psa_hash_suspend - MD4\n",
-    .alg               = PSA_ALG_MD4,
-    .input             = &hash_input,
-    .input_length      = sizeof(hash_input),
-    .hash_state        = expected_output,
-    .hash_state_size   = BUFFER_SIZE,
-    .hash_state_length = 16,
-    .operation_state   = 1,
-    .expected_status   = PSA_SUCCESS,
+    .test_desc       = "Test psa_aead_abort - Encrypt - GCM - AES\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
+    .alg             = PSA_ALG_GCM,
+    .setup_alg       = PSA_ALG_GCM,
+    .expected_status = PSA_SUCCESS
 },
 #endif
 
-#ifdef ARCH_TEST_MD5
+#ifdef ARCH_TEST_CHACHA20_POLY1305
 {
-    .test_desc         = "Test psa_hash_suspend - MD5\n",
-    .alg               = PSA_ALG_MD5,
-    .input             = &hash_input,
-    .input_length      = sizeof(hash_input),
-    .hash_state        = expected_output,
-    .hash_state_size   = BUFFER_SIZE,
-    .hash_state_length = 16,
-    .operation_state   = 1,
-    .expected_status   = PSA_SUCCESS,
+    .test_desc       = "Test psa_aead_abort - Encrypt - CHACHA20_POLY1305 - AES\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
+    .alg             = PSA_ALG_CHACHA20_POLY1305,
+    .setup_alg       = PSA_ALG_CHACHA20_POLY1305,
+    .expected_status = PSA_SUCCESS
 },
 #endif
 
-#ifdef ARCH_TEST_RIPEMD160
+#ifdef ARCH_TEST_CCM
 {
-    .test_desc         = "Test psa_hash_suspend - RIPEMD160\n",
-    .alg               = PSA_ALG_RIPEMD160,
-    .input             = &hash_input,
-    .input_length      = sizeof(hash_input),
-    .hash_state        = expected_output,
-    .hash_state_size   = BUFFER_SIZE,
-    .hash_state_length = 20,
-    .operation_state   = 1,
-    .expected_status   = PSA_SUCCESS,
+    .test_desc       = "Test psa_aead_abort - Decrypt - CCM - AES\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_DECRYPT,
+    .alg             = PSA_ALG_CCM,
+    .setup_alg       = PSA_ALG_CCM,
+    .expected_status = PSA_SUCCESS
 },
 #endif
 
-#ifdef ARCH_TEST_SHA1
+#ifdef ARCH_TEST_GCM
 {
-    .test_desc         = "Test psa_hash_suspend - SHA1\n",
-    .alg               = PSA_ALG_SHA_1,
-    .input             = &hash_input,
-    .input_length      = sizeof(hash_input),
-    .hash_state        = expected_output,
-    .hash_state_size   = BUFFER_SIZE,
-    .hash_state_length = 20,
-    .operation_state   = 1,
-    .expected_status   = PSA_SUCCESS,
+    .test_desc       = "Test psa_aead_abort - Decrypt - GCM - AES\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_DECRYPT,
+    .alg             = PSA_ALG_GCM,
+    .setup_alg       = PSA_ALG_GCM,
+    .expected_status = PSA_SUCCESS
 },
 #endif
 
-#ifdef ARCH_TEST_SHA224
+#ifdef ARCH_TEST_CHACHA20_POLY1305
 {
-    .test_desc         = "Test psa_hash_suspend - SHA224\n",
-    .alg               = PSA_ALG_SHA_224,
-    .input             = &hash_input,
-    .input_length      = sizeof(hash_input),
-    .hash_state        = expected_output,
-    .hash_state_size   = BUFFER_SIZE,
-    .hash_state_length = 28,
-    .operation_state   = 1,
-    .expected_status   = PSA_SUCCESS,
-},
-#endif
-
-#ifdef ARCH_TEST_SHA256
-{
-    .test_desc         = "Test psa_hash_suspend - SHA256\n",
-    .alg               = PSA_ALG_SHA_256,
-    .input             = &hash_input,
-    .input_length      = sizeof(hash_input),
-    .hash_state        = expected_output,
-    .hash_state_size   = BUFFER_SIZE,
-    .hash_state_length = 32,
-    .operation_state   = 1,
-    .expected_status   = PSA_SUCCESS,
-},
-#endif
-
-#ifdef ARCH_TEST_SHA384
-{
-    .test_desc         = "Test psa_hash_suspend - SHA384\n",
-    .alg               = PSA_ALG_SHA_384,
-    .input             = &hash_input,
-    .input_length      = sizeof(hash_input),
-    .hash_state        = expected_output,
-    .hash_state_size   = BUFFER_SIZE,
-    .hash_state_length = 48,
-    .operation_state   = 1,
-    .expected_status   = PSA_SUCCESS,
-},
-#endif
-
-#ifdef ARCH_TEST_SHA512
-{
-    .test_desc         = "Test psa_hash_suspend - SHA512\n",
-    .alg               = PSA_ALG_SHA_512,
-    .input             = &hash_input,
-    .input_length      = sizeof(hash_input),
-    .hash_state        = expected_output,
-    .hash_state_size   = BUFFER_SIZE,
-    .hash_state_length = 64,
-    .operation_state   = 1,
-    .expected_status   = PSA_SUCCESS,
-},
-#endif
-
-#ifdef ARCH_TEST_SHA256
-{
-    .test_desc         = "Test psa_hash_suspend - Invalid hash buffer size\n",
-    .alg               = PSA_ALG_SHA_256,
-    .input             = &hash_input,
-    .input_length      = sizeof(hash_input),
-    .hash_state        = expected_output,
-    .hash_state_size   = 10,
-    .hash_state_length = 0,
-    .operation_state   = 1,
-    .expected_status   = PSA_ERROR_BUFFER_TOO_SMALL,
-},
-
-{
-    .test_desc         = "Test psa_hash_suspend - Invalid operation state\n",
-    .alg               = PSA_ALG_SHA_256,
-    .input             = &hash_input,
-    .input_length      = sizeof(hash_input),
-    .hash_state        = expected_output,
-    .hash_state_size   = BUFFER_SIZE,
-    .hash_state_length = 32,
-    .operation_state   = 0,
-    .expected_status   = PSA_ERROR_BAD_STATE,
+    .test_desc       = "Test psa_aead_abort - Decrypt - CHACHA20_POLY1305 - AES\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .usage_flags     = PSA_KEY_USAGE_DECRYPT,
+    .alg             = PSA_ALG_CHACHA20_POLY1305,
+    .setup_alg       = PSA_ALG_CHACHA20_POLY1305,
+    .expected_status = PSA_SUCCESS
 },
 #endif
 #endif

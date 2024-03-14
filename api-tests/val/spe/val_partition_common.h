@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,7 +33,7 @@
 __UNUSED STATIC_DECLARE val_status_t val_print
                         (print_verbosity_t verbosity, char *string, int32_t data);
 __UNUSED STATIC_DECLARE val_status_t val_ipc_connect
-                        (uint32_t sid, uint32_t version, psa_handle_t *handle );
+                        (uint32_t sid, uint32_t version, psa_handle_t *handle);
 __UNUSED STATIC_DECLARE val_status_t val_ipc_call(psa_handle_t handle,
                                                   int32_t type,
                                                   const psa_invec *in_vec,
@@ -69,7 +69,7 @@ __UNUSED static val_api_t val_api = {
     .target_get_config         = val_target_get_config,
     .process_connect_request   = val_process_connect_request,
     .process_call_request      = val_process_call_request,
-    .process_disconnect_request= val_process_disconnect_request,
+    .process_disconnect_request = val_process_disconnect_request,
 };
 
 __UNUSED static psa_api_t psa_api = {
@@ -119,7 +119,8 @@ STATIC_DECLARE val_status_t val_print(print_verbosity_t verbosity, char *string,
         string_len++;
         p++;
     }
-    psa_invec data1[3] = {{&uart_fn, sizeof(uart_fn)}, {string, string_len+1}, {&data, sizeof(data)}};
+    psa_invec data1[3] = {{&uart_fn, sizeof(uart_fn)},
+   {string, string_len+1}, {&data, sizeof(data)} };
 #if STATELESS_ROT == 1
 
     status_of_call = psa_call(DRIVER_UART_HANDLE, 0, data1, 3, NULL, 0);
@@ -157,7 +158,7 @@ STATIC_DECLARE val_status_t val_print(print_verbosity_t verbosity, char *string,
  * @return val_status_t
  */
 STATIC_DECLARE val_status_t val_ipc_connect(uint32_t sid, uint32_t version,
-                                            psa_handle_t *handle )
+                                            psa_handle_t *handle)
 {
     *handle = psa_connect(sid, version);
 
@@ -191,7 +192,7 @@ STATIC_DECLARE val_status_t val_ipc_call(psa_handle_t handle,
 
     if (call_status != PSA_SUCCESS)
     {
-        return(VAL_STATUS_CALL_FAILED);
+        return VAL_STATUS_CALL_FAILED;
     }
 
     return VAL_STATUS_SUCCESS;
@@ -330,7 +331,8 @@ wait3:
     @param    - tests_list : list of tests to be executed
     @return   - val_status_t
 **/
-STATIC_DECLARE val_status_t val_execute_secure_tests(test_info_t test_info, client_test_t *tests_list)
+STATIC_DECLARE val_status_t val_execute_secure_tests(test_info_t test_info,
+						    client_test_t *tests_list)
 {
     val_status_t          status = VAL_STATUS_SUCCESS;
     val_status_t          test_status = VAL_STATUS_SUCCESS;
@@ -431,7 +433,7 @@ STATIC_DECLARE val_status_t val_execute_secure_test_func
 
     test_data = ((uint32_t)(test_info.test_num) | ((uint32_t)(test_info.block_num) << BLOCK_NUM_POS)
                 | ((uint32_t)(TEST_EXECUTE_FUNC) << ACTION_POS));
-    psa_invec data[1] = {{&test_data, sizeof(test_data)}};
+    psa_invec data[1] = {{&test_data, sizeof(test_data)} };
 
     status_of_call = psa_call(*handle, 0, data, 1, NULL, 0);
 
@@ -460,7 +462,7 @@ STATIC_DECLARE val_status_t val_get_secure_test_result(psa_handle_t *handle)
     test_data = (TEST_RETURN_RESULT << ACTION_POS);
 
     psa_outvec resp = {&status, sizeof(status)};
-    psa_invec data[1] = {{&test_data, sizeof(test_data)}};
+    psa_invec data[1] = {{&test_data, sizeof(test_data)} };
 
     status_of_call = psa_call(*handle, 0, data, 1, &resp, 1);
     if (status_of_call != PSA_SUCCESS)
@@ -525,7 +527,7 @@ STATIC_DECLARE val_status_t val_nvmem_write(uint32_t offset, void *buffer, int s
    nvmem_param.base = memory_desc->start;
    nvmem_param.offset = offset;
    nvmem_param.size = size;
-   psa_invec invec[2] = {{&nvmem_param, sizeof(nvmem_param)}, {buffer, size}};
+   psa_invec invec[2] = {{&nvmem_param, sizeof(nvmem_param)}, {buffer, size} };
 
 #if STATELESS_ROT == 1
    status_of_call = psa_call(DRIVER_NVMEM_HANDLE, 0, invec, 2, NULL, 0);

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,7 +60,7 @@ int32_t server_test_connection_busy_and_reject(void)
      * check delivery of PSA_IPC_CONNECT when psa_connect called.
      * And msg.handle must be positive.
     */
-    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
     {
         return status;
@@ -69,7 +69,7 @@ int32_t server_test_connection_busy_and_reject(void)
     /* Rejecting connection to check behaviour of PSA_ERROR_CONNECTION_BUSY */
     psa->reply(msg.handle, PSA_ERROR_CONNECTION_BUSY);
 
-    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
         return status;
@@ -85,7 +85,7 @@ int32_t server_test_accept_and_close_connect(void)
     int32_t     status = VAL_STATUS_SUCCESS;
     psa_msg_t   msg = {0};
 
-    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
     {
         /* Reject the connection if processing of connect request has failed */
@@ -99,7 +99,7 @@ int32_t server_test_accept_and_close_connect(void)
     /* Checking delivery of PSA_IPC_DISCONNECT when psa_close called
      * msg.handle must be positive
      */
-    status = val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(204), status))
     {
         return status;
@@ -118,7 +118,7 @@ int32_t server_test_connect_with_allowed_version_policy(void)
     int32_t         status = VAL_STATUS_SUCCESS;
     psa_msg_t       msg = {0};
     int             i = 0;
-    psa_signal_t    signal[4] = {SERVER_UNSPECIFED_VERSION_SIGNAL,
+    psa_signal_t    signal[4] = {SERVER_UNSPECIFIED_VERSION_SIGNAL,
                                  SERVER_STRICT_VERSION_SIGNAL,
                                  SERVER_RELAX_VERSION_SIGNAL,
                                  SERVER_RELAX_VERSION_SIGNAL};
@@ -152,7 +152,7 @@ int32_t server_test_psa_call_with_allowed_status_code(void)
 
     for (i = 0; i < (sizeof(status_code)/sizeof(status_code[0])); i++)
     {
-        status = ((val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+        status = ((val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
                                         ? VAL_STATUS_ERROR : status);
         if (val->err_check_set(TEST_CHECKPOINT_NUM(208), status))
         {
@@ -161,7 +161,7 @@ int32_t server_test_psa_call_with_allowed_status_code(void)
         }
         psa->reply(msg.handle, PSA_SUCCESS);
 
-        status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+        status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
         if (val->err_check_set(TEST_CHECKPOINT_NUM(209), status))
         {
             /* Send status code other than status_code[] to indicate failure
@@ -175,7 +175,7 @@ int32_t server_test_psa_call_with_allowed_status_code(void)
             psa->reply(msg.handle, status_code[i]);
         }
 
-        status = ((val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+        status = ((val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
                                         ? VAL_STATUS_ERROR : status);
         psa->reply(msg.handle, PSA_SUCCESS);
         val->err_check_set(TEST_CHECKPOINT_NUM(210), status);
@@ -190,7 +190,7 @@ int32_t server_test_psa_call_with_allowed_type_values(void)
     int16_t         type[] = {PSA_IPC_CALL, 1, 2, INT16_MAX};
     uint32_t        i = 0;
 
-    status = ((val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    status = ((val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
                                     ? VAL_STATUS_ERROR : status);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(211), status))
     {
@@ -201,7 +201,7 @@ int32_t server_test_psa_call_with_allowed_type_values(void)
 
     for (i = 0; i < (sizeof(type)/sizeof(type[0])); i++)
     {
-        status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+        status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
         if (val->err_check_set(TEST_CHECKPOINT_NUM(212), status))
         {
             psa->reply(msg.handle, -3);
@@ -220,7 +220,7 @@ int32_t server_test_psa_call_with_allowed_type_values(void)
         }
     }
 
-    status = ((val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    status = ((val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
                                     ? VAL_STATUS_ERROR : status);
     psa->reply(msg.handle, PSA_SUCCESS);
     val->err_check_set(TEST_CHECKPOINT_NUM(213), status);
@@ -233,7 +233,7 @@ int32_t server_test_identity(void)
     psa_msg_t   msg = {0};
     int         id_at_connect = 0, id_at_call = 0;
 
-    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
 
     if (val->err_check_set(TEST_CHECKPOINT_NUM(214), status))
     {
@@ -245,7 +245,7 @@ int32_t server_test_identity(void)
     id_at_connect = msg.client_id;
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(215), status))
     {
         psa->reply(msg.handle, -3);
@@ -259,7 +259,7 @@ int32_t server_test_identity(void)
         psa->reply(msg.handle, PSA_SUCCESS);
     }
 
-    status = val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     val->err_check_set(TEST_CHECKPOINT_NUM(216), status);
     /* Client ID during disconnect. It should be equal to id_at_call */
     if (msg.client_id != id_at_call)
@@ -293,17 +293,17 @@ int32_t server_test_spm_concurrent_connect_limit(void)
     while (1)
     {
        signals = psa->wait(PSA_WAIT_ANY, PSA_BLOCK);
-       if ((signals & SERVER_UNSPECIFED_VERSION_SIGNAL) == 0)
+       if ((signals & SERVER_UNSPECIFIED_VERSION_SIGNAL) == 0)
        {
           val->print(PRINT_ERROR,
                     "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
           return VAL_STATUS_ERROR;
        }
 
-       if (psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
+       if (psa->get(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
            continue;
 
-       switch(msg.type)
+       switch (msg.type)
        {
            case PSA_IPC_CONNECT:
                 /* serve bulk connect cases to reach connect limit */
@@ -345,7 +345,7 @@ wait:
          signals = psa->wait(PSA_WAIT_ANY, PSA_BLOCK | 0xff);
 
          /* When MODE is PSA_BLOCK, the psa_wait must return non-zero signal value */
-         if ((signals & SERVER_UNSPECIFED_VERSION_SIGNAL) == 0)
+         if ((signals & SERVER_UNSPECIFIED_VERSION_SIGNAL) == 0)
          {
              val->print(PRINT_ERROR,
                      "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
@@ -353,7 +353,7 @@ wait:
          }
          else
          {
-             if (psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
+             if (psa->get(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
              {
                  goto wait;
              }
@@ -399,7 +399,7 @@ int32_t server_test_psa_poll_behave(void)
             val->print(PRINT_ERROR, "\tsignals_block = 0x%x\n", signals_block);
             return VAL_STATUS_ERROR;
         }
-        else if ((signals_block & SERVER_UNSPECIFED_VERSION_SIGNAL) == 0)
+        else if ((signals_block & SERVER_UNSPECIFIED_VERSION_SIGNAL) == 0)
         {
             val->print(PRINT_ERROR,
                     "\tpsa_wait returned with invalid signal_block = 0x%x\n", signals_block);
@@ -407,7 +407,7 @@ int32_t server_test_psa_poll_behave(void)
         }
         else
         {
-            if (psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
+            if (psa->get(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
                 continue;
             psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
             count++;

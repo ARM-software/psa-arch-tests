@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,6 +31,8 @@ typedef struct {
     psa_status_t            expected_status;
 } test_data;
 
+extern unsigned char sign[];
+extern unsigned char hash[];
 static const test_data check1[] = {
 #ifdef ARCH_TEST_RSA_1024
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
@@ -226,6 +228,24 @@ static const test_data check1[] = {
     .signature_length = 129,
     .expected_status  = PSA_ERROR_INVALID_SIGNATURE
 },
+#endif
+#endif
+
+#ifdef ARCH_TEST_RSA_PKCS1V15_SIGN
+#ifdef ARCH_TEST_SHA256
+{
+    .test_desc        = "Test psa_verify_hash - PSA_ALG_RSA_PSS_ANY_SALT\n",
+    .type             = PSA_KEY_TYPE_RSA_PUBLIC_KEY,
+    .data             = rsa_key_pair_public_key,
+    .data_length      = 162,
+    .usage_flags      = PSA_KEY_USAGE_VERIFY_HASH,
+    .alg              = PSA_ALG_RSA_PSS_ANY_SALT(PSA_ALG_SHA_256),
+    .hash             = hash,
+    .hash_length      = 32,
+    .signature        = sign,
+    .signature_length = 128,
+    .expected_status  = PSA_SUCCESS
+}
 #endif
 #endif
 #endif

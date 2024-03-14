@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,7 +46,7 @@ static int32_t send_secure_partition_address(void)
     volatile uint32_t *addr = &g_test_i072;
     psa_msg_t         msg = {0};
 
-    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
         psa->reply(msg.handle, -2);
@@ -106,7 +106,7 @@ static int32_t send_secure_partition_address(void)
     volatile uint32_t *addr = &g_test_i072;
     psa_msg_t         msg = {0};
 
-    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
@@ -115,7 +115,7 @@ static int32_t send_secure_partition_address(void)
 
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
         psa->reply(msg.handle, -2);
@@ -128,7 +128,7 @@ static int32_t send_secure_partition_address(void)
     psa->write(msg.handle, 0, (void *)&addr, sizeof(addr));
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
     {
         return status;
@@ -153,7 +153,7 @@ int32_t server_test_nspe_write_app_rot_variable(void)
         return status;
 
     /* Wait for write to get performed by client */
-    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(204), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,12 +20,12 @@
 #include "val_client_defs.h"
 
 #ifdef NONSECURE_TEST_BUILD
-#define test_entry CONCAT(test_entry_,i090)
-#define val CONCAT(val,test_entry)
-#define psa CONCAT(psa,test_entry)
+#define test_entry CONCAT(test_entry_, i090)
+#define val CONCAT(val, test_entry)
+#define psa CONCAT(psa, test_entry)
 #else
-#define val CONCAT(val,_client_sp)
-#define psa CONCAT(psa,_client_sp)
+#define val CONCAT(val, _client_sp)
+#define psa CONCAT(psa, _client_sp)
 #endif
 
 extern val_api_t *val;

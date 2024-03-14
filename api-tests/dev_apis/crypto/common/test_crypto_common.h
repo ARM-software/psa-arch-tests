@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2020-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2020-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +26,13 @@
 #define ECDH_SECP_384_R1_PRV_KEY_LEN   48
 #define ECDH_SECP_384_R1_PUB_KEY_LEN   97
 
+#define FFDH2048_PRV_KEY_LEN   256
+#define FFDH2048_PUB_KEY_LEN   256
+#define FFDH3072_PRV_KEY_LEN   384
+#define FFDH3072_PUB_KEY_LEN   384
+#define FFDH4096_PRV_KEY_LEN   512
+#define FFDH4096_PUB_KEY_LEN   512
+
 #define AEAD_CIPHERTEXT_LEN_1          39
 #define AEAD_CIPHERTEXT_LEN_2          40
 #define AEAD_CIPHERTEXT_LEN_3          28
@@ -37,6 +44,7 @@
 #define INPUT_INFO_LEN                 4
 #define INPUT_SEED_LEN                 4
 #define INPUT_LABEL_LEN                5
+#define INPUT_PASSWORD_LEN             8
 
 /* min and max finding macro */
 #ifndef MIN
@@ -49,6 +57,7 @@
 extern const uint8_t key_data[];
 
 extern const uint8_t rsa_128_key_pair[];
+extern const uint8_t rsa_key_pair_public_key[];
 extern const uint8_t rsa_128_key_data[];
 extern const uint8_t rsa_256_key_pair[];
 extern const uint8_t rsa_256_key_data[];
@@ -90,6 +99,8 @@ extern const uint8_t input_salt[INPUT_SALT_LEN];
 extern const uint8_t input_info[INPUT_INFO_LEN];
 extern const uint8_t input_seed[INPUT_SEED_LEN];
 extern const uint8_t input_label[INPUT_LABEL_LEN];
+extern const uint8_t input_password[INPUT_PASSWORD_LEN];
+extern uint64_t input_rounds;
 
 extern const unsigned char iv[];
 
@@ -123,5 +134,40 @@ extern const uint8_t cmac_aes_128[];
 extern uint8_t expected_output[BUFFER_SIZE];
 
 extern void crypto_common_exit_action(void);
+
+#ifdef ARCH_TEST_FFDHE2048
+extern const uint8_t ffdh_key_data_2048[];
+extern const uint8_t ffdh_peer_key_data_2048[];
+#endif
+
+#ifdef ARCH_TEST_FFDHE3072
+extern const uint8_t ffdh_key_data_3072[];
+extern const uint8_t ffdh_peer_key_data_3072[];
+#endif
+
+#ifdef ARCH_TEST_FFDHE4096
+extern const uint8_t ffdh_key_data_4096[];
+extern const uint8_t ffdh_peer_key_data_4096[];
+#endif
+
+#ifdef ARCH_TEST_ARIA
+extern const uint8_t aria_128_key_data[];
+extern const uint8_t aria_128_plain_text[];
+extern const uint8_t aria_128_cipher_text[];
+extern const uint8_t aead_aria_cipher_test[];
+#endif
+
+#ifdef ARCH_TEST_TWISTED_EDWARDS
+extern const uint8_t eddsa_25519ph_keypair[];
+extern const uint8_t eddsa_25519ph_pubkey[];
+extern const uint8_t eddsa_25519ph_message[];
+extern const uint8_t eddsa_25519ph_signature[];
+
+extern const uint8_t eddsa_448_keypair[];
+extern const uint8_t eddsa_448_pubkey[];
+extern const uint8_t eddsa_448_message[];
+extern const uint8_t eddsa_448_signature[];
+
+#endif
 
 #endif /* _TEST_CRYPTO_COMMON_H_ */

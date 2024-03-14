@@ -1,5 +1,5 @@
  /** @file
-  * Copyright (c) 2021 Nordic Semiconductor ASA.
+  * Copyright (c) 2021-2024, Nordic Semiconductor ASA.
   * SPDX-License-Identifier : Apache-2.0
   *
   * Licensed under the Apache License, Version 2.0 (the "License");

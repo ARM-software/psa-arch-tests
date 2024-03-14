@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -191,7 +191,7 @@ void driver_main(void)
                                                       nvmem_param.offset,
                                                       buffer,
                                                       nvmem_param.size);
-                        psa_write(msg.handle, 0, (const void*) buffer, msg.out_size[0]);
+                        psa_write(msg.handle, 0, (const void *) buffer, msg.out_size[0]);
                     }
                     else
                     {
@@ -203,7 +203,7 @@ void driver_main(void)
                         }
                         else
                         {
-                            psa_read(msg.handle, 1, (void*) buffer, msg.in_size[1]);
+                            psa_read(msg.handle, 1, (void *) buffer, msg.in_size[1]);
                             fn_status = val_nvmem_write_sf(nvmem_param.base,
                                                            nvmem_param.offset,
                                                            buffer,

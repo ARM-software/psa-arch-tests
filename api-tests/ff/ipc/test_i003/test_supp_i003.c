@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,7 +61,7 @@ int32_t server_test_zero_length_invec(void)
     psa_msg_t            msg = {0};
     int                  data[5] = {0}, actual_data = 0x22;
 
-    if (val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    if (val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
     {
         exit_graceful(msg.handle, -2, 0, 0, 0);
         return VAL_STATUS_CALL_FAILED;
@@ -110,7 +110,7 @@ int32_t server_test_zero_length_outvec(void)
     psa_msg_t            msg = {0};
     int                  data[5] = {0}, actual_data = 0x11;
 
-    if (val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    if (val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
     {
         exit_graceful(msg.handle, -2, 0, 0, 0);
         return VAL_STATUS_CALL_FAILED;
@@ -163,7 +163,7 @@ int32_t server_test_call_read_and_skip(void)
                 actual_data[4] = {0}, i;
     psa_msg_t   msg = {0};
 
-    if (val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    if (val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
     {
         exit_graceful(msg.handle, -2, 0, 0, 0);
         return VAL_STATUS_CALL_FAILED;
@@ -308,7 +308,7 @@ int32_t server_test_call_and_write(void)
     int          data[5] = {0xaa, 0xbb, 0xcc, 0xdd, 0xee}, i;
     psa_msg_t    msg = {0};
 
-    if (val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    if (val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
     {
         exit_graceful(msg.handle, -2, 0, 0, 0);
         return VAL_STATUS_CALL_FAILED;
@@ -360,7 +360,7 @@ int32_t server_test_overlapping_vectors(void)
                   rd_data[] = {0x0, 0x0},
                   expected_data[] = {0x11, 0x22};
 
-    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(208), status))
     {
         exit_graceful(msg.handle, -1, 0, 0, 0);
@@ -409,7 +409,7 @@ const server_test_t test_i003_server_tests_list[] = {
 static void exit_graceful(psa_handle_t msg_handle, int status_code,
                 int print_next_args, int expected_data, int actual_data)
 {
-    psa_msg_t  msg={0};
+    psa_msg_t  msg = {0};
 
     if (print_next_args != 0)
     {
@@ -421,7 +421,7 @@ static void exit_graceful(psa_handle_t msg_handle, int status_code,
      */
     psa->reply(msg_handle, status_code);
 
-    if (val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    if (val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
     {
         val->print(PRINT_ERROR, "\tdisconnect failed in exit_graceful func\n", 0);
     }
@@ -434,14 +434,14 @@ int32_t server_test_zero_length_invec(void)
     psa_msg_t            msg = {0};
     int                  data[5] = {0}, actual_data = 0x22;
 
-    if (val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    if (val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
         return VAL_STATUS_CONNECTION_FAILED;
     }
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    if (val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    if (val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
     {
         exit_graceful(msg.handle, -2, 0, 0, 0);
         return VAL_STATUS_CALL_FAILED;
@@ -481,7 +481,7 @@ int32_t server_test_zero_length_invec(void)
     psa->write(msg.handle, 0, &data[2], msg.out_size[0]);
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     psa->reply(msg.handle, PSA_SUCCESS);
 
     return status;
@@ -489,18 +489,18 @@ int32_t server_test_zero_length_invec(void)
 
 int32_t server_test_zero_length_outvec(void)
 {
-    int32_t              status=VAL_STATUS_SUCCESS;
-    psa_msg_t            msg={0};
-    int                  data[5] ={0}, actual_data=0x11;
+    int32_t              status = VAL_STATUS_SUCCESS;
+    psa_msg_t            msg = {0};
+    int                  data[5] = {0}, actual_data = 0x11;
 
-    if (val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    if (val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
         return VAL_STATUS_CONNECTION_FAILED;
     }
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    if (val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    if (val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
     {
         exit_graceful(msg.handle, -2, 0, 0, 0);
         return VAL_STATUS_CALL_FAILED;
@@ -542,7 +542,7 @@ int32_t server_test_zero_length_outvec(void)
     psa->write(msg.handle, 2, &data[0], msg.out_size[0]);
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     psa->reply(msg.handle, PSA_SUCCESS);
 
     return status;
@@ -556,14 +556,14 @@ int32_t server_test_call_read_and_skip(void)
                 actual_data[4] = {0}, i;
     psa_msg_t   msg = {0};
 
-    if (val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    if (val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
         return VAL_STATUS_CONNECTION_FAILED;
     }
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    if (val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    if (val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
     {
         exit_graceful(msg.handle, -2, 0, 0, 0);
         return VAL_STATUS_CALL_FAILED;
@@ -699,7 +699,7 @@ int32_t server_test_call_read_and_skip(void)
     }
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     psa->reply(msg.handle, PSA_SUCCESS);
 
     return status;
@@ -711,14 +711,14 @@ int32_t server_test_call_and_write(void)
     int          data[5] = {0xaa, 0xbb, 0xcc, 0xdd, 0xee}, i;
     psa_msg_t    msg = {0};
 
-    if (val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    if (val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
         return VAL_STATUS_CONNECTION_FAILED;
     }
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    if (val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    if (val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
     {
         exit_graceful(msg.handle, -2, 0, 0, 0);
         return VAL_STATUS_CALL_FAILED;
@@ -759,7 +759,7 @@ int32_t server_test_call_and_write(void)
 
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     psa->reply(msg.handle, PSA_SUCCESS);
 
     return status;
@@ -772,7 +772,7 @@ int32_t server_test_psa_set_rhandle(void)
     int           num;
 
     /*rhandle value check when PSA_IPC_CONNECT */
-    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (msg.rhandle != NULL)
     {
         status = VAL_STATUS_INVALID_HANDLE;
@@ -786,7 +786,7 @@ int32_t server_test_psa_set_rhandle(void)
 
 
     /*rhandle value check when PSA_IPC_CALL */
-    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (msg.rhandle != NULL)
     {
         status = VAL_STATUS_INVALID_HANDLE;
@@ -802,7 +802,7 @@ int32_t server_test_psa_set_rhandle(void)
     psa->set_rhandle(msg.handle, &num);
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (*(int *)(msg.rhandle) != num)
     {
         status = VAL_STATUS_INVALID_HANDLE;
@@ -821,7 +821,7 @@ int32_t server_test_psa_set_rhandle(void)
     psa->set_rhandle(msg.handle, &num);
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (*(int *)(msg.rhandle) != num)
     {
         status = VAL_STATUS_INVALID_HANDLE;
@@ -834,7 +834,7 @@ int32_t server_test_psa_set_rhandle(void)
     psa->reply(msg.handle, PSA_SUCCESS);
 
     /* rhandle should retain the value at PSA_IPC_DISCONNECT too */
-    status = val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (*(int *)(msg.rhandle) != num)
     {
         status = VAL_STATUS_INVALID_HANDLE;
@@ -859,7 +859,7 @@ int32_t server_test_overlapping_vectors(void)
                   rd_data[] = {0x0, 0x0},
                   expected_data[] = {0x11, 0x22};
 
-    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(207), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
@@ -867,7 +867,7 @@ int32_t server_test_overlapping_vectors(void)
     }
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(208), status))
     {
         exit_graceful(msg.handle, -1, 0, 0, 0);
@@ -890,7 +890,7 @@ int32_t server_test_overlapping_vectors(void)
     psa->write(msg.handle, 1, &wr_data[1], 1);
     psa->reply(msg.handle, PSA_SUCCESS);
 
-    status = val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     val->err_check_set(TEST_CHECKPOINT_NUM(209), status);
     psa->reply(msg.handle, PSA_SUCCESS);
 

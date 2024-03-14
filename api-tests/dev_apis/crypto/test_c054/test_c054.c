@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,17 +22,18 @@
 
 const client_test_t test_c054_crypto_list[] = {
     NULL,
-    psa_aead_generate_nonce_test,
+    psa_aead_encrypt_setup_test,
     NULL,
 };
 
 extern  uint32_t g_test_count;
 
-int32_t psa_aead_generate_nonce_test(caller_security_t caller __UNUSED)
+int32_t psa_aead_encrypt_setup_test(caller_security_t caller __UNUSED)
 {
-#if ((defined(ARCH_TEST_CCM) || defined(ARCH_TEST_GCM)) && defined(ARCH_TEST_AES_128))
-    int32_t               i, j, status, nonce_sum;
-    size_t                nonce_length;
+#if (defined(ARCH_TEST_GCM) || (defined(ARCH_TEST_CCM) && defined(ARCH_TEST_AES_128)) || \
+(defined(ARCH_TEST_DES_1KEY) && defined(ARCH_TEST_CCM)) || (defined(ARCH_TEST_AES_128) && \
+defined(ARCH_TEST_CIPER_MODE_CFB)))
+    int32_t               i, status;
     int32_t               num_checks = sizeof(check1)/sizeof(check1[0]);
     psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_aead_operation_t  operation;
@@ -50,14 +51,11 @@ int32_t psa_aead_generate_nonce_test(caller_security_t caller __UNUSED)
 
     for (i = 0; i < num_checks; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] ", i+1);
+        val->print(PRINT_TEST, "[Check %d] ", i + 1);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
 
-        /* Reset the nonce output buffer */
-        memset((void *)check1[i].nonce, 0x0, check1[i].nonce_size);
-
         val->crypto_function(VAL_CRYPTO_AEAD_OPERATION_INIT,
-                            &operation);
+                             &operation);
 
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
@@ -82,86 +80,41 @@ int32_t psa_aead_generate_nonce_test(caller_security_t caller __UNUSED)
                                       &key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
-        if (check1[i].operation_state) {
-            if (check1[i].usage_flags == PSA_KEY_USAGE_ENCRYPT) {
-                /* Set the key for a multipart authenticated encryption operation */
-                status = val->crypto_function(VAL_CRYPTO_AEAD_ENCRYPT_SETUP,
-                                              &operation,
-                                              key,
-                                              check1[i].setup_alg);
-            } else {
-                /* Set the key for a multipart authenticated decryption operation */
-                status = val->crypto_function(VAL_CRYPTO_AEAD_DECRYPT_SETUP,
-                                              &operation,
-                                              key,
-                                              check1[i].setup_alg);
-            }
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
-
-            /* Declare the lengths of the message and additional data for AEAD */
-            status = val->crypto_function(VAL_CRYPTO_AEAD_SET_LENGTHS,
-                                          &operation,
-                                          0,
-                                          0);
-
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
-        }
-
-
-        /* Generate a random nonce for an authenticated encryption operation */
-        status = val->crypto_function(VAL_CRYPTO_AEAD_GENERATE_NONCE,
+        /* Set the key for a multipart authenticated encryption operation */
+        status = val->crypto_function(VAL_CRYPTO_AEAD_ENCRYPT_SETUP,
                                       &operation,
-                                      check1[i].nonce,
-                                      check1[i].nonce_size,
-                                      &nonce_length);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
-
-        if (check1[i].expected_status != PSA_SUCCESS)
-        {
-            /* Abort the AEAD operation */
-            status = val->crypto_function(VAL_CRYPTO_AEAD_ABORT,
-                                          &operation);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
-
-            /* Destroy the key */
-            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY,
-                                          key);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
-
-            /* Reset the key attributes */
-            val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES,
-                                 &attributes);
-            continue;
-        }
-
-        /* Check that if generated iv are non-zero */
-        nonce_sum = 0;
-        for (j = 0; j < (int32_t)nonce_length; j++)
-            nonce_sum += check1[i].nonce[j];
-
-        TEST_ASSERT_NOT_EQUAL(nonce_sum, 0, TEST_CHECKPOINT_NUM(9));
-
-        /* Generate a random nonce on an ongoing operation should be an error */
-        status = val->crypto_function(VAL_CRYPTO_AEAD_GENERATE_NONCE,
-                                      &operation,
-                                      check1[i].nonce,
-                                      check1[i].nonce_size,
-                                      &nonce_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE,  TEST_CHECKPOINT_NUM(10));
+                                      key,
+                                      check1[i].setup_alg);
+        TEST_ASSERT_DUAL(status,
+                         check1[i].expected_status[0],
+                         check1[i].expected_status[1],
+                         TEST_CHECKPOINT_NUM(4));
 
         /* Abort the AEAD operation */
         status = val->crypto_function(VAL_CRYPTO_AEAD_ABORT,
                                       &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
         /* Destroy the key */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY,
                                       key);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
+
+        /* Setting up aead on destroyed key handle should return an error */
+        status = val->crypto_function(VAL_CRYPTO_AEAD_ENCRYPT_SETUP,
+                                      &operation,
+                                      key,
+                                      check1[i].setup_alg);
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(7));
 
         /* Reset the key attributes */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES,
                              &attributes);
+
+        /* Abort the AEAD operation */
+        status = val->crypto_function(VAL_CRYPTO_AEAD_ABORT,
+                                      &operation);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
     }
 
     return VAL_STATUS_SUCCESS;

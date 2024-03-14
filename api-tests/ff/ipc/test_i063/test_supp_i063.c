@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,7 @@ int32_t server_test_psa_wait_signal_mask(void)
     psa_signal_t    signals = 0;
     psa_msg_t       msg = {0};
     int             loop_cnt = 2;
-    psa_signal_t    signal_mask = (SERVER_UNSPECIFED_VERSION_SIGNAL | SERVER_RELAX_VERSION_SIGNAL);
+    psa_signal_t    signal_mask = (SERVER_UNSPECIFIED_VERSION_SIGNAL | SERVER_RELAX_VERSION_SIGNAL);
 
     /* Debug print */
     val->err_check_set(TEST_CHECKPOINT_NUM(211), VAL_STATUS_SUCCESS);
@@ -56,7 +56,7 @@ int32_t server_test_psa_wait_signal_mask(void)
 
          /*
           * Rule - Returned signals value must be subset signals indicated in the signal_mask.
-          * This mean signal value should be either SERVER_UNSPECIFED_VERSION_SIGNAL
+          * This mean signal value should be either SERVER_UNSPECIFIED_VERSION_SIGNAL
           * or SERVER_RELAX_VERSION_SIGNAL.
           */
          if (((signals & signal_mask) == 0) &&
@@ -66,9 +66,9 @@ int32_t server_test_psa_wait_signal_mask(void)
                      "psa_wait-1 returned with invalid signal value = 0x%x\n", signals);
              return VAL_STATUS_ERROR;
          }
-         else if (signals & SERVER_UNSPECIFED_VERSION_SIGNAL)
+         else if (signals & SERVER_UNSPECIFIED_VERSION_SIGNAL)
          {
-             if (psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
+             if (psa->get(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
                  continue;
 
              loop_cnt--;

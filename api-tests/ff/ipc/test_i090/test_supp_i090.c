@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,8 @@
 #include "val_client_defs.h"
 #include "val_service_defs.h"
 
-#define val CONCAT(val,_server_sp)
-#define psa CONCAT(psa,_server_sp)
+#define val CONCAT(val, _server_sp)
+#define psa CONCAT(psa, _server_sp)
 extern val_api_t *val;
 extern psa_api_t *psa;
 
@@ -40,7 +40,7 @@ int32_t server_test_psa_call_with_neg_type(void)
 
 wait:
     signals = psa->wait(PSA_WAIT_ANY, PSA_BLOCK);
-    if (psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
+    if (psa->get(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
     {
 	goto wait;
     }
@@ -70,7 +70,7 @@ int32_t server_test_psa_call_with_neg_type(void)
     psa_msg_t       msg = {0};
     psa_signal_t    signals;
 
-    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
@@ -81,9 +81,9 @@ int32_t server_test_psa_call_with_neg_type(void)
 
 wait:
     signals = psa->wait(PSA_WAIT_ANY, PSA_BLOCK);
-    if (signals & SERVER_UNSPECIFED_VERSION_SIGNAL)
+    if (signals & SERVER_UNSPECIFIED_VERSION_SIGNAL)
     {
-        if (psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
+        if (psa->get(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
         {
             goto wait;
         }
@@ -98,7 +98,7 @@ wait:
             /* Control shouldn't have come here */
             val->print(PRINT_ERROR, "\tControl shouldn't have reached here\n", 0);
             psa->reply(msg.handle, -2);
-            val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+            val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
             psa->reply(msg.handle, PSA_SUCCESS);
         }
     }

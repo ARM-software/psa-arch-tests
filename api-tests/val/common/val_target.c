@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,8 +23,8 @@
 #define val_print(x, y, z)                        \
        do {                                       \
            if (x >= VERBOSE)                      \
-              val_print_sf(y,z);                  \
-       } while(0)
+              val_print_sf(y, z);                  \
+       } while (0)
 #else
 __UNUSED STATIC_DECLARE val_status_t val_print
                         (print_verbosity_t verbosity, char *string, int32_t data);
@@ -116,7 +116,7 @@ STATIC_DECLARE val_status_t val_target_get_cfg_blob(cfg_id_t cfg_id, uint8_t **d
                 status = VAL_STATUS_NOT_FOUND;
                 break;
         }
-    } while(1);
+    } while (1);
 
     return status;
 }
