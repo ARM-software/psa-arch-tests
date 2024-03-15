@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,9 +24,6 @@
 
 extern val_api_t val_api;
 extern psa_api_t psa_api;
-#ifdef TGT_DEV_APIS_TFM_AN521
-extern int intermediate_boot;
-#endif
 
 /* globals */
 test_status_buffer_t    g_status_buffer;
@@ -39,7 +36,7 @@ test_status_buffer_t    g_status_buffer;
    @param  -handle - return connection handle
  * @return val_status_t
  */
-val_status_t val_ipc_connect(uint32_t sid, uint32_t version, psa_handle_t *handle )
+val_status_t val_ipc_connect(uint32_t sid, uint32_t version, psa_handle_t *handle)
 {
     *handle = psa_connect(sid, version);
 
@@ -160,7 +157,7 @@ val_status_t val_execute_non_secure_tests(uint32_t test_num, const client_test_t
             }
 
             if (i == 1)
-                val_print(PRINT_TEST,"[Info] Executing tests from non-secure\n", 0);
+                val_print(PRINT_TEST, "[Info] Executing tests from non-secure\n", 0);
 #ifdef IPC
             if (server_hs == TRUE)
             {
@@ -393,9 +390,10 @@ val_status_t val_execute_secure_test_func(__attribute__((unused)) psa_handle_t *
     *handle = psa_connect(sid, 1);
     if (*handle > 0)
     {
-        test_data = ((uint32_t)(test_info.test_num) |((uint32_t)(test_info.block_num) << BLOCK_NUM_POS)
+        test_data = ((uint32_t)(test_info.test_num) |
+                    ((uint32_t)(test_info.block_num) << BLOCK_NUM_POS)
                     | ((uint32_t)(TEST_EXECUTE_FUNC) << ACTION_POS));
-        psa_invec data[1] = {{&test_data, sizeof(test_data)}};
+        psa_invec data[1] = {{&test_data, sizeof(test_data)} };
 
         status_of_call = psa_call(*handle, 0, data, 1, NULL, 0);
         if (status_of_call != PSA_SUCCESS)
@@ -430,7 +428,7 @@ val_status_t val_get_secure_test_result(psa_handle_t *handle)
     test_data = (TEST_RETURN_RESULT << ACTION_POS);
 
     psa_outvec resp = {&status, sizeof(status)};
-    psa_invec data[1] = {{&test_data, sizeof(test_data)}};
+    psa_invec data[1] = {{&test_data, sizeof(test_data)} };
 
     status_of_call = psa_call(*handle, 0, data, 1, &resp, 1);
     if (status_of_call != PSA_SUCCESS)
@@ -644,10 +642,7 @@ val_status_t val_get_last_run_test_id(test_id_t *test_id)
     val_status_t    status;
     test_count_t    test_count;
     boot_t          boot;
-    int             i = 0;
-#ifndef TGT_DEV_APIS_TFM_AN521
-    int intermediate_boot = 0;
-#endif
+    int             i = 0, intermediate_boot = 0;
     boot_state_t    boot_state[] = {BOOT_NOT_EXPECTED,
                                     BOOT_EXPECTED_NS,
                                     BOOT_EXPECTED_S,

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -106,8 +106,7 @@ int32_t client_test_mem_manipulation_fn(caller_security_t caller __UNUSED)
       {
           val->print(PRINT_ERROR, "\tmemmove() failed-1\n", 0);
           return VAL_STATUS_ERROR;
-      }
-      else if ((buffer[i] != 0x2) && (i >10))
+      } else if ((buffer[i] != 0x2) && (i > 10))
       {
           val->print(PRINT_ERROR, "\tmemmove() failed-2\n", 0);
           return VAL_STATUS_ERROR;
@@ -116,5 +115,4 @@ int32_t client_test_mem_manipulation_fn(caller_security_t caller __UNUSED)
 
   return VAL_STATUS_SUCCESS;
 }
-
 

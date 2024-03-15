@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +37,7 @@ int32_t server_test_unspecified_policy_with_higher_version(void)
     psa_msg_t       msg = {0};
 
     val->err_check_set(TEST_CHECKPOINT_NUM(201), status);
-    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
 
     /* Shouldn't have reached here */
     if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))

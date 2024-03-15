@@ -76,7 +76,7 @@ To build the test suite for your target platform, perform the following steps.
 <br />Options information:<br />
 
 -   -G"<generator_name>" : "Unix Makefiles" to generate Makefiles for Linux and Cygwin. "MinGW Makefiles" to generate Makefiles for cmd.exe on Windows  <br />
--   -DTARGET=<platform_name> is the same as the name of the target-specific directory created in the **platform/targets/** directory. The current release has been tested on **tgt_dev_apis_tfm_an521**, **tgt_dev_apis_tfm_musca_b1** and **tgt_dev_apis_tfm_musca_a** platforms except for the tests written for PSA isolation level-3 and secure partition dynamic memory APIs as these features are unsupported by the mentioned platforms. However, it can still be possible to run them if the platform supports these features.<br />
+-   -DTARGET=<platform_name> is the same as the name of the target-specific directory created in the **platform/targets/** directory. The current release has been tested on **tgt_dev_apis_tfm_an521** platform except for the tests written for PSA isolation level-3 and secure partition dynamic memory APIs as these features are unsupported by the mentioned platforms. However, it can still be possible to run them if the platform supports these features.<br />
 -   -DTOOLCHAIN=<tool_chain> Compiler toolchain to be used for test suite compilation. Supported values are GNUARM (GNU Arm Embedded), ARMCLANG (ARM Compiler 6.x) and HOST_GCC. Default is GNUARM.<br />
 -   -DCPU_ARCH=<cpu_architecture_version> is the Arm Architecture version name for which the tests should be compiled. Supported CPU arch are armv8m_ml, armv8m_bl and armv7m. Default is empty. This option is unused when TOOLCHAIN type is HOST_GCC.<br />
 -   -DSUITE=<suite_name> is the test suite name. To compile PSA FF tests, use -DSUITE=IPC<br >
@@ -163,4 +163,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2022, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2024, Arm Limited and Contributors. All rights reserved.*

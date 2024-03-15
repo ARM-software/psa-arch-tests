@@ -211,7 +211,7 @@ int pal_system_reset(void)
 
 /**
  *   @brief    - Sets the custom test list buffer
- *   @param    - custom_test_list : Custom test list buffer 
+ *   @param    - custom_test_list : Custom test list buffer
      @return   - void
 **/
 void pal_set_custom_test_list(char *custom_test_list)

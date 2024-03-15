@@ -83,12 +83,12 @@ Functions that need to be implemented for each badge:
 | -------------------------  | -----
 | All badges                 | `init`<br>`import_key`<br>`export_key`<br>`destroy_key`<br>`key_attributes_set_get`<br>`generate_key`<br>`copy_key`
 | `crypto_hash` | `hash_setup`<br>`hash_update`<br>`hash_verify`<br>`hash_finish`<br>`hash_abort`<br>`hash_clone`<br><br>optional:<br>`hash_compute`<br>`hash_compare`<br>`hash_suspend`<br>`hash_resume`
-| `crypto_mac`  | `mac_sign_setup`<br>`mac_update`<br>`mac_sign_finish`<br>`mac_verify_setup`<br>`mac_verify_finish`<br>`mac_abort`<br><br>optional:<br>`mac_compute`<br>`mac_verify`
+| `crypto_mac`  | `mac_sign_setup`<br>`mac_update`<br>`mac_sign_finish`<br>`mac_verify_setup`<br>`mac_verify_finish`<br>`mac_abort`<br><br>optional:<br>`mac_compute`<br>`mac_verify`<br>`mac_sign_multipart`<br>`mac_verify_multipart`
 | `crypto_asym_sign` | `sign_hash`<br>`verify_hash`<br>`sign_message`<br>`verify_message`
 | `crypto_asym_crypt`  | `asymmetric_encrypt`<br>`asymmetric_decrypt`
 | `crypto_cipher` | `cipher_encrypt`<br>`cipher_decrypt`<br>`cipher_encrypt_setup`<br>`cipher_decrypt_setup`<br>`cipher_generate_iv`<br>`cipher_set_iv`<br>`cipher_update`<br>`cipher_finish`<br>`cipher_abort`
 | `crypto_aead` | `aead_encrypt`<br>`aead_decrypt`<br><br>optional:<br>`aead_encrypt_setup`<br>`aead_decrypt_setup`<br>`aead_generate_nonce`<br>`aead_set_nonce`<br>`aead_set_lengths`<br>`aead_update_ad`<br>`aead_update`<br>`aead_finish`<br>`aead_abort`<br>`aead_verify`
-| `crypto_derivation`  | `key_derivation_setup`<br>`key_derivation_input_bytes`<br>`key_derivation_input_key`<br>`key_derivation_key_agreement`<br>`key_derivation_output_bytes`<br>`key_derivation_output_key`<br>`key_derivation_abort`<br>`key_derivation_set_get_capacity`
+| `crypto_derivation`  | `key_derivation_setup`<br>`key_derivation_input_bytes`<br>`key_derivation_input_integer`<br>`key_derivation_input_key`<br>`key_derivation_key_agreement`<br>`key_derivation_output_bytes`<br>`key_derivation_output_key`<br>`key_derivation_abort`<br>`key_derivation_set_get_capacity`<br>`key_derivation_verify_bytes`<br>`key_derivation_verify_key`
 | `crypto_agreement`   | `raw_key_agreement`
 | `crypto_rng`         | `generate_random`
 
@@ -128,4 +128,4 @@ Delivering a badge usually takes a few working days, please bear with us if any 
 
 --------------
 
-*Copyright (c) 2023, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2023-2024, Arm Limited and Contributors. All rights reserved.*

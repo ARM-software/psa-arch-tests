@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,22 +22,22 @@
 
 const client_test_t test_c050_crypto_list[] = {
     NULL,
-    psa_sign_message_test,
-    psa_sign_message_negative_test,
+    psa_cipher_encrypt_test,
     NULL,
 };
 
 extern  uint32_t g_test_count;
-static int32_t  valid_test_input_index = -1;
 
-
-int32_t psa_sign_message_test(caller_security_t caller __UNUSED)
+int32_t psa_cipher_encrypt_test(caller_security_t caller __UNUSED)
 {
-#if (defined(ARCH_TEST_RSA_1024) ||\
-(defined(ARCH_TEST_SHA256) && (defined(ARCH_TEST_DETERMINISTIC_ECDSA) || defined(ARCH_TEST_ECC_CURVE_SECP256R1))))
-    int32_t                 num_checks = sizeof(check1)/sizeof(check1[0]);
+#if ((defined(ARCH_TEST_AES_128) && (defined(ARCH_TEST_CBC_NO_PADDING) || \
+      defined(ARCH_TEST_CBC_PKCS7) || defined(ARCH_TEST_CIPHER_MODE_CTR))) || \
+     (defined(ARCH_TEST_CBC_NO_PADDING) && (defined(ARCH_TEST_DES_1KEY) || \
+      defined(ARCH_TEST_DES_2KEY) || defined(ARCH_TEST_DES_3KEY))))
+    uint8_t                 output[64];
+    int                     num_checks = sizeof(check1)/sizeof(check1[0]);
     int32_t                 i, status;
-    size_t                  get_signature_length;
+    size_t                  output_length;
     psa_key_attributes_t    attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_key_id_t            key;
 
@@ -61,114 +61,41 @@ int32_t psa_sign_message_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
         /* Setup the attributes for the key */
-        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE,
-                             &attributes,
-                             check1[i].type);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM,
-                             &attributes,
-                             check1[i].alg);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS,
-                             &attributes,
-                             check1[i].usage_flags);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE, &attributes, check1[i].key_type);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM, &attributes, check1[i].key_alg);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage);
 
         /* Import the key data into the key slot */
-        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY,
-                                      &attributes,
-                                      check1[i].data,
-                                      check1[i].data_length,
-                                      &key);
+        status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].key_data,
+                 check1[i].key_length, &key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
-        /* Sign a message with a private key */
-        status = val->crypto_function(VAL_CRYPTO_SIGN_MESSAGE,
-                                      key,
-                                      check1[i].sign_alg,
-                                      check1[i].input,
-                                      check1[i].input_length,
-                                      check1[i].signature,
-                                      check1[i].signature_size,
-                                      &get_signature_length);
+        /* Encrypt a message using a symmetric cipher */
+        status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT, key,
+                 check1[i].key_alg, check1[i].input, check1[i].input_length, output,
+                 check1[i].output_size, &output_length);
+
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
 
-        if (check1[i].expected_status != PSA_SUCCESS)
-        {
-            /* Destroy the key */
-            status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY,
-                                          key);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
-
-            continue;
-        }
-
-        /* Check if the output length matches with the expected length */
-        TEST_ASSERT_EQUAL(get_signature_length, check1[i].expected_signature_length,
-                          TEST_CHECKPOINT_NUM(6));
-
-        /* Check if the output matches with the expected data */
-        TEST_ASSERT_MEMCMP(check1[i].signature, check1[i].expected_signature, get_signature_length,
-                           TEST_CHECKPOINT_NUM(7));
-
         /* Destroy the key */
-        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY,
-                                      key);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
-        if (valid_test_input_index < 0)
-            valid_test_input_index = i;
+        /* Reset the key attributes and check if psa_import_key fails */
+        val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
+
+        if (check1[i].expected_status != PSA_SUCCESS)
+            continue;
+
+        /* Check if the output length matches the expected length */
+        TEST_ASSERT_EQUAL(output_length, check1[i].expected_output_length, TEST_CHECKPOINT_NUM(6));
+
+        /* Encrypt a message using a symmetric cipher on an aborted key handle should be an error */
+        status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT, key,
+                 check1[i].key_alg, check1[i].input, check1[i].input_length, output,
+                 check1[i].output_size, &output_length);
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(7));
     }
-
-    return VAL_STATUS_SUCCESS;
-#else
-    val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
-    return RESULT_SKIP(VAL_STATUS_NO_TESTS);
-#endif
-}
-
-int32_t psa_sign_message_negative_test(caller_security_t caller __UNUSED)
-{
-#if (defined(ARCH_TEST_RSA_1024) ||\
-(defined(ARCH_TEST_SHA256) && (defined(ARCH_TEST_DETERMINISTIC_ECDSA) || defined(ARCH_TEST_ECC_CURVE_SECP256R1))))
-    int32_t                 status;
-    size_t                  get_signature_length;
-    psa_key_id_t            key = 10;
-
-    if (valid_test_input_index < 0)
-        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
-
-    /* Initialize the PSA crypto library*/
-    status = val->crypto_function(VAL_CRYPTO_INIT);
-    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
-
-    /* Setting up the watchdog timer for each check */
-    status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
-    TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
-
-    val->print(PRINT_TEST, "[Check %d] Test psa_sign_message - Invalid key handle\n",
-                                                                            g_test_count++);
-    /* Sign a message with a private key */
-    status = val->crypto_function(VAL_CRYPTO_SIGN_MESSAGE,
-                                  key,
-                                  check1[valid_test_input_index].sign_alg,
-                                  check1[valid_test_input_index].input,
-                                  check1[valid_test_input_index].input_length,
-                                  check1[valid_test_input_index].signature,
-                                  check1[valid_test_input_index].signature_size,
-                                  &get_signature_length);
-    TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));
-
-    val->print(PRINT_TEST, "[Check %d] Test psa_sign_message - Zero as key handle\n",
-                                                                            g_test_count++);
-    /* Sign message with a private key */
-    status = val->crypto_function(VAL_CRYPTO_SIGN_MESSAGE,
-                                  0,
-                                  check1[valid_test_input_index].sign_alg,
-                                  check1[valid_test_input_index].input,
-                                  check1[valid_test_input_index].input_length,
-                                  check1[valid_test_input_index].signature,
-                                  check1[valid_test_input_index].signature_size,
-                                  &get_signature_length);
-    TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(4));
-
     return VAL_STATUS_SUCCESS;
 #else
     val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);

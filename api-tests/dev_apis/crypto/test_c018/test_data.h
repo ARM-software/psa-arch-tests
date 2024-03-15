@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -180,4 +180,36 @@ static const test_data check1[] = {
     .setup_alg       = PSA_ALG_HKDF(PSA_ALG_SHA_256),
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
+
+#ifdef ARCH_TEST_PBKDF2
+#ifdef ARCH_TEST_HMAC
+#ifdef ARCH_TEST_SHA256
+{
+    .test_desc        = "Test psa_key_derivation_input_key with cost input as step\n",
+    .type             = PSA_KEY_TYPE_PASSWORD_HASH,
+    .data             = key_data,
+    .data_length      = AES_16B_KEY_SIZE,
+    .bits             = BYTES_TO_BITS(AES_16B_KEY_SIZE),
+    .usage_flags      = PSA_KEY_USAGE_DERIVE,
+    .alg              = PSA_ALG_PBKDF2_HMAC(PSA_ALG_SHA_256),
+    .step             = PSA_KEY_DERIVATION_INPUT_COST,
+    .setup_alg        = PSA_ALG_PBKDF2_HMAC(PSA_ALG_SHA_256),
+    .expected_status  = PSA_ERROR_INVALID_ARGUMENT
+},
+
+{
+    .test_desc        = "Test psa_key_derivation_input_key with password as step\n",
+    .type             = PSA_KEY_TYPE_PASSWORD,
+    .data             = key_data,
+    .data_length      = AES_16B_KEY_SIZE,
+    .bits             = BYTES_TO_BITS(AES_16B_KEY_SIZE),
+    .usage_flags      = PSA_KEY_USAGE_DERIVE,
+    .alg              = PSA_ALG_PBKDF2_HMAC(PSA_ALG_SHA_256),
+    .step             = PSA_KEY_DERIVATION_INPUT_PASSWORD,
+    .setup_alg        = PSA_ALG_PBKDF2_HMAC(PSA_ALG_SHA_256),
+    .expected_status  = PSA_SUCCESS
+}
+#endif
+#endif
+#endif
 };

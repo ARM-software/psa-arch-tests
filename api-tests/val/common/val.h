@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,8 +41,8 @@
 #define FALSE 1
 #endif
 
-#define _CONCAT(A,B) A##B
-#define CONCAT(A,B) _CONCAT(A,B)
+#define _CONCAT(A, B) A##B
+#define CONCAT(A, B) _CONCAT(A, B)
 
 /* test status defines */
 #define TEST_START                 0x01
@@ -91,9 +91,9 @@
 #define VAL_GET_COMP_NUM(test_id)      \
    ((test_id - (test_id % VAL_MAX_TEST_PER_COMP)) / VAL_MAX_TEST_PER_COMP)
 #define VAL_GET_TEST_NUM(test_id)      (test_id % VAL_MAX_TEST_PER_COMP)
-#define VAL_CREATE_TEST_ID(comp,num)   ((comp*VAL_MAX_TEST_PER_COMP) + num)
+#define VAL_CREATE_TEST_ID(comp, num)   ((comp*VAL_MAX_TEST_PER_COMP) + num)
 
-#define TEST_FIELD(num1,num2)           (num2 << 8 | num1)
+#define TEST_FIELD(num1, num2)           (num2 << 8 | num1)
 #define GET_TEST_ISOLATION_LEVEL(num)   (num & 0x3)
 #define GET_WD_TIMOUT_TYPE(num)         ((num >> 8) & 0x7)
 
@@ -119,7 +119,7 @@
 
 #define TEST_PANIC()                          \
     do {                                         \
-    } while(1)
+    } while (1)
 
 #define TEST_ASSERT_EQUAL(arg1, arg2, checkpoint)                                   \
     do {                                                                            \

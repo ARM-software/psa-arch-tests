@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,7 +44,7 @@ int32_t client_test_psa_call_with_iovec_more_than_max_limit(caller_security_t ca
                                              {&data, sizeof(data)},
                                              {&data, sizeof(data)}
                                              };
-   psa_outvec         outvec[1] = {{&data, sizeof(data)}};
+   psa_outvec         outvec[1] = {{&data, sizeof(data)} };
 
    val->print(PRINT_TEST,
             "[Check 1] Test psa_call with IOVEC > PSA_MAX_IOVEC\n", 0);
@@ -80,7 +80,7 @@ int32_t client_test_psa_call_with_iovec_more_than_max_limit(caller_security_t ca
    }
 
    /* Test check- psa_call with IOVEC > PSA_MAX_IOVEC */
-   status_of_call =  psa->call(SERVER_UNSPECIFED_VERSION_HANDLE, PSA_IPC_CALL, invec,
+   status_of_call =  psa->call(SERVER_UNSPECIFIED_VERSION_HANDLE, PSA_IPC_CALL, invec,
 		                                                    PSA_MAX_IOVEC, outvec, 1);
    /*
     * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether
@@ -153,7 +153,7 @@ int32_t client_test_psa_call_with_iovec_more_than_max_limit(caller_security_t ca
     * VAL APIs to decide test status.
     */
 
-   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   handle = psa->connect(SERVER_UNSPECIFIED_VERSION_SID, SERVER_UNSPECIFIED_VERSION_VERSION);
    if (!PSA_HANDLE_IS_VALID(handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);

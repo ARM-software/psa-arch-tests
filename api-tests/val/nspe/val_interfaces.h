@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@ typedef struct {
     val_status_t     (*execute_secure_test_func)  (psa_handle_t *handle, test_info_t test_info,
                                                    uint32_t sid);
     val_status_t     (*ipc_connect)               (uint32_t sid, uint32_t version,
-                                                   psa_handle_t *handle );
+                                                   psa_handle_t *handle);
     val_status_t     (*ipc_call)                  (psa_handle_t handle,
                                                    int32_t type,
                                                    const psa_invec *in_vec,

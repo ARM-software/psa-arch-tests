@@ -1,33 +1,20 @@
 
 # Test failure analysis document
 
-This file contains list of failures identified when testing the release
-on tgt_dev_apis_tfm_an521 and  tgt_dev_apis_tfm_musca_b1
-targets with TFM commit Hash - 6fb14a14140f94150f959c88e3b880f48372da06 (tag: TF-Mv1.5.0).
+This file contains list of failures identified when testing the release on tgt_dev_apis_tfm_an521 target with TFM commit Hash - cec79b0328125b6730879966261ddf1a869440c4.
 The reason for each failing test is listed here in this file.
 
 ## Known Failures
 
+CRYPTO:
+
 | Test | Fail description                                                                | Github issue |
 |------|---------------------------------------------------------------------------------| ------------ |
-|test_c016 | This test will pass with the mbed TLS 3.1.0, TF-M 1.5.0 is not using mbed TLS 3.1.0. So the test is failing. |  |
-|test_c026 | psa_sign_message not supported | |
-|test_c027 | psa_mac_update not supported |  |
-|test_c028 | PSA_KEY_USAGE_SIGN_MESSAGE not found |  |
-|test_c029 | PSA_KEY_USAGE_VERIFY_MESSAGE not supported |  |
-|test_c030 | PSA_KEY_USAGE_VERIFY_MESSAGE not supported |  |
-|test_c052 | psa_aead_encrypt_setup is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
-|test_c053 | psa_aead_decrypt_setup is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
-|test_c054 | psa_aead_generate_nonce is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
-|test_c055 | psa_aead_set_nonce is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
-|test_c056 | psa_aead_set_lengths is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
-|test_c057 | psa_aead_update_ad is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
-|test_c058 | psa_aead_update is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
-|test_c059 | psa_aead_finish is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
-|test_c060 | psa_aead_abort is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
-|test_c061 | psa_aead_verify is unimplemented in TFM/mbed-crypto. So the test has not been verified. | https://github.com/ARMmbed/mbed-crypto/issues/381 |
-|test_c062 | psa_hash_suspend is unimplemented in TFM/mbed-crypto. So the test has not been verified. |  |
-|test_c063 | psa_hash_resume is unimplemented in TFM/mbed-crypto. So the test has not been verified. |  |
+|test_c024 <br />test_c025 <br />test_c046<br /> test_c047<br /> test_c050<br /> test_c051 | Enabling the ARCH_TEST_ARIA configuration to test the ARIA key type will cause the failure. | https://github.com/Mbed-TLS/mbedtls/pull/8763 |
+|test_c064 | psa_hash_suspend is unimplemented in TF-M/mbed-crypto. So the test has not been verified. |  |
+|test_c065 | psa_hash_resume is unimplemented in TF-M/mbed-crypto. So the test has not been verified. |  |
+|test_c067 | psa_key_derivation_verify_bytes is unimplemented in TF-M/mbed-crypto. So the test has not been verified. | https://github.com/Mbed-TLS/mbedtls/issues/7135 |
+|test_c068 | psa_key_derivation_verify_key is unimplemented in TF-M/mbed-crypto. So the test has not been verified. | https://github.com/Mbed-TLS/mbedtls/issues/7135 |
 
 ## License
 
@@ -35,4 +22,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2021-2023, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2021-2024, Arm Limited and Contributors. All rights reserved.*

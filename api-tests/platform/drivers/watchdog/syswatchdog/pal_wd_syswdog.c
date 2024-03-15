@@ -54,9 +54,12 @@ struct wdog_frame_reg_map_t {
 #define SYSWDOG_REGISTER_BIT_WIDTH          32u
 
 /* \brief Watchdog Control and Status register bit fields */
-#define SYSWDOG_CNTR_WCS_EN_OFF    1u    /*!< Control and Status register Watchdog Enable bit field offset */
-#define SYSWDOG_CNTR_WCS_WS0_OFF   2u    /*!< Control and Status register Watchdog Signal 0 bit field offset */
-#define SYSWDOG_CNTR_WCS_WS1_OFF   4u    /*!< Control and Status register Watchdog Signal 1 bit field offset */
+#define SYSWDOG_CNTR_WCS_EN_OFF    1u
+/*!< Control and Status register Watchdog Enable bit field offset */
+#define SYSWDOG_CNTR_WCS_WS0_OFF   2u
+/*!< Control and Status register Watchdog Signal 0 bit field offset */
+#define SYSWDOG_CNTR_WCS_WS1_OFF   4u
+/*!< Control and Status register Watchdog Signal 1 bit field offset */
 
 /**
     @brief           - Initializes an hardware watchdog timer
@@ -67,7 +70,7 @@ struct wdog_frame_reg_map_t {
 **/
 int pal_wd_syswdog_init(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
 {
-    struct wdog_frame_reg_map_t* p_cntr = (struct wdog_frame_reg_map_t*)base_addr;
+    struct wdog_frame_reg_map_t *p_cntr = (struct wdog_frame_reg_map_t *)base_addr;
 
     /* Set offset register */
     p_cntr->wor = time_us * timer_tick_us;
@@ -85,7 +88,7 @@ int pal_wd_syswdog_init(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_
 **/
 int pal_wd_syswdog_enable(addr_t base_addr)
 {
-    struct wdog_frame_reg_map_t* p_cntr = (struct wdog_frame_reg_map_t*)base_addr;
+    struct wdog_frame_reg_map_t *p_cntr = (struct wdog_frame_reg_map_t *)base_addr;
 
     /* Enable watchdog */
     p_cntr->wcs |= SYSWDOG_CNTR_WCS_EN_OFF;
@@ -100,7 +103,7 @@ int pal_wd_syswdog_enable(addr_t base_addr)
 **/
 int pal_wd_syswdog_disable(addr_t base_addr)
 {
-    struct wdog_frame_reg_map_t* p_cntr = (struct wdog_frame_reg_map_t*)base_addr;
+    struct wdog_frame_reg_map_t *p_cntr = (struct wdog_frame_reg_map_t *)base_addr;
 
     /* Disable Watchdog */
     p_cntr->wcs &= ~(SYSWDOG_CNTR_WCS_EN_OFF);
@@ -119,7 +122,7 @@ int pal_wd_syswdog_disable(addr_t base_addr)
 **/
 int pal_wd_syswdog_is_enabled(addr_t base_addr)
 {
-    struct wdog_frame_reg_map_t* p_cntr = (struct wdog_frame_reg_map_t*)base_addr;
+    struct wdog_frame_reg_map_t *p_cntr = (struct wdog_frame_reg_map_t *)base_addr;
 
     return (((p_cntr->wcs) & SYSWDOG_CNTR_WCS_EN_OFF) ? 1 : 0);
 }

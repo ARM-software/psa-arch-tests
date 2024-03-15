@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 #include "val_target.c"
 
 print_verbosity_t  g_print_level = PRINT_INFO;
-static int is_uart_init_done = 0;
+static int is_uart_init_done;
 
 /* UART APIs */
 /*

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,23 +22,21 @@
 
 const client_test_t test_c048_crypto_list[] = {
     NULL,
-    psa_cipher_encrypt_test,
+    psa_mac_sign_multipart_test,
     NULL,
 };
 
 extern  uint32_t g_test_count;
 
-int32_t psa_cipher_encrypt_test(caller_security_t caller __UNUSED)
+int32_t psa_mac_sign_multipart_test(caller_security_t caller __UNUSED)
 {
-#if ((defined(ARCH_TEST_AES_128) && (defined(ARCH_TEST_CBC_NO_PADDING) || defined(ARCH_TEST_CBC_PKCS7) || defined(ARCH_TEST_CIPHER_MODE_CTR)))||\
-(defined(ARCH_TEST_CBC_NO_PADDING) && (defined(ARCH_TEST_DES_1KEY) || defined(ARCH_TEST_DES_2KEY) || defined(ARCH_TEST_DES_3KEY))))
-
-    uint8_t                 output[64];
-    int                     num_checks = sizeof(check1)/sizeof(check1[0]);
-    int32_t                 i, status;
-    size_t                  output_length;
-    psa_key_attributes_t    attributes = PSA_KEY_ATTRIBUTES_INIT;
-    psa_key_id_t            key;
+    uint8_t               data[BUFFER_SIZE];
+    int                   num_checks = sizeof(check1)/sizeof(check1[0]);
+    int32_t               i, status;
+    size_t                length;
+    psa_key_attributes_t  attributes = PSA_KEY_ATTRIBUTES_INIT;
+    psa_mac_operation_t   operation = PSA_MAC_OPERATION_INIT;
+    psa_key_id_t          key;
 
     if (num_checks == 0)
     {
@@ -54,6 +52,7 @@ int32_t psa_cipher_encrypt_test(caller_security_t caller __UNUSED)
     {
         val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
+        memset(data, 0, sizeof(data));
 
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
@@ -61,43 +60,45 @@ int32_t psa_cipher_encrypt_test(caller_security_t caller __UNUSED)
 
         /* Setup the attributes for the key */
         val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE, &attributes, check1[i].key_type);
-        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM, &attributes, check1[i].key_alg);
         val->crypto_function(VAL_CRYPTO_SET_KEY_USAGE_FLAGS, &attributes, check1[i].usage);
+        val->crypto_function(VAL_CRYPTO_SET_KEY_ALGORITHM, &attributes, check1[i].key_alg);
 
         /* Import the key data into the key slot */
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].key_data,
                  check1[i].key_length, &key);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
 
-        /* Encrypt a message using a symmetric cipher */
-        status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT, key,
-                 check1[i].key_alg, check1[i].input, check1[i].input_length, output,
-                 check1[i].output_size, &output_length);
+        /* Setting up multi-part MAC calculation operation */
+        status = val->crypto_function(VAL_CRYPTO_MAC_SIGN_SETUP, &operation, key,
+                 check1[i].mac_alg);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(4));
+        /* Add message fragment to the multi-part MAC operation */
+        status = val->crypto_function(VAL_CRYPTO_MAC_UPDATE, &operation,
+                 &check1[i].data, check1[i].data_size);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+
+        /* Finish the calculation of MAC of the message */
+        status = val->crypto_function(VAL_CRYPTO_MAC_SIGN_FINISH, &operation,
+                 &data, check1[i].mac_size, &length);
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
+
+        /* Check if the MAC data matches with the expected data */
+        TEST_ASSERT_MEMCMP(data, check1[i].expected_data, length, TEST_CHECKPOINT_NUM(7));
+
+        memset(data, 0, sizeof(data));
+
+        /* Abort the MAC operation */
+        status = val->crypto_function(VAL_CRYPTO_MAC_ABORT, &operation);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
         /* Destroy the key */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
         /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
 
-        if (check1[i].expected_status != PSA_SUCCESS)
-            continue;
-
-        /* Check if the output length matches the expected length */
-        TEST_ASSERT_EQUAL(output_length, check1[i].expected_output_length, TEST_CHECKPOINT_NUM(6));
-
-        /* Encrypt a message using a symmetric cipher on an aborted key handle should be an error */
-        status = val->crypto_function(VAL_CRYPTO_CIPHER_ENCRYPT, key,
-                 check1[i].key_alg, check1[i].input, check1[i].input_length, output,
-                 check1[i].output_size, &output_length);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(7));
     }
     return VAL_STATUS_SUCCESS;
-#else
-    val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
-    return RESULT_SKIP(VAL_STATUS_NO_TESTS);
-#endif
 }

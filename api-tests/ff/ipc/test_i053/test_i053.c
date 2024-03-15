@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -117,7 +117,7 @@ int32_t client_test_psa_call_with_invalid_outvec_end_addr(caller_security_t call
    psa_outvec outvec[1] = { {valid_base, invalid_size} };
 
    /* Test check- psa_call with invalid end_addr for psa_outvec */
-   status_of_call =  psa->call(SERVER_UNSPECIFED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, outvec, 1);
+   status_of_call =  psa->call(SERVER_UNSPECIFIED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, outvec, 1);
 
    /*
     * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether
@@ -188,7 +188,7 @@ int32_t client_test_psa_call_with_invalid_outvec_end_addr(caller_security_t call
     * VAL APIs to decide test status.
     */
 
-   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION);
+   handle = psa->connect(SERVER_UNSPECIFIED_VERSION_SID, SERVER_UNSPECIFIED_VERSION_VERSION);
    if (!PSA_HANDLE_IS_VALID(handle))
    {
        val->print(PRINT_ERROR, "\tConnection failed\n", 0);
@@ -243,7 +243,7 @@ int32_t client_test_psa_call_with_invalid_outvec_end_addr(caller_security_t call
        return VAL_STATUS_ERROR;
    }
 
-   psa_outvec outvec[1] = {{valid_base, invalid_size}};
+   psa_outvec outvec[1] = {{valid_base, invalid_size} };
 
    /* Test check- psa_call with invalid end_addr for psa_outvec */
    status_of_call =  psa->call(handle, PSA_IPC_CALL, NULL, 0, outvec, 1);

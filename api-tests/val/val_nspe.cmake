@@ -58,8 +58,4 @@ target_include_directories(${PSA_TARGET_VAL_NSPE_LIB} PRIVATE
 if(${WATCHDOG_AVAILABLE} EQUAL 1)
 	target_compile_definitions(${PSA_TARGET_VAL_NSPE_LIB} PRIVATE WATCHDOG_AVAILABLE)
 endif()
-target_compile_definitions(${PSA_TARGET_VAL_NSPE_LIB}
-	PRIVATE
-		VAL_NSPE_BUILD
-		$<$<STREQUAL:${TARGET},tgt_dev_apis_tfm_an521>:TGT_DEV_APIS_TFM_AN521>
-)
+target_compile_definitions(${PSA_TARGET_VAL_NSPE_LIB} PRIVATE VAL_NSPE_BUILD)

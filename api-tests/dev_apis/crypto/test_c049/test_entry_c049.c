@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 #include "test_c049.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_CRYPTO_BASE, 49)
-#define TEST_DESC "Testing crypto symmetric cipher APIs | UT: psa_cipher_decrypt\n"
+#define TEST_DESC "Testing crypto MAC APIs | UT: psa_mac_verify_multipart\n"
 
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;
@@ -53,3 +53,4 @@ test_exit:
     val->crypto_function(VAL_CRYPTO_FREE);
     val->test_exit();
 }
+

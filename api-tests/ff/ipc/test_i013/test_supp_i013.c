@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,23 +59,23 @@ int32_t server_test_psa_get_with_more_than_one_signal(void)
     * VAL APIs to decide test status.
     */
 
-    if ((psa->wait(PSA_WAIT_ANY, PSA_BLOCK)) & SERVER_UNSPECIFED_VERSION_SIGNAL)
+    if ((psa->wait(PSA_WAIT_ANY, PSA_BLOCK)) & SERVER_UNSPECIFIED_VERSION_SIGNAL)
     {
         /* Setting boot.state before test check */
         if (val->set_boot_flag(BOOT_EXPECTED_NS))
         {
             val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
             /* Unblock client */
-            if (psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
+            if (psa->get(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
             {
-                val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+                val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
             }
             psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
             return VAL_STATUS_ERROR;
         }
 
         /* multiple signals check */
-        psa->get((SERVER_UNSPECIFED_VERSION_SIGNAL | SERVER_RELAX_VERSION_SIGNAL), &msg);
+        psa->get((SERVER_UNSPECIFIED_VERSION_SIGNAL | SERVER_RELAX_VERSION_SIGNAL), &msg);
 
         /* If PROGRAMMER ERROR results into panic then control shouldn't have reached here */
         /* Resetting boot.state to catch unwanted reboot */
@@ -128,23 +128,23 @@ int32_t server_test_psa_get_with_more_than_one_signal(void)
     * VAL APIs to decide test status.
     */
 
-    if ((psa->wait(PSA_WAIT_ANY, PSA_BLOCK)) & SERVER_UNSPECIFED_VERSION_SIGNAL)
+    if ((psa->wait(PSA_WAIT_ANY, PSA_BLOCK)) & SERVER_UNSPECIFIED_VERSION_SIGNAL)
     {
         /* Setting boot.state before test check */
         if (val->set_boot_flag(BOOT_EXPECTED_NS))
         {
             val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
             /* Unblock client */
-            if (psa->get(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
+            if (psa->get(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg) != PSA_SUCCESS)
             {
-                val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+                val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
             }
             psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
             return VAL_STATUS_ERROR;
         }
 
         /* multiple signals check */
-        psa->get((SERVER_UNSPECIFED_VERSION_SIGNAL | SERVER_RELAX_VERSION_SIGNAL), &msg);
+        psa->get((SERVER_UNSPECIFIED_VERSION_SIGNAL | SERVER_RELAX_VERSION_SIGNAL), &msg);
 
         /* If PROGRAMMER ERROR results into panic then control shouldn't have reached here */
         /* Resetting boot.state to catch unwanted reboot */

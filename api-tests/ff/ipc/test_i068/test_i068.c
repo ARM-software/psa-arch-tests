@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -67,7 +67,7 @@ int32_t client_test_instr_exec_from_writable_mem(caller_security_t caller __UNUS
   /* Point function pointer to data memory */
   fptr = (fptr_t) opcode;
   val->print(PRINT_DEBUG, "\t&opcode = 0x%x\n", (uint32_t) &opcode);
-  val->print(PRINT_DEBUG, "\tfptr = 0x%x\n",(uint32_t) fptr);
+  val->print(PRINT_DEBUG, "\tfptr = 0x%x\n", (uint32_t) fptr);
 
   /* Setting boot.state before test check */
    if (val->set_boot_flag(BOOT_EXPECTED_S))

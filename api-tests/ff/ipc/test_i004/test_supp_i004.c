@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@
 extern val_api_t *val;
 extern psa_api_t *psa;
 
-int32_t server_test_sid_does_not_exists();
+int32_t server_test_sid_does_not_exists(void);
 
 const server_test_t test_i004_server_tests_list[] = {
     NULL,
@@ -31,7 +31,7 @@ const server_test_t test_i004_server_tests_list[] = {
     NULL,
 };
 
-int32_t server_test_sid_does_not_exists()
+int32_t server_test_sid_does_not_exists(void)
 {
     val->err_check_set(TEST_CHECKPOINT_NUM(201), VAL_STATUS_SUCCESS);
     return VAL_STATUS_SUCCESS;

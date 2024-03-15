@@ -91,7 +91,7 @@ void pal_cmsdk_print(const char *str, int32_t data)
                 while (data != 0)
                 {
                     j         = data % 10;
-                    data      = data /10;
+                    data      = data / 10;
                     buffer[i] = j + 48;
                     i        += 1;
                 }

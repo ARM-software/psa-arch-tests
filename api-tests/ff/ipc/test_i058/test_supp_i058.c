@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +38,7 @@ int32_t server_test_psa_doorbell_signal(void)
     int32_t                 status = VAL_STATUS_SUCCESS;
     psa_msg_t               msg = {0};
 
-    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     val->err_check_set(TEST_CHECKPOINT_NUM(201), status);
     psa_reply(msg.handle, PSA_SUCCESS);
 
@@ -53,7 +53,7 @@ int32_t server_test_psa_doorbell_signal(void)
         val->print(PRINT_ERROR, "Caller is from non-secure\n", 0);
     }
 
-    status = val->process_call_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     val->err_check_set(TEST_CHECKPOINT_NUM(202), status);
     psa_reply(msg.handle, PSA_SUCCESS);
     return status;
@@ -75,7 +75,7 @@ int32_t server_test_psa_doorbell_signal(void)
     psa_msg_t               msg = {0};
 
     /* Serve psa_connect */
-    status = val->process_connect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg);
+    status = val->process_connect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
     {
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
@@ -97,7 +97,7 @@ int32_t server_test_psa_doorbell_signal(void)
     }
 
     /* Serve psa_close */
-    status = ((val->process_disconnect_request(SERVER_UNSPECIFED_VERSION_SIGNAL, &msg))
+    status = ((val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
                ? VAL_STATUS_ERROR : status);
     val->err_check_set(TEST_CHECKPOINT_NUM(202), status);
     psa->reply(msg.handle, PSA_SUCCESS);

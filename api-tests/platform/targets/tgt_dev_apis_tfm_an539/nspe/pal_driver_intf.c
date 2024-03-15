@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2020-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,7 +55,7 @@ int pal_print_ns(const char *str, int32_t data)
 **/
 int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
 {
-    return(pal_wd_syswdog_init(base_addr,time_us, timer_tick_us));
+    return pal_wd_syswdog_init(base_addr, time_us, timer_tick_us);
 }
 
 /**
@@ -65,7 +65,7 @@ int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick
 **/
 int pal_wd_timer_enable_ns(addr_t base_addr)
 {
-    return(pal_wd_syswdog_enable(base_addr));
+    return pal_wd_syswdog_enable(base_addr);
 }
 
 /**
@@ -75,7 +75,7 @@ int pal_wd_timer_enable_ns(addr_t base_addr)
 **/
 int pal_wd_timer_disable_ns(addr_t base_addr)
 {
-    return (pal_wd_syswdog_disable(base_addr));
+    return pal_wd_syswdog_disable(base_addr);
 }
 
 /**
@@ -128,10 +128,8 @@ void pal_terminate_simulation(void)
 {
     /* Add logic to terminate the simluation */
 
-    while(1)
-    {
+    while (1)
         __asm volatile("WFI");
-    }
 }
 
 /**

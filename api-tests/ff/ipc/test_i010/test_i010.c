@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,7 +74,7 @@ int32_t client_test_unspecified_policy_with_higher_version(caller_security_t cal
     * If they are not specified in the manifest, the RoT Service will have
     * default attributes of version=1 and version_policy="STRICT".
     */
-   handle = psa->connect(SERVER_UNSPECIFED_VERSION_SID, SERVER_UNSPECIFED_VERSION_VERSION + 1);
+   handle = psa->connect(SERVER_UNSPECIFIED_VERSION_SID, SERVER_UNSPECIFIED_VERSION_VERSION + 1);
 
    /*
     * If the caller is in the NSPE, it is IMPLEMENTATION DEFINED whether

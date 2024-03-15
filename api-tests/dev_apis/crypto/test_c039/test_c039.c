@@ -33,7 +33,8 @@ static int32_t  valid_test_input_index = -1;
 
 int32_t psa_asymmetric_encrypt_test(caller_security_t caller __UNUSED)
 {
-#if defined(ARCH_TEST_RSA_1024) || defined(ARCH_TEST_RSA_OAEP) || defined(ARCH_TEST_RSA_PKCS1V15_CRYPT) || defined(ARCH_TEST_ECC_ASYMMETRIC_API_SUPPORT)
+#if defined(ARCH_TEST_RSA_1024) || defined(ARCH_TEST_RSA_OAEP) || \
+    defined(ARCH_TEST_RSA_PKCS1V15_CRYPT) || defined(ARCH_TEST_ECC_ASYMMETRIC_API_SUPPORT)
     int32_t                 num_checks = sizeof(check1)/sizeof(check1[valid_test_input_index]);
     int32_t                 i, status;
     size_t                  get_output_length;
@@ -146,10 +147,11 @@ int32_t psa_asymmetric_encrypt_test(caller_security_t caller __UNUSED)
 
 int32_t psa_asymmetric_encrypt_negative_test(caller_security_t caller __UNUSED)
 {
-#if ((defined(ARCH_TEST_RSA_1024) && (defined(ARCH_TEST_RSA_PKCS1V15_CRYPT) || defined(ARCH_TEST_SHA256)))||\
-(defined(ARCH_TEST_SHA256) && defined(ARCH_TEST_RSA_OAEP)) ||\
-(defined(ARCH_TEST_RSA_PKCS1V15_CRYPT) && (defined(ARCH_TEST_AES_128) || defined(ARCH_TEST_RSA_1024)))||\
-(defined(ARCH_TEST_ECDSA) && defined(ARCH_TEST_ECC_CURVE_SECP256R1)))
+#if ((defined(ARCH_TEST_RSA_1024) && (defined(ARCH_TEST_RSA_PKCS1V15_CRYPT) || \
+      defined(ARCH_TEST_SHA256))) || (defined(ARCH_TEST_SHA256) && \
+      defined(ARCH_TEST_RSA_OAEP)) || (defined(ARCH_TEST_RSA_PKCS1V15_CRYPT) && \
+      (defined(ARCH_TEST_AES_128) || defined(ARCH_TEST_RSA_1024))) || \
+       (defined(ARCH_TEST_ECDSA) && defined(ARCH_TEST_ECC_CURVE_SECP256R1)))
     int32_t                 status;
     size_t                  get_output_length;
     psa_key_id_t            key = 11;

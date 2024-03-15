@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,7 @@ extern psa_api_t *psa;
 
 #define NUM_OF_BYTES 4
 
-int32_t server_test_psa_read_at_ipc_connect();
+int32_t server_test_psa_read_at_ipc_connect(void);
 
 const server_test_t test_i028_server_tests_list[] = {
     NULL,
@@ -33,7 +33,7 @@ const server_test_t test_i028_server_tests_list[] = {
     NULL,
 };
 
-int32_t server_test_psa_read_at_ipc_connect()
+int32_t server_test_psa_read_at_ipc_connect(void)
 {
     int32_t         status = VAL_STATUS_SUCCESS;
     psa_msg_t       msg = {0};

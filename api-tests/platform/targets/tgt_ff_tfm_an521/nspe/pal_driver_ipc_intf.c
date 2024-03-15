@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,7 +29,7 @@ int pal_uart_init_ns(uint32_t uart_base_addr)
 
     psa_invec data[3] = {{&uart_fn, sizeof(uart_fn)},
                          {&uart_base_addr, sizeof(uart_base_addr)},
-                         {NULL, 0}};
+                         {NULL, 0} };
 
 #if STATELESS_ROT == 1
     status_of_call = psa_call(DRIVER_UART_HANDLE, 0, data, 3, NULL, 0);
@@ -78,7 +78,7 @@ int pal_print_ns(const char *str, int32_t data)
 
     psa_invec data1[3] = {{&uart_fn, sizeof(uart_fn)},
                           {str, string_len+1},
-                          {&data, sizeof(data)}};
+                          {&data, sizeof(data)} };
 #if STATELESS_ROT == 1
     status_of_call = psa_call(DRIVER_UART_HANDLE, 0, data1, 3, NULL, 0);
     if (status_of_call != PSA_SUCCESS)
@@ -120,7 +120,7 @@ int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick
     wd_param.wd_base_addr = base_addr;
     wd_param.wd_time_us = time_us;
     wd_param.wd_timer_tick_us = timer_tick_us;
-    psa_invec invec[1] = {{&wd_param, sizeof(wd_param)}};
+    psa_invec invec[1] = {{&wd_param, sizeof(wd_param)} };
 
 #if STATELESS_ROT == 1
     status_of_call = psa_call(DRIVER_WATCHDOG_HANDLE, 0, invec, 1, NULL, 0);
@@ -163,7 +163,7 @@ int pal_wd_timer_enable_ns(addr_t base_addr)
     wd_param.wd_base_addr = base_addr;
     wd_param.wd_time_us = 0;
     wd_param.wd_timer_tick_us = 0;
-    psa_invec invec[1] = {{&wd_param, sizeof(wd_param)}};
+    psa_invec invec[1] = {{&wd_param, sizeof(wd_param)} };
 
 #if STATELESS_ROT == 1
     status_of_call = psa_call(DRIVER_WATCHDOG_HANDLE, 0, invec, 1, NULL, 0);
@@ -204,7 +204,7 @@ int pal_wd_timer_disable_ns(addr_t base_addr)
     wd_param.wd_base_addr = base_addr;
     wd_param.wd_time_us = 0;
     wd_param.wd_timer_tick_us = 0;
-    psa_invec invec[1] = {{&wd_param, sizeof(wd_param)}};
+    psa_invec invec[1] = {{&wd_param, sizeof(wd_param)} };
 #if STATELESS_ROT == 1
     status_of_call = psa_call(DRIVER_WATCHDOG_HANDLE, 0, invec, 1, NULL, 0);
     if (status_of_call != PSA_SUCCESS)
@@ -249,8 +249,8 @@ int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size)
     nvmem_param.base = base;
     nvmem_param.offset = offset;
     nvmem_param.size = size;
-    psa_invec invec[1] = {{&nvmem_param, sizeof(nvmem_param)}};
-    psa_outvec outvec[1] = {{buffer, size}};
+    psa_invec invec[1] = {{&nvmem_param, sizeof(nvmem_param)} };
+    psa_outvec outvec[1] = {{buffer, size} };
 #if STATELESS_ROT == 1
     status_of_call = psa_call(DRIVER_NVMEM_HANDLE, 0, invec, 1, outvec, 1);
     if (status_of_call != PSA_SUCCESS)
@@ -295,7 +295,7 @@ int pal_nvmem_write_ns(addr_t base, uint32_t offset, void *buffer, int size)
     nvmem_param.base = base;
     nvmem_param.offset = offset;
     nvmem_param.size = size;
-    psa_invec invec[2] = {{&nvmem_param, sizeof(nvmem_param)}, {buffer, size}};
+    psa_invec invec[2] = {{&nvmem_param, sizeof(nvmem_param)}, {buffer, size} };
 #if STATELESS_ROT == 1
     status_of_call = psa_call(DRIVER_NVMEM_HANDLE, 0, invec, 2, NULL, 0);
     if (status_of_call != PSA_SUCCESS)
@@ -330,9 +330,6 @@ int pal_nvmem_write_ns(addr_t base, uint32_t offset, void *buffer, int size)
 void pal_terminate_simulation(void)
 {
     /* Add logic to terminate the simluation */
-
-    while(1)
-    {
+    while (1)
         __asm volatile("WFI");
-    }
 }

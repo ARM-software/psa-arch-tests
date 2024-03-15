@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -84,9 +84,9 @@ void client_main(void)
                     }
                     break;
                 case PSA_IPC_DISCONNECT:
-                    test_data=0;
-                    status=0;
-                    test_status=0;
+                    test_data = 0;
+                    status = 0;
+                    test_status = 0;
                     psa_reply(msg.handle, PSA_SUCCESS);
                     break;
                 default:
