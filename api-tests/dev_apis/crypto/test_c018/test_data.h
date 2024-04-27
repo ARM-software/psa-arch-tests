@@ -17,6 +17,12 @@
 
 #include "test_crypto_common.h"
 
+#ifdef ARCH_TEST_HKDF_FAILING_ALG
+#define HKDF_FAILING_ALG ARCH_TEST_HKDF_FAILING_ALG
+#else
+#define HKDF_FAILING_ALG PSA_ALG_CTR
+#endif
+
 typedef struct {
     char                        test_desc[75];
     psa_key_type_t              type;
@@ -132,7 +138,7 @@ static const test_data check1[] = {
     .data_length     = AES_32B_KEY_SIZE,
     .bits            = BYTES_TO_BITS(AES_32B_KEY_SIZE),
     .usage_flags     = PSA_KEY_USAGE_DERIVE,
-    .alg             = PSA_ALG_CTR,
+    .alg             = HKDF_FAILING_ALG,
     .step            = PSA_KEY_DERIVATION_INPUT_SECRET,
     .setup_alg       = PSA_ALG_HKDF(PSA_ALG_SHA_256),
     .expected_status = PSA_ERROR_NOT_PERMITTED
