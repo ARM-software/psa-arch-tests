@@ -30,7 +30,7 @@ extern  uint32_t g_test_count;
 
 int32_t psa_aead_generate_nonce_test(caller_security_t caller __UNUSED)
 {
-#if ((defined(ARCH_TEST_CCM) || defined(ARCH_TEST_GCM)) && defined(ARCH_TEST_AES_128))
+#if (((defined(ARCH_TEST_CCM) || defined(ARCH_TEST_GCM)) && defined(ARCH_TEST_AES_128)) && (!defined(ARCH_TEST_AEAD_MULTISTAGE_OFF)))
     int32_t               i, j, status, nonce_sum;
     size_t                nonce_length;
     int32_t               num_checks = sizeof(check1)/sizeof(check1[0]);
