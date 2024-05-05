@@ -45,7 +45,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_PBKDF2
 #ifdef ARCH_TEST_HMAC
 {
-    .test_desc          = "Test psa_key_derivation_verify_bytes - PBKDF2_HMAC algo. with Password\n"
+    .test_desc          = "Test psa_key_derivation_verify_bytes - PBKDF2_HMAC alg. with Password\n",
     .type               = PSA_KEY_TYPE_PASSWORD,
     .usage_flag         = PSA_KEY_USAGE_VERIFY_DERIVATION,
     .alg                = PSA_ALG_PBKDF2_HMAC(PSA_ALG_SHA_256),
@@ -76,7 +76,7 @@ static const test_data check1[] = {
     .expected_status    = PSA_SUCCESS
 },
 {
-    .test_desc          = "Test psa_key_derivation_verify_bytes - Incorrect usage flag\n"
+    .test_desc          = "Test psa_key_derivation_verify_bytes - Incorrect usage flag\n",
     .type               = PSA_KEY_TYPE_PASSWORD,
     .usage_flag         = PSA_KEY_USAGE_DERIVE,
     .alg                = PSA_ALG_PBKDF2_HMAC(PSA_ALG_SHA_256),
@@ -107,7 +107,7 @@ static const test_data check1[] = {
     .expected_status    = PSA_ERROR_NOT_PERMITTED
 },
 {
-    .test_desc          = "Test psa_key_derivation_verify_bytes - Mismatched expected value\n"
+    .test_desc          = "Test psa_key_derivation_verify_bytes - Mismatched expected value\n",
     .type               = PSA_KEY_TYPE_PASSWORD,
     .usage_flag         = PSA_KEY_USAGE_VERIFY_DERIVATION,
     .alg                = PSA_ALG_PBKDF2_HMAC(PSA_ALG_SHA_256),
@@ -138,7 +138,7 @@ static const test_data check1[] = {
     .expected_status    = PSA_ERROR_INVALID_SIGNATURE
 },
 {
-    .test_desc          = "Test psa_key_derivation_verify_bytes - Invalid operation's capacity\n"
+    .test_desc          = "Test psa_key_derivation_verify_bytes - Invalid operation's capacity\n",
     .type               = PSA_KEY_TYPE_PASSWORD,
     .usage_flag         = PSA_KEY_USAGE_VERIFY_DERIVATION,
     .alg                = PSA_ALG_PBKDF2_HMAC(PSA_ALG_SHA_256),
@@ -227,19 +227,19 @@ static const test_data check1[] = {
                             .step        = 0,
                             .data        = NULL,
                             .data_length = 0
-                            },
+                            }
                          },
-    .output             = {0xF5, 0x07, 0x1E, 0x9D, 0x8E, 0xE5, 0x87, 0xE1, 0xB5, 0xA6, 0x76,
+    .expected_output    = {0xF5, 0x07, 0x1E, 0x9D, 0x8E, 0xE5, 0x87, 0xE1, 0xB5, 0xA6, 0x76,
                            0x9C, 0x6B, 0xEC, 0xC9, 0x76, 0x06, 0x59, 0x29, 0x29, 0x6B, 0x51,
                            0xAE, 0x27, 0xFC, 0x45, 0x03, 0x40, 0x82, 0xBE, 0x93, 0xEA},
-    .output_length      = 32,
+    .expected_length    = 32,
     .expected_status    = PSA_SUCCESS
 },
 
 {
     .test_desc          = "Test psa_key_derivation_verify_bytes - missing salt/secret/info\n",
     .type               = PSA_KEY_TYPE_DERIVE,
-    .usage_flags        = PSA_KEY_USAGE_VERIFY_DERIVATION,
+    .usage_flag         = PSA_KEY_USAGE_VERIFY_DERIVATION,
     .alg                = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
     .capacity           = 32,
     .data               = input_bytes_data,
@@ -259,7 +259,7 @@ static const test_data check1[] = {
                             .step        = 0,
                             .data        = NULL,
                             .data_length = 0
-                            },
+                            }
                          },
     .expected_output    = {0xEB, 0x70, 0xF0, 0x1D, 0xED, 0xE9, 0xAF, 0xAF, 0xA4, 0x49, 0xEE,
                            0xE1, 0xB1, 0x28, 0x65, 0x04, 0xE1, 0xF6, 0x23, 0x88, 0xB3, 0xF7,
