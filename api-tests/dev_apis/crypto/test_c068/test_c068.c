@@ -48,7 +48,7 @@ int32_t psa_key_derivation_verify_key_test(caller_security_t caller __UNUSED)
 
     for (i = 0; i < num_checks; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] ", i++);
+        val->print(PRINT_TEST, "[Check %d] ", i+1);
         val->print(PRINT_TEST, check1[i].test_desc, 0);
 
         /* Setting up the watchdog timer for each check */
