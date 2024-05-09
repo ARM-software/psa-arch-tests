@@ -78,7 +78,7 @@ static const test_data check1[] = {
 #endif
 #endif
 
-#ifdef ARCH_TEST_CBC_NO_PADDING
+#ifdef ARCH_TEST_CIPHER_MODE_CBC
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc            = "Test psa_export_key 16 Byte AES\n",
