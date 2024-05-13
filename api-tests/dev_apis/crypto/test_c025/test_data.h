@@ -169,7 +169,7 @@ static const test_data check1[] = {
 },
 #else
 {
-    .test_desc                  = "Test psa_aead_decrypt - CCM - AES - 24 bytes Tag length = 4\n",
+    .test_desc                  = "Test psa_aead_decrypt - CCM - AES - 24 bytes Tag length = 8\n",
     .type                       = PSA_KEY_TYPE_AES,
     .data                       = key_data,
     .data_length                = AES_16B_KEY_SIZE,
@@ -190,7 +190,7 @@ static const test_data check1[] = {
 },
 
 {
-    .test_desc                  = "Test psa_aead_decrypt - CCM - AES (atleast Tag length=4)\n",
+    .test_desc                  = "Test psa_aead_decrypt - CCM - AES (atleast Tag length=8)\n",
     .type                       = PSA_KEY_TYPE_AES,
     .data                       = key_data,
     .data_length                = AES_16B_KEY_SIZE,
@@ -211,7 +211,7 @@ static const test_data check1[] = {
 },
 
 {
-    .test_desc                  = "Test psa_aead_decrypt - (atleast length=4 on shortened Tag)\n",
+    .test_desc                  = "Test psa_aead_decrypt - (atleast length=8 on shortened Tag)\n",
     .type                       = PSA_KEY_TYPE_AES,
     .data                       = key_data,
     .data_length                = AES_16B_KEY_SIZE,
