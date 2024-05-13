@@ -196,7 +196,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_CBC_NO_PADDING
 #ifdef ARCH_TEST_AES_128
 {
-    .test_desc          = "Test psa_cipher_generate_iv AES - small iv buffer\n",
+    .test_desc          = "Test psa_cipher_generate_iv AES in CBC mode - small iv buffer\n",
     .type               = PSA_KEY_TYPE_AES,
     .data               = key_data,
     .data_length        = AES_16B_KEY_SIZE,
