@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,54 +31,7 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
-#ifdef ARCH_TEST_CIPHER_MODE_CTR
-#ifdef ARCH_TEST_AES_128
-{
-    .test_desc            = "Test psa_export_key 16 Byte AES\n",
-    .type                 = PSA_KEY_TYPE_AES,
-    .data                 = key_data,
-    .data_length          = AES_16B_KEY_SIZE,
-    .bits                 = BYTES_TO_BITS(AES_16B_KEY_SIZE),
-    .usage_flags          = PSA_KEY_USAGE_EXPORT,
-    .expected_data        = expected_output,
-    .data_size            = BUFFER_SIZE,
-    .expected_data_length = AES_16B_KEY_SIZE,
-    .expected_status      = PSA_SUCCESS
-},
-#endif
-
-#ifdef ARCH_TEST_AES_192
-{
-    .test_desc            = "Test psa_export_key 24 Byte AES\n",
-    .type                 = PSA_KEY_TYPE_AES,
-    .data                 = key_data,
-    .data_length          = AES_24B_KEY_SIZE,
-    .bits                 = BYTES_TO_BITS(AES_24B_KEY_SIZE),
-    .usage_flags          = PSA_KEY_USAGE_EXPORT,
-    .expected_data        = expected_output,
-    .data_size            = BUFFER_SIZE,
-    .expected_data_length = AES_24B_KEY_SIZE,
-    .expected_status      = PSA_SUCCESS
-},
-#endif
-
-#ifdef ARCH_TEST_AES_256
-{
-    .test_desc            = "Test psa_export_key 32 Byte AES\n",
-    .type                 = PSA_KEY_TYPE_AES,
-    .data                 = key_data,
-    .data_length          = AES_32B_KEY_SIZE,
-    .bits                 = BYTES_TO_BITS(AES_32B_KEY_SIZE),
-    .usage_flags          = PSA_KEY_USAGE_EXPORT,
-    .expected_data        = expected_output,
-    .data_size            = BUFFER_SIZE,
-    .expected_data_length = AES_32B_KEY_SIZE,
-    .expected_status      = PSA_SUCCESS
-},
-#endif
-#endif
-
-#ifdef ARCH_TEST_CIPHER_MODE_CBC
+#if defined(ARCH_TEST_CIPHER_MODE_CTR) || defined(ARCH_TEST_CIPHER_MODE_CBC)
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc            = "Test psa_export_key 16 Byte AES\n",

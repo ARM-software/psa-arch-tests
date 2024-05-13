@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -87,7 +87,7 @@ static const test_data check1[] = {
 #ifdef ARCH_TEST_CBC_NO_PADDING
 #ifdef ARCH_TEST_AES_128
 {
-    .test_desc          = "Test psa_cipher_generate_iv 16 Byte AES\n",
+    .test_desc          = "Test psa_cipher_generate_iv 16 Byte AES in CBC mode\n",
     .type               = PSA_KEY_TYPE_AES,
     .data               = key_data,
     .data_length        = AES_16B_KEY_SIZE,
@@ -102,7 +102,7 @@ static const test_data check1[] = {
 
 #ifdef ARCH_TEST_AES_192
 {
-    .test_desc          = "Test psa_cipher_generate_iv 24 Byte AES\n",
+    .test_desc          = "Test psa_cipher_generate_iv 24 Byte AES in CBC mode\n",
     .type               = PSA_KEY_TYPE_AES,
     .data               = key_data,
     .data_length        = AES_24B_KEY_SIZE,
@@ -117,7 +117,7 @@ static const test_data check1[] = {
 
 #ifdef ARCH_TEST_AES_256
 {
-    .test_desc          = "Test psa_cipher_generate_iv 32 Byte AES\n",
+    .test_desc          = "Test psa_cipher_generate_iv 32 Byte AES in CBC mode\n",
     .type               = PSA_KEY_TYPE_AES,
     .data               = key_data,
     .data_length        = AES_32B_KEY_SIZE,
