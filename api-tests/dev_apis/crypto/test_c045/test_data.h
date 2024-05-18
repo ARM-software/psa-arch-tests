@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,6 +32,7 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
+#ifndef ARCH_TEST_HASH_CLONE_UNSUPPORTED
 #ifdef ARCH_TEST_MD2
 {
     .test_desc            = "Test psa_hash_clone - MD2 algorithm\n",
@@ -174,5 +175,6 @@ static const test_data check1[] = {
     .expected_hash_length = 64,
     .expected_status      = PSA_SUCCESS,
 },
+#endif
 #endif
 };
