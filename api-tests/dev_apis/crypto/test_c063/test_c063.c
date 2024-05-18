@@ -30,7 +30,7 @@ extern  uint32_t g_test_count;
 
 int32_t psa_aead_verify_test(caller_security_t caller __UNUSED)
 {
-#if ((defined(ARCH_TEST_CCM) || defined(ARCH_TEST_GCM)) && defined(ARCH_TEST_AES_128))
+#if (((defined(ARCH_TEST_CCM) || defined(ARCH_TEST_GCM)) && defined(ARCH_TEST_AES_128)) && (!defined(ARCH_TEST_AEAD_MULTISTAGE_OFF)))
     uint8_t  output[BUFFER_SIZE];
     int32_t               i, status;
     size_t                length, verify_length;
