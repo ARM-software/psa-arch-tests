@@ -39,6 +39,7 @@
 #define AEAD_CIPHERTEXT_LEN_4          40
 #define AEAD_CIPHERTEXT_LEN_5          16
 #define AEAD_CIPHERTEXT_LEN_6          40
+#define AEAD_CIPHERTEXT_LEN_7          32
 
 #define INPUT_SALT_LEN                 4
 #define INPUT_INFO_LEN                 4
@@ -92,6 +93,7 @@ extern const uint8_t aead_ciphertext_3[AEAD_CIPHERTEXT_LEN_3];
 extern const uint8_t aead_ciphertext_4[AEAD_CIPHERTEXT_LEN_4];
 extern const uint8_t aead_ciphertext_5[AEAD_CIPHERTEXT_LEN_5];
 extern const uint8_t aead_ciphertext_6[AEAD_CIPHERTEXT_LEN_6];
+extern const uint8_t aead_ciphertext_7[AEAD_CIPHERTEXT_LEN_7];
 
 extern const uint8_t hash_input;
 extern const uint8_t input_bytes_data[INPUT_BYTES_DATA_LEN];

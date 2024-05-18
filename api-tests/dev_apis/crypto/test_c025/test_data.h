@@ -83,6 +83,7 @@ static const test_data check1[] = {
     .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
 },
 
+#ifndef ARCH_TEST_CCM_MIN_TAG_LEN_8
 {
     .test_desc                  = "Test psa_aead_decrypt - CCM - AES - 24 bytes Tag length = 4\n",
     .type                       = PSA_KEY_TYPE_AES,
@@ -166,6 +167,91 @@ static const test_data check1[] = {
     .expected_plaintext_length  = 24,
     .expected_status            = {PSA_ERROR_NOT_PERMITTED, PSA_ERROR_NOT_PERMITTED}
 },
+#else
+{
+    .test_desc                  = "Test psa_aead_decrypt - CCM - AES - 24 bytes Tag length = 8\n",
+    .type                       = PSA_KEY_TYPE_AES,
+    .data                       = key_data,
+    .data_length                = AES_16B_KEY_SIZE,
+    .usage_flags                = PSA_KEY_USAGE_DECRYPT,
+    .key_alg                    = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 8),
+    .aead_alg                   = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 8),
+    .nonce                      = nonce,
+    .nonce_length               = 13,
+    .additional_data            = additional_data,
+    .additional_data_length     = 32,
+    .ciphertext                 = aead_ciphertext_7,
+    .ciphertext_length          = AEAD_CIPHERTEXT_LEN_7,
+    .plaintext                  = expected_output,
+    .expected_plaintext         = plaintext,
+    .plaintext_size             = BUFFER_SIZE,
+    .expected_plaintext_length  = 24,
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
+},
+
+{
+    .test_desc                  = "Test psa_aead_decrypt - CCM - AES (atleast Tag length=8)\n",
+    .type                       = PSA_KEY_TYPE_AES,
+    .data                       = key_data,
+    .data_length                = AES_16B_KEY_SIZE,
+    .usage_flags                = PSA_KEY_USAGE_DECRYPT,
+    .key_alg                    = PSA_ALG_AEAD_WITH_AT_LEAST_THIS_LENGTH_TAG(PSA_ALG_CCM, 8),
+    .aead_alg                   = PSA_ALG_CCM,
+    .nonce                      = nonce,
+    .nonce_length               = 13,
+    .additional_data            = additional_data,
+    .additional_data_length     = 8,
+    .ciphertext                 = aead_ciphertext_1,
+    .ciphertext_length          = AEAD_CIPHERTEXT_LEN_1,
+    .plaintext                  = expected_output,
+    .expected_plaintext         = plaintext,
+    .plaintext_size             = BUFFER_SIZE,
+    .expected_plaintext_length  = 23,
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
+},
+
+{
+    .test_desc                  = "Test psa_aead_decrypt - (atleast length=8 on shortened Tag)\n",
+    .type                       = PSA_KEY_TYPE_AES,
+    .data                       = key_data,
+    .data_length                = AES_16B_KEY_SIZE,
+    .usage_flags                = PSA_KEY_USAGE_DECRYPT,
+    .key_alg                    = PSA_ALG_AEAD_WITH_AT_LEAST_THIS_LENGTH_TAG(PSA_ALG_CCM, 8),
+    .aead_alg                   = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 8),
+    .nonce                      = nonce,
+    .nonce_length               = 13,
+    .additional_data            = additional_data,
+    .additional_data_length     = 32,
+    .ciphertext                 = aead_ciphertext_7,
+    .ciphertext_length          = AEAD_CIPHERTEXT_LEN_7,
+    .plaintext                  = expected_output,
+    .expected_plaintext         = plaintext,
+    .plaintext_size             = BUFFER_SIZE,
+    .expected_plaintext_length  = 24,
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
+},
+
+{
+    .test_desc                  = "Test psa_aead_decrypt - CCM - AES (Tag length < min. length)\n",
+    .type                       = PSA_KEY_TYPE_AES,
+    .data                       = key_data,
+    .data_length                = AES_16B_KEY_SIZE,
+    .usage_flags                = PSA_KEY_USAGE_DECRYPT,
+    .key_alg                    = PSA_ALG_AEAD_WITH_AT_LEAST_THIS_LENGTH_TAG(PSA_ALG_CCM, 10),
+    .aead_alg                   = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_CCM, 8),
+    .nonce                      = nonce,
+    .nonce_length               = 13,
+    .additional_data            = additional_data,
+    .additional_data_length     = 32,
+    .ciphertext                 = aead_ciphertext_7,
+    .ciphertext_length          = AEAD_CIPHERTEXT_LEN_7,
+    .plaintext                  = expected_output,
+    .expected_plaintext         = plaintext,
+    .plaintext_size             = BUFFER_SIZE,
+    .expected_plaintext_length  = 24,
+    .expected_status            = {PSA_ERROR_NOT_PERMITTED, PSA_ERROR_NOT_PERMITTED}
+},
+#endif
 
 #ifdef ARCH_TEST_ARIA
 {
