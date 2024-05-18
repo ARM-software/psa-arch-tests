@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,7 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
-#ifdef ARCH_TEST_CIPHER_MODE_CTR
+#if defined(ARCH_TEST_CIPHER_MODE_CTR) || defined(ARCH_TEST_CIPHER_MODE_CBC)
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc            = "Test psa_export_key 16 Byte AES\n",
