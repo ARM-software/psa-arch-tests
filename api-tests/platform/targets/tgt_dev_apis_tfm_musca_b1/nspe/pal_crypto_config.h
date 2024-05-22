@@ -392,6 +392,27 @@
 */
 #define ARCH_TEST_PBKDF2
 
+/**
+ * \def ARCH_TEST_AEAD_MULTISTAGE_OFF
+ *
+ * Enable unsupported multi-stage AEAD test-cases.
+*/
+//#define ARCH_TEST_AEAD_MULTISTAGE_OFF
+
+/**
+ * \def ARCH_TEST_CCM_MIN_TAG_LEN_8
+ *
+ * Enable possibility to set the minimal Tag length of 8 bytes.
+*/
+//#define ARCH_TEST_CCM_MIN_TAG_LEN_8
+
+/**
+ * \def ARCH_TEST_HASH_CLONE_UNSUPPORTED
+ *
+ * Enable unsupported hash clones in tests.
+*/
+//#define ARCH_TEST_HASH_CLONE_UNSUPPORTED
+
 #include "pal_crypto_config_check.h"
 
 #endif /* _PAL_CRYPTO_CONFIG_H_ */
