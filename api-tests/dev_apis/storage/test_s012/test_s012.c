@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -78,18 +78,24 @@ static int32_t psa_sst_offset_invalid(storage_function_code_t fCode)
                               write_buff);
     TEST_ASSERT_EQUAL(status, s012_data[VAL_TEST_IDX6].status, TEST_CHECKPOINT_NUM(6));
 
-    /* Set data using set API */
-    val->print(PRINT_TEST, "[Check 5] Overwrite the whole data with set API\n", 0);
-    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX7].api[fCode], p_uid, TEST_BUFF_SIZE,
-                              write_buff, PSA_STORAGE_FLAG_NONE);
+    /* Try to set data at invalid location with offset + data len > capacity */
+    val->print(PRINT_TEST, "[Check 5] Call set_extended API with (offset+data len)>capacity\n", 0);
+    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX7].api[fCode], p_uid, 1, TEST_MAX_UINT32,
+                              write_buff);
     TEST_ASSERT_EQUAL(status, s012_data[VAL_TEST_IDX7].status, TEST_CHECKPOINT_NUM(7));
 
-    /* Call the get function to check data is correctly overwritten */
-    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX8].api[fCode], p_uid, 0, TEST_BUFF_SIZE,
-                              read_buff, &p_data_length);
+    /* Set data using set API */
+    val->print(PRINT_TEST, "[Check 6] Overwrite the whole data with set API\n", 0);
+    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX8].api[fCode], p_uid, TEST_BUFF_SIZE,
+                              write_buff, PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s012_data[VAL_TEST_IDX8].status, TEST_CHECKPOINT_NUM(8));
-    TEST_ASSERT_MEMCMP(read_buff, write_buff, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(9));
-    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(10));
+
+    /* Call the get function to check data is correctly overwritten */
+    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX9].api[fCode], p_uid, 0, TEST_BUFF_SIZE,
+                              read_buff, &p_data_length);
+    TEST_ASSERT_EQUAL(status, s012_data[VAL_TEST_IDX9].status, TEST_CHECKPOINT_NUM(9));
+    TEST_ASSERT_MEMCMP(read_buff, write_buff, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(10));
+    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(11));
 
     return VAL_STATUS_SUCCESS;
 }
@@ -100,25 +106,25 @@ static int32_t psa_sst_bad_pointer(storage_function_code_t fCode)
     psa_storage_uid_t  uid = 0;
 
     /* Call create API with UID value 0 */
-    val->print(PRINT_TEST, "[Check 6] Call create API with UID 0\n", 0);
-    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX10].api[fCode], uid, TEST_BUFF_SIZE,
+    val->print(PRINT_TEST, "[Check 7] Call create API with UID 0\n", 0);
+    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX11].api[fCode], uid, TEST_BUFF_SIZE,
                               PSA_STORAGE_FLAG_NONE);
-    TEST_ASSERT_EQUAL(status, s012_data[VAL_TEST_IDX10].status, TEST_CHECKPOINT_NUM(11));
-
-    /* Call set extended API with UID value 0 */
-    val->print(PRINT_TEST, "[Check 7] Call set_extended API with UID 0\n", 0);
-    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX11].api[fCode], uid, 0, TEST_BUFF_SIZE,
-                              write_buff_2);
     TEST_ASSERT_EQUAL(status, s012_data[VAL_TEST_IDX11].status, TEST_CHECKPOINT_NUM(12));
 
-    /* Call remove API with UID value 0 */
-    val->print(PRINT_TEST, "[Check 8] Call remove API with UID 0\n", 0);
-    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX12].api[fCode], uid);
+    /* Call set extended API with UID value 0 */
+    val->print(PRINT_TEST, "[Check 8] Call set_extended API with UID 0\n", 0);
+    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX12].api[fCode], uid, 0, TEST_BUFF_SIZE,
+                              write_buff_2);
     TEST_ASSERT_EQUAL(status, s012_data[VAL_TEST_IDX12].status, TEST_CHECKPOINT_NUM(13));
 
-    /* Remove the UID */
-    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX13].api[fCode], p_uid);
+    /* Call remove API with UID value 0 */
+    val->print(PRINT_TEST, "[Check 9] Call remove API with UID 0\n", 0);
+    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX13].api[fCode], uid);
     TEST_ASSERT_EQUAL(status, s012_data[VAL_TEST_IDX13].status, TEST_CHECKPOINT_NUM(14));
+
+    /* Remove the UID */
+    status = STORAGE_FUNCTION(s012_data[VAL_TEST_IDX14].api[fCode], p_uid);
+    TEST_ASSERT_EQUAL(status, s012_data[VAL_TEST_IDX14].status, TEST_CHECKPOINT_NUM(15));
 
     return VAL_STATUS_SUCCESS;
 }

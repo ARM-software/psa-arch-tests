@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2020-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +22,7 @@
 
 #define UID_BASE_VALUE  0
 #define BYTES_TO_BITS(byte)             (byte * 8)
+#define TEST_MAX_UINT32 0xFFFFFFFF
 
 typedef enum {
     VAL_ITS_SET                         = 0x1,

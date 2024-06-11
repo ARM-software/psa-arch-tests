@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -73,8 +73,12 @@ static const test_data_t s016_data[] = {
     VAL_TEST_IDX13, {VAL_API_UNUSED, VAL_PS_CREATE}, PSA_ERROR_ALREADY_EXISTS
 },
 {
-    /* Remove the UID */
-    VAL_TEST_IDX14, {VAL_API_UNUSED, VAL_PS_REMOVE}, PSA_SUCCESS
+    /* Calling create API for capacity bigger than available space should fail */
+    VAL_TEST_IDX14, {VAL_API_UNUSED, VAL_PS_CREATE}, PSA_ERROR_INSUFFICIENT_STORAGE
 },
+{
+    /* Remove the UID */
+    VAL_TEST_IDX15, {VAL_API_UNUSED, VAL_PS_REMOVE}, PSA_SUCCESS
+}
 };
 #endif /* _S016_TEST_DATA_H_ */

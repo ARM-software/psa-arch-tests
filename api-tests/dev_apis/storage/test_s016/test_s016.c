@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -78,7 +78,7 @@ static int32_t psa_sst_optional_api_sst_capacity(storage_function_code_t fCode)
     status = STORAGE_FUNCTION(s016_data[VAL_TEST_IDX11].api[fCode], p_uid);
     TEST_ASSERT_EQUAL(status, s016_data[VAL_TEST_IDX11].status, TEST_CHECKPOINT_NUM(11));
 
-    /* Create new storage assest using set  API */
+    /* Create new storage assest using set API */
     val->print(PRINT_TEST, "[Check 4] Creation of new storage assest\n", 0);
     status = STORAGE_FUNCTION(s016_data[VAL_TEST_IDX12].api[fCode], p_uid, TEST_BUFF_SIZE_2,
                               write_buff, PSA_STORAGE_FLAG_NONE);
@@ -90,9 +90,15 @@ static int32_t psa_sst_optional_api_sst_capacity(storage_function_code_t fCode)
                               PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s016_data[VAL_TEST_IDX13].status, TEST_CHECKPOINT_NUM(13));
 
-    /* Remove the storage */
-    status = STORAGE_FUNCTION(s016_data[VAL_TEST_IDX14].api[fCode], p_uid);
+    /* Call to create API for capacity bigger than available space should fail */
+    val->print(PRINT_TEST, "[Check 6] Create API call for capacity exceeding available space\n", 0);
+    status = STORAGE_FUNCTION(s016_data[VAL_TEST_IDX14].api[fCode], p_uid, TEST_MAX_UINT32,
+                              PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s016_data[VAL_TEST_IDX14].status, TEST_CHECKPOINT_NUM(14));
+
+    /* Remove the storage */
+    status = STORAGE_FUNCTION(s016_data[VAL_TEST_IDX15].api[fCode], p_uid);
+    TEST_ASSERT_EQUAL(status, s016_data[VAL_TEST_IDX15].status, TEST_CHECKPOINT_NUM(15));
 
     return VAL_STATUS_SUCCESS;
 }
