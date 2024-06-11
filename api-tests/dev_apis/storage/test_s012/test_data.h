@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,31 +50,35 @@ static const test_data_t s012_data[] = {
     VAL_TEST_IDX6, {VAL_API_UNUSED, VAL_PS_SET_EXTENDED}, PSA_ERROR_INVALID_ARGUMENT
 },
 {
+    /* Set_extended with offset + data len > capacity */
+    VAL_TEST_IDX7, {VAL_API_UNUSED, VAL_PS_SET_EXTENDED}, PSA_ERROR_INVALID_ARGUMENT
+},
+{
     /* Write data using set API */
-    VAL_TEST_IDX7, {VAL_API_UNUSED, VAL_PS_SET}, PSA_SUCCESS
+    VAL_TEST_IDX8, {VAL_API_UNUSED, VAL_PS_SET}, PSA_SUCCESS
 },
 {
     /* Check data validity using get API */
-    VAL_TEST_IDX8, {VAL_API_UNUSED, VAL_PS_GET}, PSA_SUCCESS
+    VAL_TEST_IDX9, {VAL_API_UNUSED, VAL_PS_GET}, PSA_SUCCESS
 },
 {
-    VAL_TEST_IDX9, {VAL_API_UNUSED, VAL_API_UNUSED}, 0
+    VAL_TEST_IDX10, {VAL_API_UNUSED, VAL_API_UNUSED}, 0
 },
 {
     /* Create call with UID 0 */
-    VAL_TEST_IDX10, {VAL_API_UNUSED, VAL_PS_CREATE}, PSA_ERROR_INVALID_ARGUMENT
+    VAL_TEST_IDX11, {VAL_API_UNUSED, VAL_PS_CREATE}, PSA_ERROR_INVALID_ARGUMENT
 },
 {
     /* Call set_extended with UID 0 */
-    VAL_TEST_IDX11, {VAL_API_UNUSED, VAL_PS_SET_EXTENDED}, PSA_ERROR_INVALID_ARGUMENT
+    VAL_TEST_IDX12, {VAL_API_UNUSED, VAL_PS_SET_EXTENDED}, PSA_ERROR_INVALID_ARGUMENT
 },
 {
     /* Call remove with UID 0 */
-    VAL_TEST_IDX12, {VAL_API_UNUSED, VAL_PS_REMOVE}, PSA_ERROR_INVALID_ARGUMENT
+    VAL_TEST_IDX13, {VAL_API_UNUSED, VAL_PS_REMOVE}, PSA_ERROR_INVALID_ARGUMENT
 },
 {
     /* Remove with UID */
-    VAL_TEST_IDX13, {VAL_API_UNUSED, VAL_PS_REMOVE}, PSA_SUCCESS
-},
+    VAL_TEST_IDX14, {VAL_API_UNUSED, VAL_PS_REMOVE}, PSA_SUCCESS
+}
 };
 #endif /* _S012_TEST_DATA_H_ */

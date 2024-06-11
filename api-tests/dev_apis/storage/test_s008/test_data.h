@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +39,8 @@ static const test_data_t s008_data[] = {
     VAL_TEST_IDX4, {VAL_ITS_GET, VAL_PS_GET}, PSA_SUCCESS
 },
 {
-    VAL_TEST_IDX5, {VAL_API_UNUSED, VAL_API_UNUSED}, 0
+    /* Call get API with data_len = MAX_UINT32 */
+    VAL_TEST_IDX5, {VAL_ITS_GET, VAL_PS_GET}, PSA_ERROR_INVALID_ARGUMENT
 },
 {
     /* Call get API with offset = total data_size + 1 */
