@@ -236,8 +236,8 @@ static const test_data check1[] = {
 {
     .test_desc        = "Test psa_verify_hash - PSA_ALG_RSA_PSS_ANY_SALT\n",
     .type             = PSA_KEY_TYPE_RSA_PUBLIC_KEY,
-    .data             = rsa_key_pair_public_key,
-    .data_length      = 162,
+    .data             = rsa_128_key_data,
+    .data_length      = 140,
     .usage_flags      = PSA_KEY_USAGE_VERIFY_HASH,
     .alg              = PSA_ALG_RSA_PSS_ANY_SALT(PSA_ALG_SHA_256),
     .hash             = hash,
