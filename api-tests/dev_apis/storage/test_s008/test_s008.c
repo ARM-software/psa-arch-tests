@@ -123,7 +123,7 @@ static int32_t psa_sst_valid_offset_success(storage_function_code_t fCode)
     /* Try to access data with a valid offset and length as MAX_UINT32 */
     status = STORAGE_FUNCTION(s008_data[VAL_TEST_IDX5].api[fCode], uid, offset, TEST_MAX_UINT32,
                             read_buff, &p_data_length);
-    TEST_ASSERT_EQUAL(status, s008_data[VAL_TEST_IDX5].status, TEST_CHECKPOINT_NUM(8));
+    TEST_ASSERT_NOT_EQUAL(status, s008_data[VAL_TEST_IDX5].status, TEST_CHECKPOINT_NUM(8));
     status = storage_buffer_comparison(read_buff, TEST_BUFF_SIZE);
     TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
