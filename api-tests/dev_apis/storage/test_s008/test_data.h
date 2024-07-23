@@ -40,7 +40,7 @@ static const test_data_t s008_data[] = {
 },
 {
     /* Call get API with data_len = MAX_UINT32 */
-    VAL_TEST_IDX5, {VAL_ITS_GET, VAL_PS_GET}, PSA_ERROR_INVALID_ARGUMENT
+    VAL_TEST_IDX5, {VAL_ITS_GET, VAL_PS_GET}, PSA_ERROR_PROGRAMMER_ERROR
 },
 {
     /* Call get API with offset = total data_size + 1 */

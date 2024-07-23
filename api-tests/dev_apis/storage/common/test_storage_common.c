@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,16 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
-#ifndef _TEST_S008_CLIENT_TESTS_H_
-#define _TEST_S008_CLIENT_TESTS_H_
-
-#define test_entry CONCAT(test_entry_,  s008)
 
 #include "test_storage_common.h"
 
-extern const client_test_t s008_storage_test_list[];
+/* Storage APIs Buffer comparison common function */
+int32_t storage_buffer_comparison(uint8_t *buffer_to_compare, uint32_t test_buff_size)
+{
+    uint32_t j;
 
-int32_t s008_storage_test(caller_security_t caller);
-extern int32_t storage_buffer_comparison(uint8_t *buffer_to_compare, uint32_t test_buff_size);
+    for (j = 0; j < test_buff_size; j++)
+    {
+        if (buffer_to_compare[j] != 0x00)
+        {
+            return VAL_STATUS_ERROR;
+        }
+    }
 
-#endif /* _TEST_S008_CLIENT_TESTS_H_ */
+    return VAL_STATUS_SUCCESS;
+}

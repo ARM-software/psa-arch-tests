@@ -33,6 +33,9 @@ endforeach()
 
 add_definitions(${CC_OPTIONS})
 add_definitions(${AS_OPTIONS})
+
+# append common storage file to list of source collected
+list(APPEND SUITE_CC_SOURCE ${PSA_SUITE_DIR}/common/test_storage_common.c)
 add_library(${PSA_TARGET_TEST_COMBINE_LIB} STATIC ${SUITE_CC_SOURCE} ${SUITE_AS_SOURCE})
 
 # Test related Include directories
@@ -54,4 +57,5 @@ target_include_directories(${PSA_TARGET_TEST_COMBINE_LIB} PRIVATE
 	${PSA_ROOT_DIR}/platform/targets/common/nspe
 	${PSA_ROOT_DIR}/platform/targets/common/nspe/crypto
 	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe
+	${PSA_SUITE_DIR}/common/
 )
