@@ -119,6 +119,7 @@ static int32_t psa_sst_valid_offset_success(storage_function_code_t fCode)
          data_len <<= 1;
      }
 
+    offset = TEST_BUFF_SIZE - 2;
     memset(read_buff, 0, TEST_BUFF_SIZE);
     /* Try to access data with a valid offset and length as MAX_UINT32 */
     status = STORAGE_FUNCTION(s008_data[VAL_TEST_IDX5].api[fCode], uid, offset, TEST_MAX_UINT32,

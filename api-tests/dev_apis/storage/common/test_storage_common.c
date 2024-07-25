@@ -17,6 +17,8 @@
 
 #include "test_storage_common.h"
 
+int32_t storage_buffer_comparison(uint8_t *buffer_to_compare, uint32_t test_buff_size);
+
 /* Storage APIs Buffer comparison common function */
 int32_t storage_buffer_comparison(uint8_t *buffer_to_compare, uint32_t test_buff_size)
 {

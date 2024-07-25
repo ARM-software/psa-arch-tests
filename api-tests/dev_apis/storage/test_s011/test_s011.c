@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,6 @@ static uint8_t read_buff[TEST_BUFF_SIZE]  = {0};
 static int32_t psa_sst_uid_not_found(storage_function_code_t fCode)
 {
     int32_t                   status;
-    uint32_t                  j;
     size_t                    p_data_length = 0;
     psa_storage_uid_t         p_uid         = UID_BASE_VALUE + 5;
     struct psa_storage_info_t orig_info;
@@ -91,10 +90,8 @@ static int32_t psa_sst_uid_not_found(storage_function_code_t fCode)
     status = STORAGE_FUNCTION(s011_data[VAL_TEST_IDX11].api[fCode], p_uid, 0, TEST_BUFF_SIZE,
                               read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s011_data[VAL_TEST_IDX11].status, TEST_CHECKPOINT_NUM(11));
-    for (j = 0; j < TEST_BUFF_SIZE; j++)
-    {
-        TEST_ASSERT_EQUAL(read_buff[j], 0, TEST_CHECKPOINT_NUM(12));
-    }
+    status = storage_buffer_comparison(read_buff, TEST_BUFF_SIZE);
+    TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(12));
     TEST_ASSERT_EQUAL(p_data_length, 0, TEST_CHECKPOINT_NUM(13));
 
     /* Remove the UID */
