@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2020-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2020-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@
 #define _TEST_STORAGE_COMMON_H_
 
 #include "val_storage.h"
+#include "val_interfaces.h"
 
 #define val              CONCAT(val, test_entry)
 #define psa              CONCAT(psa, test_entry)
@@ -36,5 +37,7 @@ typedef struct {
     storage_function_type_t api[2];
     psa_status_t            status;
 } test_data_t;
+
+extern int32_t storage_buffer_comparison(uint8_t *buffer_to_compare, uint32_t test_buff_size);
 
 #endif /* _TEST_STORAGE_COMMON_H_ */

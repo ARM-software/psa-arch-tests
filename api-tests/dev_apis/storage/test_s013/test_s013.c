@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -125,10 +125,13 @@ static int32_t psa_sst_set_extended_create_success(storage_function_code_t fCode
     TEST_ASSERT_EQUAL(status, s013_data[VAL_TEST_IDX19].status, TEST_CHECKPOINT_NUM(22));
 
     /* Validate there should not be duplicate UID present */
+    memset(read_buff, 0, TEST_BUFF_SIZE);
     val->print(PRINT_TEST, "[Check 10] No duplicate entry of UID present\n", 0);
     status = STORAGE_FUNCTION(s013_data[VAL_TEST_IDX20].api[fCode], p_uid, 0, TEST_BUFF_SIZE,
                               read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s013_data[VAL_TEST_IDX20].status, TEST_CHECKPOINT_NUM(23));
+    status = storage_buffer_comparison(read_buff, TEST_BUFF_SIZE);
+    TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(24));
 
     return VAL_STATUS_SUCCESS;
 }

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,6 @@
 #include "test_data.h"
 
 #define TEST_BUFF_SIZE 20
-#define TEST_MAX_UINT32 0xFFFFFFFF
 
 const client_test_t s008_storage_test_list[] = {
     NULL,
@@ -34,11 +33,10 @@ static uint8_t           read_buff[TEST_BUFF_SIZE];
 static uint8_t           write_buff[TEST_BUFF_SIZE] = {0x99, 0x01, 0x02, 0x03, 0x04,
                                                        0x23, 0xF6, 0x07, 0x08, 0x0D,
                                                        0x70, 0xA1, 0xFF, 0xFF, 0x14,
-                                                      0x73, 0x46, 0x97, 0xE8, 0xDD};
+                                                       0x73, 0x46, 0x97, 0xE8, 0xDD};
 
 static int32_t psa_sst_invalid_offset_failure(storage_function_code_t fCode)
 {
-    uint32_t j;
     size_t   p_data_length = 0;
     int32_t  status;
 
@@ -47,36 +45,37 @@ static int32_t psa_sst_invalid_offset_failure(storage_function_code_t fCode)
     memset(read_buff, 0, TEST_BUFF_SIZE);
     status = STORAGE_FUNCTION(s008_data[VAL_TEST_IDX6].api[fCode], uid, TEST_BUFF_SIZE+1, 0,
                               read_buff, &p_data_length);
-    TEST_ASSERT_NOT_EQUAL(status, s008_data[VAL_TEST_IDX6].status, TEST_CHECKPOINT_NUM(8));
-    TEST_ASSERT_EQUAL(p_data_length, 0, TEST_CHECKPOINT_NUM(9));
-    for (j = 0; j < TEST_BUFF_SIZE; j++)
-    {
-        TEST_ASSERT_EQUAL(read_buff[j], 0x00, TEST_CHECKPOINT_NUM(10));
-    }
+    TEST_ASSERT_NOT_EQUAL(status, s008_data[VAL_TEST_IDX6].status, TEST_CHECKPOINT_NUM(10));
+    TEST_ASSERT_EQUAL(p_data_length, 0, TEST_CHECKPOINT_NUM(11));
+    status = storage_buffer_comparison(read_buff, TEST_BUFF_SIZE);
+    TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(12));
 
     /* Case where offset = data_size  , data_len= 1  Also check nothing is returned in read buff */
     memset(read_buff, 0xCD, TEST_BUFF_SIZE);
     p_data_length = 0xFF;
     status = STORAGE_FUNCTION(s008_data[VAL_TEST_IDX8].api[fCode], uid, TEST_BUFF_SIZE, 1,
                               read_buff, &p_data_length);
-    TEST_ASSERT_EQUAL(status, s008_data[VAL_TEST_IDX8].status, TEST_CHECKPOINT_NUM(11));
-    TEST_ASSERT_EQUAL(p_data_length, 0, TEST_CHECKPOINT_NUM(12));
+    TEST_ASSERT_EQUAL(status, s008_data[VAL_TEST_IDX8].status, TEST_CHECKPOINT_NUM(13));
+    TEST_ASSERT_EQUAL(p_data_length, 0, TEST_CHECKPOINT_NUM(14));
 
     /* Case where offset = 0, data_len > data_size, check if just data_size is returned */
     status = STORAGE_FUNCTION(s008_data[VAL_TEST_IDX10].api[fCode], uid, 0, TEST_BUFF_SIZE+1,
                               read_buff, &p_data_length);
-    TEST_ASSERT_EQUAL(status, s008_data[VAL_TEST_IDX10].status, TEST_CHECKPOINT_NUM(13));
-    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(14));
-    TEST_ASSERT_MEMCMP(read_buff, write_buff, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(15));
+    TEST_ASSERT_EQUAL(status, s008_data[VAL_TEST_IDX10].status, TEST_CHECKPOINT_NUM(15));
+    TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(16));
+    TEST_ASSERT_MEMCMP(read_buff, write_buff, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(17));
 
     /* Try to access data with offset as MAX_UINT32 and length less than buffer size */
+    memset(read_buff, 0, TEST_BUFF_SIZE);
     status = STORAGE_FUNCTION(s008_data[VAL_TEST_IDX12].api[fCode], uid, TEST_MAX_UINT32,
                           TEST_BUFF_SIZE/2, read_buff, &p_data_length);
-    TEST_ASSERT_EQUAL(status, s008_data[VAL_TEST_IDX12].status, TEST_CHECKPOINT_NUM(16));
+    TEST_ASSERT_EQUAL(status, s008_data[VAL_TEST_IDX12].status, TEST_CHECKPOINT_NUM(18));
+    status = storage_buffer_comparison(read_buff, TEST_BUFF_SIZE);
+    TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(19));
 
     /* Remove the UID */
     status = STORAGE_FUNCTION(s008_data[VAL_TEST_IDX13].api[fCode], uid);
-    TEST_ASSERT_EQUAL(status, s008_data[VAL_TEST_IDX13].status, TEST_CHECKPOINT_NUM(17));
+    TEST_ASSERT_EQUAL(status, s008_data[VAL_TEST_IDX13].status, TEST_CHECKPOINT_NUM(20));
 
     return VAL_STATUS_SUCCESS;
 }
@@ -119,6 +118,15 @@ static int32_t psa_sst_valid_offset_success(storage_function_code_t fCode)
          offset >>= 1;
          data_len <<= 1;
      }
+
+    offset = TEST_BUFF_SIZE - 2;
+    memset(read_buff, 0, TEST_BUFF_SIZE);
+    /* Try to access data with a valid offset and length as MAX_UINT32 */
+    status = STORAGE_FUNCTION(s008_data[VAL_TEST_IDX5].api[fCode], uid, offset, TEST_MAX_UINT32,
+                            read_buff, &p_data_length);
+    TEST_ASSERT_NOT_EQUAL(status, s008_data[VAL_TEST_IDX5].status, TEST_CHECKPOINT_NUM(8));
+    status = storage_buffer_comparison(read_buff, TEST_BUFF_SIZE);
+    TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
     return VAL_STATUS_SUCCESS;
 }
