@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,7 +49,7 @@ if((${SUITE} STREQUAL "CRYPTO") OR
    (${SUITE} STREQUAL "PROTECTED_STORAGE") OR
    (${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE") OR
    (${SUITE} STREQUAL "INITIAL_ATTESTATION"))
-    message(FATAL_ERROR "For PSA API - use -DTARGET=tgt_dev_apis_tfm_an521 instead")
+    message(FATAL_ERROR "For PSA API - use -DTARGET=tgt_dev_apis_tfm_cs3x0 instead")
 endif()
 
 # Create NSPE library
