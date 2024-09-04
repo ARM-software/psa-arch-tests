@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -139,6 +139,5 @@ void pal_terminate_simulation(void)
 **/
 int pal_system_reset(void)
 {
-    /* Reset functionality is not functional on AN521 FVP */
     return PAL_STATUS_UNSUPPORTED_FUNC;
 }
