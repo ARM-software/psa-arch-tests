@@ -131,5 +131,6 @@ int32_t psa_key_derivation_verify_bytes_test(caller_security_t caller __UNUSED)
                                       &check1[i].expected_output, check1[i].expected_length);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(13));
     }
+
     return VAL_STATUS_SUCCESS;
 }

@@ -66,9 +66,7 @@ int32_t pal_crypto_function(int type, va_list valist)
     psa_status_t                              status;
     uint8_t                                  *output1;
     size_t                                   output_size1, *p_output_length1;
-#ifdef CRYPTO_1_1_0
     const uint8_t                            *expected_output;
-#endif
 
 
     switch (type)
@@ -646,7 +644,6 @@ int32_t pal_crypto_function(int type, va_list valist)
 			return psa_key_derivation_output_key(c_attributes,
 		        derivation_operation, p_key);
 			break;
-#ifdef CRYPTO_1_1_0
         case PAL_CRYPTO_KEY_DERIVATION_VERIFY_BYTES:
 			derivation_operation     = va_arg(valist, psa_key_derivation_operation_t *);
             expected_output          = va_arg(valist, const uint8_t *);
@@ -660,7 +657,6 @@ int32_t pal_crypto_function(int type, va_list valist)
             return psa_key_derivation_verify_key(derivation_operation,
                 key);
             break;
-#endif
 		case PAL_CRYPTO_KEY_DERIVATION_SET_CAPACITY:
 			derivation_operation     = va_arg(valist, psa_key_derivation_operation_t *);
 		        input_length             = va_arg(valist, size_t);
