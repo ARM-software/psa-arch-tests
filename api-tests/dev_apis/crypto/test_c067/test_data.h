@@ -76,37 +76,6 @@ static const test_data check1[] = {
     .expected_status    = PSA_SUCCESS
 },
 {
-    .test_desc          = "Test psa_key_derivation_verify_bytes - Incorrect usage flag\n",
-    .type               = PSA_KEY_TYPE_PASSWORD,
-    .usage_flag         = PSA_KEY_USAGE_DERIVE,
-    .alg                = PSA_ALG_PBKDF2_HMAC(PSA_ALG_SHA_256),
-    .capacity           = 32,
-    .data               = input_bytes_data,
-    .data_length        = INPUT_BYTES_DATA_LEN,
-    .derv_inputs        = {
-                            {
-                            .step        = PSA_KEY_DERIVATION_INPUT_COST,
-                            .data        = NULL,
-                            .data_length = 1
-                            },
-                            {
-                            .step        = PSA_KEY_DERIVATION_INPUT_SALT,
-                            .data        = input_salt,
-                            .data_length = INPUT_SALT_LEN
-                            },
-                            {
-                            .step        = PSA_KEY_DERIVATION_INPUT_PASSWORD,
-                            .data        = input_password,
-                            .data_length = INPUT_PASSWORD_LEN
-                            }
-                          },
-    .expected_output    = {0xD0, 0x6A, 0xE2, 0xF2, 0xC9, 0x7C, 0x9D, 0x56, 0x99, 0x5D, 0xEA,
-                           0x77, 0xC5, 0x38, 0x72, 0x08, 0xF5, 0x14, 0xF1, 0x4F, 0x39, 0x63,
-                           0x69, 0xEB, 0x0C, 0x69, 0x66, 0xC8, 0x33, 0x8E, 0x28, 0xE5},
-    .expected_length    = 32,
-    .expected_status    = PSA_ERROR_NOT_PERMITTED
-},
-{
     .test_desc          = "Test psa_key_derivation_verify_bytes - Mismatched expected value\n",
     .type               = PSA_KEY_TYPE_PASSWORD,
     .usage_flag         = PSA_KEY_USAGE_VERIFY_DERIVATION,

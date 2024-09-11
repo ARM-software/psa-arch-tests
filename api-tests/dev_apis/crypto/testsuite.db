@@ -86,7 +86,7 @@ test_c063
 test_c064, skip
 test_c065, skip
 test_c066
-test_c067, skip
-test_c068, skip
+test_c067
+test_c068
 
 (END)

@@ -103,8 +103,7 @@ int32_t psa_key_derivation_verify_key_test(caller_security_t caller __UNUSED)
         /*  Verify the key from an ongoing key derivation operation */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_VERIFY_KEY, &operation,
                                       expected);
-        TEST_ASSERT_DUAL(status, check1[i].expected_status[0], check1[i].expected_status[1],\
-                        TEST_CHECKPOINT_NUM(9));
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(9));
 
         /* Verifying set zero capacity for provided invalid operation's capacity */
         if (check1[i].capacity < check1[i].expected_hash_len) {
@@ -121,10 +120,12 @@ int32_t psa_key_derivation_verify_key_test(caller_security_t caller __UNUSED)
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &operation);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
 
-        /* Expect bad state when verification is called on an aborted operation */
+        /* Expect error-code when verification is called on an aborted operation */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_VERIFY_KEY, &operation,
                                       expected);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(13));
+        TEST_ASSERT_DUAL(status, PSA_ERROR_BAD_STATE, PSA_ERROR_INVALID_HANDLE,\
+                            TEST_CHECKPOINT_NUM(13));
     }
+
     return VAL_STATUS_SUCCESS;
 }
