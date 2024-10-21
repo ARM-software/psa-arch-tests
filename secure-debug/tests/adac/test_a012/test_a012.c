@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2023 Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2023-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -124,9 +124,10 @@ void test_entry(val_api_t *val_api)
         val->err_check_set(TEST_CHECKPOINT_NUM(3), VAL_STATUS_INVALID);
         goto test_end;
     }
-    response_packet_release(response);
 
 test_end:
+    response_packet_release(response);
+
     if (tlv_seq != NULL)
         free(tlv_seq);
 
