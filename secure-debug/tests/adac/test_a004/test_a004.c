@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021-2022 Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -136,9 +136,8 @@ void test_entry(val_api_t *val_api)
     if (response->status != ADAC_SUCCESS)
         val->err_check_set(TEST_CHECKPOINT_NUM(10), VAL_STATUS_ERROR);
 
-    response_packet_release(response);
-
 test_end:
+    response_packet_release(response);
     if ((type_id_list != NULL) || (type_id_list_rev != NULL)) {
         free(type_id_list);
         free(type_id_list_rev);

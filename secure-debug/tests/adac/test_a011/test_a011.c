@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021-2022 Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -97,5 +97,6 @@ void test_entry(val_api_t *val_api)
     }
 
 test_end:
+    response_packet_release(response);
     val->test_exit();
 }
