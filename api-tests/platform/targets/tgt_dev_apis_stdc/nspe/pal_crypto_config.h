@@ -79,10 +79,10 @@
  *
  * Comment macros to disable the types
  */
-#define ARCH_TEST_DES
-#define ARCH_TEST_DES_1KEY
-#define ARCH_TEST_DES_2KEY
-#define ARCH_TEST_DES_3KEY
+//#define ARCH_TEST_DES
+//#define ARCH_TEST_DES_1KEY
+//#define ARCH_TEST_DES_2KEY
+//#define ARCH_TEST_DES_3KEY
 
 /**
  * \def  ARCH_TEST_RAW
@@ -230,8 +230,8 @@
  */
 // #define ARCH_TEST_MD2
 // #define ARCH_TEST_MD4
-#define ARCH_TEST_MD5
-#define ARCH_TEST_RIPEMD160
+//#define ARCH_TEST_MD5
+//#define ARCH_TEST_RIPEMD160
 #define ARCH_TEST_SHA1
 #define ARCH_TEST_SHA224
 #define ARCH_TEST_SHA256
