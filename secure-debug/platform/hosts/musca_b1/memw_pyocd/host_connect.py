@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #/** @file
-# * Copyright (c) 2022 Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2022-2024, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -129,7 +129,10 @@ if __name__ == "__main__":
                 try:
                     data_received, address = adac_acs.server_socket.recvfrom(4096)
                     length = len(data_received)
-                    print("Data received from adac acs : length : %d, data : %s"%(length, str(data_received.hex())))
+                    received_string = str(data_received.hex())
+                    print("Data received from adac acs : length : %d, data : %s"%(length, received_string))
+                    if received_string[len(received_string)-8:] == '12345678':
+                        break
                     adac_acs.send(data_received)
                     head, data = adac_acs.receive()
                     adac_acs.server_socket.sendto(head, address)

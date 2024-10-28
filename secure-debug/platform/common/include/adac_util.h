@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -105,5 +105,12 @@ int request_packet_send(request_packet_t *packet);
  *   @return   - Response packet received from target.
 **/
 response_packet_t *response_packet_receive();
+
+/**
+ *   @brief    - Reset the connection between pyocd and target.
+ *   @param    - None
+ *   @return   - None
+**/
+void psa_adac_reset_debugger_target_session();
 
 #endif /* _PSA_ADAC_UTIL_H_ */
