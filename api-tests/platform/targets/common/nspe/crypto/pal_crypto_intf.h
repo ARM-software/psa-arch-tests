@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -108,6 +108,19 @@ enum crypto_function_code {
     PAL_CRYPTO_SIGN_MESSAGE,
     PAL_CRYPTO_VERIFY_HASH,
     PAL_CRYPTO_VERIFY_MESSAGE,
+    PAL_CRYPTO_PAKE_OPERATION_INIT,
+    PAL_CRYPTO_PAKE_CS_SET_ALGORITHM,
+    PAL_CRYPTO_PAKE_CS_SET_PRIMITIVE,
+    PAL_CRYPTO_PAKE_CS_SET_KEY_CONFIRMATION,
+    PAL_CRYPTO_PAKE_SETUP,
+    PAL_CRYPTO_PAKE_SET_ROLE,
+    PAL_CRYPTO_PAKE_SET_USER,
+    PAL_CRYPTO_PAKE_SET_PEER,
+    PAL_CRYPTO_PAKE_SET_CONTEXT,
+    PAL_CRYPTO_PAKE_OUTPUT,
+    PAL_CRYPTO_PAKE_INPUT,
+    PAL_CRYPTO_PAKE_GET_SHARED_KEY,
+    PAL_CRYPTO_PAKE_ABORT,
     PAL_CRYPTO_RESET                            = 0xF0,
     PAL_CRYPTO_FREE                             = 0xFE,
 };

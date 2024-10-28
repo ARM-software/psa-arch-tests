@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@
 #ifdef INITIAL_ATTESTATION
 
 uint32_t    mandatory_claims = 0;
-uint32_t    mandaroty_sw_components = 0;
+uint32_t    mandatory_sw_components = 0;
 bool_t      sw_component_present = 0;
 
 static int get_items_in_map(QCBORDecodeContext *decode_context,
@@ -160,11 +160,11 @@ static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
         if (status != VAL_ATTEST_SUCCESS)
             break;
 
-        mandatory_claims |= 1 << (EAT_CBOR_ARM_RANGE_BASE - item.label.int64);
         if (item.uLabelType == QCBOR_TYPE_INT64)
         {
-            if (item.label.int64 == EAT_CBOR_ARM_LABEL_NONCE)
+            if (item.label.int64 == PSATOKEN_NONCE)
             {
+                mandatory_claims++;
                 if (item.uDataType == QCBOR_TYPE_BYTE_STRING)
                 {
                     /* Given challenge vs challenge in token */
@@ -174,28 +174,42 @@ static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
                 else
                     return VAL_ATTEST_TOKEN_NOT_SUPPORTED;
             }
-            else if (item.label.int64 == EAT_CBOR_ARM_LABEL_BOOT_SEED ||
-                     item.label.int64 == EAT_CBOR_ARM_LABEL_IMPLEMENTATION_ID ||
-                     item.label.int64 == EAT_CBOR_ARM_LABEL_UEID)
+            else if (item.label.int64 == PSATOKEN_IMPLEMENTATION_ID ||
+                     item.label.int64 == PSATOKEN_UEID)
             {
+                mandatory_claims++;
                 if (item.uDataType != QCBOR_TYPE_BYTE_STRING)
                     return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
             }
-            else if (item.label.int64 == EAT_CBOR_ARM_LABEL_ORIGINATION ||
-                     item.label.int64 == EAT_CBOR_ARM_LABEL_PROFILE_DEFINITION ||
-                     item.label.int64 == EAT_CBOR_ARM_LABEL_HW_VERSION)
+            else if (item.label.int64 == PSATOKEN_BOOT_SEED)
+            {
+#ifdef PSA_ATTESTATION_PROFILE_1
+                mandatory_claims++;
+#endif
+                if (item.uDataType != QCBOR_TYPE_BYTE_STRING)
+                    return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
+            }
+            else if (item.label.int64 == PSATOKEN_VERIFICATION_SERVICE_INDICATOR ||
+                     item.label.int64 == PSATOKEN_PROFILE_DEFINITION ||
+                     item.label.int64 == PSATOKEN_HW_VERSION)
             {
                 if (item.uDataType != QCBOR_TYPE_TEXT_STRING)
                     return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
             }
-            else if (item.label.int64 == EAT_CBOR_ARM_LABEL_CLIENT_ID ||
-                     item.label.int64 == EAT_CBOR_ARM_LABEL_SECURITY_LIFECYCLE)
+            else if (item.label.int64 == PSATOKEN_CLIENT_ID ||
+                     item.label.int64 == PSATOKEN_SECURITY_LIFECYCLE)
             {
+                mandatory_claims++;
                 if (item.uDataType != QCBOR_TYPE_INT64)
                     return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
             }
-            else if (item.label.int64 == EAT_CBOR_ARM_LABEL_SW_COMPONENTS)
+#ifdef PSA_ATTESTATION_PROFILE_1
+            else if (item.label.int64 == PSATOKEN_NO_SW_COMPONENTS)
+                mandatory_claims++;
+#endif
+            else if (item.label.int64 == PSATOKEN_SW_COMPONENTS)
             {
+                mandatory_claims++;
                 if (item.uDataType != QCBOR_TYPE_ARRAY)
                     return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
 
@@ -210,37 +224,32 @@ static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
                     count = item.val.uCount;
                     for (i = 0; i <= count; i++)
                     {
-                        //mandaroty_sw_components |= 1 << item.label.int64;
-                        if (item.label.int64 == EAT_CBOR_SW_COMPONENT_MEASUREMENT)
+                        if (item.label.int64 == PSATOKEN_SW_COMPONENT_MEASUREMENT)
                         {
-                           if (index == 0)
-                        	   mandaroty_sw_components |= 1 << item.label.int64;
-                           if (item.uDataType != QCBOR_TYPE_BYTE_STRING)
+                            if (index == 0)
+                                mandatory_sw_components++;
+                            if (item.uDataType != QCBOR_TYPE_BYTE_STRING)
                               return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
                         }
-                        else if (item.label.int64 == EAT_CBOR_SW_COMPONENT_MEASUREMENT_DESC)
+                        else if (item.label.int64 == PSATOKEN_SW_COMPONENT_SIGNER_ID)
+                        {
+#ifdef PSA_ATTESTATION_PROFILE_2
+                            if (index == 0)
+                                mandatory_sw_components++;
+#endif
+                            if (item.uDataType != QCBOR_TYPE_BYTE_STRING)
+                              return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
+                        }
+                        else if (item.label.int64 == PSATOKEN_SW_COMPONENT_TYPE ||
+                                 item.label.int64 == PSATOKEN_SW_COMPONENT_VERSION ||
+                                 item.label.int64 == PSATOKEN_SW_COMPONENT_MEASUREMENT_DESC)
                         {
                             if (item.uDataType != QCBOR_TYPE_TEXT_STRING)
                                 return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
                         }
-                        else if (item.label.int64 == EAT_CBOR_SW_COMPONENT_VERSION)
-                        {
-                            if (item.uDataType != QCBOR_TYPE_TEXT_STRING)
-                               return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
-                        }
-                        else if (item.label.int64 == EAT_CBOR_SW_COMPONENT_SIGNER_ID)
-                        {
-                            if (item.uDataType != QCBOR_TYPE_BYTE_STRING)
-                               return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
-                        }
-                        else if (item.label.int64 == EAT_CBOR_SW_COMPONENT_EPOCH)
+                        else if (item.label.int64 == PSATOKEN_SW_COMPONENT_EPOCH)
                         {
                              if (item.uDataType != QCBOR_TYPE_INT64)
-                               return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
-                        }
-                        else if (item.label.int64 == EAT_CBOR_SW_COMPONENT_TYPE)
-                        {
-                            if (item.uDataType != QCBOR_TYPE_TEXT_STRING)
                                return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
                         }
 
@@ -250,8 +259,8 @@ static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
                             if (status != VAL_ATTEST_SUCCESS)
                                return VAL_ATTEST_TOKEN_ERR_CBOR_FORMATTING;
                         }
-                    } /*for (i = 0; i <= count; i++)*/
-                } /*for (index = 0; index<sw_comp_count; index++)*/
+                    }
+                }
 
             }
         }
@@ -260,7 +269,6 @@ static int parse_claims(QCBORDecodeContext *decode_context, QCBORItem item,
             /* For other claim types */
         }
     }
-
     if (status == QCBOR_ERR_HIT_END || status == QCBOR_ERR_NO_MORE_ITEMS)
         return VAL_ATTEST_SUCCESS;
     else
@@ -317,7 +325,7 @@ int32_t val_initial_attest_verify_token(uint8_t *challenge, size_t challenge_siz
     -------------------------
 */
 
-    /* Initialize the decorder */
+    /* Initialize the decoder */
     QCBORDecode_Init(&decode_context, completed_token, QCBOR_DECODE_MODE_NORMAL);
 
     /* Get the Header */
@@ -388,18 +396,28 @@ int32_t val_initial_attest_verify_token(uint8_t *challenge, size_t challenge_siz
     if (status != VAL_ATTEST_SUCCESS)
         return status;
 
-    if ((mandatory_claims & MANDATORY_CLAIM_WITH_SW_COMP) == MANDATORY_CLAIM_WITH_SW_COMP)
+#ifdef PSA_ATTESTATION_PROFILE_1
+    if (mandatory_claims == PROFILE_1_MANDATORY_CLAIMS)
     {
-        if ((mandaroty_sw_components & MANDATORY_SW_COMP) != MANDATORY_SW_COMP)
-            return VAL_ATTEST_TOKEN_NOT_ALL_MANDATORY_CLAIMS;
-        mandaroty_sw_components = 0;
+        if (sw_component_present == 1 && mandatory_sw_components != PROFILE_1_MANDATORY_SW_COMPS)
+            status = VAL_ATTEST_TOKEN_NOT_ALL_MANDATORY_CLAIMS;
     }
-    else if ((mandatory_claims & MANDATORY_CLAIM_NO_SW_COMP) != MANDATORY_CLAIM_NO_SW_COMP)
-    {
-        return VAL_ATTEST_TOKEN_NOT_ALL_MANDATORY_CLAIMS;
-    }
+    else
+        status = VAL_ATTEST_TOKEN_NOT_ALL_MANDATORY_CLAIMS;
+#endif
 
-    return VAL_ATTEST_SUCCESS;
+#ifdef PSA_ATTESTATION_PROFILE_2
+    if (mandatory_claims == PROFILE_2_MANDATORY_CLAIMS)
+    {
+        if (mandatory_sw_components != PROFILE_2_MANDATORY_SW_COMPS)
+            status = VAL_ATTEST_TOKEN_NOT_ALL_MANDATORY_CLAIMS;
+    }
+#endif
+    mandatory_claims = 0;
+    mandatory_sw_components = 0;
+
+    return status;
+
 }
 #endif /* INITIAL_ATTESTATION */
 

@@ -6,6 +6,8 @@ There are a couple of limitations to this target when it comes to a test which i
 
 - **NVMEM**: Stores data in an array in memory, which means NVMEM would be lost as it isn't a non-volatile implementation.
 
+- If PSA crypto static library file is available, -DPSA_CRYPTO_LIB_FILENAME to be used to mention the absolute path to the file.
+
 ## License
 
 Arm PSA test suite is distributed under Apache v2.0 License.
