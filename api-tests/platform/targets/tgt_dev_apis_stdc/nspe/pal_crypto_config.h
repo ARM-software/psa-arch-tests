@@ -341,6 +341,23 @@
 */
 #define ARCH_TEST_PBKDF2
 
+/**
+ * \def ARCH_TEST_JAPKE
+ *
+ * Enable support for balanced PAKE: ECJPAKE algorithm
+*/
+#define ARCH_TEST_JPAKE
+
+/**
+ * \def ARCH_TEST_SPAKE2P
+ *
+ * Enable support for augmented PAKE: SPAKE2P algorithm
+ */
+#define ARCH_TEST_SPAKE2P
+#define ARCH_TEST_SPAKE2P_HMAC
+#define ARCH_TEST_SPAKE2P_CMAC
+#define ARCH_TEST_SPAKE2P_MATTER
+
 #include "pal_crypto_config_check.h"
 
 #endif /* _PAL_CRYPTO_CONFIG_H_ */

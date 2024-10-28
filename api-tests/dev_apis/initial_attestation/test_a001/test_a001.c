@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,6 +36,14 @@ int32_t psa_initial_attestation_get_token_test(caller_security_t caller __UNUSED
     size_t      token_buffer_size, token_size;
     uint8_t     challenge[PSA_INITIAL_ATTEST_CHALLENGE_SIZE_64+1];
     uint8_t     token_buffer[PSA_INITIAL_ATTEST_MAX_TOKEN_SIZE];
+
+#ifdef PSA_ATTESTATION_PROFILE_1
+    val->print(PRINT_TEST, "[Info] The Attestation Profile being tested = 1\n", 0);
+#endif
+
+#ifdef PSA_ATTESTATION_PROFILE_2
+    val->print(PRINT_TEST, "[Info] The Attestation Profile being tested = 2\n", 0);
+#endif
 
     for (i = 0; i < num_checks; i++)
     {

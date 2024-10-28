@@ -66,8 +66,21 @@ int32_t pal_crypto_function(int type, va_list valist)
     psa_status_t                              status;
     uint8_t                                  *output1;
     size_t                                   output_size1, *p_output_length1;
+    psa_pake_operation_t                     *pake_operation, pake_operation_temp;
+    psa_pake_cipher_suite_t                  *cipher_suite;
+    const psa_pake_cipher_suite_t            *c_cipher_suite;
+    psa_pake_primitive_t                      pake_primitive;
+    uint32_t                                  key_confirmation;
+    psa_key_id_t                             *pw_key;
+    psa_pake_role_t                           role;
+    const uint8_t                            *user_id, *peer_id, *pake_context;
+    size_t                                    user_id_len, peer_id_len, context_len;
+    psa_pake_step_t                           pake_step;
+    uint8_t                                  *pake_output, *pake_input;
+    size_t                                    pake_op_size, ip_length;
+    size_t                                   *op_length;
+    const psa_key_attributes_t               *pake_key_attr;
     const uint8_t                            *expected_output;
-
 
     switch (type)
 	{
@@ -878,6 +891,92 @@ int32_t pal_crypto_function(int type, va_list valist)
 								   input1,
 								   input_length1);
 			break;
+                case PAL_CRYPTO_PAKE_OPERATION_INIT:
+                        pake_operation           = va_arg(valist, psa_pake_operation_t *);
+                        pake_operation_temp      = psa_pake_operation_init();
+                        memcpy((void *)pake_operation, (void *)&pake_operation_temp,
+                                   sizeof(psa_pake_operation_t));
+                        return 0;
+                        break;
+                case PAL_CRYPTO_PAKE_SETUP:
+                        pake_operation         = va_arg(valist, psa_pake_operation_t *);
+                        key                    = va_arg(valist, psa_key_id_t);
+                        c_cipher_suite         = va_arg(valist, const psa_pake_cipher_suite_t *);
+                        return psa_pake_setup( pake_operation,key,
+                                                                  c_cipher_suite);
+                        break;
+                case PAL_CRYPTO_PAKE_ABORT:
+                        pake_operation        = va_arg(valist, psa_pake_operation_t *);
+                        return psa_pake_abort(pake_operation);
+                        break;
+                case PAL_CRYPTO_PAKE_CS_SET_ALGORITHM:
+                        cipher_suite         = va_arg(valist, psa_pake_cipher_suite_t *);
+                        alg                  = va_arg(valist, psa_algorithm_t );
+                        psa_pake_cs_set_algorithm(cipher_suite,
+                                                                  alg);
+                        return 0;
+                        break;
+                case PAL_CRYPTO_PAKE_CS_SET_PRIMITIVE:
+                        cipher_suite         = va_arg(valist, psa_pake_cipher_suite_t *);
+                        pake_primitive       = va_arg(valist, psa_pake_primitive_t );
+                        psa_pake_cs_set_primitive(cipher_suite,
+                                                                 pake_primitive);
+                        return 0;
+                        break;
+                case PAL_CRYPTO_PAKE_CS_SET_KEY_CONFIRMATION:
+                        cipher_suite         = va_arg(valist, psa_pake_cipher_suite_t *);
+                        key_confirmation     = va_arg(valist, uint32_t );
+                        psa_pake_cs_set_key_confirmation(cipher_suite,
+                                                                 key_confirmation);
+                        return 0;
+                        break;
+                case PAL_CRYPTO_PAKE_SET_ROLE:
+                        pake_operation      = va_arg(valist, psa_pake_operation_t* );
+                        role                = va_arg(valist, int );
+                        return  psa_pake_set_role(pake_operation, role);
+                        break;
+                case PAL_CRYPTO_PAKE_SET_USER:
+                        pake_operation     = va_arg(valist, psa_pake_operation_t *);
+                        user_id            = va_arg(valist, const uint8_t *);
+                        user_id_len        = va_arg(valist, size_t);
+                        return psa_pake_set_user( pake_operation, user_id, user_id_len );
+                        break;
+                case PAL_CRYPTO_PAKE_SET_PEER:
+                        pake_operation   = va_arg(valist, psa_pake_operation_t *);
+                        peer_id          = va_arg(valist, const uint8_t* );
+                        peer_id_len      = va_arg(valist, size_t);
+                        return psa_pake_set_peer( pake_operation, peer_id, peer_id_len);
+                        break;
+                case PAL_CRYPTO_PAKE_SET_CONTEXT:
+                        pake_operation = va_arg(valist, psa_pake_operation_t* );
+                        pake_context   = va_arg(valist, const uint8_t* );
+                        context_len    = va_arg(valist, size_t );
+                        return psa_pake_set_context(pake_operation, pake_context, context_len);
+                        break;
+                case PAL_CRYPTO_PAKE_OUTPUT:
+                        pake_operation = va_arg(valist, psa_pake_operation_t* );
+                        pake_step      = va_arg(valist, int );
+                        pake_output    = va_arg(valist, uint8_t* );
+                        pake_op_size   = va_arg(valist, size_t);
+                        op_length      = va_arg(valist, size_t* );
+                        return psa_pake_output(pake_operation, pake_step, pake_output,
+                                                        pake_op_size, op_length);
+                        break;
+                case PAL_CRYPTO_PAKE_INPUT:
+                        pake_operation = va_arg(valist, psa_pake_operation_t*);
+                        pake_step      = va_arg(valist, int );
+                        pake_input     = va_arg(valist, uint8_t* );
+                        ip_length      = va_arg(valist, size_t);
+                        return psa_pake_input(pake_operation, pake_step,
+                                                              pake_input, ip_length);
+                        break;
+                case PAL_CRYPTO_PAKE_GET_SHARED_KEY:
+                        pake_operation = va_arg(valist, psa_pake_operation_t* );
+                        pake_key_attr  = va_arg(valist, const psa_key_attributes_t* );
+                        pw_key         = va_arg(valist, psa_key_id_t *);
+                        return psa_pake_get_shared_key( pake_operation, pake_key_attr,
+                                                        pw_key);
+                        break;
 		case PAL_CRYPTO_RESET:
 			return pal_system_reset();
 			break;

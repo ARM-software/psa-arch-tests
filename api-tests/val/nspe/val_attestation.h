@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,61 +48,54 @@
 
 #define MAX_CHALLENGE_SIZE      PSA_INITIAL_ATTEST_CHALLENGE_SIZE_64
 
-#define EAT_CBOR_ARM_RANGE_BASE                 (-75000)
-#define EAT_CBOR_ARM_LABEL_PROFILE_DEFINITION   (EAT_CBOR_ARM_RANGE_BASE - 0)
-#define EAT_CBOR_ARM_LABEL_CLIENT_ID            (EAT_CBOR_ARM_RANGE_BASE - 1)
-#define EAT_CBOR_ARM_LABEL_SECURITY_LIFECYCLE   (EAT_CBOR_ARM_RANGE_BASE - 2)
-#define EAT_CBOR_ARM_LABEL_IMPLEMENTATION_ID    (EAT_CBOR_ARM_RANGE_BASE - 3)
-#define EAT_CBOR_ARM_LABEL_BOOT_SEED            (EAT_CBOR_ARM_RANGE_BASE - 4)
-#define EAT_CBOR_ARM_LABEL_HW_VERSION           (EAT_CBOR_ARM_RANGE_BASE - 5)
-#define EAT_CBOR_ARM_LABEL_SW_COMPONENTS        (EAT_CBOR_ARM_RANGE_BASE - 6)
-#define EAT_CBOR_ARM_LABEL_NO_SW_COMPONENTS     (EAT_CBOR_ARM_RANGE_BASE - 7)
-#define EAT_CBOR_ARM_LABEL_NONCE                (EAT_CBOR_ARM_RANGE_BASE - 8)
-#define EAT_CBOR_ARM_LABEL_UEID                 (EAT_CBOR_ARM_RANGE_BASE - 9)
-#define EAT_CBOR_ARM_LABEL_ORIGINATION          (EAT_CBOR_ARM_RANGE_BASE - 10)
+#ifdef PSA_ATTESTATION_PROFILE_1
 
-#define CBOR_ARM_TOTAL_CLAIM_INSTANCE           10
+/* Profile-1 token claim values */
+#define PSATOKEN_PROFILE_DEFINITION                 (-75000)
+#define PSATOKEN_CLIENT_ID                          (-75001)
+#define PSATOKEN_SECURITY_LIFECYCLE                 (-75002)
+#define PSATOKEN_IMPLEMENTATION_ID                  (-75003)
+#define PSATOKEN_BOOT_SEED                          (-75004)
+#define PSATOKEN_HW_VERSION                         (-75005)
+#define PSATOKEN_SW_COMPONENTS                      (-75006)
+#define PSATOKEN_NO_SW_COMPONENTS                   (-75007)
+#define PSATOKEN_NONCE                              (-75008)
+#define PSATOKEN_UEID                               (-75009)
+#define PSATOKEN_VERIFICATION_SERVICE_INDICATOR     (-75010)
 
-#define EAT_CBOR_SW_COMPONENT_TYPE              (1u)
-#define EAT_CBOR_SW_COMPONENT_MEASUREMENT       (2u)
-#define EAT_CBOR_SW_COMPONENT_EPOCH             (3u)
-#define EAT_CBOR_SW_COMPONENT_VERSION           (4u)
-#define EAT_CBOR_SW_COMPONENT_SIGNER_ID         (5u)
-#define EAT_CBOR_SW_COMPONENT_MEASUREMENT_DESC  (6u)
+#define PROFILE_1_MANDATORY_CLAIMS          7
+#define PROFILE_1_MANDATORY_SW_COMPS        1
 
-#define MANDATORY_CLAIM_WITH_SW_COMP           (1 << (EAT_CBOR_ARM_RANGE_BASE                      \
-                                                    - EAT_CBOR_ARM_LABEL_NONCE)              |     \
-                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
-                                                    - EAT_CBOR_ARM_LABEL_UEID)               |     \
-                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
-                                                    - EAT_CBOR_ARM_LABEL_IMPLEMENTATION_ID)  |     \
-                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
-                                                    - EAT_CBOR_ARM_LABEL_CLIENT_ID)          |     \
-                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
-                                                    - EAT_CBOR_ARM_LABEL_SECURITY_LIFECYCLE) |     \
-                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
-                                                    - EAT_CBOR_ARM_LABEL_BOOT_SEED)          |     \
-                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
-                                                    - EAT_CBOR_ARM_LABEL_SW_COMPONENTS))
+#endif
 
-#define MANDATORY_CLAIM_NO_SW_COMP             (1 << (EAT_CBOR_ARM_RANGE_BASE                      \
-                                                    - EAT_CBOR_ARM_LABEL_NONCE)              |     \
-                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
-                                                    - EAT_CBOR_ARM_LABEL_UEID)               |     \
-                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
-                                                    - EAT_CBOR_ARM_LABEL_IMPLEMENTATION_ID)  |     \
-                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
-                                                    - EAT_CBOR_ARM_LABEL_CLIENT_ID)          |     \
-                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
-                                                    - EAT_CBOR_ARM_LABEL_SECURITY_LIFECYCLE) |     \
-                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
-                                                    - EAT_CBOR_ARM_LABEL_BOOT_SEED)          |     \
-                                                1 << (EAT_CBOR_ARM_RANGE_BASE                      \
-                                                    - EAT_CBOR_ARM_LABEL_NO_SW_COMPONENTS))
+#ifdef PSA_ATTESTATION_PROFILE_2
 
-#define MANDATORY_SW_COMP                      (1 << EAT_CBOR_SW_COMPONENT_MEASUREMENT)
+/* Profile-2 token claim values */
+#define PSATOKEN_NONCE                              (10)
+#define PSATOKEN_UEID                               (256)
+#define PSATOKEN_PROFILE_DEFINITION                 (265)
+#define PSATOKEN_BOOT_SEED                          (268)
+#define PSATOKEN_CLIENT_ID                          (2394)
+#define PSATOKEN_SECURITY_LIFECYCLE                 (2395)
+#define PSATOKEN_IMPLEMENTATION_ID                  (2396)
+#define PSATOKEN_HW_VERSION                         (2398)
+#define PSATOKEN_SW_COMPONENTS                      (2399)
+#define PSATOKEN_VERIFICATION_SERVICE_INDICATOR     (2400)
 
-#define VAL_ATTEST_MIN_ERROR                    70
+#define PROFILE_2_MANDATORY_CLAIMS          6
+#define PROFILE_2_MANDATORY_SW_COMPS        2
+
+#endif
+
+/* Common Software component claims between both profiles */
+#define PSATOKEN_SW_COMPONENT_TYPE                  (1u)
+#define PSATOKEN_SW_COMPONENT_MEASUREMENT           (2u)
+#define PSATOKEN_SW_COMPONENT_EPOCH                 (3u)
+#define PSATOKEN_SW_COMPONENT_VERSION               (4u)
+#define PSATOKEN_SW_COMPONENT_SIGNER_ID             (5u)
+#define PSATOKEN_SW_COMPONENT_MEASUREMENT_DESC      (6u)
+
+#define VAL_ATTEST_MIN_ERROR                70
 
 enum attestation_error_code {
     VAL_ATTEST_SUCCESS = 0,
