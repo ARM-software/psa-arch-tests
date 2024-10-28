@@ -192,6 +192,8 @@ void test_entry(val_api_t *val_api)
         goto test_end;
     }
     response_packet_release(response);
+    //reset session
+    psa_adac_reset_debugger_target_session();
 
     // Set device in locked state.
     ret = psa_adac_issue_command(ADAC_LOCK_DEBUG_CMD, request, NULL, 0);

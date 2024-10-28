@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2024, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -335,4 +335,19 @@ psa_status_t psa_adac_check_cryptosystem_support(response_packet_t *packet, uint
         r = PSA_SUCCESS;
     }
     return r;
+}
+
+
+/**
+ *   @brief    - Reset the connection between pyocd and target.
+ *   @param    - None
+ *   @return   - None
+**/
+void psa_adac_reset_debugger_target_session()
+{
+    uint8_t reset[] = {0x12,0x34,0x56,0x78};
+    request_packet_t packet = {0,};
+    memcpy(packet.data,&reset,4);
+    packet.data_count = 1;
+    request_packet_send(&packet);
 }
