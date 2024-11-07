@@ -29,7 +29,7 @@ list(APPEND PAL_SRC_ASM_DRIVER_SP )
 
 # Listing all the sources required for given target
 if(${SUITE} STREQUAL "IPC")
-    message(FATAL_ERROR "For IPC - use -DTARGET=tgt_ff_tfm_cs3x0 instead")
+    message(FATAL_ERROR "For IPC - use -DTARGET=tgt_ff_tfm_mps3 instead")
 else()
     list(APPEND PAL_SRC_C_NSPE
         # driver files will be compiled as part of NSPE
