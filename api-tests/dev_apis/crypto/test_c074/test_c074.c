@@ -391,7 +391,7 @@ int32_t psa_pake_output_test(caller_security_t caller __UNUSED)
 
       }
 
-      if (PSA_ALG_JPAKE(PSA_ALG_SHA_256))
+      if (PSA_ALG_IS_JPAKE (check1[i].alg))
          {
            /* Abort the PAKE operation object */
          status = val->crypto_function(VAL_CRYPTO_PAKE_ABORT, &user);

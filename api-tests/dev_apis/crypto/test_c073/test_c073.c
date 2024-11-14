@@ -139,8 +139,7 @@ int32_t psa_pake_set_context_test(caller_security_t caller __UNUSED)
    /* Expect a bad state if psa_pake_set_context is called on aborted inactive operation object */
         status = val->crypto_function(VAL_CRYPTO_PAKE_SET_CONTEXT,
                                       &operation,
-                                      check1[i].context,
-                                      check1[i].context_len);
+                                      (const uint8_t*)"context", 7);
         TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(11));
   }
     return VAL_STATUS_SUCCESS;

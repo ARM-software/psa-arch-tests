@@ -472,6 +472,12 @@ int32_t psa_pake_get_shared_key_test(caller_security_t caller __UNUSED)
              TEST_ASSERT_DUAL(status, check1[i].expected_status[0],
                                       check1[i].expected_status[1], TEST_CHECKPOINT_NUM(12));
 
+             if (status == PSA_SUCCESS) {
+               /* Destroy the key */
+               status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, shared_key);
+               TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(14));
+             }
+
              status = val->crypto_function(VAL_CRYPTO_PAKE_GET_SHARED_KEY,
                                            &server, &attributes, &shared_key);
              TEST_ASSERT_DUAL(status, check1[i].expected_status[0],
