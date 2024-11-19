@@ -129,11 +129,14 @@ int32_t psa_pake_set_peer_test(caller_security_t caller __UNUSED)
                                        &operation);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
-      /* Expect a bad state when psa_pake_set_peer is called on aborted inactive operation object */
-        status = val->crypto_function(VAL_CRYPTO_PAKE_SET_PEER,
-                                       &operation,
-                                       (const uint8_t*)"peer", 4);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(10));
+        /* Expect a bad state when psa_pake_set_peer is called on aborted inactive operation object */
+        if (check1[i].expected_status == PSA_SUCCESS) {
+            status = val->crypto_function(VAL_CRYPTO_PAKE_SET_PEER,
+                                          &operation,
+                                          check1[i].peer_id,
+                                          check1[i].peer_id_len);
+            TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(10));
+        }
 }
     return VAL_STATUS_SUCCESS;
 }
