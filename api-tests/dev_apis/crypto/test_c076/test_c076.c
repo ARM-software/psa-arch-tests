@@ -105,6 +105,10 @@ int32_t psa_pake_abort_test(caller_security_t caller __UNUSED)
                                       &operation);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
 
+        /* Destroy the key */
+        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+
      }
     return VAL_STATUS_SUCCESS;
 }
