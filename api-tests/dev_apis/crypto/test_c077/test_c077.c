@@ -299,7 +299,7 @@ int32_t psa_pake_get_shared_key_test(caller_security_t caller __UNUSED)
     psa_pake_operation_t    client = PSA_PAKE_OPERATION_INIT;
     psa_pake_operation_t    server = PSA_PAKE_OPERATION_INIT;
     psa_key_id_t            pw_key, ckey, skey;
-    psa_key_id_t            shared_key;
+    psa_key_id_t            shared_key, shared_key1;
 
     if (num_checks == 0)
     {
@@ -479,14 +479,14 @@ int32_t psa_pake_get_shared_key_test(caller_security_t caller __UNUSED)
              }
 
              status = val->crypto_function(VAL_CRYPTO_PAKE_GET_SHARED_KEY,
-                                           &server, &attributes, &shared_key);
+                                           &server, &attributes, &shared_key1);
              TEST_ASSERT_DUAL(status, check1[i].expected_status[0],
                                       check1[i].expected_status[1], TEST_CHECKPOINT_NUM(13));
 
              if (status == PSA_SUCCESS) {
-             status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, shared_key);
-             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(14));
-
+               /* Destroy the key */
+               status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, shared_key1);
+               TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(14));
             }
            }
 
@@ -507,7 +507,6 @@ int32_t psa_pake_get_shared_key_test(caller_security_t caller __UNUSED)
 
               status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, skey);
               TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(19));
-
             }
 
    }
