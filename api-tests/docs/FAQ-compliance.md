@@ -76,6 +76,7 @@ Authenticated Encryption with Associated Data   | `crypto_aead`
 Key derivation              | `crypto_derivation`
 Key agreement               | `crypto_agreement`
 Random Number Generation    | `crypto_rng`
+PAKE algorithm support      | `crypto_pake`
 
 Functions that need to be implemented for each badge:
 
@@ -91,6 +92,7 @@ Functions that need to be implemented for each badge:
 | `crypto_derivation`  | `key_derivation_setup`<br>`key_derivation_input_bytes`<br>`key_derivation_input_integer`<br>`key_derivation_input_key`<br>`key_derivation_key_agreement`<br>`key_derivation_output_bytes`<br>`key_derivation_output_key`<br>`key_derivation_abort`<br>`key_derivation_set_get_capacity`<br>`key_derivation_verify_bytes`<br>`key_derivation_verify_key`
 | `crypto_agreement`   | `raw_key_agreement`
 | `crypto_rng`         | `generate_random`
+| `crypto_pake`        | A consistent set of PAKE operations needed to complete a PAKE key exchange.
 
 This list is probably not exhaustive. Crypto vendors are expected to use common sense to determine which functions of a given subset are interesting for their own users.
 

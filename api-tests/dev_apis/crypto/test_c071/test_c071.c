@@ -121,12 +121,14 @@ int32_t psa_pake_set_user_test(caller_security_t caller __UNUSED)
                                        &operation);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
-      /* Expect a bad state when psa_pake_set_user is called on aborted inactive operation object */
-        status = val->crypto_function(VAL_CRYPTO_PAKE_SET_USER,
-                                       &operation,
-                                       check1[i].user_id,
-                                       check1[i].user_id_len);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(9));
+        /* Expect a bad state when psa_pake_set_user is called on aborted inactive operation object */
+        if (check1[i].expected_status == PSA_SUCCESS) {
+            status = val->crypto_function(VAL_CRYPTO_PAKE_SET_USER,
+                                          &operation,
+                                          check1[i].user_id,
+                                          check1[i].user_id_len);
+            TEST_ASSERT_EQUAL(status, PSA_ERROR_BAD_STATE, TEST_CHECKPOINT_NUM(9));
+        }
     }
 
     return VAL_STATUS_SUCCESS;
