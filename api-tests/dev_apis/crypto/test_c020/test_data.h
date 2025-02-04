@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2022, 2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -191,6 +191,68 @@ static const test_data check1[] = {
     .expected_status = PSA_ERROR_BAD_STATE
 },
 #endif /* ARCH_TEST_HKDF */
+#ifdef ARCH_TEST_HKDF_EXTRACT
+{
+    .test_desc       = "Test psa_key_derivation_output_bytes - HKDF\n",
+    .type            = PSA_KEY_TYPE_DERIVE,
+    .usage_flags     = PSA_KEY_USAGE_DERIVE,
+    .alg             = PSA_ALG_HKDF_EXTRACT(PSA_ALG_SHA_256),
+    .capacity        = 32,
+    .data            = IKM,
+    .data_length     = 22,
+    .derv_inputs     = {
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_SALT,
+                         .data        = kdf_salt,
+                         .data_length = 13
+                        },
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_SECRET,
+                         .data        = IKM,
+                         .data_length = 22
+                        },
+                        {
+                         .step        = 0,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                       },
+    .output          = expected_output,
+    .output_length   = 32,
+    .expected_status = PSA_SUCCESS
+},
+#endif
+#ifdef ARCH_TEST_HKDF_EXPAND
+{
+    .test_desc       = "Test psa_key_derivation_output_bytes - HKDF Expand\n",
+    .type            = PSA_KEY_TYPE_DERIVE,
+    .usage_flags     = PSA_KEY_USAGE_DERIVE,
+    .alg             = PSA_ALG_HKDF_EXPAND(PSA_ALG_SHA_256),
+    .capacity        = 42,
+    .data            = PRK,
+    .data_length     = 32,
+    .derv_inputs     = {
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_SECRET,
+                         .data        = PRK,
+                         .data_length = 32
+                        },
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_INFO,
+                         .data        = kdf_info,
+                         .data_length = 10
+                        },
+                        {
+                         .step        = 0,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                       },
+    .output          = expected_output,
+    .output_length   = 42,
+    .expected_status = PSA_SUCCESS
+},
+#endif
 
 #ifdef ARCH_TEST_TLS12_PRF
 {
@@ -283,4 +345,35 @@ static const test_data check1[] = {
     .expected_status = PSA_ERROR_BAD_STATE
 },
 #endif /* ARCH_TEST_TLS12_PRF */
+#ifdef ARCH_TEST_SP800_108_COUNTER_CMAC
+{
+    .test_desc       = "Test psa_key_derivation_output_bytes - SP800_108_HMAC\n",
+    .type            = PSA_KEY_TYPE_DERIVE,
+    .usage_flags     = PSA_KEY_USAGE_DERIVE,
+    .alg             = PSA_ALG_SP800_108_COUNTER_HMAC(PSA_ALG_SHA_256),
+    .capacity        = 42,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .derv_inputs     = {
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_SECRET,
+                         .data        = key_data,
+                         .data_length = 16
+                        },
+                        {
+                         .step        = PSA_KEY_DERIVATION_INPUT_LABEL,
+                         .data        = input_label,
+                         .data_length = INPUT_LABEL_LEN
+                        },
+                        {
+                         .step        = 0,
+                         .data        = NULL,
+                         .data_length = 0
+                        },
+                       },
+    .output          = expected_output,
+    .output_length   = 42,
+    .expected_status = PSA_SUCCESS
+},
+#endif
 };

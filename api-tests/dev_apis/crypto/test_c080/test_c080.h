@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,19 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
+#ifndef _TEST_C080_CLIENT_TESTS_H_
+#define _TEST_C080_CLIENT_TESTS_H_
 
-#ifndef _VAL_ENTRY_H_
-#define _VAL_ENTRY_H_
+#include "val_crypto.h"
+#define test_entry CONCAT(test_entry_, c080)
+#define val CONCAT(val, test_entry)
+#define psa CONCAT(psa, test_entry)
 
-#include "val_framework.h"
+extern val_api_t *val;
+extern psa_api_t *psa;
+extern const client_test_t test_c080_crypto_list[];
 
-#define PSA_ACS_MAJOR_VER    1
-#define PSA_ACS_MINOR_VER    8
+int32_t psa_key_agreement_test(caller_security_t caller);
+int32_t psa_key_agreement_negative_test(caller_security_t caller);
+extern void crypto_common_exit_action(void);
 
-/**
-    @brief    - PSA Test Suite C main function, does VAL init and calls test dispatcher
-    @param    - None
-    @return   - int32_t
-**/
-extern int32_t val_entry(void);
-#endif
+#endif /* _TEST_C080_CLIENT_TESTS_H_ */
+

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, 2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -181,4 +181,19 @@ static const test_data check1[] = {
     .expected_hash_length = 64,
     .expected_status      = PSA_ERROR_NOT_SUPPORTED,
 },
+
+#ifdef ARCH_TEST_AES_MMO_ZIGBEE
+{
+    .test_desc            = "Test psa_hash_compute with AES MMO ZIGBEE algorithm\n",
+    .alg                  = PSA_ALG_AES_MMO_ZIGBEE,
+    .input                = aes_mmo_hash_input,
+    .input_length         = sizeof(aes_mmo_hash_input),
+    .hash                 = expected_output,
+    .hash_size            = BUFFER_SIZE,
+    .expected_hash        = aes_mmo_hash,
+    .expected_hash_length = 16,
+    .expected_status      = PSA_SUCCESS,
+},
+#endif
+
 };

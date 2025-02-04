@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, 2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -151,6 +151,25 @@ static const test_data check1[] = {
     .output_size            = BUFFER_SIZE,
     .expected_output        = ciphertext_2,
     .expected_output_length = 15,
+    .expected_status        = PSA_SUCCESS
+},
+#endif
+#ifdef ARCH_TEST_CCM_STAR_NO_TAG
+{
+    .test_desc              = "Test psa_cipher_finish - Encrypt - CCM* No tag\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = ccm_star_no_tag_key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_CCM_STAR_NO_TAG,
+    .iv                     = ccm_star_no_tag_iv,
+    .iv_length              = 13,
+    .input                  = ccm_star_no_tag_plaintext,
+    .input_length           = 24,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = ccm_star_no_tag_ciphertext,
+    .expected_output_length = 24,
     .expected_status        = PSA_SUCCESS
 },
 #endif

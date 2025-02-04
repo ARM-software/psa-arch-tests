@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2024-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,7 @@ typedef struct {
     const uint8_t              *data;
     size_t                      data_length;
     key_derivation_input_t      derv_inputs[DERIVATION_INPUT_CNT];
-    const uint8_t               expected_output[32];
+    const uint8_t               expected_output[42];
     size_t                      expected_length;
     psa_status_t                expected_status;
 } test_data;
@@ -235,7 +235,106 @@ static const test_data check1[] = {
                            0xDD, 0x4F, 0x95, 0x66, 0x97, 0xB0, 0xE8, 0x28, 0xFE, 0x18},
     .expected_length    = 32,
     .expected_status    = PSA_ERROR_BAD_STATE
-}
+},
+#endif
+#ifdef ARCH_TEST_HKDF_EXTRACT
+{
+    .test_desc          = "Test psa_key_derivation_verify_bytes - HKDF extract\n",
+    .type               = PSA_KEY_TYPE_DERIVE,
+    .usage_flag         = PSA_KEY_USAGE_DERIVE,
+    .alg                = PSA_ALG_HKDF_EXTRACT(PSA_ALG_SHA_256),
+    .capacity           = 32,
+    .data               = IKM,
+    .data_length        = 22,
+    .derv_inputs        = {
+                            {
+                            .step        = PSA_KEY_DERIVATION_INPUT_SALT,
+                            .data        = kdf_salt,
+                            .data_length = 13
+                            },
+                            {
+                            .step        = PSA_KEY_DERIVATION_INPUT_SECRET,
+                            .data        = IKM,
+                            .data_length = 22
+                            },
+                            {
+                            .step        = 0,
+                            .data        = NULL,
+                            .data_length = 0
+                            }
+                         },
+    .expected_output    = {0x07, 0x77, 0x09, 0x36, 0x2C, 0x2E, 0x32, 0xDF, 0x0D, 0xDC, 0x3F, 0x0D,
+                           0xC4, 0x7B, 0xBA, 0x63, 0x90, 0xB6, 0xC7, 0x3B, 0xB5, 0x0F, 0x9C, 0x31,
+                           0x22, 0xEC, 0x84, 0x4A, 0xD7, 0xC2, 0xB3, 0xE5},
+    .expected_length    = 32,
+    .expected_status    = PSA_SUCCESS
+},
+#endif
+#ifdef ARCH_TEST_HKDF_EXPAND
+{
+    .test_desc          = "Test psa_key_derivation_verify_bytes - HKDF expand\n",
+    .type               = PSA_KEY_TYPE_DERIVE,
+    .usage_flag         = PSA_KEY_USAGE_VERIFY_DERIVATION,
+    .alg                = PSA_ALG_HKDF_EXPAND(PSA_ALG_SHA_256),
+    .capacity           = 42,
+    .data               = PRK,
+    .data_length        = 32,
+    .derv_inputs        = {
+                            {
+                            .step        = PSA_KEY_DERIVATION_INPUT_SECRET,
+                            .data        = PRK,
+                            .data_length = 32
+                            },
+                            {
+                            .step        = PSA_KEY_DERIVATION_INPUT_INFO,
+                            .data        = kdf_info,
+                            .data_length = 10
+                            },
+                            {
+                            .step        = 0,
+                            .data        = NULL,
+                            .data_length = 0
+                            }
+                         },
+    .expected_output    = {0x3c, 0xb2, 0x5f, 0x25, 0xfa, 0xac, 0xd5, 0x7a, 0x90, 0x43, 0x4f, 0x64,
+                           0xd0, 0x36, 0x2f, 0x2a, 0x2d, 0x2d, 0x0a, 0x90, 0xcf, 0x1a, 0x5a, 0x4c,
+                           0x5d, 0xb0, 0x2d, 0x56, 0xec, 0xc4, 0xc5, 0xbf, 0x34, 0x00, 0x72, 0x08,
+                           0xd5, 0xb8, 0x87, 0x18, 0x58, 0x65},
+    .expected_length    = 42,
+    .expected_status    = PSA_SUCCESS
+},
+{
+    .test_desc          = "Test psa_key_derivation_verify_bytes - HKDF expand\n",
+    .type               = PSA_KEY_TYPE_DERIVE,
+    .usage_flag         = PSA_KEY_USAGE_VERIFY_DERIVATION,
+    .alg                = PSA_ALG_HKDF_EXPAND(PSA_ALG_SHA_256),
+    .capacity           = 42,
+    .data               = invalid_prk,
+    .data_length        = 32,
+    .derv_inputs        = {
+                            {
+                            .step        = PSA_KEY_DERIVATION_INPUT_SECRET,
+                            .data        = invalid_prk,
+                            .data_length = 32
+                            },
+                            {
+                            .step        = PSA_KEY_DERIVATION_INPUT_INFO,
+                            .data        = kdf_info,
+                            .data_length = 10
+                            },
+                            {
+                            .step        = 0,
+                            .data        = NULL,
+                            .data_length = 0
+                            }
+                         },
+    .expected_output    = {0x3c, 0xb2, 0x5f, 0x25, 0xfa, 0xac, 0xd5, 0x7a, 0x90, 0x43, 0x4f, 0x64,
+                           0xd0, 0x36, 0x2f, 0x2a, 0x2d, 0x2d, 0x0a, 0x90, 0xcf, 0x1a, 0x5a, 0x4c,
+                           0x5d, 0xb0, 0x2d, 0x56, 0xec, 0xc4, 0xc5, 0xbf, 0x34, 0x00, 0x72, 0x08,
+                           0xd5, 0xb8, 0x87, 0x18, 0x58, 0x65},
+    .expected_length    = 42,
+    .expected_status    = PSA_ERROR_INVALID_SIGNATURE
+},
 #endif
 #endif
 };

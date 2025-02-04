@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -100,39 +100,51 @@ int32_t psa_key_derivation_input_key_test(caller_security_t caller __UNUSED)
             TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
         }
 
+       if ((PSA_ALG_IS_TLS12_PRF(check1[i].alg)) ||
+           ((PSA_ALG_IS_TLS12_PSK_TO_MS(check1[i].alg)) &&
+             check1[i].step == PSA_KEY_DERIVATION_INPUT_OTHER_SECRET))
+        {
+          /* Provide seed as an input step prior passing other secret as input */
+          status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_BYTES,
+                                        &operation,
+                                        PSA_KEY_DERIVATION_INPUT_SEED,
+                                        input_seed, INPUT_SEED_LEN);
+          TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+        }
+
         /* Provide an input for key derivation or key agreement */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY, &operation,
                  check1[i].step, key);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(8));
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(9));
 
         if (check1[i].expected_status != PSA_SUCCESS)
         {
             /* Abort the key derivation operation */
             status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &operation);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
 
             status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
             continue;
         }
 
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
 
         /* Provide an input for key derivation or key agreement */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY, &operation,
                  check1[i].step, key);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(12));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(13));
 
         /* Abort the key derivation operation */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(13));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(14));
 
         /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
         status = val->crypto_function(VAL_CRYPTO_IMPORT_KEY, &attributes, check1[i].data,
                  check1[i].data_length, &key);
-        TEST_ASSERT_EQUAL(status, PSA_ERROR_NOT_SUPPORTED, TEST_CHECKPOINT_NUM(14));
+        TEST_ASSERT_EQUAL(status, PSA_ERROR_NOT_SUPPORTED, TEST_CHECKPOINT_NUM(15));
 
         if (valid_test_input_index < 0)
             valid_test_input_index = i;
@@ -158,7 +170,7 @@ int32_t psa_key_derivation_input_key_negative_test(caller_security_t caller __UN
     status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
     TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-    val->print(PRINT_TEST, "[Check %d] Test psa_cipher_decrypt_setup - Invalid key handle\n",
+    val->print(PRINT_TEST, "[Check %d] Test psa_key_derivation_input_key - Invalid key handle\n",
                                                                                g_test_count++);
 
     operation = psa_key_derivation_operation_init();
@@ -177,7 +189,7 @@ int32_t psa_key_derivation_input_key_negative_test(caller_security_t caller __UN
     status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &operation);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
 
-    val->print(PRINT_TEST, "[Check %d] Test psa_cipher_decrypt_setup - Zero as key handle\n",
+    val->print(PRINT_TEST, "[Check %d] Test psa_key_derivation_input_key - Zero as key handle\n",
                                                                                g_test_count++);
 
     operation = psa_key_derivation_operation_init();

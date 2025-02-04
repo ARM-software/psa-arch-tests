@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2021, 2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +38,7 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
-#ifdef ARCH_TEST_CIPER_MODE_CTR
+#ifdef ARCH_TEST_CIPHER_MODE_CTR
 #ifdef ARCH_TEST_AES_128
 {
     .test_desc            = "Test psa_copy_key - 16 Byte AES\n",
@@ -379,6 +379,51 @@ static const test_data check1[] = {
     .expected_data        = expected_output,
     .expected_data_size   = BUFFER_SIZE,
     .expected_data_length = 28,
+    .expected_status      = PSA_SUCCESS
+},
+#endif
+#endif
+
+#ifdef ARCH_TEST_CIPHER
+#ifdef ARCH_TEST_CHACHA20
+{
+    .test_desc            = "Test psa_copy_key - CHACHA20 Key\n",
+    .type                 = PSA_KEY_TYPE_CHACHA20,
+    .alg                  = PSA_ALG_STREAM_CIPHER,
+    .usage_flags          = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
+    .lifetime             = PSA_KEY_LIFETIME_VOLATILE,
+    .data                 = chacha20_key,
+    .data_length          = 32,
+    .target_type          = PSA_KEY_TYPE_CHACHA20,
+    .target_alg           = PSA_ALG_STREAM_CIPHER,
+    .target_usage_flags   = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
+    .target_lifetime      = PSA_KEY_LIFETIME_VOLATILE,
+    .target_bits          = 256,
+    .expected_usage_flags = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
+    .expected_data        = expected_output,
+    .expected_data_size   = BUFFER_SIZE,
+    .expected_data_length = 32,
+    .expected_status      = PSA_SUCCESS
+},
+#endif
+#ifdef ARCH_TEST_XCHACHA20
+{
+    .test_desc            = "Test psa_copy_key - XCHACHA20 Key\n",
+    .type                 = PSA_KEY_TYPE_XCHACHA20,
+    .alg                  = PSA_ALG_STREAM_CIPHER,
+    .usage_flags          = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
+    .lifetime             = PSA_KEY_LIFETIME_VOLATILE,
+    .data                 = xchacha20_key,
+    .data_length          = 32,
+    .target_type          = PSA_KEY_TYPE_XCHACHA20,
+    .target_alg           = PSA_ALG_STREAM_CIPHER,
+    .target_usage_flags   = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
+    .target_lifetime      = PSA_KEY_LIFETIME_VOLATILE,
+    .target_bits          = 256,
+    .expected_usage_flags = PSA_KEY_USAGE_COPY | PSA_KEY_USAGE_EXPORT,
+    .expected_data        = expected_output,
+    .expected_data_size   = BUFFER_SIZE,
+    .expected_data_length = 32,
     .expected_status      = PSA_SUCCESS
 },
 #endif

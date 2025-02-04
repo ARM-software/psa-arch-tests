@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -82,7 +82,28 @@ static const test_data check1[] = {
     .expected_ciphertext_length = AEAD_CIPHERTEXT_LEN_2,
     .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
 },
-
+#ifdef PSA_ALG_CCM_STAR_ANY_TAG
+{
+    .test_desc                  = "Test psa_aead_encrypt - CCM - AES - CCM_STAR_ANY key policy\n",
+    .type                       = PSA_KEY_TYPE_AES,
+    .data                       = key_data,
+    .data_length                = AES_16B_KEY_SIZE,
+    .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
+    .key_alg                    = PSA_ALG_CCM_STAR_ANY_TAG,
+    .aead_alg                   = PSA_ALG_CCM,
+    .nonce                      = nonce,
+    .nonce_length               = 13,
+    .additional_data            = additional_data,
+    .additional_data_length     = 32,
+    .plaintext                  = plaintext,
+    .plaintext_length           = 24,
+    .ciphertext                 = expected_output,
+    .expected_ciphertext        = aead_ciphertext_2,
+    .ciphertext_size            = BUFFER_SIZE,
+    .expected_ciphertext_length = AEAD_CIPHERTEXT_LEN_2,
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
+},
+#endif
 #ifndef ARCH_TEST_CCM_MIN_TAG_LEN_8
 {
     .test_desc                  = "Test psa_aead_encrypt - CCM - AES - 24 bytes Tag length = 4\n",
@@ -453,4 +474,51 @@ static const test_data check1[] = {
 },
 #endif
 #endif
+
+#ifdef ARCH_TEST_CHACHA20
+{
+    .test_desc                  = "Test psa_aead_encrypt-CHACHA20_POLY1305-12B nonce & add data\n",
+    .type                       = PSA_KEY_TYPE_CHACHA20,
+    .data                       = xchacha20_key,
+    .data_length                = 32,
+    .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
+    .key_alg                    = PSA_ALG_CHACHA20_POLY1305,
+    .aead_alg                   = PSA_ALG_CHACHA20_POLY1305,
+    .nonce                      = aead_chacha20_poly1305_nonce,
+    .nonce_length               = 12,
+    .additional_data            = aead_add_data,
+    .additional_data_length     = 12,
+    .plaintext                  = aead_plaintext,
+    .plaintext_length           = 114,
+    .ciphertext                 = expected_output,
+    .expected_ciphertext        = aead_chacha20_poly1305_ciphertext,
+    .ciphertext_size            = BUFFER_SIZE,
+    .expected_ciphertext_length = 130,
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
+},
+#endif
+
+#ifdef ARCH_TEST_XCHACHA20
+{
+    .test_desc                  = "Test psa_aead_encrypt-XCHACHA20_POLY1305-24B nonce, 12B add\n",
+    .type                       = PSA_KEY_TYPE_XCHACHA20,
+    .data                       = xchacha20_key,
+    .data_length                = 32,
+    .usage_flags                = PSA_KEY_USAGE_ENCRYPT,
+    .key_alg                    = PSA_ALG_XCHACHA20_POLY1305,
+    .aead_alg                   = PSA_ALG_XCHACHA20_POLY1305,
+    .nonce                      = aead_Xchacha20_poly1305_nonce,
+    .nonce_length               = 24,
+    .additional_data            = aead_add_data,
+    .additional_data_length     = 12,
+    .plaintext                  = aead_plaintext,
+    .plaintext_length           = 114,
+    .ciphertext                 = expected_output,
+    .expected_ciphertext        = aead_xchacha20_poly1305_ciphertext,
+    .ciphertext_size            = BUFFER_SIZE,
+    .expected_ciphertext_length = 130,
+    .expected_status            = {PSA_SUCCESS, PSA_SUCCESS}
+},
+#endif
+
 };

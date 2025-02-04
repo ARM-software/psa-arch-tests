@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,9 @@ typedef struct {
 } test_data;
 
 static const test_data check1[] = {
-
+#ifdef ARCH_TEST_SHA256
+#ifdef ARCH_TEST_HKDF
+#ifdef ARCH_TEST_AES_128
 {
     .test_desc       = "Test psa_key_derivation_input_key 16 Byte Key\n",
     .type            = PSA_KEY_TYPE_DERIVE,
@@ -109,7 +111,7 @@ static const test_data check1[] = {
     .setup_alg       = PSA_ALG_HKDF(PSA_ALG_SHA_256),
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
-
+#endif
 #ifdef ARCH_TEST_AES_192
 {
     .test_desc       = "Test psa_key_derivation_input_key with key type as AES(not derive)\n",
@@ -124,7 +126,7 @@ static const test_data check1[] = {
     .expected_status = PSA_ERROR_INVALID_ARGUMENT,
 },
 #endif
-
+#ifdef ARCH_TEST_AES_256
 {
     .test_desc       = "Test psa_key_derivation_input_key incorrect key algorithm\n",
     .type            = PSA_KEY_TYPE_DERIVE,
@@ -137,7 +139,7 @@ static const test_data check1[] = {
     .setup_alg       = PSA_ALG_HKDF(PSA_ALG_SHA_256),
     .expected_status = PSA_ERROR_NOT_PERMITTED
 },
-
+#endif
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW
 #ifdef ARCH_TEST_RSA_2048
 {
@@ -180,7 +182,22 @@ static const test_data check1[] = {
     .setup_alg       = PSA_ALG_HKDF(PSA_ALG_SHA_256),
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
-
+#endif
+#ifdef ARCH_TEST_HKDF_EXTRACT
+{
+    .test_desc       = "Test psa_key_derivation_input_key HKDF_EXTRACT with out of order step\n",
+    .type            = PSA_KEY_TYPE_DERIVE,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .bits            = BYTES_TO_BITS(AES_16B_KEY_SIZE),
+    .usage_flags     = PSA_KEY_USAGE_DERIVE,
+    .alg             = PSA_ALG_HKDF_EXTRACT(PSA_ALG_SHA_256),
+    .step            = PSA_KEY_DERIVATION_INPUT_SECRET,
+    .setup_alg       = PSA_ALG_HKDF_EXTRACT(PSA_ALG_SHA_256),
+    .expected_status = PSA_ERROR_BAD_STATE
+},
+#endif
+#endif
 #ifdef ARCH_TEST_PBKDF2
 #ifdef ARCH_TEST_HMAC
 #ifdef ARCH_TEST_SHA256
@@ -208,8 +225,91 @@ static const test_data check1[] = {
     .step             = PSA_KEY_DERIVATION_INPUT_PASSWORD,
     .setup_alg        = PSA_ALG_PBKDF2_HMAC(PSA_ALG_SHA_256),
     .expected_status  = PSA_SUCCESS
-}
+},
 #endif
 #endif
 #endif
+#ifdef ARCH_TEST_SHA256
+#ifdef ARCH_TEST_TLS12_PSK_TO_MS
+{
+    .test_desc        = "Test psa_key_derivation_input_key with other secret as step\n",
+    .type             = PSA_KEY_TYPE_DERIVE,
+    .data             = key_data,
+    .data_length      = 48,
+    .bits             = 384,
+    .usage_flags      = PSA_KEY_USAGE_DERIVE,
+    .alg              = PSA_ALG_TLS12_PSK_TO_MS(PSA_ALG_SHA_256),
+    .step             = PSA_KEY_DERIVATION_INPUT_OTHER_SECRET,
+    .setup_alg        = PSA_ALG_TLS12_PSK_TO_MS(PSA_ALG_SHA_256),
+    .expected_status  = PSA_SUCCESS
+},
+{
+    .test_desc        = "Test psa_key_derivation_input_key with out of order step input\n",
+    .type             = PSA_KEY_TYPE_DERIVE,
+    .data             = key_data,
+    .data_length      = 48,
+    .bits             = 384,
+    .usage_flags      = PSA_KEY_USAGE_DERIVE,
+    .alg              = PSA_ALG_TLS12_PSK_TO_MS(PSA_ALG_SHA_256),
+    .step             = PSA_KEY_DERIVATION_INPUT_SECRET,
+    .setup_alg        = PSA_ALG_TLS12_PSK_TO_MS(PSA_ALG_SHA_256),
+    .expected_status  = PSA_ERROR_BAD_STATE
+},
+#endif
+#ifdef ARCH_TEST_TLS12_PRF
+{
+    .test_desc        = "Test psa_key_derivation_input_key with 16B key secret as step\n",
+    .type             = PSA_KEY_TYPE_DERIVE,
+    .data             = key_data,
+    .data_length      = AES_16B_KEY_SIZE,
+    .bits             = BYTES_TO_BITS(AES_16B_KEY_SIZE),
+    .usage_flags      = PSA_KEY_USAGE_DERIVE,
+    .alg              = PSA_ALG_TLS12_PRF(PSA_ALG_SHA_256),
+    .step             = PSA_KEY_DERIVATION_INPUT_SECRET,
+    .setup_alg        = PSA_ALG_TLS12_PRF(PSA_ALG_SHA_256),
+    .expected_status  = PSA_SUCCESS
+},
+{
+    .test_desc        = "Test psa_key_derivation_input_key with invalid input step\n",
+    .type             = PSA_KEY_TYPE_DERIVE,
+    .data             = key_data,
+    .data_length      = AES_16B_KEY_SIZE,
+    .bits             = BYTES_TO_BITS(AES_16B_KEY_SIZE),
+    .usage_flags      = PSA_KEY_USAGE_DERIVE,
+    .alg              = PSA_ALG_TLS12_PRF(PSA_ALG_SHA_256),
+    .step             = PSA_KEY_DERIVATION_INPUT_OTHER_SECRET,
+    .setup_alg        = PSA_ALG_TLS12_PRF(PSA_ALG_SHA_256),
+    .expected_status  = PSA_ERROR_INVALID_ARGUMENT
+},
+#endif
+#endif
+#ifdef ARCH_TEST_SP800_108_COUNTER_HMAC
+{
+    .test_desc        = "Test psa_key_derivation_input_key - SP800_108_HMAC\n",
+    .type             = PSA_KEY_TYPE_DERIVE,
+    .data             = key_data,
+    .data_length      = AES_16B_KEY_SIZE,
+    .bits             = BYTES_TO_BITS(AES_16B_KEY_SIZE),
+    .usage_flags      = PSA_KEY_USAGE_DERIVE,
+    .alg              = PSA_ALG_SP800_108_COUNTER_HMAC(PSA_ALG_SHA_256),
+    .step             = PSA_KEY_DERIVATION_INPUT_SECRET,
+    .setup_alg        = PSA_ALG_SP800_108_COUNTER_HMAC(PSA_ALG_SHA_256),
+    .expected_status  = PSA_SUCCESS
+},
+#endif
+#ifdef ARCH_TEST_SP800_108_COUNTER_CMAC
+{
+    .test_desc        = "Test psa_key_derivation_input_key - SP800_108_CMAC\n",
+    .type             = PSA_KEY_TYPE_AES,
+    .data             = key_data,
+    .data_length      = AES_16B_KEY_SIZE,
+    .bits             = BYTES_TO_BITS(AES_16B_KEY_SIZE),
+    .usage_flags      = PSA_KEY_USAGE_DERIVE,
+    .alg              = PSA_ALG_SP800_108_COUNTER_CMAC,
+    .step             = PSA_KEY_DERIVATION_INPUT_SECRET,
+    .setup_alg        = PSA_ALG_SP800_108_COUNTER_CMAC,
+    .expected_status  = PSA_SUCCESS
+},
+#endif
+
 };
