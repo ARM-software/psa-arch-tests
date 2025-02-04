@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2024-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,17 +35,8 @@ int32_t get_output_buffer_size(psa_pake_step_t step, psa_algorithm_t alg,
  switch (step)
             {
               case PSA_PAKE_STEP_KEY_SHARE:
-                    output_size = PSA_PAKE_OUTPUT_SIZE(alg, primitive, step);
-                    break;
-
               case PSA_PAKE_STEP_ZK_PUBLIC:
-                    output_size = PSA_PAKE_OUTPUT_SIZE(alg, primitive, step);
-                    break;
-
               case PSA_PAKE_STEP_ZK_PROOF:
-                    output_size = PSA_PAKE_OUTPUT_SIZE(alg, primitive, step);
-                    break;
-
               case PSA_PAKE_STEP_CONFIRM:
                     output_size = PSA_PAKE_OUTPUT_SIZE(alg, primitive, step);
                     break;

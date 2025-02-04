@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2022-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2022-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +26,7 @@
 
 #ifndef _PAL_CRYPTO_CONFIG_H_
 #define _PAL_CRYPTO_CONFIG_H_
+
 /**
  * \def ARCH_TEST_RSA
  *
@@ -105,6 +106,20 @@
  * Enable the ARC4 key type.
  */
 #define ARCH_TEST_ARC4
+
+/**
+ * \def ARCH_TEST_CHACHA20
+ *
+ * Enable CHACHA20 key type
+ */
+#define ARCH_TEST_CHACHA20
+
+/**
+ * \def ARCH_TEST_XCHACHA20
+ *
+ * Enable XCHACHA20 key type
+ */
+//#define ARCH_TEST_XCHACHA20
 
 /**
  * \def ARCH_TEST_CIPHER_MODE_CTR
@@ -217,6 +232,13 @@
 #define ARCH_TEST_HMAC
 
 /**
+ * Enable ZIGBEE MMO HASH algorithm
+ * Requires : ARCH_TEST_AES
+ *
+ */
+//#define ARCH_TEST_AES_MMO_ZIGBEE
+
+/**
  * \def ARCH_TEST_MDX
  * \def ARCH_TEST_SHAXXX
  *
@@ -251,7 +273,8 @@
  * Requires: ARCH_TEST_HASH
 */
 #define ARCH_TEST_HKDF
-
+#define ARCH_TEST_HKDF_EXTRACT
+#define ARCH_TEST_HKDF_EXPAND
 /**
  * \def ARCH_TEST_TLS12_PRF
  *
@@ -260,6 +283,16 @@
  * Requires: ARCH_TEST_HASH
 */
 #define ARCH_TEST_TLS12_PRF
+#define ARCH_TEST_TLS12_PSK_TO_MS
+
+/**
+ * \def ARCH_TEST_SP800_108
+ *
+ * Enable the NIST SP800-108 Counter mode KDF algorithm
+ *
+*/
+#define ARCH_TEST_SP800_108_COUNTER_HMAC
+#define ARCH_TEST_SP800_108_COUNTER_CMAC
 
 /**
  * \def ARCH_TEST_xMAC
@@ -290,6 +323,17 @@
  * Requires: ARCH_TEST_AES
  *
  */
+
+/**
+ * \def ARCH_TEST_CCM_STAR_NO_TAG
+ *
+ * Enable CBC-MAC (CCM) mode without authentication.
+ *
+ * Requires: ARCH_TEST_AES
+ */
+#define ARCH_TEST_CCM_STAR_NO_TAG
+#define ARCH_TEST_CCM_STAR_ANY_TAG
+
 #define ARCH_TEST_GCM
 
 /**
@@ -325,6 +369,7 @@
  * Enable deterministic ECDSA (RFC 6979).
 */
 #define ARCH_TEST_DETERMINISTIC_ECDSA
+#define ARCH_TEST_TWISTED_EDWARDS
 
 /**
  * \def ARCH_TEST_ECC_ASYMMETRIC_API_SUPPORT
@@ -334,10 +379,17 @@
 //#define ARCH_TEST_ECC_ASYMMETRIC_API_SUPPORT
 
 /**
+ * \def ARCH_TEST_PBKDF2
+ *
+ * Enable the Password-based Key derivation functions - 2.
+*/
+#define ARCH_TEST_PBKDF2
+
+/**
  * \def ARCH_TEST_JAPKE
  *
  * Enable support for balanced PAKE: ECJPAKE algorithm
- */
+*/
 #define ARCH_TEST_JPAKE
 
 /**

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,6 +66,20 @@ static const test_data check1[] = {
     .signature_length = 128,
     .expected_status  = PSA_SUCCESS
 },
+{
+    .test_desc        = "Test psa_verify_hash - RSA KEY_PAIR PKCS1V15 SHA-256 - invalid hash\n",
+    .type             = PSA_KEY_TYPE_RSA_KEY_PAIR,
+    .data             = rsa_128_key_pair,
+    .data_length      = 610,
+    .usage_flags      = PSA_KEY_USAGE_VERIFY_HASH,
+    .alg              = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
+    .hash             = sha_256_incorrect_hash,
+    .hash_length      = 32,
+    .signature        = signature_2,
+    .signature_length = 128,
+    .expected_status  = PSA_ERROR_INVALID_SIGNATURE
+},
+
 #endif
 #endif
 #endif
@@ -245,8 +259,26 @@ static const test_data check1[] = {
     .signature        = sign,
     .signature_length = 128,
     .expected_status  = PSA_SUCCESS
-}
+},
 #endif
 #endif
 #endif
+
+#ifdef ARCH_TEST_TWISTED_EDWARDS
+{
+    .test_desc                 = "Test psa_verify_hash - Eddsa25519ph\n",
+    .type                      = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_TWISTED_EDWARDS),
+    .data                      = eddsa_25519ph_keypair,
+    .data_length               = 32,
+    .usage_flags               = PSA_KEY_USAGE_VERIFY_HASH,
+    .alg                       = PSA_ALG_ED25519PH,
+    .hash                      = sha_512_hash_eddsa519,
+    .hash_length               = 64,
+    .signature                 = expected_output,
+    .signature                 = eddsa_25519ph_signature,
+    .signature_length          = 64,
+    .expected_status           = PSA_SUCCESS,
+},
+#endif
+
 };

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, 2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -397,5 +397,45 @@ static const test_data check1[] = {
     .expected_status        = PSA_ERROR_BUFFER_TOO_SMALL
 },
 #endif
+
+#ifdef ARCH_TEST_CHACHA20
+{
+    .test_desc              = "Test psa_cipher_update - Encrypt - CHACHA20\n",
+    .type                   = PSA_KEY_TYPE_CHACHA20,
+    .data                   = chacha20_key,
+    .data_length            = 32,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_STREAM_CIPHER,
+    .iv                     = chacha20_iv,
+    .iv_length              = 12,
+    .input                  = plaintext_stream_cipher,
+    .input_length           = 15,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = ciphertext_chacha20,
+    .expected_output_length = 15,
+    .expected_status        = PSA_SUCCESS
+},
+#endif
+#ifdef ARCH_TEST_XCHACHA20
+{
+    .test_desc              = "Test psa_cipher_update - Encrypt - XCHACHA20\n",
+    .type                   = PSA_KEY_TYPE_XCHACHA20,
+    .data                   = xchacha20_key,
+    .data_length            = 32,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_STREAM_CIPHER,
+    .iv                     = xchacha20_iv,
+    .iv_length              = 24,
+    .input                  = plaintext_stream_cipher,
+    .input_length           = 15,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = ciphertext_xchacha20,
+    .expected_output_length = 15,
+    .expected_status        = PSA_SUCCESS
+},
+#endif
+
 };
 #endif

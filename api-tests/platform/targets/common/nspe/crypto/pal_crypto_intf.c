@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -81,6 +81,7 @@ int32_t pal_crypto_function(int type, va_list valist)
     size_t                                   *op_length;
     const psa_key_attributes_t               *pake_key_attr;
     const uint8_t                            *expected_output;
+    psa_key_id_t                             *derv_key;
 
     switch (type)
 	{
@@ -784,6 +785,16 @@ int32_t pal_crypto_function(int type, va_list valist)
 										 output_size,
 										 p_output_length);
 			break;
+                case PAL_CRYPTO_KEY_AGREEMENT:
+                        key                      = va_arg(valist, psa_key_id_t);
+                        input                    = va_arg(valist, const uint8_t *);
+                        input_length             = va_arg(valist, size_t);
+                        alg                      = va_arg(valist, psa_algorithm_t);
+                        c_attributes             = va_arg(valist, const psa_key_attributes_t *);
+                        derv_key                 = va_arg(valist, psa_key_id_t *);
+                        return psa_key_agreement(key, input, input_length, alg,
+                                                             c_attributes, derv_key);
+                        break;
 		case PAL_CRYPTO_RESET_KEY_ATTRIBUTES:
 			attributes               = va_arg(valist, psa_key_attributes_t *);
 			psa_reset_key_attributes(attributes);

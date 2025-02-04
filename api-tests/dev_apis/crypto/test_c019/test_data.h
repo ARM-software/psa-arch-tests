@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,7 +46,18 @@ static const test_data check1[] = {
     .peer_key_length = ECDH_SECP_256_R1_PUB_KEY_LEN,
     .expected_status = PSA_SUCCESS
 },
-
+{
+    .test_desc       = "Test psa_key_derivation_key_agreement - TLS12_PSK_TO_MS_SECP256R1[ECDH]\n",
+    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
+    .data            = ecdh_secp_256_r1_prv_key,
+    .data_length     = ECDH_SECP_256_R1_PRV_KEY_LEN,
+    .usage_flags     = PSA_KEY_USAGE_DERIVE,
+    .alg            = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_TLS12_PSK_TO_MS(PSA_ALG_SHA_256)),
+    .step            = PSA_KEY_DERIVATION_INPUT_OTHER_SECRET,
+    .peer_key        = ecdh_secp_256_r1_pub_key,
+    .peer_key_length = ECDH_SECP_256_R1_PUB_KEY_LEN,
+    .expected_status = PSA_SUCCESS
+},
 {
     .test_desc       = "Test psa_key_derivation_key_agreement - Invalid step[ECDH]\n",
     .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
@@ -122,6 +133,18 @@ static const test_data check1[] = {
     .step            = PSA_KEY_DERIVATION_INPUT_SECRET,
     .peer_key        = ecdh_secp_384_r1_pub_key,
     .peer_key_length = ECDH_SECP_384_R1_PUB_KEY_LEN,
+    .expected_status = PSA_ERROR_INVALID_ARGUMENT
+},
+{
+    .test_desc       = "Test psa_key_derivation_key_agreement - invalid input for the step\n",
+    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
+    .data            = ecdh_secp_256_r1_prv_key,
+    .data_length     = ECDH_SECP_256_R1_PRV_KEY_LEN,
+    .usage_flags     = PSA_KEY_USAGE_DERIVE,
+    .alg            = PSA_ALG_KEY_AGREEMENT(PSA_ALG_ECDH, PSA_ALG_TLS12_PSK_TO_MS(PSA_ALG_SHA_256)),
+    .step            = PSA_KEY_DERIVATION_INPUT_INFO,
+    .peer_key        = ecdh_secp_256_r1_pub_key,
+    .peer_key_length = ECDH_SECP_256_R1_PUB_KEY_LEN,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },
 
@@ -210,6 +233,18 @@ static const test_data check1[] = {
     .alg             = PSA_ALG_KEY_AGREEMENT(PSA_ALG_FFDH, PSA_ALG_HKDF(PSA_ALG_SHA_256)),
     .step            = PSA_KEY_DERIVATION_INPUT_SECRET,
     .peer_key        = ffdh_peer_key_data_4096,
+    .peer_key_length = FFDH4096_PUB_KEY_LEN,
+    .expected_status = PSA_ERROR_INVALID_ARGUMENT
+},
+{
+    .test_desc       = "Test psa_key_derivation_key_agreement-Public key different curve[FFDH]\n",
+    .type            = PSA_KEY_TYPE_DH_KEY_PAIR(PSA_DH_FAMILY_RFC7919),
+    .data            = ffdh_key_data_2048,
+    .data_length     = FFDH2048_PRV_KEY_LEN,
+    .usage_flags     = PSA_KEY_USAGE_DERIVE,
+    .alg            = PSA_ALG_KEY_AGREEMENT(PSA_ALG_FFDH, PSA_ALG_TLS12_PSK_TO_MS(PSA_ALG_SHA_256)),
+    .step            = PSA_KEY_DERIVATION_INPUT_SECRET,
+    .peer_key        = ffdh_peer_key_data_2048,
     .peer_key_length = FFDH4096_PUB_KEY_LEN,
     .expected_status = PSA_ERROR_INVALID_ARGUMENT
 },

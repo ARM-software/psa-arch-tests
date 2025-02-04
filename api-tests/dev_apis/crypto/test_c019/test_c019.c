@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -72,6 +72,16 @@ int32_t psa_key_derivation_key_agreement_test(caller_security_t caller __UNUSED)
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_SETUP, &operation, check1[i].alg);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
 
+     if ((PSA_ALG_KEY_AGREEMENT_GET_KDF(check1[i].alg)) == PSA_ALG_TLS12_PSK_TO_MS(PSA_ALG_SHA_256))
+         {
+           status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_BYTES,
+                                         &operation,
+                                         PSA_KEY_DERIVATION_INPUT_SEED,
+                                         input_seed,
+                                         INPUT_SEED_LEN);
+           TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(5));
+         }
+
         /* Perform a key agreement */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_KEY_AGREEMENT,
                                       &operation,
@@ -79,11 +89,11 @@ int32_t psa_key_derivation_key_agreement_test(caller_security_t caller __UNUSED)
                                       key,
                                       check1[i].peer_key,
                                       check1[i].peer_key_length);
-        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(5));
+        TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(6));
 
         /* Abort the key derivation operation */
         status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &operation);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(6));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
         /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
@@ -92,13 +102,13 @@ int32_t psa_key_derivation_key_agreement_test(caller_security_t caller __UNUSED)
         {
             /* Destroy a key and restore the slot to its default state */
             status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
-            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
+            TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
             continue;
         }
 
         /* Destroy a key and restore the slot to its default state */
         status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
-        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
+        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
         if (valid_test_input_index < 0)
             valid_test_input_index = i;

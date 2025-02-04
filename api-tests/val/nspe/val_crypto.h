@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -130,6 +130,7 @@ enum crypto_function_code {
     VAL_CRYPTO_MAC_VERIFY_SETUP,
     VAL_CRYPTO_PURGE_KEY,
     VAL_CRYPTO_RAW_KEY_AGREEMENT,
+    VAL_CRYPTO_KEY_AGREEMENT,
     VAL_CRYPTO_RESET_KEY_ATTRIBUTES,
     VAL_CRYPTO_SET_KEY_ALGORITHM,
     VAL_CRYPTO_SET_KEY_BITS,

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, 2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -63,34 +63,68 @@ static const test_data check1[] = {
     .usage_flags               = PSA_KEY_USAGE_SIGN_HASH,
     .alg                       = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
     .hash                      = sha_256_hash,
-    .hash_length               = 32,
+    .hash_length               = PSA_HASH_LENGTH(PSA_ALG_GET_HASH(PSA_ALG_SHA_256)),
     .signature                 = expected_output,
     .signature_size            = BUFFER_SIZE,
     .expected_signature        = signature_2,
     .expected_signature_length = 128,
     .expected_status           = PSA_SUCCESS,
 },
+
+{
+    .test_desc                 = "Test psa_sign_hash -RSA KEY_PAIR PKCS1V15 SHA-256-invalid hash\n",
+    .type                      = PSA_KEY_TYPE_RSA_KEY_PAIR,
+    .data                      = rsa_128_key_pair,
+    .data_length               = 610,
+    .usage_flags               = PSA_KEY_USAGE_SIGN_HASH,
+    .alg                       = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
+    .hash                      = sha_512_hash,
+    .hash_length               = PSA_HASH_LENGTH(PSA_ALG_GET_HASH(PSA_ALG_SHA_512)),
+    .signature                 = expected_output,
+    .signature_size            = BUFFER_SIZE,
+    .expected_signature        = signature_2,
+    .expected_signature_length = 128,
+    .expected_status           = PSA_ERROR_INVALID_ARGUMENT,
+},
+
 #endif
 #endif
 #endif
 
 #ifdef ARCH_TEST_SHA256
-#ifdef ARCH_TEST_DETERMINISTIC_ECDSA
 #ifdef ARCH_TEST_ECC_CURVE_SECP256R1
+#ifdef ARCH_TEST_DETERMINISTIC_ECDSA
 {
-    .test_desc                 = "Test psa_sign_hash - ECDSA SECP256R1 SHA-256\n",
+    .test_desc                 = "Test psa_sign_hash - ECDSA_DETERMINISTIC SECP256R1 SHA-256\n",
     .type                      = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
     .data                      = ec_keypair_deterministic,
     .data_length               = 32,
     .usage_flags               = PSA_KEY_USAGE_SIGN_HASH,
     .alg                       = PSA_ALG_DETERMINISTIC_ECDSA(PSA_ALG_SHA_256),
     .hash                      = sha_256_hash,
-    .hash_length               = 32,
+    .hash_length               = PSA_HASH_LENGTH(PSA_ALG_GET_HASH(PSA_ALG_SHA_256)),
     .signature                 = expected_output,
     .signature_size            = BUFFER_SIZE,
     .expected_signature        = signature_3,
     .expected_signature_length = 64,
     .expected_status           = PSA_SUCCESS,
+},
+#endif
+#ifdef ARCH_TEST_ECDSA
+{
+    .test_desc                 = "Test psa_sign_hash - ECDSA SECP256R1 SHA-256\n",
+    .type                      = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
+    .data                      = ec_key_pair,
+    .data_length               = 32,
+    .usage_flags               = PSA_KEY_USAGE_SIGN_HASH,
+    .alg                       = PSA_ALG_ECDSA_ANY,
+    .hash                      = sha_256_hash,
+    .hash_length               = PSA_HASH_LENGTH(PSA_ALG_GET_HASH(PSA_ALG_SHA_256)),
+    .signature                 = expected_output,
+    .signature_size            = BUFFER_SIZE,
+    .expected_signature        = signature_3,
+    .expected_signature_length = 64,
+    .expected_status           = PSA_ERROR_NOT_PERMITTED,
 },
 #endif
 #endif
@@ -121,7 +155,7 @@ static const test_data check1[] = {
     .usage_flags               = PSA_KEY_USAGE_SIGN_HASH,
     .alg                       = PSA_ALG_RSA_PKCS1V15_SIGN(PSA_ALG_SHA_256),
     .hash                      = sha_256_hash,
-    .hash_length               = 32,
+    .hash_length               = PSA_HASH_LENGTH(PSA_ALG_GET_HASH(PSA_ALG_SHA_256)),
     .signature                 = expected_output,
     .signature_size            = 127,
     .expected_signature        = signature_1,
@@ -207,4 +241,22 @@ static const test_data check1[] = {
 #endif
 #endif
 #endif
+#ifdef ARCH_TEST_TWISTED_EDWARDS
+{
+    .test_desc                 = "Test psa_sign_hash - Eddsa25519ph\n",
+    .type                      = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_TWISTED_EDWARDS),
+    .data                      = eddsa_25519ph_keypair,
+    .data_length               = 32,
+    .usage_flags               = PSA_KEY_USAGE_SIGN_HASH,
+    .alg                       = PSA_ALG_ED25519PH,
+    .hash                      = sha_512_hash_eddsa519,
+    .hash_length               = 64,
+    .signature                 = expected_output,
+    .signature_size            = BUFFER_SIZE,
+    .expected_signature        = eddsa_25519ph_signature,
+    .expected_signature_length = 64,
+    .expected_status           = PSA_SUCCESS,
+},
+#endif
+
 };
