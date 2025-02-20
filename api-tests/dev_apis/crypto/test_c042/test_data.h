@@ -274,7 +274,6 @@ static const test_data check1[] = {
     .alg                       = PSA_ALG_ED25519PH,
     .hash                      = sha_512_hash_eddsa519,
     .hash_length               = 64,
-    .signature                 = expected_output,
     .signature                 = eddsa_25519ph_signature,
     .signature_length          = 64,
     .expected_status           = PSA_SUCCESS,

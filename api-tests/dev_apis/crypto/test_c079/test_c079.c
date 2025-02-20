@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2024-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,23 +81,21 @@ int32_t psa_pake_spake2p_setup(psa_pake_operation_t *op, const uint8_t *user, co
                                   sizeof(context));
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
-  return VAL_STATUS_SUCCESS;
+  return status;
 }
 
 int32_t send_message_spake2p(psa_pake_operation_t *from, psa_pake_operation_t *to,
-                             psa_pake_step_t step, uint8_t n)
+                             psa_pake_step_t step)
 {
   int32_t status;
   uint8_t data[1024];
   size_t op_len;
 
   status = val->crypto_function(VAL_CRYPTO_PAKE_OUTPUT, from, step, data, sizeof(data), &op_len);
-  TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(n));
 
   status = val->crypto_function(VAL_CRYPTO_PAKE_INPUT, to, step, data, op_len);
-  TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(n + 1));
 
- return VAL_STATUS_SUCCESS;
+ return status;
 }
 
 const client_test_t test_c079_crypto_list[] = {
@@ -121,6 +119,12 @@ int32_t psa_pake_spake2p_test(caller_security_t caller __UNUSED)
     psa_key_id_t shared_key = 0;
     uint8_t secret1[32], secret2[32], pub_key[97];
     size_t pub_key_len;
+
+    if (num_checks == 0)
+    {
+        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        return RESULT_SKIP(VAL_STATUS_NO_TESTS);
+    }
 
     /* Initialize PSA crypto library */
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -193,16 +197,20 @@ int32_t psa_pake_spake2p_test(caller_security_t caller __UNUSED)
    /* Starting key exchange operation */
 
    // ShareP
-   status = send_message_spake2p(&client, &server, PSA_PAKE_STEP_KEY_SHARE, 7);
+   status = send_message_spake2p(&client, &server, PSA_PAKE_STEP_KEY_SHARE);
+   TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(7));
 
    // ShareV
-   status = send_message_spake2p(&server, &client, PSA_PAKE_STEP_KEY_SHARE, 9);
+   status = send_message_spake2p(&server, &client, PSA_PAKE_STEP_KEY_SHARE);
+   TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(8));
 
    //ConfirmV
-   status = send_message_spake2p(&server, &client, PSA_PAKE_STEP_CONFIRM, 11);
+   status = send_message_spake2p(&server, &client, PSA_PAKE_STEP_CONFIRM);
+   TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
    //ConfirmP
-   status = send_message_spake2p(&client, &server, PSA_PAKE_STEP_CONFIRM, 13);
+   status = send_message_spake2p(&client, &server, PSA_PAKE_STEP_CONFIRM);
+   TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
 
    val->print(PRINT_DEBUG, "       3 : SPAKE2P key exchange between prover and verifier done\n", 0);
    /* Extract Shared Secret as a key derivation key */
@@ -223,31 +231,31 @@ int32_t psa_pake_spake2p_test(caller_security_t caller __UNUSED)
     /* Setup Key Derivation for prover/client */
      status = val->crypto_function(VAL_CRYPTO_PAKE_GET_SHARED_KEY,
                                    &client, &attributes, &shared_key);
-     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(15));
+     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));
 
      status = val->crypto_function(VAL_CRYPTO_PAKE_ABORT, &client);
-     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(16));
+     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(12));
 
      status =  val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_SETUP,
                                     &kdf, PSA_ALG_HKDF(PSA_ALG_SHA_256));
-     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(17));
+     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(13));
 
      status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY,
                                 &kdf, PSA_KEY_DERIVATION_INPUT_SECRET,
                                 shared_key);
-     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(18));
+     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(14));
 
      status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_BYTES,
                                    &kdf, PSA_KEY_DERIVATION_INPUT_INFO,
                                    input_bytes_data, INPUT_BYTES_DATA_LEN);
-     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(19));
+     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(15));
 
      status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_OUTPUT_BYTES,
                                 &kdf, secret1, sizeof(secret1));
-     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(20));
+     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(16));
 
      status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &kdf);
-     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(21));
+     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(17));
 
      val->print(PRINT_DEBUG, " secret1 : ", 0);
      for (i = 0; i < 32; i++)
@@ -257,38 +265,38 @@ int32_t psa_pake_spake2p_test(caller_security_t caller __UNUSED)
       val->print(PRINT_DEBUG, "\n", 0);
 
      status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, shared_key);
-     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(22));
+     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(18));
 
      val->print(PRINT_DEBUG, "       5 : Derive shared secret from verifier \n", 0);
 
     /* Setup Key Derivation for prover/client */
      status = val->crypto_function(VAL_CRYPTO_PAKE_GET_SHARED_KEY,
                                    &server, &attributes, &shared_key);
-     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(23));
+     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(19));
 
      status = val->crypto_function(VAL_CRYPTO_PAKE_ABORT, &server);
-     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(24));
+     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(20));
 
      status =  val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_SETUP,
                                     &kdf, PSA_ALG_HKDF(PSA_ALG_SHA_256));
-     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(25));
+     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(21));
 
      status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_KEY,
                                 &kdf, PSA_KEY_DERIVATION_INPUT_SECRET,
                                 shared_key);
-     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(26));
+     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(22));
 
      status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_INPUT_BYTES,
                                    &kdf, PSA_KEY_DERIVATION_INPUT_INFO,
                                    input_bytes_data, INPUT_BYTES_DATA_LEN);
-     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(27));
+     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(23));
 
      status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_OUTPUT_BYTES,
                                    &kdf, secret2, sizeof(secret2));
-     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(28));
+     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(24));
 
      status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &kdf);
-     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(29));
+     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(25));
 
      val->print(PRINT_DEBUG, " secret2 : ", 0);
      for (i = 0; i < 32; i++)
@@ -299,15 +307,15 @@ int32_t psa_pake_spake2p_test(caller_security_t caller __UNUSED)
        val->print(PRINT_DEBUG, "\n", 0);
 
        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, shared_key);
-       TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(30));
+       TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(26));
 
-       TEST_ASSERT_MEMCMP(secret1, secret2, sizeof(secret1), TEST_CHECKPOINT_NUM(31));
+       TEST_ASSERT_MEMCMP(secret1, secret2, sizeof(secret1), TEST_CHECKPOINT_NUM(27));
 
        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, ckey);
-       TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(32));
+       TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(28));
 
        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, skey);
-       TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(33));
+       TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(29));
 }
   return VAL_STATUS_SUCCESS;
 }
