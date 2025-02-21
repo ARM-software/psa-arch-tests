@@ -85,7 +85,8 @@ int32_t psa_key_agreement_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_DUAL(status, check1[i].expected_status[0],
                                  check1[i].expected_status[1], TEST_CHECKPOINT_NUM(4));
 
-        if (check1[i].expected_status == PSA_SUCCESS)
+        if ((check1[i].expected_status[0] == PSA_SUCCESS) && 
+            (check1[i].derv_type == PSA_KEY_TYPE_DERIVE))
         {
         /* Set up a key derivation operation */
         status =  val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_SETUP,
