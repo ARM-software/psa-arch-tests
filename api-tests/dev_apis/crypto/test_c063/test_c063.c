@@ -97,7 +97,8 @@ int32_t psa_aead_verify_test(caller_security_t caller __UNUSED)
 
         /* Finish authenticating and decrypting a message in an AEAD operation */
         status = val->crypto_function(VAL_CRYPTO_AEAD_VERIFY, &operation, output + length,
-                 check1[i].output_size, &verify_length, check1[i].tag, check1[i].tag_length);
+                check1[i].output_size > length ? check1[i].output_size - length : check1[i].output_size,
+                &verify_length, check1[i].tag, check1[i].tag_length);
         TEST_ASSERT_DUAL(status,
                          check1[i].expected_status[0],
                          check1[i].expected_status[1],

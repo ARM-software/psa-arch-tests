@@ -98,7 +98,8 @@ int32_t psa_aead_finish_test(caller_security_t caller __UNUSED)
 
         /* Finish encrypting a message in an AEAD operation */
         status = val->crypto_function(VAL_CRYPTO_AEAD_FINISH, &operation, output + length,
-                 check1[i].output_size, &finish_length, tag, check1[i].tag_size, &tag_length);
+                 check1[i].output_size > length ? check1[i].output_size-length : check1[i].output_size,
+                 &finish_length, tag, check1[i].tag_size, &tag_length);
         TEST_ASSERT_EQUAL(status, check1[i].expected_status, TEST_CHECKPOINT_NUM(9));
 
         if (check1[i].expected_status != PSA_SUCCESS)
