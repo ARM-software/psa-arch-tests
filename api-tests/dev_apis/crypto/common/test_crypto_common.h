@@ -208,6 +208,10 @@ extern const uint8_t eddsa_448_keypair[];
 extern const uint8_t eddsa_448_pubkey[];
 extern const uint8_t eddsa_448_message[];
 extern const uint8_t eddsa_448_signature[];
+extern const uint8_t eddsa_448ph_keypair[];
+extern const uint8_t eddsa_448ph_pubkey[];
+extern const uint8_t eddsa_448ph_message[];
+extern const uint8_t eddsa_448ph_signature[];
 
 #endif
 
