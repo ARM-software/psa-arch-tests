@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -206,8 +206,20 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
         val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
     }
 
+    /* GCC null-dereference check fails because of invalid_msg, however this
+     * part should not be reached according the comment above.
+     */
+    #if defined(__GNUC__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wnull-dereference"
+    #endif
+
     /* Reject the connection */
     psa->reply(invalid_msg->handle, PSA_ERROR_CONNECTION_REFUSED);
+
+    #if defined(__GNUC__)
+    #pragma GCC diagnostic pop
+    #endif
 
     return VAL_STATUS_SPM_FAILED;
 }
