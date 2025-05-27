@@ -55,6 +55,37 @@ int pal_wd_stm_init(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
 }
 
 /**
+    @brief           - Initializes an hardware watchdog timer
+    @param           - base_addr       : Base address of the watchdog module for STM32WBA
+                     - time_us         : Time in micro seconds
+                     - timer_tick_us   : Number of ticks per micro second
+    @return          - SUCCESS/FAILURE
+**/
+int pal_wd_stm_wba_init(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
+{
+   volatile uint32_t ti = time_us;
+   volatile uint32_t titi = timer_tick_us;
+   ti;
+   titi;
+   /*  enable watchog clock  */
+   #define RCC_APB1ENR1_WWDGEN_Pos              (11U)
+   #define RCC_APB1ENR1_WWDGEN_Msk            (0x1UL << RCC_APB1ENR1_WWDGEN_Pos)/*!< 0x00000800 */
+   #define RCC_APB1ENR1_WWDGEN                  RCC_APB1ENR1_WWDGEN_Msk
+   /*   RCC_APB1ENR1 */
+   volatile uint32_t *reg = (uint32_t *)0x40002C00;
+   *reg |= RCC_APB1ENR1_WWDGEN;
+   *reg |= RCC_APB1ENR1_WWDGEN;
+   /*  prescaler  */
+   MODIFY_REG(((WWDG_TypeDef *)base_addr)->CFR, WWDG_CFR_WDGTB, LL_WWDG_PRESCALER_128);
+   /* Counter 0..0x7F (7 bit counter value)*/
+   MODIFY_REG(((WWDG_TypeDef *)base_addr)->CR, WWDG_CR_T, 0x7F);
+   /* Window 0x00..0x7F*/
+   MODIFY_REG(((WWDG_TypeDef *)base_addr)->CFR, WWDG_CFR_W, 0x7F);
+
+   return 0;
+}
+
+/**
     @brief           - Enables a hardware watchdog timer
     @param           - base_addr       : Base address of the watchdog module
     @return          - SUCCESS/FAILURE
