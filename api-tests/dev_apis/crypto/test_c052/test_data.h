@@ -242,7 +242,7 @@ static const test_data check1[] = {
 
 #ifdef ARCH_TEST_TWISTED_EDWARDS
 {
-    .test_desc                 = "Test psa_sign_message - EDDSA  Ed25519\n",
+    .test_desc                 = "Test psa_sign_message - PURE_EDDSA_25519\n",
     .type                      = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_TWISTED_EDWARDS),
     .data                      = eddsa_25519_keypair,
     .data_length               = 32,
@@ -258,13 +258,13 @@ static const test_data check1[] = {
     .expected_status           = PSA_SUCCESS,
 },
 {
-    .test_desc                 = "Test psa_sign_message - EDDSA  448PH\n",
+    .test_desc                 = "Test psa_sign_message - PURE_EDDSA_448\n",
     .type                      = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_TWISTED_EDWARDS),
     .data                      = eddsa_448_keypair,
     .data_length               = 57,
     .usage_flags               = PSA_KEY_USAGE_SIGN_MESSAGE,
-    .alg                       = PSA_ALG_ED448PH,
-    .sign_alg                  = PSA_ALG_ED448PH,
+    .alg                       = PSA_ALG_PURE_EDDSA,
+    .sign_alg                  = PSA_ALG_PURE_EDDSA,
     .input                     = eddsa_448_message,
     .input_length              = 1,
     .signature                 = expected_output,
@@ -273,6 +273,22 @@ static const test_data check1[] = {
     .expected_signature_length = 114,
     .expected_status           = PSA_SUCCESS,
 },
+{
+    .test_desc                 = "Test psa_sign_message - EDDSA  448PH\n",
+    .type                      = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_TWISTED_EDWARDS),
+    .data                      = eddsa_448ph_keypair,
+    .data_length               = 57,
+    .usage_flags               = PSA_KEY_USAGE_SIGN_MESSAGE,
+    .alg                       = PSA_ALG_ED448PH,
+    .sign_alg                  = PSA_ALG_ED448PH,
+    .input                     = eddsa_448ph_message,
+    .input_length              = 3,
+    .signature                 = expected_output,
+    .signature_size            = BUFFER_SIZE,
+    .expected_signature        = eddsa_448ph_signature,
+    .expected_signature_length = 114,
+    .expected_status           = PSA_SUCCESS,
+}
 #endif
 
 };
