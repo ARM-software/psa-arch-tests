@@ -1,5 +1,8 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018 - 2025, Arm Limited or its affiliates. All rights reserved.
+ * SPDX-License-Identifier : Apache-2.0
+ *
+ * Copyright (c) 2018 - 2025, STMicroelectronics.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -101,6 +104,7 @@ typedef struct {
 
 
 int pal_wd_stm_init(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us);
+int pal_wd_stm_wba_init(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us);
 int pal_wd_stm_enable(addr_t base_addr);
 int pal_wd_stm_disable(addr_t base_addr);
 int pal_wd_stm_is_enabled(addr_t base_addr);
