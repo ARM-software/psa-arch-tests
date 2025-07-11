@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -38,8 +37,8 @@ int32_t client_test_psa_drop_connection(caller_security_t caller)
    psa_status_t       status_of_call;
    boot_state_t       boot_state;
 
-   val->print(PRINT_TEST,
-            "[Check 1] Test connection termination at PSA_IPC_CALL\n", 0);
+   val->print(TEST,
+            "Check 1: Test connection termination at PSA_IPC_CALL\n", 0);
 
    /*
     * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
@@ -55,7 +54,7 @@ int32_t client_test_psa_drop_connection(caller_security_t caller)
     * the test harness function.
     *
     * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
+    * timeout entries available in pal_config.h.
     *
     * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
@@ -66,7 +65,7 @@ int32_t client_test_psa_drop_connection(caller_security_t caller)
    handle = psa->connect(SERVER_CONNECTION_DROP_SID, SERVER_CONNECTION_DROP_VERSION);
    if (!PSA_HANDLE_IS_VALID(handle))
    {
-       val->print(PRINT_ERROR, "\tConnection failed\n", 0);
+       val->print(ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
    }
 
@@ -74,7 +73,7 @@ int32_t client_test_psa_drop_connection(caller_security_t caller)
    boot_state = (caller == CALLER_NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
    if (val->set_boot_flag(boot_state))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
@@ -90,11 +89,11 @@ int32_t client_test_psa_drop_connection(caller_security_t caller)
        /* Resetting boot.state to catch unwanted reboot */
        if (val->set_boot_flag(BOOT_NOT_EXPECTED))
        {
-           val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+           val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
            return VAL_STATUS_ERROR;
        }
 
-       val->print(PRINT_DEBUG, "\tReceived PSA_ERROR_PROGRAMMER_ERROR\n", 0);
+       val->print(DBG, "\tReceived PSA_ERROR_PROGRAMMER_ERROR\n", 0);
 
        /* close the handle after receving the programmer error*/
        psa->close(handle);
@@ -108,7 +107,7 @@ int32_t client_test_psa_drop_connection(caller_security_t caller)
        if (status_of_call != PSA_ERROR_PROGRAMMER_ERROR)
        {
            status = VAL_STATUS_SPM_FAILED;
-           val->print(PRINT_ERROR,
+           val->print(ERROR,
            "\tCall should have returned PSA_ERROR_PROGRAMMER_ERROR. Status = 0x%x\n",
            status_of_call);
        }
@@ -117,7 +116,7 @@ int32_t client_test_psa_drop_connection(caller_security_t caller)
        if (status_of_call != PSA_ERROR_PROGRAMMER_ERROR)
        {
            status = VAL_STATUS_SPM_FAILED;
-           val->print(PRINT_ERROR,
+           val->print(ERROR,
            "\tCall should have returned PSA_ERROR_PROGRAMMER_ERROR. Status = 0x%x\n",
            status_of_call);
        }
@@ -126,12 +125,12 @@ int32_t client_test_psa_drop_connection(caller_security_t caller)
    }
 
    /* If PROGRAMMER ERROR results into panic then control shouldn't have reached here */
-   val->print(PRINT_ERROR, "\tCall should failed but succeed\n", 0);
+   val->print(ERROR, "\tCall should failed but succeed\n", 0);
 
    /* Resetting boot.state to catch unwanted reboot */
    if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
        return VAL_STATUS_ERROR;
    }
 

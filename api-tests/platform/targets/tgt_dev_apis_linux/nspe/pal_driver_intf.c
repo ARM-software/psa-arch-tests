@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  * Copyright 2023 NXP
  *
@@ -25,6 +25,9 @@
 
 #include "pal_common.h"
 
+/* Regression test status reporting buffer */
+uint8_t test_status_buffer[256]  = {0};
+
 /* This stdc implementation doesn't support tests that involve resets of the
  * test process or the system, so we don't actually need non-volatile memory.
  * Just implement the "nvmem" as an array in memory.
@@ -32,7 +35,7 @@
 
 /* Using zero as NVMEM_BASE is a bit arbitrary - we don't actually need callers
  * to specify a base address but the nvmem function signatures have "base" params.
- * Zero is the value used in our target.cfg file so that's what we should receive.
+ * Zero is the value used in our pal_config.h file so that's what we should receive.
  */
 #define NVMEM_BASE 0
 
@@ -72,15 +75,14 @@ static int nvmem_check_bounds(addr_t base, uint32_t offset, int size)
 
 /**
     @brief    - Reads from given non-volatile address.
-    @param    - base    : Base address of nvmem (must be zero)
-                offset  : Offset
+    @param    - offset  : Offset
                 buffer  : Pointer to dest address
                 size    : Number of bytes
     @return   - SUCCESS/FAILURE
 **/
-int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size)
+int pal_nvm_read(uint32_t offset, void *buffer, size_t size)
 {
-    if (nvmem_check_bounds(base, offset, size) != PAL_STATUS_SUCCESS)
+    if (nvmem_check_bounds((addr_t) PLATFORM_NVM_BASE, offset, size) != PAL_STATUS_SUCCESS)
     {
         return PAL_STATUS_ERROR;
     }
@@ -90,15 +92,14 @@ int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size)
 
 /**
     @brief    - Writes into given non-volatile address.
-    @param    - base    : Base address of nvmem (must be zero)
-                offset  : Offset
+    @param    - offset  : Offset
                 buffer  : Pointer to source address
                 size    : Number of bytes
     @return   - SUCCESS/FAILURE
 **/
-int pal_nvmem_write_ns(addr_t base, uint32_t offset, void *buffer, int size)
+int pal_nvm_write(uint32_t offset, void *buffer, size_t size)
 {
-    if (nvmem_check_bounds(base, offset, size) != PAL_STATUS_SUCCESS)
+    if (nvmem_check_bounds((addr_t) PLATFORM_NVM_BASE, offset, size) != PAL_STATUS_SUCCESS)
     {
         return PAL_STATUS_ERROR;
     }
@@ -112,12 +113,11 @@ int pal_nvmem_write_ns(addr_t base, uint32_t offset, void *buffer, int size)
     This implementation doesn't actually use a UART to print test output, we
     just send it to stdout. No init necessary.
 
-    @param    - uart base addr (ignored)
+    @param    - Void
     @return   - SUCCESS/FAILURE
 **/
-int pal_uart_init_ns(uint32_t uart_base_addr)
+int pal_uart_init_ns(void)
 {
-    (void)uart_base_addr;
     return PAL_STATUS_SUCCESS;
 }
 
@@ -141,18 +141,16 @@ int pal_print_ns(const char *str, int32_t data)
 }
 
 /**
-    @brief           - Initializes an hardware watchdog timer
+    @brief           - Initializes a hardware watchdog timer
 
     This implementation doesn't support watchdogs so this is a noop.
 
-    @param           - base_addr       : Base address of the watchdog module
-                     - time_us         : Time in micro seconds
+    @param           - time_us         : Time in micro seconds
                      - timer_tick_us   : Number of ticks per micro second
     @return          - SUCCESS/FAILURE
 **/
-int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
+int pal_wd_timer_init_ns(uint32_t time_us, uint32_t timer_tick_us)
 {
-    (void)base_addr;
     (void)time_us;
     (void)timer_tick_us;
     return PAL_STATUS_SUCCESS;
@@ -163,12 +161,11 @@ int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick
 
     This implementation doesn't support watchdogs so this is a noop.
 
-    @param           - base_addr       : Base address of the watchdog module
+    @param           - Void
     @return          - SUCCESS/FAILURE
 **/
-int pal_wd_timer_enable_ns(addr_t base_addr)
+int pal_watchdog_enable(void)
 {
-    (void)base_addr;
     return PAL_STATUS_SUCCESS;
 }
 
@@ -177,12 +174,11 @@ int pal_wd_timer_enable_ns(addr_t base_addr)
 
     This implementation doesn't support watchdogs so this is a noop.
 
-    @param           - base_addr  : Base address of the watchdog module
+    @param           - Void
     @return          - SUCCESS/FAILURE
 **/
-int pal_wd_timer_disable_ns(addr_t base_addr)
+int pal_watchdog_disable(void)
 {
-    (void)base_addr;
     return PAL_STATUS_SUCCESS;
 }
 

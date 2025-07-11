@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -264,7 +264,7 @@ int32_t server_test_identity(void)
     /* Client ID during disconnect. It should be equal to id_at_call */
     if (msg.client_id != id_at_call)
     {
-        val->print(PRINT_ERROR, "\tmsg.client_id failed for IPC_DISCONNECT", 0);
+        val->print(ERROR, "\tmsg.client_id failed for IPC_DISCONNECT", 0);
         status = VAL_STATUS_WRONG_IDENTITY;
     }
 
@@ -276,7 +276,7 @@ int32_t server_test_identity(void)
      */
     if ((msg.client_id > 0) && (msg.client_id != CLIENT_PARTITION))
     {
-        val->print(PRINT_ERROR, "\tmsg.client_id failed for CLIENT_PARTITION", 0);
+        val->print(ERROR, "\tmsg.client_id failed for CLIENT_PARTITION", 0);
         status = VAL_STATUS_WRONG_IDENTITY;
     }
     psa->reply(msg.handle, PSA_SUCCESS);
@@ -295,7 +295,7 @@ int32_t server_test_spm_concurrent_connect_limit(void)
        signals = psa->wait(PSA_WAIT_ANY, PSA_BLOCK);
        if ((signals & SERVER_UNSPECIFIED_VERSION_SIGNAL) == 0)
        {
-          val->print(PRINT_ERROR,
+          val->print(ERROR,
                     "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
           return VAL_STATUS_ERROR;
        }
@@ -347,7 +347,7 @@ wait:
          /* When MODE is PSA_BLOCK, the psa_wait must return non-zero signal value */
          if ((signals & SERVER_UNSPECIFIED_VERSION_SIGNAL) == 0)
          {
-             val->print(PRINT_ERROR,
+             val->print(ERROR,
                      "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
              return VAL_STATUS_ERROR;
          }
@@ -394,14 +394,14 @@ int32_t server_test_psa_poll_behave(void)
 
         if (signals_poll != signals_block)
         {
-            val->print(PRINT_ERROR, "\tSignal value mismatch\n", 0);
-            val->print(PRINT_ERROR, "\tsignals_poll = 0x%x\n", signals_poll);
-            val->print(PRINT_ERROR, "\tsignals_block = 0x%x\n", signals_block);
+            val->print(ERROR, "\tSignal value mismatch\n", 0);
+            val->print(ERROR, "\tsignals_poll = 0x%x\n", signals_poll);
+            val->print(ERROR, "\tsignals_block = 0x%x\n", signals_block);
             return VAL_STATUS_ERROR;
         }
         else if ((signals_block & SERVER_UNSPECIFIED_VERSION_SIGNAL) == 0)
         {
-            val->print(PRINT_ERROR,
+            val->print(ERROR,
                     "\tpsa_wait returned with invalid signal_block = 0x%x\n", signals_block);
             return VAL_STATUS_ERROR;
         }

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_s001.h"
 #include "test_data.h"
 
@@ -41,7 +40,7 @@ static int32_t sst_calls_without_set_call(storage_function_code_t fCode, psa_sto
 
     /* get() without using set() before */
     memset(read_buff, 0, TEST_BUFF_SIZE);
-    val->print(PRINT_TEST, "[Check 1] Call get API for UID %d which is not set\n", (int32_t)p_uid);
+    val->print(TEST, "Check 1: Call get API for UID %d which is not set\n", (int32_t)p_uid);
     status = STORAGE_FUNCTION(s001_data[VAL_TEST_IDX1].api[fCode], p_uid, 0, TEST_BUFF_SIZE,
                               read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s001_data[VAL_TEST_IDX1].status, TEST_CHECKPOINT_NUM(1));
@@ -49,13 +48,13 @@ static int32_t sst_calls_without_set_call(storage_function_code_t fCode, psa_sto
     TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
     /*  get_info() without using set() before */
-    val->print(PRINT_TEST, "[Check 2] Call get_info API for UID %d which is not set\n",
+    val->print(TEST, "Check 2: Call get_info API for UID %d which is not set\n",
                             (int32_t)p_uid);
     status = STORAGE_FUNCTION(s001_data[VAL_TEST_IDX2].api[fCode], p_uid, &info);
     TEST_ASSERT_EQUAL(status, s001_data[VAL_TEST_IDX2].status, TEST_CHECKPOINT_NUM(3));
 
     /* remove() without using set() before */
-    val->print(PRINT_TEST, "[Check 3] Call remove API for UID %d which is not set\n",
+    val->print(TEST, "Check 3: Call remove API for UID %d which is not set\n",
                             (int32_t)p_uid);
     status = STORAGE_FUNCTION(s001_data[VAL_TEST_IDX3].api[fCode], p_uid);
     TEST_ASSERT_EQUAL(status, s001_data[VAL_TEST_IDX3].status, TEST_CHECKPOINT_NUM(4));
@@ -91,7 +90,7 @@ static int32_t sst_calls_after_uid_remove(storage_function_code_t fCode, psa_sto
 
     /* get() for UID which is removed */
     memset(read_buff, 0, TEST_BUFF_SIZE);
-    val->print(PRINT_TEST, "[Check 4] Call get API for UID %d which is removed\n", (int32_t)p_uid);
+    val->print(TEST, "Check 4: Call get API for UID %d which is removed\n", (int32_t)p_uid);
     status = STORAGE_FUNCTION(s001_data[VAL_TEST_IDX7].api[fCode], p_uid, 0, TEST_BUFF_SIZE,
                               read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s001_data[VAL_TEST_IDX7].status, TEST_CHECKPOINT_NUM(8));
@@ -99,13 +98,13 @@ static int32_t sst_calls_after_uid_remove(storage_function_code_t fCode, psa_sto
     TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
     /* get_info() for UID which is removed */
-    val->print(PRINT_TEST, "[Check 5] Call get_info API for UID %d which is removed\n",
+    val->print(TEST, "Check 5: Call get_info API for UID %d which is removed\n",
                             (int32_t)p_uid);
     status = STORAGE_FUNCTION(s001_data[VAL_TEST_IDX8].api[fCode], p_uid, &info);
     TEST_ASSERT_EQUAL(status, s001_data[VAL_TEST_IDX8].status, TEST_CHECKPOINT_NUM(10));
 
     /* remove() for UID which is removed */
-    val->print(PRINT_TEST, "[Check 6] Call remove API for UID %d which is removed\n",
+    val->print(TEST, "Check 6 Call remove API for UID %d which is removed\n",
                             (int32_t)p_uid);
     status = STORAGE_FUNCTION(s001_data[VAL_TEST_IDX9].api[fCode], p_uid);
     TEST_ASSERT_EQUAL(status, s001_data[VAL_TEST_IDX9].status, TEST_CHECKPOINT_NUM(11));
@@ -119,14 +118,14 @@ static int32_t sst_calls_with_different_uid(storage_function_code_t fCode, psa_s
     size_t  p_data_length = 0;
 
     /* set() a UID */
-    val->print(PRINT_TEST, "Set storage for UID %d\n", (int32_t)p_uid);
+    val->print(TEST, "Set storage for UID %d\n", (int32_t)p_uid);
     status = STORAGE_FUNCTION(s001_data[VAL_TEST_IDX10].api[fCode], p_uid, TEST_BUFF_SIZE,
                               write_buff, PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s001_data[VAL_TEST_IDX10].status, TEST_CHECKPOINT_NUM(12));
 
     /* get() for different UID then set UID */
     memset(read_buff, 0, TEST_BUFF_SIZE);
-    val->print(PRINT_TEST, "[Check 7] Call get API for different UID %d\n", (int32_t)(p_uid-1));
+    val->print(TEST, "Check 7: Call get API for different UID %d\n", (int32_t)(p_uid-1));
     status = STORAGE_FUNCTION(s001_data[VAL_TEST_IDX11].api[fCode], p_uid-1, 0, TEST_BUFF_SIZE - 1,
                               read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s001_data[VAL_TEST_IDX11].status, TEST_CHECKPOINT_NUM(13));
@@ -134,13 +133,13 @@ static int32_t sst_calls_with_different_uid(storage_function_code_t fCode, psa_s
     TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(14));
 
     /* get_info() for different UID then set UID */
-    val->print(PRINT_TEST, "[Check 8] Call get_info API for different UID %d\n",
+    val->print(TEST, "Check 8: Call get_info API for different UID %d\n",
                             (int32_t)(p_uid-1));
     status = STORAGE_FUNCTION(s001_data[VAL_TEST_IDX12].api[fCode], p_uid-1, &info);
     TEST_ASSERT_EQUAL(status, s001_data[VAL_TEST_IDX12].status, TEST_CHECKPOINT_NUM(15));
 
     /* remove() for different UID then set UID */
-    val->print(PRINT_TEST, "[Check 9] Call remove API for different UID %d\n", (int32_t)(p_uid-1));
+    val->print(TEST, "Check 9: Call remove API for different UID %d\n", (int32_t)(p_uid-1));
     status = STORAGE_FUNCTION(s001_data[VAL_TEST_IDX13].api[fCode], p_uid-1);
     TEST_ASSERT_EQUAL(status, s001_data[VAL_TEST_IDX13].status, TEST_CHECKPOINT_NUM(16));
 
@@ -194,7 +193,8 @@ int32_t s001_storage_test(caller_security_t caller __UNUSED)
     int32_t status;
 
 #if defined(STORAGE) || defined(INTERNAL_TRUSTED_STORAGE)
-    val->print(PRINT_TEST, ITS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, ITS_TEST_MESSAGE, 0);
     status = psa_sst_uid_not_found(VAL_ITS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;
@@ -202,7 +202,8 @@ int32_t s001_storage_test(caller_security_t caller __UNUSED)
 #endif
 
 #if defined(STORAGE) || defined(PROTECTED_STORAGE)
-    val->print(PRINT_TEST, PS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, PS_TEST_MESSAGE, 0);
     status = psa_sst_uid_not_found(VAL_PS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,18 +26,17 @@
 typedef struct {
     val_status_t     (*print)                     (print_verbosity_t verbosity,
                                                    const char *string, int32_t data);
-    val_status_t     (*set_status)                (uint32_t status);
+    void             (*set_status)                (uint32_t status);
     uint32_t         (*get_status)                (void);
-    void             (*test_init)                 (uint32_t test_num,  char8_t *desc,
-                                                   uint32_t test_bitfield);
+    void             (*test_init)                 (uint32_t test_num, uint32_t comp_num,
+                                                   char8_t *desc, uint32_t test_bitfield);
     void             (*test_exit)                 (void);
     val_status_t     (*err_check_set)             (uint32_t checkpoint, val_status_t status);
-    val_status_t     (*target_get_config)         (cfg_id_t cfg_id, uint8_t **data, uint32_t *size);
     val_status_t     (*execute_non_secure_tests)  (uint32_t test_num,
                                                    const client_test_t *tests_list,
                                                    bool_t server_hs);
     val_status_t     (*switch_to_secure_client)   (uint32_t test_num);
-    val_status_t     (*execute_secure_test_func)  (psa_handle_t *handle, test_info_t test_info,
+    val_status_t     (*execute_secure_test_func)  (psa_handle_t *handle, test_info_ipc_t test_info,
                                                    uint32_t sid);
     val_status_t     (*ipc_connect)               (uint32_t sid, uint32_t version,
                                                    psa_handle_t *handle);
@@ -49,11 +48,11 @@ typedef struct {
                                                    size_t out_len);
     void             (*ipc_close)                 (psa_handle_t handle);
     val_status_t     (*get_secure_test_result)    (psa_handle_t *handle);
-    val_status_t     (*nvmem_read)                (uint32_t offset, void *buffer, int size);
-    val_status_t     (*nvmem_write)               (uint32_t offset, const void *buffer, int size);
+    uint32_t         (*nvmem_read)                (uint32_t offset, void *buffer, size_t size);
+    uint32_t         (*nvmem_write)               (uint32_t offset, void *buffer, size_t size);
     val_status_t     (*wd_timer_init)             (wd_timeout_type_t timeout_type);
-    val_status_t     (*wd_timer_enable)           (void);
-    val_status_t     (*wd_timer_disable)          (void);
+    uint32_t         (*wd_timer_enable)           (void);
+    uint32_t         (*wd_timer_disable)          (void);
     val_status_t     (*wd_reprogram_timer)        (wd_timeout_type_t timeout_type);
     val_status_t     (*set_boot_flag)             (boot_state_t state);
     val_status_t     (*get_boot_flag)             (boot_state_t *state);

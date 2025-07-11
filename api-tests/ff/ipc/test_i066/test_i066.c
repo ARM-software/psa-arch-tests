@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -44,7 +43,7 @@ int32_t client_test_psa_eoi_with_multiple_signals(caller_security_t caller __UNU
     * hold the test check.
     */
 
-   val->print(PRINT_TEST, "[Check 1] Test psa_eoi with multiple signals\n", 0);
+   val->print(TEST, "Check 1: Test psa_eoi with multiple signals\n", 0);
 
    /* Execute driver function related to TEST_PSA_EOI_WITH_MULTIPLE_SIGNALS */
    psa_invec invec = {&driver_test_fn_id, sizeof(driver_test_fn_id)};
@@ -75,13 +74,13 @@ int32_t client_test_psa_eoi_with_multiple_signals(caller_security_t caller __UNU
     * hold the test check.
     */
 
-   val->print(PRINT_TEST, "[Check 1] Test psa_eoi with multiple signals\n", 0);
+   val->print(TEST, "Check 1: Test psa_eoi with multiple signals\n", 0);
 
    /* Connect to DRIVER_TEST_SID */
    handle = psa->connect(DRIVER_TEST_SID, DRIVER_TEST_VERSION);
    if (!PSA_HANDLE_IS_VALID(handle))
    {
-       val->print(PRINT_ERROR, "\t psa_connect failed. handle=0x%x\n", handle);
+       val->print(ERROR, "\t psa_connect failed. handle=0x%x\n", handle);
        return VAL_STATUS_SPM_FAILED;
    }
 

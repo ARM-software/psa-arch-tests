@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -118,7 +118,7 @@ void test_entry(val_api_t *val_api)
     }
 
     if (leaf_cert == NULL) {
-	    val->print(PRINT_ERROR, "Leaf certificate not found\n", 0);
+	    val->print(ERROR, "Leaf certificate not found\n", 0);
         val->err_check_set(TEST_CHECKPOINT_NUM(7), VAL_STATUS_NOT_FOUND);
         goto test_end;
     }

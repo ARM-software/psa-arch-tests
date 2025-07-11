@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2024-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_c072.h"
 #include "test_data.h"
 
@@ -38,7 +37,7 @@ int32_t psa_pake_set_peer_test(caller_security_t caller __UNUSED)
 
     if (num_checks == 0)
     {
-        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        val->print(TEST, "No test available for the selected crypto configuration\n", 0);
         return RESULT_SKIP(VAL_STATUS_NO_TESTS);
     }
 
@@ -48,8 +47,8 @@ int32_t psa_pake_set_peer_test(caller_security_t caller __UNUSED)
 
     for (i = 0; i < num_checks; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
-        val->print(PRINT_TEST, check1[i].test_desc, 0);
+        val->print(TEST, "Check %d: ", g_test_count++);
+        val->print(TEST, check1[i].test_desc, 0);
 
         val->crypto_function(VAL_CRYPTO_PAKE_OPERATION_INIT,
                              &operation);
@@ -129,7 +128,7 @@ int32_t psa_pake_set_peer_test(caller_security_t caller __UNUSED)
                                        &operation);
         TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
-        /* Expect a bad state when psa_pake_set_peer is called on aborted inactive operation object */
+      /* Expect a bad state when psa_pake_set_peer is called on aborted inactive operation object */
         if (check1[i].expected_status == PSA_SUCCESS) {
             status = val->crypto_function(VAL_CRYPTO_PAKE_SET_PEER,
                                           &operation,

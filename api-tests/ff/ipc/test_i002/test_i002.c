@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -44,7 +43,7 @@ int32_t client_test_connection_busy_and_reject(caller_security_t caller __UNUSED
     int32_t         status = VAL_STATUS_SUCCESS;
     psa_handle_t    handle = 0;
 
-    val->print(PRINT_TEST, "[Check 1] Test busy and reject connect type\n", 0);
+    val->print(TEST, "Check 1: Test busy and reject connect type\n", 0);
 
     handle = psa->connect(SERVER_UNSPECIFIED_VERSION_SID, SERVER_UNSPECIFIED_VERSION_VERSION);
 
@@ -54,7 +53,7 @@ int32_t client_test_connection_busy_and_reject(caller_security_t caller __UNUSED
      */
     if (handle != PSA_ERROR_CONNECTION_BUSY)
     {
-        val->print(PRINT_ERROR,
+        val->print(ERROR,
                    "Expected handle=PSA_ERROR_CONNECTION_BUSY but handle=0x%x\n", handle);
         return VAL_STATUS_INVALID_HANDLE;
     }
@@ -66,7 +65,7 @@ int32_t client_test_connection_busy_and_reject(caller_security_t caller __UNUSED
      */
     if (handle != PSA_ERROR_CONNECTION_REFUSED)
     {
-        val->print(PRINT_ERROR,
+        val->print(ERROR,
                    "Expected handle=PSA_ERROR_CONNECTION_REFUSED but handle=0x%x\n", handle);
         status = VAL_STATUS_INVALID_HANDLE;
     }
@@ -78,7 +77,7 @@ int32_t client_test_accept_and_close_connect(caller_security_t caller __UNUSED)
 {
    psa_handle_t     handle = 0;
 
-   val->print(PRINT_TEST, "[Check 2] Accept and close connection\n", 0);
+   val->print(TEST, "Check 2: Accept and close connection\n", 0);
 
    handle = psa->connect(SERVER_UNSPECIFIED_VERSION_SID, SERVER_UNSPECIFIED_VERSION_VERSION);
    /* RoT service accepts the connection. Expecting positive handle */
@@ -108,7 +107,7 @@ int32_t client_test_connect_with_allowed_version_policy(caller_security_t caller
                                  SERVER_RELAX_VERSION_VERSION - 1,
                                  SERVER_RELAX_VERSION_VERSION};
 
-   val->print(PRINT_TEST, "[Check 3] Test psa_connect with allowed version policy\n", 0);
+   val->print(TEST, "Check 3: Test psa_connect with allowed version policy\n", 0);
 
    /* Connect RoT service with following version numbers and expect positive handle for
     * each connection:
@@ -123,7 +122,7 @@ int32_t client_test_connect_with_allowed_version_policy(caller_security_t caller
         handle = psa->connect(sid[i], version[i]);
         if (!PSA_HANDLE_IS_VALID(handle))
         {
-            val->print(PRINT_ERROR,
+            val->print(ERROR,
                         "\tpsa_connect failed for version policy. Iteration No=%d\n", i);
             return VAL_STATUS_INVALID_HANDLE;
         }
@@ -164,7 +163,7 @@ int32_t client_test_psa_call_with_allowed_status_code(caller_security_t caller _
    psa_status_t    expected_status_code[] = {PSA_SUCCESS, 1, 2, INT32_MAX, -1, -2, INT32_MIN+128};
    uint32_t        i = 0;
 
-   val->print(PRINT_TEST, "[Check 4] Test psa_call with allowed status code\n", 0);
+   val->print(TEST, "Check 4: Test psa_call with allowed status code\n", 0);
 
    for (i = 0; i < (sizeof(expected_status_code)/sizeof(expected_status_code[0])); i++)
    {
@@ -172,7 +171,7 @@ int32_t client_test_psa_call_with_allowed_status_code(caller_security_t caller _
         status = psa_call_with_null_msg(expected_status_code[i]);
         if (VAL_ERROR(status))
         {
-            val->print(PRINT_ERROR,
+            val->print(ERROR,
                        "\tpsa_call failed for status code=0x%x\n", expected_status_code[i]);
             return status;
         }
@@ -187,7 +186,7 @@ int32_t client_test_psa_call_with_allowed_type_values(caller_security_t caller _
    int16_t            type[] = {PSA_IPC_CALL, 1, 2, INT16_MAX};
    uint32_t           i = 0;
 
-   val->print(PRINT_TEST, "[Check 5] Test psa_call with different type values\n", 0);
+   val->print(TEST, "Check 5: Test psa_call with different type values\n", 0);
    handle = psa->connect(SERVER_UNSPECIFIED_VERSION_SID, SERVER_UNSPECIFIED_VERSION_VERSION);
    if (!PSA_HANDLE_IS_VALID(handle))
    {
@@ -199,7 +198,7 @@ int32_t client_test_psa_call_with_allowed_type_values(caller_security_t caller _
        /* Send type = type[i] */
        if (psa->call(handle, type[i], NULL, 0, NULL, 0) != PSA_SUCCESS)
        {
-           val->print(PRINT_ERROR, "\tCheck failed for type=%d\n", type[i]);
+           val->print(ERROR, "\tCheck failed for type=%d\n", type[i]);
            status = VAL_STATUS_CALL_FAILED;
            break;
        }
@@ -216,7 +215,7 @@ int32_t client_test_identity(caller_security_t caller)
    psa_status_t    status_of_call;
    int             id_at_connect = 0, id_at_call = 0;
 
-   val->print(PRINT_TEST, "[Check 6] Test client_id\n", 0);
+   val->print(TEST, "Check 6: Test client_id\n", 0);
 
    handle = psa->connect(SERVER_UNSPECIFIED_VERSION_SID, SERVER_UNSPECIFIED_VERSION_VERSION);
    if (!PSA_HANDLE_IS_VALID(handle))
@@ -257,7 +256,7 @@ int32_t client_test_spm_concurrent_connect_limit(caller_security_t caller __UNUS
    psa_handle_t    handle[CONNECT_LIMIT] = {0};
    int             i = 0, signture = 0;
 
-   val->print(PRINT_TEST, "[Check 7] Test connect limit\n", 0);
+   val->print(TEST, "Check 7: Test connect limit\n", 0);
 
    if (caller == CALLER_SECURE)
    {
@@ -321,12 +320,12 @@ int32_t client_test_psa_wait(void)
 
 int32_t client_test_psa_block_behave(caller_security_t caller __UNUSED)
 {
-   val->print(PRINT_TEST, "[Check 8] Test PSA_BLOCK\n", 0);
+   val->print(TEST, "Check 8: Test PSA_BLOCK\n", 0);
    return client_test_psa_wait();
 }
 
 int32_t client_test_psa_poll_behave(caller_security_t caller __UNUSED)
 {
-   val->print(PRINT_TEST, "[Check 9] Test PSA_POLL\n", 0);
+   val->print(TEST, "Check 9: Test PSA_POLL\n", 0);
    return client_test_psa_wait();
 }

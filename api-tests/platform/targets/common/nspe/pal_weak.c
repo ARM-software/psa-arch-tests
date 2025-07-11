@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2023-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  * Copyright 2023 NXP
  *
@@ -41,4 +41,11 @@ __attribute__((weak)) bool_t pal_is_test_enabled(test_id_t test_id)
 __attribute__((weak)) unsigned int pal_platform_init(void)
 {
 	return (unsigned int)PAL_STATUS_SUCCESS;
+}
+
+__attribute__((weak)) int pal_print(uint8_t c)
+{
+	(void)c;
+
+	return PAL_STATUS_SUCCESS;
 }

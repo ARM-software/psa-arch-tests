@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,8 +46,8 @@ static void exit_graceful(psa_handle_t msg_handle, int status_code,
 {
     if (print_next_args != 0)
     {
-        val->print(PRINT_ERROR, "\tExpected data=%x\n", expected_data);
-        val->print(PRINT_ERROR, "\tActual data=%x\n", actual_data);
+        val->print(ERROR, "\tExpected data=%x\n", expected_data);
+        val->print(ERROR, "\tActual data=%x\n", actual_data);
     }
     /* Negative status_code represents check failure and each check has
      * uniq status_code to identify failing point
@@ -374,7 +374,7 @@ int32_t server_test_overlapping_vectors(void)
     /* rd_data[0] should either be original value or modified value */
     if ((rd_data[0] != expected_data[0]) && (rd_data[0] != expected_data[1]))
     {
-        val->print(PRINT_ERROR, "\tReceived invalid data=%x\n", rd_data[0]);
+        val->print(ERROR, "\tReceived invalid data=%x\n", rd_data[0]);
         exit_graceful(msg.handle, -2, 0, 0, 0);
         return status;
     }
@@ -413,8 +413,8 @@ static void exit_graceful(psa_handle_t msg_handle, int status_code,
 
     if (print_next_args != 0)
     {
-        val->print(PRINT_ERROR, "\tExpected data=%x\n", expected_data);
-        val->print(PRINT_ERROR, "\tActual data=%x\n", actual_data);
+        val->print(ERROR, "\tExpected data=%x\n", expected_data);
+        val->print(ERROR, "\tActual data=%x\n", actual_data);
     }
     /* Negative status_code represents check failure and each check has
      * uniq status_code to identify failing point
@@ -423,7 +423,7 @@ static void exit_graceful(psa_handle_t msg_handle, int status_code,
 
     if (val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
     {
-        val->print(PRINT_ERROR, "\tdisconnect failed in exit_graceful func\n", 0);
+        val->print(ERROR, "\tdisconnect failed in exit_graceful func\n", 0);
     }
     psa->reply(msg.handle, PSA_SUCCESS);
 }
@@ -881,7 +881,7 @@ int32_t server_test_overlapping_vectors(void)
     /* rd_data[0] should either be original value or modified value */
     if ((rd_data[0] != expected_data[0]) && (rd_data[0] != expected_data[1]))
     {
-        val->print(PRINT_ERROR, "\tReceived invalid data=%x\n", rd_data[0]);
+        val->print(ERROR, "\tReceived invalid data=%x\n", rd_data[0]);
         exit_graceful(msg.handle, -2, 0, 0, 0);
         return status;
     }

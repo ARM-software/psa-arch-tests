@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -40,8 +39,8 @@ int32_t client_test_psa_doorbell_signal(caller_security_t caller __UNUSED)
    psa_signal_t       signals = 0;
 #endif
 
-   val->print(PRINT_TEST,
-            "[Check 1] Test PSA_DOORBELL signal\n", 0);
+   val->print(TEST,
+            "Check 1: Test PSA_DOORBELL signal\n", 0);
    psa->call(SERVER_UNSPECIFIED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, NULL, 0);
 
 #ifndef NONSECURE_TEST_BUILD
@@ -52,7 +51,7 @@ int32_t client_test_psa_doorbell_signal(caller_security_t caller __UNUSED)
    if ((signals & PSA_DOORBELL) == 0)
    {
        status = VAL_STATUS_INVALID_HANDLE;
-       val->print(PRINT_ERROR, "\tpsa_wait didn't receive doorbell signal\n", 0);
+       val->print(ERROR, "\tpsa_wait didn't receive doorbell signal\n", 0);
    }
 
    /*
@@ -65,7 +64,7 @@ int32_t client_test_psa_doorbell_signal(caller_security_t caller __UNUSED)
    if ((signals & PSA_DOORBELL) == 0)
    {
        status = VAL_STATUS_INVALID_HANDLE;
-       val->print(PRINT_ERROR, "\tDoorbell signal cleared without calling psa_clear\n", 0);
+       val->print(ERROR, "\tDoorbell signal cleared without calling psa_clear\n", 0);
    }
 
    /* Clear the doorbell signal */
@@ -76,7 +75,7 @@ int32_t client_test_psa_doorbell_signal(caller_security_t caller __UNUSED)
    if ((signals & PSA_DOORBELL) != 0)
    {
        status = VAL_STATUS_INVALID_HANDLE;
-       val->print(PRINT_ERROR, "\tpsa_clear didn't clear doorbell signal\n", 0);
+       val->print(ERROR, "\tpsa_clear didn't clear doorbell signal\n", 0);
    }
 #endif
 
@@ -100,13 +99,13 @@ int32_t client_test_psa_doorbell_signal(caller_security_t caller __UNUSED)
    psa_signal_t       signals = 0;
 #endif
 
-   val->print(PRINT_TEST,
-            "[Check 1] Test PSA_DOORBELL signal\n", 0);
+   val->print(TEST,
+            "Check 1: Test PSA_DOORBELL signal\n", 0);
 
    handle = psa->connect(SERVER_UNSPECIFIED_VERSION_SID, SERVER_UNSPECIFIED_VERSION_VERSION);
    if (!PSA_HANDLE_IS_VALID(handle))
    {
-       val->print(PRINT_ERROR, "\tConnection failed\n", 0);
+       val->print(ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
    }
 
@@ -118,7 +117,7 @@ int32_t client_test_psa_doorbell_signal(caller_security_t caller __UNUSED)
    if ((signals & PSA_DOORBELL) == 0)
    {
        status = VAL_STATUS_INVALID_HANDLE;
-       val->print(PRINT_ERROR, "\tpsa_wait didn't receive doorbell signal\n", 0);
+       val->print(ERROR, "\tpsa_wait didn't receive doorbell signal\n", 0);
    }
 
    /*
@@ -131,7 +130,7 @@ int32_t client_test_psa_doorbell_signal(caller_security_t caller __UNUSED)
    if ((signals & PSA_DOORBELL) == 0)
    {
        status = VAL_STATUS_INVALID_HANDLE;
-       val->print(PRINT_ERROR, "\tDoorbell signal cleared without calling psa_clear\n", 0);
+       val->print(ERROR, "\tDoorbell signal cleared without calling psa_clear\n", 0);
    }
 
    /* Clear the doorbell signal */
@@ -142,7 +141,7 @@ int32_t client_test_psa_doorbell_signal(caller_security_t caller __UNUSED)
    if ((signals & PSA_DOORBELL) != 0)
    {
        status = VAL_STATUS_INVALID_HANDLE;
-       val->print(PRINT_ERROR, "\tpsa_clear didn't clear doorbell signal\n", 0);
+       val->print(ERROR, "\tpsa_clear didn't clear doorbell signal\n", 0);
    }
 #endif
 

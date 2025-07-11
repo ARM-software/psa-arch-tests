@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,7 @@ const server_test_t test_i061_server_tests_list[] = {
 int32_t server_test_psa_clear_at_unasserted_doorbell_sig(void)
 {
 
-    val->print(PRINT_TEST, "[Check 1] Test psa_clear at unasserted doorbell sig\n", 0);
+    val->print(TEST, "[Check 1] Test psa_clear at unasserted doorbell sig\n", 0);
 
    /*
     * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
@@ -50,7 +50,7 @@ int32_t server_test_psa_clear_at_unasserted_doorbell_sig(void)
     * the test harness function.
     *
     * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
+    * timeout entries available in pal_config.h.
     *
     * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
@@ -61,7 +61,7 @@ int32_t server_test_psa_clear_at_unasserted_doorbell_sig(void)
     /* Setting boot.state before test check */
     if (val->set_boot_flag(BOOT_EXPECTED_NS))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
         return VAL_STATUS_ERROR;
     }
 
@@ -69,12 +69,12 @@ int32_t server_test_psa_clear_at_unasserted_doorbell_sig(void)
     psa->clear();
 
     /* shouldn't have reached here */
-    val->print(PRINT_ERROR, "\tpsa->clear() check failed for unasserted doorbel signal\n", 0);
+    val->print(ERROR, "\tpsa->clear() check failed for unasserted doorbel signal\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
     if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
         return VAL_STATUS_ERROR;
     }
 

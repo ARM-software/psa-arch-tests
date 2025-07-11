@@ -1,5 +1,5 @@
  /** @file
-  * Copyright (c) 2023-2024, Arm Limited or its affiliates. All rights reserved.
+  * Copyright (c) 2023-2025, Arm Limited or its affiliates. All rights reserved.
   * SPDX-License-Identifier : Apache-2.0
   *
   * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,13 @@
   * limitations under the License.
  **/
 
-#include "pal_driver_intf.h"
+#include "pal_interfaces_s.h"
+#include "pal_uart.h"
+#include "pal_nvmem.h"
+#include "pal_wd_cmsdk.h"
+
+/* Regression test status reporting buffer */
+uint8_t test_status_buffer[256]  = {0};
 
 /**
     @brief    - This function initializes the UART
@@ -29,15 +35,13 @@ void pal_uart_init(uint32_t uart_base_addr)
 }
 
 /**
-    @brief    - This function parses the input string and writes bytes into UART TX FIFO
-    @param    - str      : Input String
-              - data     : Value for format specifier
+    @brief    - This function sends a character to the UART TX FIFO.
+    @param    - c  :  Input character
 **/
-
-void pal_print(const char *str, int32_t data)
+int pal_print(uint8_t c)
 {
-  pal_cmsdk_print(str,data);
-
+  pal_uart_cmsdk_putc(c);
+  return PAL_STATUS_SUCCESS;
 }
 
 
@@ -69,7 +73,7 @@ int pal_nvmem_read(addr_t base, uint32_t offset, void *buffer, int size)
 
 
 /**
-    @brief           - Initializes an hardware watchdog timer
+    @brief           - Initializes a hardware watchdog timer
     @param           - base_addr       : Base address of the watchdog module
                      - time_us         : Time in micro seconds
                      - timer_tick_us   : Number of ticks per micro second

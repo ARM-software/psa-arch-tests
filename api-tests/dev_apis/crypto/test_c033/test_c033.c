@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_c033.h"
 #include "test_data.h"
 
@@ -41,7 +40,7 @@ int32_t psa_cipher_decrypt_setup_test(caller_security_t caller __UNUSED)
 
     if (num_checks == 0)
     {
-        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        val->print(TEST, "No test available for the selected crypto configuration\n", 0);
         return RESULT_SKIP(VAL_STATUS_NO_TESTS);
     }
 
@@ -52,8 +51,8 @@ int32_t psa_cipher_decrypt_setup_test(caller_security_t caller __UNUSED)
     /* Set the key data buffer to the input base on algorithm */
     for (i = 0; i < num_checks; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
-        val->print(PRINT_TEST, check1[i].test_desc, 0);
+        val->print(TEST, "Check %d: ", g_test_count++);
+        val->print(TEST, check1[i].test_desc, 0);
         val->crypto_function(VAL_CRYPTO_CIPHER_OPERATION_INIT, &operation);
 
         /* Setting up the watchdog timer for each check */
@@ -154,14 +153,14 @@ int32_t psa_cipher_decrypt_setup_negative_test(caller_security_t caller __UNUSED
     status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
     TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-    val->print(PRINT_TEST, "[Check %d] Test psa_cipher_decrypt_setup - Invalid key handle\n",
+    val->print(TEST, "Check %d: Test psa_cipher_decrypt_setup - Invalid key handle\n",
                                                                                g_test_count++);
     /* Set the key for a multipart symmetric decryption operation */
     status = val->crypto_function(VAL_CRYPTO_CIPHER_DECRYPT_SETUP, &operation, key,
                                   check1[valid_test_input_index].alg);
     TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));
 
-    val->print(PRINT_TEST, "[Check %d] Test psa_cipher_decrypt_setup - Zero as key handle\n",
+    val->print(TEST, "Check %d: Test psa_cipher_decrypt_setup - Zero as key handle\n",
                                                                                g_test_count++);
 
     memset(&operation, 0, sizeof(operation));

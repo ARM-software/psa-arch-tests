@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,18 +17,22 @@
 
 #include "pal_common.h"
 
+static addr_t uart_base = PLATFORM_UART_BASE;
+/* Regression test status reporting buffer */
+uint8_t test_status_buffer[256]  = {0};
+
 /**
     @brief    - This function initializes the UART
-    @param    - uart base addr
+    @param    - Void
     @return   - SUCCESS/FAILURE
 **/
-int pal_uart_init_ns(uint32_t uart_base_addr)
+int pal_uart_init_ns(void)
 {
     psa_status_t            status_of_call = PSA_SUCCESS;
     uart_fn_type_t          uart_fn = UART_INIT;
 
     psa_invec data[3] = {{&uart_fn, sizeof(uart_fn)},
-                         {&uart_base_addr, sizeof(uart_base_addr)},
+                         {&uart_base, sizeof(uart_base)},
                          {NULL, 0} };
 
 #if STATELESS_ROT == 1
@@ -62,7 +66,6 @@ int pal_uart_init_ns(uint32_t uart_base_addr)
               - data     : Value for format specifier
     @return   - SUCCESS/FAILURE
 **/
-
 int pal_print_ns(const char *str, int32_t data)
 {
     int             string_len = 0;
@@ -106,19 +109,18 @@ int pal_print_ns(const char *str, int32_t data)
 }
 
 /**
-    @brief           - Initializes an hardware watchdog timer
-    @param           - base_addr       : Base address of the watchdog module
-                     - time_us         : Time in micro seconds
+    @brief           - Initializes a hardware watchdog timer
+    @param           - time_us         : Time in micro seconds
                      - timer_tick_us   : Number of ticks per micro second
     @return          - SUCCESS/FAILURE
 **/
-int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
+int pal_wd_timer_init_ns(uint32_t time_us, uint32_t timer_tick_us)
 {
     wd_param_t              wd_param;
     psa_status_t            status_of_call = PSA_SUCCESS;
 
     wd_param.wd_fn_type = WD_INIT_SEQ;
-    wd_param.wd_base_addr = base_addr;
+    wd_param.wd_base_addr = (addr_t)PLATFORM_WD_BASE;
     wd_param.wd_time_us = time_us;
     wd_param.wd_timer_tick_us = timer_tick_us;
     psa_invec invec[1] = {{&wd_param, sizeof(wd_param)} };
@@ -151,16 +153,16 @@ int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick
 
 /**
     @brief           - Enables a hardware watchdog timer
-    @param           - base_addr       : Base address of the watchdog module
+    @param           - Void
     @return          - SUCCESS/FAILURE
 **/
-int pal_wd_timer_enable_ns(addr_t base_addr)
+int pal_watchdog_enable(void)
 {
     wd_param_t              wd_param;
     psa_status_t            status_of_call = PSA_SUCCESS;
 
     wd_param.wd_fn_type = WD_ENABLE_SEQ;
-    wd_param.wd_base_addr = base_addr;
+    wd_param.wd_base_addr = (addr_t)PLATFORM_WD_BASE;
     wd_param.wd_time_us = 0;
     wd_param.wd_timer_tick_us = 0;
     psa_invec invec[1] = {{&wd_param, sizeof(wd_param)} };
@@ -192,16 +194,16 @@ int pal_wd_timer_enable_ns(addr_t base_addr)
 
 /**
     @brief           - Disables a hardware watchdog timer
-    @param           - base_addr  : Base address of the watchdog module
+    @param           - Void
     @return          - SUCCESS/FAILURE
 **/
-int pal_wd_timer_disable_ns(addr_t base_addr)
+int pal_watchdog_disable(void)
 {
     wd_param_t              wd_param;
     psa_status_t            status_of_call = PSA_SUCCESS;
 
     wd_param.wd_fn_type = WD_DISABLE_SEQ;
-    wd_param.wd_base_addr = base_addr;
+    wd_param.wd_base_addr = (addr_t)PLATFORM_WD_BASE;
     wd_param.wd_time_us = 0;
     wd_param.wd_timer_tick_us = 0;
     psa_invec invec[1] = {{&wd_param, sizeof(wd_param)} };
@@ -233,19 +235,18 @@ int pal_wd_timer_disable_ns(addr_t base_addr)
 
 /**
     @brief    - Reads from given non-volatile address.
-    @param    - base    : Base address of nvmem
-                offset  : Offset
+    @param    - offset  : Offset
                 buffer  : Pointer to source address
                 size    : Number of bytes
     @return   - SUCCESS/FAILURE
 **/
-int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size)
+int pal_nvm_read(uint32_t offset, void *buffer, size_t size)
 {
     nvmem_param_t   nvmem_param;
     psa_status_t    status_of_call = PSA_SUCCESS;
 
     nvmem_param.nvmem_fn_type = NVMEM_READ;
-    nvmem_param.base = base;
+    nvmem_param.base = (addr_t)PLATFORM_NVM_BASE;
     nvmem_param.offset = offset;
     nvmem_param.size = size;
     psa_invec invec[1] = {{&nvmem_param, sizeof(nvmem_param)} };
@@ -277,19 +278,18 @@ int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size)
 
 /**
     @brief    - Writes into given non-volatile address.
-    @param    - base    : Base address of nvmem
-                offset  : Offset
+    @param    - offset  : Offset
                 buffer  : Pointer to source address
                 size    : Number of bytes
     @return   - SUCCESS/FAILURE
 **/
-int pal_nvmem_write_ns(addr_t base, uint32_t offset, void *buffer, int size)
+int pal_nvm_write(uint32_t offset, void *buffer, size_t size)
 {
     nvmem_param_t   nvmem_param;
     psa_status_t    status_of_call = PSA_SUCCESS;
 
     nvmem_param.nvmem_fn_type = NVMEM_WRITE;
-    nvmem_param.base = base;
+    nvmem_param.base = (addr_t)PLATFORM_NVM_BASE;
     nvmem_param.offset = offset;
     nvmem_param.size = size;
     psa_invec invec[2] = {{&nvmem_param, sizeof(nvmem_param)}, {buffer, size} };

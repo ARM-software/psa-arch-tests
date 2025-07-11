@@ -85,7 +85,7 @@ To build the test suite for your target platform, execute the following commands
     -DPSA_INCLUDE_PATHS=`readlink -f <relative_include_path>`
 ```
 -   -DTOOLCHAIN=<tool_chain> Compiler toolchain to be used for test suite compilation. Supported values are GNUARM (GNU Arm Embedded), ARMCLANG (ARM Compiler 6.x) , HOST_GCC and GCC_LINUX . Default is GNUARM.<br />
--   -DVERBOSE=<verbose_level>. Print verbosity level. Default is 3. Supported print levels are 1(INFO & above), 2(DEBUG & above), 3(TEST & above), 4(WARN & ERROR) and 5(ERROR).
+-   -DVERBOSITY=<verbosity_level>. Print verbosity level. Default is 3. Supported print levels are 1(INFO & above), 2(DEBUG & above), 3(TEST & above), 4(WARN & ERROR) and 5(ERROR).
 -   -DBUILD=<BUILD_DIR> : To select the build directory to keep output files. Default is BUILD/ inside current directory.
 -   -DWATCHDOG_AVAILABLE=<0|1>: Test harness may require to access watchdog timer to recover system hang. 0 means skip watchdog programming in the test suite and 1 means program the watchdog. Default is 1. Note, watchdog must be available for the tests which check the API behaviour on the system reset.
 -   -DSUITE_TEST_RANGE="<test_start_number>;<test_end_number>" is to select range of tests for build. All tests under -DSUITE are considered by default if not specified.

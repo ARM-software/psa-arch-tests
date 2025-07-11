@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,7 +55,7 @@ int32_t server_test_psa_read_with_invalid_handle(void)
     * the test harness function.
     *
     * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
+    * timeout entries available in pal_config.h.
     *
     * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
@@ -74,7 +74,7 @@ int32_t server_test_psa_read_with_invalid_handle(void)
         status = val->set_boot_flag(BOOT_EXPECTED_NS);
         if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
         {
-            val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+            val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
             psa->reply(msg.handle, -3);
         }
         else
@@ -83,13 +83,13 @@ int32_t server_test_psa_read_with_invalid_handle(void)
             psa->read(INVALID_HANDLE, 0, (void *)data, 0);
 
             /* shouldn't have reached here */
-            val->print(PRINT_ERROR,
+            val->print(ERROR,
                 "\tpsa_read with invalid handle should failed but succeed\n", 0);
 
             /* Resetting boot.state to catch unwanted reboot */
             if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
             {
-                val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+                val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
             }
 
             status = VAL_STATUS_SPM_FAILED;
@@ -131,7 +131,7 @@ int32_t server_test_psa_read_with_invalid_handle(void)
     * the test harness function.
     *
     * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
+    * timeout entries available in pal_config.h.
     *
     * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
@@ -159,7 +159,7 @@ int32_t server_test_psa_read_with_invalid_handle(void)
         status = val->set_boot_flag(BOOT_EXPECTED_NS);
         if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
         {
-            val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+            val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
             psa->reply(msg.handle, -3);
         }
         else
@@ -168,13 +168,13 @@ int32_t server_test_psa_read_with_invalid_handle(void)
             psa->read(INVALID_HANDLE, 0, (void *)data, 0);
 
             /* shouldn't have reached here */
-            val->print(PRINT_ERROR,
+            val->print(ERROR,
                 "\tpsa_read with invalid handle should failed but succeed\n", 0);
 
             /* Resetting boot.state to catch unwanted reboot */
             if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
             {
-                val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+                val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
             }
 
             status = VAL_STATUS_SPM_FAILED;

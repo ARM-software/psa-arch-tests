@@ -15,7 +15,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_c078.h"
 #include "test_crypto_common.h"
 
@@ -110,7 +109,7 @@ int32_t psa_pake_jpake_test(caller_security_t caller __UNUSED)
     psa_key_id_t key = 0;
     uint8_t secret1[32], secret2[32];
 
-    val->print(PRINT_ALWAYS, "[check 1] JPAKE Test \n", 0);
+    val->print(ALWAYS, "Check 1: JPAKE Test \n", 0);
     /* Initialize PSA crypto library */
     status = val->crypto_function(VAL_CRYPTO_INIT);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
@@ -141,14 +140,14 @@ int32_t psa_pake_jpake_test(caller_security_t caller __UNUSED)
    /* setup Jpake operation for user */
     status = psa_pake_jpake_setup(&user, (const uint8_t *)"client", (const uint8_t *)"server",
                                    pw_key);
-    val->print(PRINT_DEBUG, "[check 1] : JPAKE operation setup for user done\n", 0);
+    val->print(DBG, "Check 2: JPAKE operation setup for user done\n", 0);
 
     /* Setup jpake operation for peer */
     status = psa_pake_jpake_setup(&peer, (const uint8_t *)"server", (const uint8_t *)"client",
                                     pw_key);
-    val->print(PRINT_DEBUG, "[check 2] : JPAKE operation setup for peer done\n", 0);
+    val->print(DBG, "Check 3: JPAKE operation setup for peer done\n", 0);
     /* Round 1 key exchange */
-    val->print(PRINT_DEBUG, "[check 3] : Starting Round1 Key Exchange from user to peer\n", 0);
+    val->print(DBG, "Check 4: Starting Round1 Key Exchange from user to peer\n", 0);
     // Get and set g1
     status = send_message_jpake(&user, &peer, PSA_PAKE_STEP_KEY_SHARE);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(4));
@@ -173,10 +172,9 @@ int32_t psa_pake_jpake_test(caller_security_t caller __UNUSED)
    status = send_message_jpake(&user, &peer, PSA_PAKE_STEP_ZK_PROOF);
    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(9));
 
-   val->print(PRINT_DEBUG, "            Round1 Key Exchange from user to peer done\n", 0);
+   val->print(DBG, "            Round1 Key Exchange from user to peer done\n", 0);
 
-   val->print(PRINT_DEBUG, "[check 4] : Starting Round1 Key Exchange from peer to user\n", 0);
-
+   val->print(DBG, "Check 5: Starting Round1 Key Exchange from peer to user\n", 0);
    //Get and set g3
    status = send_message_jpake(&peer, &user, PSA_PAKE_STEP_KEY_SHARE);
    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
@@ -201,11 +199,11 @@ int32_t psa_pake_jpake_test(caller_security_t caller __UNUSED)
    status = send_message_jpake(&peer, &user, PSA_PAKE_STEP_ZK_PROOF);
    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(15));
 
-   val->print(PRINT_DEBUG, "            Round1 Key Exchange from peer to user done\n", 0);
+   val->print(DBG, "            Round1 Key Exchange from peer to user done\n", 0);
 
   /* Round 2 Key exchange */
 
-    val->print(PRINT_DEBUG, "[check 5] : Starting Round2 Key Exchange from user to peer\n", 0);
+    val->print(DBG, "Check 6: Starting Round2 Key Exchange from user to peer\n", 0);
 
    // Get and set A
    status = send_message_jpake(&user, &peer, PSA_PAKE_STEP_KEY_SHARE);
@@ -219,9 +217,9 @@ int32_t psa_pake_jpake_test(caller_security_t caller __UNUSED)
   status = send_message_jpake(&user, &peer, PSA_PAKE_STEP_ZK_PROOF);
   TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(18));
 
-   val->print(PRINT_DEBUG, "            Round2 Key Exchange from user to peer done\n", 0);
+   val->print(DBG, "            Round2 Key Exchange from user to peer done\n", 0);
 
-   val->print(PRINT_DEBUG, "[check 6] : Starting Round2 Key Exchange from peer to user\n", 0);
+   val->print(DBG, "Check 7: Starting Round2 Key Exchange from peer to user\n", 0);
 
   // Get and Set B
   status = send_message_jpake(&peer, &user, PSA_PAKE_STEP_KEY_SHARE);
@@ -235,7 +233,7 @@ int32_t psa_pake_jpake_test(caller_security_t caller __UNUSED)
   status = send_message_jpake(&peer, &user, PSA_PAKE_STEP_ZK_PROOF);
   TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(21));
 
-  val->print(PRINT_DEBUG, "            Round2 Key Exchange from peer to user done\n", 0);
+  val->print(DBG, "            Round2 Key Exchange from peer to user done\n", 0);
 
   /* Setup the attributes for the key */
   val->crypto_function(VAL_CRYPTO_SET_KEY_TYPE,
@@ -248,7 +246,7 @@ int32_t psa_pake_jpake_test(caller_security_t caller __UNUSED)
                        &attributes,
                        PSA_ALG_TLS12_ECJPAKE_TO_PMS);
 
-  val->print(PRINT_DEBUG, "[check 7] : Derive shared secret from user \n", 0);
+  val->print(DBG, "Check 8: Derive shared secret from user \n", 0);
 
   /* Setup Key Derivation for User */
   status = val->crypto_function(VAL_CRYPTO_PAKE_GET_SHARED_KEY, &user, &attributes, &key);
@@ -273,16 +271,16 @@ int32_t psa_pake_jpake_test(caller_security_t caller __UNUSED)
   status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &kdf);
   TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(27));
 
-  val->print(PRINT_DEBUG, "[secret1] : ", 0);
+  val->print(DBG, "[secret1] : ", 0);
   for (i = 0; i < 32; i++)
   {
-    val->print(PRINT_DEBUG, "%x", secret1[i]);
+    val->print(DBG, "%x", secret1[i]);
   }
 
   status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, key);
   TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(28));
 
-  val->print(PRINT_DEBUG, "\n[check 8] : Derive shared secret from peer \n", 0);
+  val->print(DBG, "\nCheck 9: Derive shared secret from peer \n", 0);
 
   /* Setup Key Derivation for Peer */
   status = val->crypto_function(VAL_CRYPTO_PAKE_GET_SHARED_KEY, &peer, &attributes, &key);
@@ -304,14 +302,14 @@ int32_t psa_pake_jpake_test(caller_security_t caller __UNUSED)
                                &kdf, secret2, sizeof(secret2));
   TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(33));
 
-  val->print(PRINT_DEBUG, "[secret2] : ", 0);
+  val->print(DBG, "[secret2] : ", 0);
 
   for (i = 0; i < 32; i++)
   {
-    val->print(PRINT_DEBUG, "%x", secret2[i]);
+    val->print(DBG, "%x", secret2[i]);
   }
 
-  val->print(PRINT_DEBUG, "\n", 0);
+  val->print(DBG, "\n", 0);
 
   status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &kdf);
   TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(34));

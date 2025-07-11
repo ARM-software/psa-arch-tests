@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -44,7 +43,7 @@ int32_t client_test_zero_length_invec(caller_security_t caller __UNUSED)
 
    int                  data[4] = {0x11, 0x22};
 
-   val->print(PRINT_TEST, "[Check 1] Test zero length invec\n", 0);
+   val->print(TEST, "Check 1: Test zero length invec\n", 0);
 
    /* Invec 0 as zero length vector
     * Invec 1 as NULL
@@ -67,20 +66,20 @@ int32_t client_test_zero_length_invec(caller_security_t caller __UNUSED)
    }
    else if (data[2] != data[1])
    {
-       val->print(PRINT_ERROR, "\tExpected data=%x\n", data[1]);
-       val->print(PRINT_ERROR, "\tBut actual data=%x\n", data[2]);
+       val->print(ERROR, "\tExpected data=%x\n", data[1]);
+       val->print(ERROR, "\tBut actual data=%x\n", data[2]);
        status = VAL_STATUS_WRITE_FAILED;
    }
    else if (resp[0].len != sizeof(data[1]))
    {
-       val->print(PRINT_ERROR, "\tExpected size= %x\n", sizeof(data[1]));
-       val->print(PRINT_ERROR, "\tBut actual size=%x\n", resp[0].len);
+       val->print(ERROR, "\tExpected size= %x\n", sizeof(data[1]));
+       val->print(ERROR, "\tBut actual size=%x\n", resp[0].len);
        status = VAL_STATUS_WRITE_FAILED;
    }
 
    if (VAL_ERROR(status))
    {
-       val->print(PRINT_ERROR, "\tpsa_call failed. status=%x\n", status);
+       val->print(ERROR, "\tpsa_call failed. status=%x\n", status);
    }
 
    return status;
@@ -92,7 +91,7 @@ int32_t client_test_zero_length_outvec(caller_security_t caller __UNUSED)
 
    int                  data[4] = {0x11};
 
-   val->print(PRINT_TEST, "[Check 2] Test zero length outvec\n", 0);
+   val->print(TEST, "Check 2: Test zero length outvec\n", 0);
 
    /* Test invec 1 to 3 are NULL
     * Invec 1 should be ignored since in_len is 1
@@ -118,21 +117,21 @@ int32_t client_test_zero_length_outvec(caller_security_t caller __UNUSED)
    /* Compare the outvec with expected data */
    else if (data[2] != data[0])
    {
-       val->print(PRINT_ERROR, "\tExpected data=%x\n", data[0]);
-       val->print(PRINT_ERROR, "\tBut actual data=%x\n", data[2]);
+       val->print(ERROR, "\tExpected data=%x\n", data[0]);
+       val->print(ERROR, "\tBut actual data=%x\n", data[2]);
        status = VAL_STATUS_WRITE_FAILED;
    }
    /* No. of bytes written by psa_write should update the psa_outvec.len param */
    else if (resp[2].len != sizeof(data[2]))
    {
-       val->print(PRINT_ERROR, "\tExpected size=%x\n", sizeof(data[2]));
-       val->print(PRINT_ERROR, "\tBut actual size=%x\n", resp[2].len);
+       val->print(ERROR, "\tExpected size=%x\n", sizeof(data[2]));
+       val->print(ERROR, "\tBut actual size=%x\n", resp[2].len);
        status = VAL_STATUS_WRITE_FAILED;
    }
 
    if (VAL_ERROR(status))
    {
-       val->print(PRINT_ERROR, "\tpsa_call failed. status=%x\n", status);
+       val->print(ERROR, "\tpsa_call failed. status=%x\n", status);
    }
 
    return status;
@@ -146,7 +145,7 @@ int32_t client_test_call_read_and_skip(caller_security_t caller __UNUSED)
    uint64_t             data3 = 0x1020304050607080;
 
 
-   val->print(PRINT_TEST, "[Check 3] Test psa_call, psa_read and psa_skip\n", 0);
+   val->print(TEST, "Check 3: Test psa_call, psa_read and psa_skip\n", 0);
 
    /* Server test func checks the following:
     * All iovec as input, out_len=0, inbound read, inbound skip,
@@ -162,7 +161,7 @@ int32_t client_test_call_read_and_skip(caller_security_t caller __UNUSED)
 
    if (status < 0)
    {
-       val->print(PRINT_ERROR, "\tpsa_call failed. status=%x\n", status);
+       val->print(ERROR, "\tpsa_call failed. status=%x\n", status);
        status = VAL_STATUS_CALL_FAILED;
    }
 
@@ -179,7 +178,7 @@ int32_t client_test_call_and_write(caller_security_t caller __UNUSED)
                                            2};
 
 
-   val->print(PRINT_TEST, "[Check 4] Test psa_call and psa_write\n", 0);
+   val->print(TEST, "Check 4: Test psa_call and psa_write\n", 0);
 
    /* Check all iovec as output */
    /* Check for in_len=0 */
@@ -201,24 +200,24 @@ int32_t client_test_call_and_write(caller_security_t caller __UNUSED)
    {
         if (data[i] != expected_data[i])
         {
-            val->print(PRINT_ERROR, "\tIteration= %x\n", i);
-            val->print(PRINT_ERROR, "\tExpected data=%x\n", expected_data[i]);
-            val->print(PRINT_ERROR, "\tBut actual data=%x\n", data[i]);
+            val->print(ERROR, "\tIteration= %x\n", i);
+            val->print(ERROR, "\tExpected data=%x\n", expected_data[i]);
+            val->print(ERROR, "\tBut actual data=%x\n", data[i]);
             status = VAL_STATUS_WRITE_FAILED;
         }
         /* No. of bytes written by psa_write should update the psa_outvec.len param */
         else if (resp[i].len != expected_size[i])
         {
-            val->print(PRINT_ERROR, "\tIteration= %x\n", i);
-            val->print(PRINT_ERROR, "\tExpected size=%x\n", expected_size[i]);
-            val->print(PRINT_ERROR, "\tBut actual size=%x\n", resp[i].len);
+            val->print(ERROR, "\tIteration= %x\n", i);
+            val->print(ERROR, "\tExpected size=%x\n", expected_size[i]);
+            val->print(ERROR, "\tBut actual size=%x\n", resp[i].len);
             status = VAL_STATUS_WRITE_FAILED;
         }
    }
 
    if (VAL_ERROR(status))
    {
-       val->print(PRINT_ERROR, "\tpsa_call failed. status=%x\n", status);
+       val->print(ERROR, "\tpsa_call failed. status=%x\n", status);
    }
 
    return status;
@@ -230,7 +229,7 @@ int32_t client_test_overlapping_vectors(caller_security_t caller __UNUSED)
 
    uint8_t            data = 0x11, expected_data[] = {0x22, 0x33};
 
-   val->print(PRINT_TEST, "[Check 6] Test overlapping vectors\n", 0);
+   val->print(TEST, "Check 6: Test overlapping vectors\n", 0);
 
 #if STATELESS_ROT != 1
    psa_handle_t       handle = 0;
@@ -267,13 +266,13 @@ int32_t client_test_overlapping_vectors(caller_security_t caller __UNUSED)
    /* data should contain either value written by 1st psa_write or 2nd */
    else if ((data != expected_data[0]) && (data != expected_data[1]))
    {
-       val->print(PRINT_ERROR, "\tInvalid data received=%x\n", data);
+       val->print(ERROR, "\tInvalid data received=%x\n", data);
        status = VAL_STATUS_CALL_FAILED;
    }
 
    if (VAL_ERROR(status))
    {
-       val->print(PRINT_ERROR, "\tpsa_call failed. status=%x\n", status);
+       val->print(ERROR, "\tpsa_call failed. status=%x\n", status);
    }
 
    return status;
@@ -298,7 +297,7 @@ int32_t client_test_zero_length_invec(caller_security_t caller __UNUSED)
    psa_handle_t         handle = 0;
    int                  data[4] = {0x11, 0x22};
 
-   val->print(PRINT_TEST, "[Check 1] Test zero length invec\n", 0);
+   val->print(TEST, "Check 1: Test zero length invec\n", 0);
 
    if (val->ipc_connect(SERVER_UNSPECIFIED_VERSION_SID,
                         SERVER_UNSPECIFIED_VERSION_VERSION,
@@ -328,20 +327,20 @@ int32_t client_test_zero_length_invec(caller_security_t caller __UNUSED)
    }
    else if (data[2] != data[1])
    {
-       val->print(PRINT_ERROR, "\tExpected data=%x\n", data[1]);
-       val->print(PRINT_ERROR, "\tBut actual data=%x\n", data[2]);
+       val->print(ERROR, "\tExpected data=%x\n", data[1]);
+       val->print(ERROR, "\tBut actual data=%x\n", data[2]);
        status = VAL_STATUS_WRITE_FAILED;
    }
    else if (resp[0].len != sizeof(data[1]))
    {
-       val->print(PRINT_ERROR, "\tExpected size= %x\n", sizeof(data[1]));
-       val->print(PRINT_ERROR, "\tBut actual size=%x\n", resp[0].len);
+       val->print(ERROR, "\tExpected size= %x\n", sizeof(data[1]));
+       val->print(ERROR, "\tBut actual size=%x\n", resp[0].len);
        status = VAL_STATUS_WRITE_FAILED;
    }
 
    if (VAL_ERROR(status))
    {
-       val->print(PRINT_ERROR, "\tpsa_call failed. status=%x\n", status);
+       val->print(ERROR, "\tpsa_call failed. status=%x\n", status);
    }
    val->ipc_close(handle);
 
@@ -354,7 +353,7 @@ int32_t client_test_zero_length_outvec(caller_security_t caller __UNUSED)
    psa_handle_t         handle = 0;
    int                  data[4] = {0x11};
 
-   val->print(PRINT_TEST, "[Check 2] Test zero length outvec\n", 0);
+   val->print(TEST, "Check 2: Test zero length outvec\n", 0);
 
    if (val->ipc_connect(SERVER_UNSPECIFIED_VERSION_SID,
                         SERVER_UNSPECIFIED_VERSION_VERSION,
@@ -386,21 +385,21 @@ int32_t client_test_zero_length_outvec(caller_security_t caller __UNUSED)
    /* Compare the outvec with expected data */
    else if (data[2] != data[0])
    {
-       val->print(PRINT_ERROR, "\tExpected data=%x\n", data[0]);
-       val->print(PRINT_ERROR, "\tBut actual data=%x\n", data[2]);
+       val->print(ERROR, "\tExpected data=%x\n", data[0]);
+       val->print(ERROR, "\tBut actual data=%x\n", data[2]);
        status = VAL_STATUS_WRITE_FAILED;
    }
    /* No. of bytes written by psa_write should update the psa_outvec.len param */
    else if (resp[2].len != sizeof(data[2]))
    {
-       val->print(PRINT_ERROR, "\tExpected size=%x\n", sizeof(data[2]));
-       val->print(PRINT_ERROR, "\tBut actual size=%x\n", resp[2].len);
+       val->print(ERROR, "\tExpected size=%x\n", sizeof(data[2]));
+       val->print(ERROR, "\tBut actual size=%x\n", resp[2].len);
        status = VAL_STATUS_WRITE_FAILED;
    }
 
    if (VAL_ERROR(status))
    {
-       val->print(PRINT_ERROR, "\tpsa_call failed. status=%x\n", status);
+       val->print(ERROR, "\tpsa_call failed. status=%x\n", status);
    }
 
    val->ipc_close(handle);
@@ -416,7 +415,7 @@ int32_t client_test_call_read_and_skip(caller_security_t caller __UNUSED)
    uint64_t             data3 = 0x1020304050607080;
    psa_handle_t         handle = 0;
 
-   val->print(PRINT_TEST, "[Check 3] Test psa_call, psa_read and psa_skip\n", 0);
+   val->print(TEST, "Check 3: Test psa_call, psa_read and psa_skip\n", 0);
 
    if (val->ipc_connect(SERVER_UNSPECIFIED_VERSION_SID,
                         SERVER_UNSPECIFIED_VERSION_VERSION,
@@ -438,7 +437,7 @@ int32_t client_test_call_read_and_skip(caller_security_t caller __UNUSED)
 
    if (status < 0)
    {
-       val->print(PRINT_ERROR, "\tpsa_call failed. status=%x\n", status);
+       val->print(ERROR, "\tpsa_call failed. status=%x\n", status);
        status = VAL_STATUS_CALL_FAILED;
    }
 
@@ -457,7 +456,7 @@ int32_t client_test_call_and_write(caller_security_t caller __UNUSED)
                                            2};
    psa_handle_t         handle = 0;
 
-   val->print(PRINT_TEST, "[Check 4] Test psa_call and psa_write\n", 0);
+   val->print(TEST, "Check 4: Test psa_call and psa_write\n", 0);
 
    if (val->ipc_connect(SERVER_UNSPECIFIED_VERSION_SID,
                         SERVER_UNSPECIFIED_VERSION_VERSION,
@@ -486,24 +485,24 @@ int32_t client_test_call_and_write(caller_security_t caller __UNUSED)
    {
         if (data[i] != expected_data[i])
         {
-            val->print(PRINT_ERROR, "\tIteration= %x\n", i);
-            val->print(PRINT_ERROR, "\tExpected data=%x\n", expected_data[i]);
-            val->print(PRINT_ERROR, "\tBut actual data=%x\n", data[i]);
+            val->print(ERROR, "\tIteration= %x\n", i);
+            val->print(ERROR, "\tExpected data=%x\n", expected_data[i]);
+            val->print(ERROR, "\tBut actual data=%x\n", data[i]);
             status = VAL_STATUS_WRITE_FAILED;
         }
         /* No. of bytes written by psa_write should update the psa_outvec.len param */
         else if (resp[i].len != expected_size[i])
         {
-            val->print(PRINT_ERROR, "\tIteration= %x\n", i);
-            val->print(PRINT_ERROR, "\tExpected size=%x\n", expected_size[i]);
-            val->print(PRINT_ERROR, "\tBut actual size=%x\n", resp[i].len);
+            val->print(ERROR, "\tIteration= %x\n", i);
+            val->print(ERROR, "\tExpected size=%x\n", expected_size[i]);
+            val->print(ERROR, "\tBut actual size=%x\n", resp[i].len);
             status = VAL_STATUS_WRITE_FAILED;
         }
    }
 
    if (VAL_ERROR(status))
    {
-       val->print(PRINT_ERROR, "\tpsa_call failed. status=%x\n", status);
+       val->print(ERROR, "\tpsa_call failed. status=%x\n", status);
    }
 
    val->ipc_close(handle);
@@ -517,7 +516,7 @@ int32_t client_test_psa_set_rhandle(caller_security_t caller __UNUSED)
    psa_handle_t       handle = 0;
    int                i = 0;
 
-   val->print(PRINT_TEST, "[Check 5] Test psa_set_rhandle API\n", 0);
+   val->print(TEST, "Check 5: Test psa_set_rhandle API\n", 0);
 
    /* rhandle value check when PSA_IPC_CONNECT */
    if (val->ipc_connect(SERVER_UNSPECIFIED_VERSION_SID,
@@ -536,7 +535,7 @@ int32_t client_test_psa_set_rhandle(caller_security_t caller __UNUSED)
         status = psa->call(handle, PSA_IPC_CALL, NULL, 0, NULL, 0);
         if (status < 0)
         {
-            val->print(PRINT_ERROR, "psa_call failed. status=%x\n", status);
+            val->print(ERROR, "psa_call failed. status=%x\n", status);
             status = VAL_STATUS_CALL_FAILED;
             break;
         }
@@ -553,7 +552,7 @@ int32_t client_test_overlapping_vectors(caller_security_t caller __UNUSED)
 
    uint8_t            data = 0x11, expected_data[] = {0x22, 0x33};
 
-   val->print(PRINT_TEST, "[Check 6] Test overlapping vectors\n", 0);
+   val->print(TEST, "Check 6: Test overlapping vectors\n", 0);
 
    psa_handle_t       handle = 0;
    if (val->ipc_connect(SERVER_UNSPECIFIED_VERSION_SID,
@@ -588,13 +587,13 @@ int32_t client_test_overlapping_vectors(caller_security_t caller __UNUSED)
    /* data should contain either value written by 1st psa_write or 2nd */
    else if ((data != expected_data[0]) && (data != expected_data[1]))
    {
-       val->print(PRINT_ERROR, "\tInvalid data received=%x\n", data);
+       val->print(ERROR, "\tInvalid data received=%x\n", data);
        status = VAL_STATUS_CALL_FAILED;
    }
 
    if (VAL_ERROR(status))
    {
-       val->print(PRINT_ERROR, "\tpsa_call failed. status=%x\n", status);
+       val->print(ERROR, "\tpsa_call failed. status=%x\n", status);
    }
 
    val->ipc_close(handle);

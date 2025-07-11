@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_s015.h"
 #include "test_data.h"
 
@@ -40,14 +39,14 @@ static int32_t psa_sst_create_api_write_once_flag_check(storage_function_code_t 
     if (status == s015_data[VAL_TEST_IDX0].status)
     {
         /* Call create API with write_once flag */
-        val->print(PRINT_TEST, "[Check 1] Call create API with write_once flag\n", 0);
+        val->print(TEST, "Check 1: Call create API with write_once flag\n", 0);
         status = STORAGE_FUNCTION(s015_data[VAL_TEST_IDX1].api[fCode], p_uid, TEST_BUFF_SIZE,
                                   PSA_STORAGE_FLAG_WRITE_ONCE);
         TEST_ASSERT_EQUAL(status, s015_data[VAL_TEST_IDX1].status, TEST_CHECKPOINT_NUM(1));
     }
     else
     {
-        val->print(PRINT_TEST, "Test Case skipped as Optional PS APIs are not supported.\n", 0);
+        val->print(TEST, "Test Case skipped as Optional PS APIs are not supported.\n", 0);
         return RESULT_SKIP(VAL_STATUS_UNSUPPORTED);
     }
 
@@ -58,7 +57,8 @@ int32_t s015_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 
-    val->print(PRINT_TEST, PS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, PS_TEST_MESSAGE, 0);
     status = psa_sst_create_api_write_once_flag_check(VAL_PS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;

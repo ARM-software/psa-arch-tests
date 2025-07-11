@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -44,11 +43,11 @@ static int32_t get_secure_partition_address(addr_t *addr)
    psa_outvec outvec[1] = { {addr, BUFFER_SIZE} };
   if (psa->call(SERVER_UNSPECIFIED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, outvec, 1) != PSA_SUCCESS)
    {
-	   val->print(PRINT_ERROR, "\tmsg request failed\n", 0);
+	   val->print(ERROR, "\tmsg request failed\n", 0);
        return VAL_STATUS_CALL_FAILED;
    }
 
-   val->print(PRINT_DEBUG, "\tClient SP: Accessing address 0x%x\n", *addr);
+   val->print(DBG, "\tClient SP: Accessing address 0x%x\n", *addr);
 
    return VAL_STATUS_SUCCESS;
 }
@@ -58,7 +57,7 @@ int32_t client_test_sp_read_other_sp_heap(caller_security_t caller __UNUSED)
    addr_t   app_rot_addr;
    uint8_t  data = DATA_VALUE;
 
-   val->print(PRINT_TEST, "[Check 1] Test SP reading other SP heap\n", 0);
+   val->print(TEST, "Check 1: Test SP reading other SP heap\n", 0);
 
    if (VAL_ERROR(get_secure_partition_address(&app_rot_addr)))
        return VAL_STATUS_ERROR;
@@ -66,7 +65,7 @@ int32_t client_test_sp_read_other_sp_heap(caller_security_t caller __UNUSED)
    /* Setting boot.state before test check */
    if (val->set_boot_flag(BOOT_EXPECTED_REENTER_TEST))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
@@ -79,12 +78,12 @@ int32_t client_test_sp_read_other_sp_heap(caller_security_t caller __UNUSED)
    if (data == DATA_VALUE)
         return VAL_STATUS_SUCCESS;
 
-   val->print(PRINT_ERROR, "\tExpected read to fault but it didn't\n", 0);
+   val->print(ERROR, "\tExpected read to fault but it didn't\n", 0);
 
    /* Resetting boot.state to catch unwanted reboot */
    if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
@@ -96,7 +95,7 @@ int32_t client_test_sp_write_other_sp_heap(caller_security_t caller __UNUSED)
    addr_t   app_rot_addr;
    uint8_t  data = DATA_VALUE;
 
-   val->print(PRINT_TEST, "[Check 2] Test SP writing other SP heap\n", 0);
+   val->print(TEST, "Check 2: Test SP writing other SP heap\n", 0);
 
    if (VAL_ERROR(get_secure_partition_address(&app_rot_addr)))
        return VAL_STATUS_ERROR;
@@ -104,7 +103,7 @@ int32_t client_test_sp_write_other_sp_heap(caller_security_t caller __UNUSED)
    /* Setting boot.state before test check */
    if (val->set_boot_flag(BOOT_EXPECTED_ON_SECOND_CHECK))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
@@ -118,15 +117,15 @@ int32_t client_test_sp_write_other_sp_heap(caller_security_t caller __UNUSED)
 #else
 int32_t client_test_sp_read_other_sp_heap(caller_security_t caller __UNUSED)
 {
-   val->print(PRINT_TEST, "[Check 1] Test SP reading other SP heap\n", 0);
-   val->print(PRINT_ERROR, "\tSkipping test as heap memory not supported\n", 0);
+   val->print(TEST, "Check 1: Test SP reading other SP heap\n", 0);
+   val->print(ERROR, "\tSkipping test as heap memory not supported\n", 0);
    return RESULT_SKIP(VAL_STATUS_HEAP_NOT_AVAILABLE);
 }
 
 int32_t client_test_sp_write_other_sp_heap(caller_security_t caller __UNUSED)
 {
-   val->print(PRINT_TEST, "[Check 2] Test SP writing other SP heap\n", 0);
-   val->print(PRINT_ERROR, "\tSkipping test as heap memory not supported\n", 0);
+   val->print(TEST, "Check 2: Test SP writing other SP heap\n", 0);
+   val->print(ERROR, "\tSkipping test as heap memory not supported\n", 0);
    return RESULT_SKIP(VAL_STATUS_HEAP_NOT_AVAILABLE);
 }
 #endif
@@ -148,7 +147,7 @@ static int32_t get_secure_partition_address(addr_t *addr)
    handle = psa->connect(SERVER_UNSPECIFIED_VERSION_SID, SERVER_UNSPECIFIED_VERSION_VERSION);
    if (!PSA_HANDLE_IS_VALID(handle))
    {
-       val->print(PRINT_ERROR, "\tConnection failed\n", 0);
+       val->print(ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
    }
 
@@ -156,11 +155,11 @@ static int32_t get_secure_partition_address(addr_t *addr)
    psa_outvec outvec[1] = {{addr, BUFFER_SIZE} };
    if (psa->call(handle, PSA_IPC_CALL, NULL, 0, outvec, 1) != PSA_SUCCESS)
    {
-       val->print(PRINT_ERROR, "\tmsg request failed\n", 0);
+       val->print(ERROR, "\tmsg request failed\n", 0);
        return VAL_STATUS_CALL_FAILED;
    }
 
-   val->print(PRINT_DEBUG, "\tClient SP: Accessing address 0x%x\n", *addr);
+   val->print(DBG, "\tClient SP: Accessing address 0x%x\n", *addr);
 
    psa->close(handle);
    return VAL_STATUS_SUCCESS;
@@ -171,7 +170,7 @@ int32_t client_test_sp_read_other_sp_heap(caller_security_t caller __UNUSED)
    addr_t   app_rot_addr;
    uint8_t  data = DATA_VALUE;
 
-   val->print(PRINT_TEST, "[Check 1] Test SP reading other SP heap\n", 0);
+   val->print(TEST, "Check 1: Test SP reading other SP heap\n", 0);
 
    if (VAL_ERROR(get_secure_partition_address(&app_rot_addr)))
        return VAL_STATUS_ERROR;
@@ -179,7 +178,7 @@ int32_t client_test_sp_read_other_sp_heap(caller_security_t caller __UNUSED)
    /* Setting boot.state before test check */
    if (val->set_boot_flag(BOOT_EXPECTED_REENTER_TEST))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
@@ -192,12 +191,12 @@ int32_t client_test_sp_read_other_sp_heap(caller_security_t caller __UNUSED)
    if (data == DATA_VALUE)
         return VAL_STATUS_SUCCESS;
 
-   val->print(PRINT_ERROR, "\tExpected read to fault but it didn't\n", 0);
+   val->print(ERROR, "\tExpected read to fault but it didn't\n", 0);
 
    /* Resetting boot.state to catch unwanted reboot */
    if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
@@ -209,7 +208,7 @@ int32_t client_test_sp_write_other_sp_heap(caller_security_t caller __UNUSED)
    addr_t   app_rot_addr;
    uint8_t  data = DATA_VALUE;
 
-   val->print(PRINT_TEST, "[Check 2] Test SP writing other SP heap\n", 0);
+   val->print(TEST, "Check 2: Test SP writing other SP heap\n", 0);
 
    if (VAL_ERROR(get_secure_partition_address(&app_rot_addr)))
        return VAL_STATUS_ERROR;
@@ -217,7 +216,7 @@ int32_t client_test_sp_write_other_sp_heap(caller_security_t caller __UNUSED)
    /* Setting boot.state before test check */
    if (val->set_boot_flag(BOOT_EXPECTED_ON_SECOND_CHECK))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
@@ -229,7 +228,7 @@ int32_t client_test_sp_write_other_sp_heap(caller_security_t caller __UNUSED)
    /* Handshake with server to decide write status */
    if ((psa->connect(SERVER_UNSPECIFIED_VERSION_SID, SERVER_UNSPECIFIED_VERSION_VERSION)) > 0)
    {
-       val->print(PRINT_ERROR, "\tExpected connection to fail but succeed\n", 0);
+       val->print(ERROR, "\tExpected connection to fail but succeed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
    }
    return VAL_STATUS_SUCCESS;
@@ -238,15 +237,15 @@ int32_t client_test_sp_write_other_sp_heap(caller_security_t caller __UNUSED)
 #else
 int32_t client_test_sp_read_other_sp_heap(caller_security_t caller __UNUSED)
 {
-   val->print(PRINT_TEST, "[Check 1] Test SP reading other SP heap\n", 0);
-   val->print(PRINT_ERROR, "\tSkipping test as heap memory not supported\n", 0);
+   val->print(TEST, "Check 1: Test SP reading other SP heap\n", 0);
+   val->print(ERROR, "\tSkipping test as heap memory not supported\n", 0);
    return RESULT_SKIP(VAL_STATUS_HEAP_NOT_AVAILABLE);
 }
 
 int32_t client_test_sp_write_other_sp_heap(caller_security_t caller __UNUSED)
 {
-   val->print(PRINT_TEST, "[Check 2] Test SP writing other SP heap\n", 0);
-   val->print(PRINT_ERROR, "\tSkipping test as heap memory not supported\n", 0);
+   val->print(TEST, "Check 2: Test SP writing other SP heap\n", 0);
+   val->print(ERROR, "\tSkipping test as heap memory not supported\n", 0);
    return RESULT_SKIP(VAL_STATUS_HEAP_NOT_AVAILABLE);
 }
 #endif

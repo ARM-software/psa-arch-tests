@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,14 +52,14 @@ int32_t server_test_dynamic_mem_alloc_fn(void)
    buffer = (uint8_t *)malloc(sizeof(uint8_t) * SERVER_HEAP_SIZE);
    if (buffer == NULL)
    {
-       val->print(PRINT_ERROR, "\tmalloc failed for full memory allocation\n", 0);
+       val->print(ERROR, "\tmalloc failed for full memory allocation\n", 0);
        return VAL_STATUS_SPM_FAILED;
    }
 
    /* Check for zero init by malloc() */
    if (memcmp(buffer, cmpbuff, SERVER_HEAP_SIZE))
    {
-       val->print(PRINT_ERROR, "\tUnequal data in compared buffers-1\n", 0);
+       val->print(ERROR, "\tUnequal data in compared buffers-1\n", 0);
        return VAL_STATUS_SPM_FAILED;
    }
 
@@ -67,7 +67,7 @@ int32_t server_test_dynamic_mem_alloc_fn(void)
    buffer1 = (uint8_t *)malloc(sizeof(uint8_t) * 8);
    if (buffer1 != NULL)
    {
-       val->print(PRINT_ERROR, "\tmalloc failed for over mem alloc\n", 0);
+       val->print(ERROR, "\tmalloc failed for over mem alloc\n", 0);
        return VAL_STATUS_SPM_FAILED;
    }
 
@@ -80,7 +80,7 @@ int32_t server_test_dynamic_mem_alloc_fn(void)
    /* Check for memory scrub by free() */
    if (*buffer == 1)
    {
-       val->print(PRINT_ERROR, "\tUnequal data in compared buffers-2\n", 0);
+       val->print(ERROR, "\tUnequal data in compared buffers-2\n", 0);
        return VAL_STATUS_SPM_FAILED;
    }
 
@@ -88,7 +88,7 @@ int32_t server_test_dynamic_mem_alloc_fn(void)
    buffer = (uint8_t *)malloc(sizeof(uint8_t) * 32);
    if (buffer == NULL)
    {
-       val->print(PRINT_ERROR, "\tmalloc failed\n", 0);
+       val->print(ERROR, "\tmalloc failed\n", 0);
        return VAL_STATUS_SPM_FAILED;
    }
 
@@ -102,21 +102,21 @@ int32_t server_test_dynamic_mem_alloc_fn(void)
    /* Check older object is deallocated */
    if (memcmp(buffer, (cmpbuff + 64), 32))
    {
-       val->print(PRINT_ERROR, "\tUnequal data in compared buffers-3\n", 0);
+       val->print(ERROR, "\tUnequal data in compared buffers-3\n", 0);
        return VAL_STATUS_SPM_FAILED;
    }
 
    /* Check new object has previous data of older object */
    if (memcmp(buffer1, cmpbuff, 32))
    {
-       val->print(PRINT_ERROR, "\tUnequal data in compared buffers-4\n", 0);
+       val->print(ERROR, "\tUnequal data in compared buffers-4\n", 0);
        return VAL_STATUS_SPM_FAILED;
    }
 
    /* Check new allocated size is zero init */
    if (memcmp((buffer1 + 32), (cmpbuff + 32), 32))
    {
-       val->print(PRINT_ERROR, "\tUnequal data in compared buffers-5\n", 0);
+       val->print(ERROR, "\tUnequal data in compared buffers-5\n", 0);
        return VAL_STATUS_SPM_FAILED;
    }
 

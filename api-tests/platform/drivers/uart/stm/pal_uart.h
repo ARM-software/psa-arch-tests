@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,9 +57,10 @@ typedef struct {
 #define USART_ICR_TCCF_Pos         (6U)
 #define USART_ICR_TCCF_Msk         (0x1UL << USART_ICR_TCCF_Pos) /*!< 0x00000040 */
 #define USART_ICR_TCCF             USART_ICR_TCCF_Msk    /*!< Transmission Complete Clear Flag */
+
 /* function prototypes */
 void pal_uart_stm_init(uint32_t uart_base_addr);
-void pal_uart_stm_print(const char *str, int32_t data);
+void pal_uart_stm_putc(uint8_t c);
 void pal_uart_stm_generate_irq(void);
 void pal_uart_stm_disable_irq(void);
 

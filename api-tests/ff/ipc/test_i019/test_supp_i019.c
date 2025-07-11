@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,7 +51,7 @@ int32_t server_test_psa_set_rhandle_with_null_handle(void)
     * the test harness function.
     *
     * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
+    * timeout entries available in pal_config.h.
     *
     * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
@@ -70,7 +70,7 @@ int32_t server_test_psa_set_rhandle_with_null_handle(void)
     status = val->set_boot_flag(BOOT_EXPECTED_NS);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
         return status;
     }
@@ -80,14 +80,14 @@ int32_t server_test_psa_set_rhandle_with_null_handle(void)
     psa->set_rhandle(PSA_NULL_HANDLE, &num);
 
     /* shouldn't have reached here */
-    val->print(PRINT_ERROR,
+    val->print(ERROR,
                 "\tpsa_set_rhandle with NULL handle should failed but succeed\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
     status = val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
         return status;
     }
 

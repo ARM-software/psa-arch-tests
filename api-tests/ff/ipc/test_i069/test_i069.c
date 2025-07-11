@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -35,12 +34,12 @@ int32_t client_test_write_to_code_space(caller_security_t caller __UNUSED)
 {
   int32_t *p;
 
-  val->print(PRINT_TEST, "[Check 1] Test write to code space\n", 0);
+  val->print(TEST, "Check 1: Test write to code space\n", 0);
 
   /* Setting boot.state before test check */
    if (val->set_boot_flag(BOOT_EXPECTED_S))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
@@ -54,15 +53,13 @@ int32_t client_test_write_to_code_space(caller_security_t caller __UNUSED)
       /* This means, write ignored */
       return VAL_STATUS_SUCCESS;
   }
-  val->print(PRINT_ERROR, "\tWrite to code memory check failed\n", 0);
+  val->print(ERROR, "\tWrite to code memory check failed\n", 0);
 
   /* Resetting boot.state to catch unwanted reboot */
   if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
   {
-      val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+      val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
   }
 
   return VAL_STATUS_ERROR;
 }
-
-

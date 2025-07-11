@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -39,7 +38,7 @@ int32_t client_test_mem_manipulation_fn(caller_security_t caller __UNUSED)
   uint8_t    buffer1[BUFF_SIZE] = {0};
   int         i;
 
-  val->print(PRINT_TEST, "[Check 1] Test memory manipulation functions\n", 0);
+  val->print(TEST, "Check 1: Test memory manipulation functions\n", 0);
 
   /* Test memset()- Set all buffer elements  with zero */
   memset((uint8_t *)buffer, 0, BUFF_SIZE);
@@ -47,7 +46,7 @@ int32_t client_test_mem_manipulation_fn(caller_security_t caller __UNUSED)
   {
       if (buffer[i] != 0)
       {
-        val->print(PRINT_ERROR,
+        val->print(ERROR,
                   "\tmemset() failed, found buffer with non-zero value = %x\n", buffer[i]);
         return VAL_STATUS_ERROR;
       }
@@ -59,7 +58,7 @@ int32_t client_test_mem_manipulation_fn(caller_security_t caller __UNUSED)
   {
       if (buffer[i] != 0x3)
       {
-        val->print(PRINT_ERROR,
+        val->print(ERROR,
                   "\tmemset() failed, found buffer with wrong value = %x\n", buffer[i]);
         return VAL_STATUS_ERROR;
       }
@@ -71,7 +70,7 @@ int32_t client_test_mem_manipulation_fn(caller_security_t caller __UNUSED)
   {
       if (buffer1[i] != 0x3)
       {
-         val->print(PRINT_ERROR,
+         val->print(ERROR,
                   "\tmemcpy() failed, found buffer with wrong value = %x\n", buffer1[i]);
          return VAL_STATUS_ERROR;
       }
@@ -80,7 +79,7 @@ int32_t client_test_mem_manipulation_fn(caller_security_t caller __UNUSED)
   /* Test memcmp() with equal buffer */
   if (memcmp((uint8_t *)buffer1, (uint8_t *)buffer, BUFF_SIZE))
   {
-      val->print(PRINT_ERROR,
+      val->print(ERROR,
                  "\tmemcmp() failed for two equal buffer\n", 0);
       return VAL_STATUS_ERROR;
   }
@@ -89,7 +88,7 @@ int32_t client_test_mem_manipulation_fn(caller_security_t caller __UNUSED)
   /* Test memcmp() with unequal buffer */
   if (!memcmp((uint8_t *)buffer1, (uint8_t *)buffer, BUFF_SIZE))
   {
-      val->print(PRINT_ERROR,
+      val->print(ERROR,
                  "\tmemcmp() failed for two unequal buffer\n", 0);
       return VAL_STATUS_ERROR;
   }
@@ -104,11 +103,11 @@ int32_t client_test_mem_manipulation_fn(caller_security_t caller __UNUSED)
   {
       if ((buffer[i] != 0x1) && (i < 10))
       {
-          val->print(PRINT_ERROR, "\tmemmove() failed-1\n", 0);
+          val->print(ERROR, "\tmemmove() failed-1\n", 0);
           return VAL_STATUS_ERROR;
       } else if ((buffer[i] != 0x2) && (i > 10))
       {
-          val->print(PRINT_ERROR, "\tmemmove() failed-2\n", 0);
+          val->print(ERROR, "\tmemmove() failed-2\n", 0);
           return VAL_STATUS_ERROR;
       }
   }

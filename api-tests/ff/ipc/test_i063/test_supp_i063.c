@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -62,7 +62,7 @@ int32_t server_test_psa_wait_signal_mask(void)
          if (((signals & signal_mask) == 0) &&
              ((signals | signal_mask) != signal_mask))
          {
-             val->print(PRINT_ERROR,
+             val->print(ERROR,
                      "psa_wait-1 returned with invalid signal value = 0x%x\n", signals);
              return VAL_STATUS_ERROR;
          }
@@ -95,7 +95,7 @@ wait:
     signals = psa->wait(SERVER_SECURE_CONNECT_ONLY_SIGNAL, PSA_BLOCK);
     if ((signals & SERVER_SECURE_CONNECT_ONLY_SIGNAL) == 0)
     {
-       val->print(PRINT_ERROR,
+       val->print(ERROR,
                 "psa_wait-2 returned with invalid signal value = 0x%x\n", signals);
        return VAL_STATUS_ERROR;
     }

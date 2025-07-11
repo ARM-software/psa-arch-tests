@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,6 @@
 #define _VAL_COMMON_SP_APIS_H_
 
 #include "val.h"
-#include "val_target.c"
 #include "val_service_defs.h"
 
 __UNUSED STATIC_DECLARE val_status_t val_print
@@ -47,9 +46,9 @@ __UNUSED STATIC_DECLARE val_status_t val_process_call_request(psa_signal_t sig, 
 __UNUSED STATIC_DECLARE val_status_t val_process_disconnect_request
                         (psa_signal_t sig, psa_msg_t *msg);
 __UNUSED STATIC_DECLARE val_status_t val_execute_secure_tests
-                        (test_info_t test_info, client_test_t *tests_list);
+                        (test_info_ipc_t test_info, client_test_t *tests_list);
 __UNUSED STATIC_DECLARE val_status_t val_execute_secure_test_func
-                        (psa_handle_t *handle, test_info_t test_info, uint32_t sid);
+                        (psa_handle_t *handle, test_info_ipc_t test_info, uint32_t sid);
 __UNUSED STATIC_DECLARE val_status_t val_get_secure_test_result(psa_handle_t *handle);
 __UNUSED STATIC_DECLARE val_status_t val_err_check_set(uint32_t checkpoint, val_status_t status);
 __UNUSED STATIC_DECLARE val_status_t val_nvmem_write(uint32_t offset, void *buffer, int size);
@@ -66,7 +65,6 @@ __UNUSED static val_api_t val_api = {
     .ipc_close                 = val_ipc_close,
     .set_boot_flag             = val_set_boot_flag,
 	.set_test_data             = val_set_test_data,
-    .target_get_config         = val_target_get_config,
     .process_connect_request   = val_process_connect_request,
     .process_call_request      = val_process_call_request,
     .process_disconnect_request = val_process_disconnect_request,
@@ -109,7 +107,7 @@ STATIC_DECLARE val_status_t val_print(print_verbosity_t verbosity, char *string,
     val_status_t    status = VAL_STATUS_SUCCESS;
     uart_fn_type_t  uart_fn = UART_PRINT;
 
-    if (verbosity < VERBOSE)
+    if (verbosity < VERBOSITY)
     {
        return VAL_STATUS_SUCCESS;
     }
@@ -232,7 +230,7 @@ wait1:
 
         if ((msg->type != PSA_IPC_CONNECT) || (msg->handle <= 0))
         {
-            val_print(PRINT_ERROR, "\tpsa_get failed for connect message\n", 0);
+            val_print(ERROR, "\tpsa_get failed for connect message\n", 0);
             res = VAL_STATUS_ERROR;
         }
         else
@@ -242,7 +240,7 @@ wait1:
     }
     else
     {
-        val_print(PRINT_ERROR, "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
+        val_print(ERROR, "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
         res = VAL_STATUS_ERROR;
     }
     return res;
@@ -270,7 +268,7 @@ wait2:
 
         if ((msg->type < PSA_IPC_CALL) || (msg->handle <= 0))
         {
-            val_print(PRINT_ERROR, "\tpsa_get failed for request message\n", 0);
+            val_print(ERROR, "\tpsa_get failed for request message\n", 0);
             res = VAL_STATUS_ERROR;
         }
         else
@@ -280,7 +278,7 @@ wait2:
     }
     else
     {
-        val_print(PRINT_ERROR, "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
+        val_print(ERROR, "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
         res = VAL_STATUS_ERROR;
     }
     return res;
@@ -308,7 +306,7 @@ wait3:
 
         if ((msg->type != PSA_IPC_DISCONNECT) || (msg->handle <= 0))
         {
-            val_print(PRINT_ERROR, "\tpsa_get failed for disconnect massage\n", 0);
+            val_print(ERROR, "\tpsa_get failed for disconnect massage\n", 0);
             res = VAL_STATUS_ERROR;
         }
         else
@@ -318,7 +316,7 @@ wait3:
     }
     else
     {
-        val_print(PRINT_ERROR, "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
+        val_print(ERROR, "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
         res = VAL_STATUS_ERROR;
     }
     return res;
@@ -327,11 +325,11 @@ wait3:
 /**
     @brief    - This function executes given list of tests from secure sequentially
                 This covers secure to secure IPC API scenario
-    @param    - test_info_t : test_num and block_num
-    @param    - tests_list : list of tests to be executed
+    @param    - test_info   :  test_num and block_num
+    @param    - tests_list  :  list of tests to be executed
     @return   - val_status_t
 **/
-STATIC_DECLARE val_status_t val_execute_secure_tests(test_info_t test_info,
+STATIC_DECLARE val_status_t val_execute_secure_tests(test_info_ipc_t test_info,
 						    client_test_t *tests_list)
 {
     val_status_t          status = VAL_STATUS_SUCCESS;
@@ -342,7 +340,7 @@ STATIC_DECLARE val_status_t val_execute_secure_tests(test_info_t test_info,
     while (tests_list[i] != NULL)
     {
         if (i == 1)
-        val_print(PRINT_TEST, "[Info] Executing tests from secure\n", 0);
+        val_print(TEST, "[Info] Executing tests from secure\n", 0);
 
         /* Handshake with server tests */
         test_info.block_num = i;
@@ -354,15 +352,15 @@ STATIC_DECLARE val_status_t val_execute_secure_tests(test_info_t test_info,
 #endif
         if (VAL_ERROR(status))
         {
-            val_print(PRINT_ERROR, "[Check %d] START\n", i);
+            val_print(ERROR, "[Check %d] START\n", i);
             return status;
         }
         else
         {
-            val_print(PRINT_DEBUG, "[Check %d] START\n", i);
+            val_print(DBG, "[Check %d] START\n", i);
         }
         /* keep track of the test block numbers, helps when the panic happened */
-    	status = val_set_test_data(NV_TEST_DATA1, i);
+        status = val_set_test_data(NVM_TEST_DATA1, i);
     	if (VAL_ERROR(status))
     	{
     	   return VAL_STATUS_ERROR;
@@ -376,17 +374,17 @@ STATIC_DECLARE val_status_t val_execute_secure_tests(test_info_t test_info,
         status = test_status ? test_status:status;
         if (IS_TEST_SKIP(status))
         {
-            val_print(PRINT_DEBUG, "[Check %d] SKIPPED\n", i);
+            val_print(DBG, "[Check %d] SKIPPED\n", i);
             return status;
         }
         if (VAL_ERROR(status))
         {
-            val_print(PRINT_DEBUG, "[Check %d] FAILED\n", i);
+            val_print(DBG, "[Check %d] FAILED\n", i);
             return status;
         }
         else
         {
-            val_print(PRINT_DEBUG, "[Check %d] PASSED\n", i);
+            val_print(DBG, "[Check %d] PASSED\n", i);
         }
         i++;
     }
@@ -404,7 +402,7 @@ STATIC_DECLARE val_status_t val_execute_secure_tests(test_info_t test_info,
     @return   - val_status_t
 **/
 STATIC_DECLARE val_status_t val_execute_secure_test_func
-               (__attribute__((unused)) psa_handle_t *handle, test_info_t test_info, uint32_t sid)
+            (__attribute__((unused)) psa_handle_t *handle, test_info_ipc_t test_info, uint32_t sid)
 {
     uint32_t        test_data;
     val_status_t    status = VAL_STATUS_SUCCESS;
@@ -419,7 +417,7 @@ STATIC_DECLARE val_status_t val_execute_secure_test_func
     if (status_of_call != PSA_SUCCESS)
     {
     	status = VAL_STATUS_CALL_FAILED;
-        val_print(PRINT_ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
+        val_print(ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
     }
     return status;
 #else
@@ -427,7 +425,7 @@ STATIC_DECLARE val_status_t val_execute_secure_test_func
 
     if (*handle < 0)
     {
-        val_print(PRINT_ERROR, "Could not connect SID. Handle=%x\n", *handle);
+        val_print(ERROR, "Could not connect SID. Handle=%x\n", *handle);
         status = VAL_STATUS_CONNECTION_FAILED;
     }
 
@@ -440,7 +438,7 @@ STATIC_DECLARE val_status_t val_execute_secure_test_func
     if (status_of_call != PSA_SUCCESS)
     {
         status = VAL_STATUS_CALL_FAILED;
-        val_print(PRINT_ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
+        val_print(ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
         psa_close(*handle);
     }
     return status;
@@ -468,7 +466,7 @@ STATIC_DECLARE val_status_t val_get_secure_test_result(psa_handle_t *handle)
     if (status_of_call != PSA_SUCCESS)
     {
         status = VAL_STATUS_CALL_FAILED;
-        val_print(PRINT_ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
+        val_print(ERROR, "Call to dispatch SF failed. Status=%x\n", status_of_call);
     }
 #if STATELESS_ROT != 1
     psa_close(*handle);
@@ -487,12 +485,12 @@ STATIC_DECLARE val_status_t val_err_check_set(uint32_t checkpoint, val_status_t 
 {
     if (VAL_ERROR(status))
     {
-        val_print(PRINT_ERROR, "\tCheckpoint %d : ", checkpoint);
-        val_print(PRINT_ERROR, "Error Code=0x%x \n", status);
+        val_print(ERROR, "\tCheckpoint %d : ", checkpoint);
+        val_print(ERROR, "Error Code=0x%x \n", status);
     }
     else
     {
-        val_print(PRINT_DEBUG, "\tCheckpoint %d \n", checkpoint);
+        val_print(DBG, "\tCheckpoint %d \n", checkpoint);
     }
     return status;
 }
@@ -509,22 +507,10 @@ STATIC_DECLARE val_status_t val_err_check_set(uint32_t checkpoint, val_status_t 
 STATIC_DECLARE val_status_t val_nvmem_write(uint32_t offset, void *buffer, int size)
 {
    nvmem_param_t   nvmem_param;
-
    psa_status_t    status_of_call = PSA_SUCCESS;
-   val_status_t    status = VAL_STATUS_SUCCESS;
-   memory_desc_t   *memory_desc;
-
-   status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVMEM, 0),
-                                 (uint8_t **)&memory_desc,
-                                 (uint32_t *)sizeof(memory_desc_t));
-
-   if (VAL_ERROR(status))
-   {
-      return status;
-   }
 
    nvmem_param.nvmem_fn_type = NVMEM_WRITE;
-   nvmem_param.base = memory_desc->start;
+   nvmem_param.base = (addr_t)PLATFORM_NVM_BASE;
    nvmem_param.offset = offset;
    nvmem_param.size = size;
    psa_invec invec[2] = {{&nvmem_param, sizeof(nvmem_param)}, {buffer, size} };
@@ -570,10 +556,10 @@ STATIC_DECLARE val_status_t val_set_boot_flag(boot_state_t state)
    val_status_t     status;
 
    boot.state = state;
-   status = val_nvmem_write(VAL_NVMEM_OFFSET(NV_BOOT), &boot, sizeof(boot_t));
+   status = val_nvmem_write(VAL_NVM_OFFSET(NVM_BOOT), &boot, sizeof(boot_t));
    if (VAL_ERROR(status))
    {
-       val_print(PRINT_ERROR, "\tval_nvmem_write failed Error=0x%x\n", status);
+       val_print(ERROR, "\tval_nvmem_write failed Error=0x%x\n", status);
        return status;
    }
    return status;
@@ -590,10 +576,10 @@ STATIC_DECLARE val_status_t val_set_test_data(int32_t nvm_index, int32_t test_da
 {
    val_status_t     status;
 
-   status = val_nvmem_write(VAL_NVMEM_OFFSET(nvm_index), &test_data, sizeof(int32_t));
+   status = val_nvmem_write(VAL_NVM_OFFSET(nvm_index), &test_data, sizeof(int32_t));
    if (VAL_ERROR(status))
    {
-       val_print(PRINT_ERROR, "\tval_nvmem_write failed for test data. Error=0x%x\n", status);
+       val_print(ERROR, "\tval_nvmem_write failed for test data. Error=0x%x\n", status);
        return status;
    }
    return status;

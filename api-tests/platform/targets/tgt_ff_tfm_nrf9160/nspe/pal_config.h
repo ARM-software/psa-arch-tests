@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Copyright (c) 2021 Nordic Semiconductor ASA.
@@ -21,11 +21,65 @@
 #ifndef _PAL_CONFIG_H_
 #define _PAL_CONFIG_H_
 
+/*==========================  PLATFORM CONFIGURATIONS START  ==========================*/
+
+// UART device info
+#define UART_NUM                               1
+#define UART_0_BASE                            0    // Unused value
+
+// Watchdog device info
+#define WATCHDOG_NUM                           1
+
+#define WATCHDOG_0_BASE                        0x50018000
+#define WATCHDOG_0_NUM_OF_TICK_PER_MICRO_SEC   1
+// The same value should be used for all timeout durations, as the nRF91
+// WDT cannot be reconfigured once it has been started.
+#define WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_LOW    18000000  // 18 secs
+#define WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_MEDIUM 18000000  // 18 secs
+#define WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_HIGH   18000000  // 18 secs
+#define WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_CRYPTO 18000000  // 18 secs
+
+// Range of 1KB Non-volatile memory to preserve data over reset. Ex, NVRAM and FLASH
+#define NVMEM_NUM                              1
+
+#define NVMEM_0_START                          0    // Unused value
+#define NVMEM_0_END                            0x3ff
+
+// ###################################################################
+// Following Target configuration parameters are required for IPC tests
+// only. Avoid updating them if you are running dev_apis tests.
+// ###################################################################
+
+// Assign free memory range for isolation testing. Choose the addresses
+// for these memory regions such that it follows below condition:
+// nspe_mmio.0.start < server_partition_mmio.0.start < driver_partition_mmio.0.start.
+
+#define NSPE_MMIO_NUM                      1
+
+#define NSPE_MMIO_0_START                  0x2003DF00
+#define NSPE_MMIO_0_END                    0x2003E000
+#define NSPE_MMIO_0_PERMISSION             TYPE_READ_WRITE
+
+#define SERVER_PARTITION_MMIO_NUM          1
+
+#define SERVER_PARTITION_MMIO_0_START      0x2003E000
+#define SERVER_PARTITION_MMIO_0_END        0x2003E100
+#define SERVER_PARTITION_MMIO_0_PERMISSION TYPE_READ_WRITE
+
+#define DRIVER_PARTITION_MMIO_NUM          1
+
+#define DRIVER_PARTITION_MMIO_0_START      0x2003E100
+#define DRIVER_PARTITION_MMIO_0_END        0x2003E200
+#define DRIVER_PARTITION_MMIO_0_PERMISSION TYPE_READ_WRITE
+
+/*==========================  PLATFORM CONFIGURATIONS END  ============================*/
+
+
 /* Define PSA test suite dependent macros for non-cmake build */
 #if !defined(PSA_CMAKE_BUILD)
 
 /* Print verbosity = TEST */
-#define VERBOSE 3
+#define VERBOSITY 3
 
 /* NSPE or SPE VAL build? */
 #define VAL_NSPE_BUILD
@@ -48,6 +102,37 @@
 
 /* Use hardcoded public key */
 //#define PLATFORM_OVERRIDE_ATTEST_PK
+
+/* Enable custom printing for Non-secure side */
+#define BESPOKE_PRINT_NS
+
+/* Enable custom printing for Secure side */
+#define BESPOKE_PRINT_S
+
+/* UART base address assigned */
+#define PLATFORM_UART_BASE UART_0_BASE
+
+/* Watchdog device configurations assigned */
+#define PLATFORM_WD_BASE                        WATCHDOG_0_BASE
+#define PLATFORM_WD_NUM_OF_TICK_PER_MICRO_SEC   WATCHDOG_0_NUM_OF_TICK_PER_MICRO_SEC
+#define PLATFORM_WD_TIMEOUT_IN_MICRO_SEC_LOW    WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_LOW
+#define PLATFORM_WD_TIMEOUT_IN_MICRO_SEC_MEDIUM WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_LOW
+#define PLATFORM_WD_TIMEOUT_IN_MICRO_SEC_HIGH   WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_LOW
+#define PLATFORM_WD_TIMEOUT_IN_MICRO_SEC_CRYPTO WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_CRYPTO
+
+/* Non-volatile memory base address assigned */
+#define PLATFORM_NVM_BASE NVMEM_0_START
+
+
+/* Non-secure partition Memory Mapped I/O base address assigned */
+#define PLATFORM_NSPE_MMIO_START NSPE_MMIO_0_START
+
+/* Server partition Memory Mapped I/O base address assigned */
+#define PLATFORM_SERVER_PARTITION_MMIO_START SERVER_PARTITION_MMIO_0_START
+
+/* Driver partition Memory Mapped I/O configurations assigned */
+#define PLATFORM_DRIVER_PARTITION_MMIO_START DRIVER_PARTITION_MMIO_0_START
+#define PLATFORM_DRIVER_PARTITION_MMIO_END   DRIVER_PARTITION_MMIO_0_END
 
 /*
  * Include of PSA defined Header files

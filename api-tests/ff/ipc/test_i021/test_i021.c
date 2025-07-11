@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -45,7 +44,7 @@ int32_t client_test_irq_routing(caller_security_t caller __UNUSED)
     * hold the test check.
     */
 
-   val->print(PRINT_TEST, "[Check 1] Test irq routing\n", 0);
+   val->print(TEST, "Check 1: Test irq routing\n", 0);
 
    /* Execute driver function related to TEST_INTR_SERVICE */
    psa_invec invec = {&driver_test_fn_id, sizeof(driver_test_fn_id)};
@@ -78,13 +77,13 @@ int32_t client_test_irq_routing(caller_security_t caller __UNUSED)
     * hold the test check.
     */
 
-   val->print(PRINT_TEST, "[Check 1] Test irq routing\n", 0);
+   val->print(TEST, "Check 1: Test irq routing\n", 0);
 
    /* Connect to DRIVER_TEST_SID */
    handle = psa->connect(DRIVER_TEST_SID, DRIVER_TEST_VERSION);
    if (!PSA_HANDLE_IS_VALID(handle))
    {
-       val->print(PRINT_ERROR, "\t psa_connect failed. handle=0x%x\n", handle);
+       val->print(ERROR, "\t psa_connect failed. handle=0x%x\n", handle);
        return VAL_STATUS_SPM_FAILED;
    }
 

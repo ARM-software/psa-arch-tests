@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2020-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2020-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -62,7 +62,7 @@ struct wdog_frame_reg_map_t {
 /*!< Control and Status register Watchdog Signal 1 bit field offset */
 
 /**
-    @brief           - Initializes an hardware watchdog timer
+    @brief           - Initializes a hardware watchdog timer
     @param           - base_addr       : Base address of the watchdog module
                      - time_us         : Time in micro seconds
                      - timer_tick_us   : Number of ticks per micro second

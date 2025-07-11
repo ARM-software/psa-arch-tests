@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # * Copyright 2023 NXP
 # *
@@ -30,6 +30,7 @@ find_package(Git REQUIRED)
 get_filename_component(PSA_ROOT_DIR . ABSOLUTE)
 
 include(${PSA_ROOT_DIR}/tools/cmake/common/Utils.cmake)
+include(${PSA_ROOT_DIR}/tools/cmake/common/CommonVAL.cmake)
 include(${PSA_ROOT_DIR}/tools/cmake/common/CMakeSettings.cmake)
 include(${PSA_ROOT_DIR}/tools/cmake/common/CMakeExternal.cmake)
 
@@ -129,8 +130,8 @@ list(APPEND PSA_CPU_ARCH_SUPPORT
 	armv8a
 )
 
-# list of VERBOSE options
-list(APPEND PSA_VERBOSE_OPTIONS 1 2 3 4 5)
+# list of VERBOSITY options
+list(APPEND PSA_VERBOSITY_OPTIONS 1 2 3 4 5)
 
 # list of PLATFORM_PSA_ISOLATION_LEVEL options
 if("${TFM_PROFILE}" STREQUAL "profile_medium")
@@ -223,10 +224,6 @@ else()
 endif()
 
 # Project variables
-set(PSA_TARGET_PRE_BUILD		psa_pre_build)
-set(PSA_TARGET_GENERATE_DATABASE_PRE	psa_generate_database_prerequisite)
-set(PSA_TARGET_GENERATE_DATABASE	psa_generate_database)
-set(PSA_TARGET_GENERATE_DATABASE_POST	psa_generate_database_cleanup)
 if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
 	set(PSA_TARGET_QCBOR		${CMAKE_CURRENT_BINARY_DIR}/psa_qcbor	CACHE PATH "Location of Q_CBOR sources.")
 
@@ -245,9 +242,10 @@ if(${SUITE} STREQUAL "INITIAL_ATTESTATION")
 		endif()
 	endif()
 endif()
-set(PSA_TARGET_PAL_NSPE_LIB		pal_nspe)
-set(PSA_TARGET_VAL_NSPE_LIB		val_nspe)
-set(PSA_TARGET_TEST_COMBINE_LIB		test_combine)
+set(PSA_TARGET_PAL_NSPE_LIB     pal_nspe)
+set(COMMON_VAL_LIB              common_val_lib)
+set(PSA_TARGET_VAL_NSPE_LIB     val_nspe)
+set(PSA_TARGET_TEST_COMBINE_LIB test_combine)
 set(PSA_TARGET_DRIVER_PARTITION_LIB	tfm_psa_rot_partition_driver_partition)
 set(PSA_TARGET_CLIENT_PARTITION_LIB	tfm_app_rot_partition_client_partition)
 set(PSA_TARGET_SERVER_PARTITION_LIB	tfm_app_rot_partition_server_partition)
@@ -261,14 +259,7 @@ else()
 	set(PSA_SUITE_DIR		${PSA_ROOT_DIR}/dev_apis/${SUITE_LOWER})
 	set(PSA_SUITE_OUT_DIR		${CMAKE_CURRENT_BINARY_DIR}/dev_apis/${SUITE_LOWER})
 endif()
-set(PSA_TARGET_CONFIG_HEADER_GENERATOR	${PSA_ROOT_DIR}/tools/scripts/target_cfg/targetConfigGen.py)
 set(PSA_TESTLIST_GENERATOR		${PSA_ROOT_DIR}/tools/scripts/gen_tests_list.py)
-set(TARGET_CONFIGURATION_FILE		${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cfg)
-set(TGT_CONFIG_SOURCE_C			${CMAKE_CURRENT_BINARY_DIR}/targetConfigGen.c)
-set(OUTPUT_HEADER			target_database.h)
-set(DATABASE_TABLE_NAME			target_database)
-set(DATABASE_TABLE_SECTION_NAME		"NOSECTION")
-set(TARGET_HEADER_GEN_INCLUDE_PATHS     "${PSA_ROOT_DIR}/val/nspe|${PSA_ROOT_DIR}/val/common|${PSA_ROOT_DIR}/platform/targets/common/nspe|${PSA_ROOT_DIR}/platform/targets/common/nspe/crypto|${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe")
 if(NOT DEFINED SPEC_VERSION)
 	if(${SUITE} STREQUAL "INTERNAL_TRUSTED_STORAGE")
 		set(TESTSUITE_DB			${PSA_SUITE_DIR}/its_testsuite.db)
@@ -396,15 +387,15 @@ if(${TOOLCHAIN} STREQUAL "ARMCLANG" OR ${TOOLCHAIN} STREQUAL "GNUARM")
     message(STATUS "[PSA] : CPU_ARCH is set to ${CPU_ARCH}")
 endif()
 
-# Check for VERBOSE
-if(NOT DEFINED VERBOSE)
-	set(VERBOSE 3 CACHE INTERNAL "Default VERBOSE value" FORCE)
-        message(STATUS "[PSA] : Defaulting VERBOSE to ${VERBOSE}")
+# Check for VERBOSITY
+if(NOT DEFINED VERBOSITY)
+	set(VERBOSITY 3 CACHE INTERNAL "Default VERBOSITY value" FORCE)
+        message(STATUS "[PSA] : Defaulting VERBOSITY to ${VERBOSITY}")
 else()
-	if(NOT ${VERBOSE} IN_LIST PSA_VERBOSE_OPTIONS)
-		message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DVERBOSE=${VERBOSE}, supported values are : ${PSA_VERBOSE_OPTIONS}")
+	if(NOT ${VERBOSITY} IN_LIST PSA_VERBOSITY_OPTIONS)
+		message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DVERBOSITY=${VERBOSITY}, supported values are : ${PSA_VERBOSITY_OPTIONS}")
 	endif()
-    message(STATUS "[PSA] : VERBOSE is set to ${VERBOSE}")
+    message(STATUS "[PSA] : VERBOSITY is set to ${VERBOSITY}")
 endif()
 
 # Check for PLATFORM_PSA_ISOLATION_LEVEL
@@ -437,7 +428,7 @@ else()
 	if(INCLUDE_PANIC_TESTS EQUAL 1)
 		message(STATUS "[PSA] : "
 		"INCLUDE_PANIC_TESTS set to 1, therefore including PSA APIs panic tests into the regression,\n"
-		"\tensure that watchdog.num is set to 1 in ${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cfg")
+		"\tensure that WATCHDOG_NUM is set to 1 in ${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe/pal_config.h")
 	endif()
 endif()
 
@@ -577,7 +568,6 @@ endif()
 
 # Create PSA clean list
 list(APPEND PSA_CLEAN_LIST
-        ${CMAKE_CURRENT_BINARY_DIR}/${OUTPUT_HEADER}
 	${PSA_TESTLIST_FILE}
 	${PSA_TEST_ENTRY_LIST_INC}
 	${PSA_TEST_ENTRY_FUN_DECLARE_INC}
@@ -611,45 +601,6 @@ if(NOT PSA_TEST_LIST)
 endif()
 string(REGEX REPLACE "\n" ";" PSA_TEST_LIST "${PSA_TEST_LIST}")
 
-add_custom_target(
-	${PSA_TARGET_GENERATE_DATABASE_PRE}
-	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/platform
-	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/val
-	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/partition
-	COMMAND ${CMAKE_COMMAND} -E make_directory ${PSA_SUITE_OUT_DIR}
-)
-
-# Generate target files from User provided data base
-include(ExternalProject)
-ExternalProject_Add(
-        ${PSA_TARGET_GENERATE_DATABASE}
-        PREFIX ${CMAKE_CURRENT_BINARY_DIR}
-        DOWNLOAD_COMMAND ""
-        UPDATE_COMMAND ""
-        PATCH_COMMAND ""
-        BUILD_ALWAYS TRUE
-        SOURCE_DIR "${PSA_ROOT_DIR}/tools/scripts/target_cfg"
-	CMAKE_ARGS -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
-		-DOUT_DIR=${CMAKE_CURRENT_BINARY_DIR}
-		-DTARGET=${TARGET}
-		-DGENERATOR_FILE=${PSA_TARGET_CONFIG_HEADER_GENERATOR}
-		-DINCLUDE_DIR=${PSA_ROOT_DIR}/val/common
-		-DTARGET_CONFIGURATION_FILE=${TARGET_CONFIGURATION_FILE}
-		-DTGT_CONFIG_SOURCE_C=${TGT_CONFIG_SOURCE_C}
-		-DOUTPUT_HEADER=${OUTPUT_HEADER}
-		-DDATABASE_TABLE_NAME=${DATABASE_TABLE_NAME}
-		-DDATABASE_TABLE_SECTION_NAME=${DATABASE_TABLE_SECTION_NAME}
-		-DTARGET_HEADER_GEN_INCLUDE_PATHS=${TARGET_HEADER_GEN_INCLUDE_PATHS}
-	LIST_SEPARATOR |
-        TEST_COMMAND ""
-)
-
-# Add custom target to clean generated files of the external project
-add_custom_target(
-        ${PSA_TARGET_GENERATE_DATABASE_POST}
-        COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/src/${PSA_TARGET_GENERATE_DATABASE}-build/ -- clean
-)
-
 # Check for supported toolchain/s
 if(${TOOLCHAIN} IN_LIST PSA_TOOLCHAIN_SUPPORT)
 	if (DEFINED CROSS_COMPILE)
@@ -665,7 +616,7 @@ endif()
 # Global macro to identify the PSA test suite cmake build
 add_definitions(-DPSA_CMAKE_BUILD)
 add_definitions(-D${SUITE})
-add_definitions(-DVERBOSE=${VERBOSE})
+add_definitions(-DVERBOSITY=${VERBOSITY})
 add_definitions(-DPLATFORM_PSA_ISOLATION_LEVEL=${PLATFORM_PSA_ISOLATION_LEVEL})
 add_definitions(-D${TARGET})
 if("${TFM_PROFILE}" STREQUAL "profile_small")
@@ -686,6 +637,9 @@ endif()
 # Build PAL NSPE LIB
 include(${PSA_ROOT_DIR}/platform/targets/common/nspe/pal_nspe.cmake)
 include(${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cmake)
+# Build COMMON VAL LIB
+add_definitions(-DSTATIC_ASSERT_CHECKS)
+include(${COMMON_VAL_PATH}/common_val.cmake)
 # Build VAL NSPE LIB
 #add_definitions(-DVAL_NSPE_BUILD)
 include(${PSA_ROOT_DIR}/val/val_nspe.cmake)
@@ -696,16 +650,19 @@ if(${SUITE} STREQUAL "IPC")
 include(${PSA_ROOT_DIR}/val/val_spe.cmake)
 endif()
 
-add_dependencies(${PSA_TARGET_GENERATE_DATABASE}	${PSA_TARGET_GENERATE_DATABASE_PRE})
-add_dependencies(${PSA_TARGET_GENERATE_DATABASE_POST}	${PSA_TARGET_GENERATE_DATABASE})
-add_dependencies(${PSA_TARGET_PAL_NSPE_LIB} 		${PSA_TARGET_GENERATE_DATABASE_POST})
-add_dependencies(${PSA_TARGET_VAL_NSPE_LIB}		${PSA_TARGET_PAL_NSPE_LIB})
+# Link Common VAL library to both Non-secure and Secure VAL libraries
+target_link_libraries(val_nspe PRIVATE common_val_lib)
+if(${SUITE} STREQUAL "IPC")
+target_link_libraries(tfm_psa_rot_partition_driver_partition PRIVATE common_val_lib)
+endif()
+
+add_dependencies(${COMMON_VAL_LIB}					${PSA_TARGET_PAL_NSPE_LIB})
+add_dependencies(${PSA_TARGET_VAL_NSPE_LIB}			${COMMON_VAL_LIB})
 add_dependencies(${PSA_TARGET_TEST_COMBINE_LIB}		${PSA_TARGET_VAL_NSPE_LIB})
 if(${SUITE} STREQUAL "IPC")
 add_dependencies(${PSA_TARGET_DRIVER_PARTITION_LIB}	${PSA_TARGET_TEST_COMBINE_LIB})
 add_dependencies(${PSA_TARGET_CLIENT_PARTITION_LIB}	${PSA_TARGET_DRIVER_PARTITION_LIB})
 add_dependencies(${PSA_TARGET_SERVER_PARTITION_LIB}	${PSA_TARGET_CLIENT_PARTITION_LIB})
-add_dependencies(${PSA_TARGET_SERVER_PARTITION_LIB} ${PSA_TARGET_GENERATE_DATABASE_POST})
 endif()
 
 # Include the files for make clean
@@ -715,6 +672,7 @@ endforeach()
 
 set_property(TARGET ${PSA_TARGET_VAL_NSPE_LIB}          PROPERTY ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/val)
 set_property(TARGET ${PSA_TARGET_PAL_NSPE_LIB}          PROPERTY ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/platform)
+set_property(TARGET ${COMMON_VAL_LIB}          			PROPERTY ARCHIVE_OUTPUT_DIRECTORY ${COMMON_VAL_PATH})
 set_property(TARGET ${PSA_TARGET_TEST_COMBINE_LIB}      PROPERTY ARCHIVE_OUTPUT_DIRECTORY ${PSA_SUITE_OUT_DIR})
 if(${SUITE} STREQUAL "IPC")
 set_property(TARGET ${PSA_TARGET_DRIVER_PARTITION_LIB}  PROPERTY ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/partition)

@@ -80,7 +80,7 @@ To build the test suite for your target platform, perform the following steps.
 -   -DTOOLCHAIN=<tool_chain> Compiler toolchain to be used for test suite compilation. Supported values are GNUARM (GNU Arm Embedded), ARMCLANG (ARM Compiler 6.x) and HOST_GCC. Default is GNUARM.<br />
 -   -DCPU_ARCH=<cpu_architecture_version> is the Arm Architecture version name for which the tests should be compiled. Supported CPU arch are armv8m_ml, armv8m_bl and armv7m. Default is empty. This option is unused when TOOLCHAIN type is HOST_GCC.<br />
 -   -DSUITE=<suite_name> is the test suite name. To compile PSA FF tests, use -DSUITE=IPC<br >
--   -DVERBOSE=<verbose_level>. Print verbosity level. Default is 3. Supported print levels are 1(INFO & above), 2(DEBUG & above), 3(TEST & above), 4(WARN & ERROR) and 5(ERROR).
+-   -DVERBOSITY=<verbosity_level>. Print verbosity level. Default is 3. Supported print levels are 1(INFO & above), 2(DEBUG & above), 3(TEST & above), 4(WARN & ERROR) and 5(ERROR).
 -   -DBUILD=<BUILD_DIR> : To select the build directory to keep output files. Default is BUILD/ inside current directory.
 -   -DINCLUDE_PANIC_TESTS=<0|1> : The default compilation flow includes the functional API tests to build the test suite. It does not include panic tests that check for the API's PROGRAMMER ERROR(Panic) conditions as defined in the PSA-FF specification. You can include the panic tests for building the test suite by setting this option to 1.
 -   -DPLATFORM_PSA_ISOLATION_LEVEL=<1|2|3> : PSA Firmware Framwork isolation level supported by the platform. Default is highest level of isolation which is three.
@@ -163,4 +163,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2024, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2025, Arm Limited and Contributors. All rights reserved.*

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -45,7 +44,7 @@ static int32_t get_secure_partition_address(__attribute__((unused)) psa_handle_t
       psa_outvec outvec[1] = { {addr, sizeof(addr_t)} };
       if (psa->call(DRIVER_TEST_HANDLE, PSA_IPC_CALL, invec, 1, outvec, 1) != PSA_SUCCESS)
       {
-          val->print(PRINT_ERROR, "\tmsg request failed\n", 0);
+          val->print(ERROR, "\tmsg request failed\n", 0);
           return VAL_STATUS_CALL_FAILED;
       }
 
@@ -68,7 +67,7 @@ int32_t client_test_nspe_read_psa_rot_mmio(caller_security_t caller __UNUSED)
    uint32_t     data = DATA_VALUE;
    psa_handle_t handle = 0;
 
-   val->print(PRINT_TEST, "[Check 1] Test NSPE reading PSA-RoT mmio\n", 0);
+   val->print(TEST, "Check 1: Test NSPE reading PSA-RoT mmio\n", 0);
 
    if (VAL_ERROR(get_secure_partition_address(&handle,
                                               &psa_rot_addr,
@@ -78,7 +77,7 @@ int32_t client_test_nspe_read_psa_rot_mmio(caller_security_t caller __UNUSED)
    /* Setting boot.state before test check */
    if (val->set_boot_flag(BOOT_EXPECTED_REENTER_TEST))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
@@ -91,12 +90,12 @@ int32_t client_test_nspe_read_psa_rot_mmio(caller_security_t caller __UNUSED)
    if (data == DATA_VALUE)
         return VAL_STATUS_SUCCESS;
 
-   val->print(PRINT_ERROR, "\tExpected read to fault but it didn't\n", 0);
+   val->print(ERROR, "\tExpected read to fault but it didn't\n", 0);
 
    /* Resetting boot.state to catch unwanted reboot */
    if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
@@ -109,7 +108,7 @@ int32_t client_test_nspe_write_psa_rot_mmio(caller_security_t caller __UNUSED)
    uint32_t     data = DATA_VALUE;
    psa_handle_t handle = 0;
 
-   val->print(PRINT_TEST, "[Check 2] Test NSPE writing PSA-RoT mmio\n", 0);
+   val->print(TEST, "Check 2: Test NSPE writing PSA-RoT mmio\n", 0);
 
    if (VAL_ERROR(get_secure_partition_address(&handle,
                                               &psa_rot_addr,
@@ -145,7 +144,7 @@ static int32_t get_secure_partition_address(psa_handle_t *handle,
    *handle = psa->connect(DRIVER_TEST_SID, DRIVER_TEST_VERSION);
    if (!PSA_HANDLE_IS_VALID(*handle))
    {
-       val->print(PRINT_ERROR, "\tConnection failed\n", 0);
+       val->print(ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
    }
 
@@ -154,7 +153,7 @@ static int32_t get_secure_partition_address(psa_handle_t *handle,
    psa_outvec outvec[1] = {{addr, sizeof(addr_t)} };
    if (psa->call(*handle, PSA_IPC_CALL, invec, 1, outvec, 1) != PSA_SUCCESS)
    {
-       val->print(PRINT_ERROR, "\tmsg request failed\n", 0);
+       val->print(ERROR, "\tmsg request failed\n", 0);
        return VAL_STATUS_CALL_FAILED;
    }
 
@@ -181,7 +180,7 @@ int32_t client_test_nspe_read_psa_rot_mmio(caller_security_t caller __UNUSED)
    uint32_t     data = DATA_VALUE;
    psa_handle_t handle = 0;
 
-   val->print(PRINT_TEST, "[Check 1] Test NSPE reading PSA-RoT mmio\n", 0);
+   val->print(TEST, "Check 1: Test NSPE reading PSA-RoT mmio\n", 0);
 
    if (VAL_ERROR(get_secure_partition_address(&handle,
                                               &psa_rot_addr,
@@ -191,7 +190,7 @@ int32_t client_test_nspe_read_psa_rot_mmio(caller_security_t caller __UNUSED)
    /* Setting boot.state before test check */
    if (val->set_boot_flag(BOOT_EXPECTED_REENTER_TEST))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
@@ -204,12 +203,12 @@ int32_t client_test_nspe_read_psa_rot_mmio(caller_security_t caller __UNUSED)
    if (data == DATA_VALUE)
         return VAL_STATUS_SUCCESS;
 
-   val->print(PRINT_ERROR, "\tExpected read to fault but it didn't\n", 0);
+   val->print(ERROR, "\tExpected read to fault but it didn't\n", 0);
 
    /* Resetting boot.state to catch unwanted reboot */
    if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
@@ -222,7 +221,7 @@ int32_t client_test_nspe_write_psa_rot_mmio(caller_security_t caller __UNUSED)
    uint32_t     data = DATA_VALUE;
    psa_handle_t handle = 0;
 
-   val->print(PRINT_TEST, "[Check 2] Test NSPE writing PSA-RoT mmio\n", 0);
+   val->print(TEST, "Check 2: Test NSPE writing PSA-RoT mmio\n", 0);
 
    if (VAL_ERROR(get_secure_partition_address(&handle,
                                               &psa_rot_addr,

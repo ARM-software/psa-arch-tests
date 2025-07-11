@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,7 +53,7 @@ static int32_t send_secure_partition_address(void)
         return status;
     }
 
-    val->print(PRINT_DEBUG, "\tAPP-ROT: Passing 0x%x to NSPE\n", (int)&g_test_i072);
+    val->print(DBG, "\tAPP-ROT: Passing 0x%x to NSPE\n", (int)&g_test_i072);
 
     /* Send Application RoT data address - global variable */
     psa->write(msg.handle, 0, (void *)&addr, sizeof(addr));
@@ -80,12 +80,12 @@ int32_t server_test_nspe_write_app_rot_variable(void)
     if (g_test_i072 == DATA_VALUE)
         return VAL_STATUS_SUCCESS;
 
-    val->print(PRINT_ERROR, "\tExpected write to fault but it didn't\n", 0);
+    val->print(ERROR, "\tExpected write to fault but it didn't\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
     if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
         return VAL_STATUS_ERROR;
     }
     return VAL_STATUS_SUCCESS;
@@ -122,7 +122,7 @@ static int32_t send_secure_partition_address(void)
         return status;
     }
 
-    val->print(PRINT_DEBUG, "\tAPP-ROT: Passing 0x%x to NSPE\n", (int)&g_test_i072);
+    val->print(DBG, "\tAPP-ROT: Passing 0x%x to NSPE\n", (int)&g_test_i072);
 
     /* Send Application RoT data address - global variable */
     psa->write(msg.handle, 0, (void *)&addr, sizeof(addr));
@@ -167,12 +167,12 @@ int32_t server_test_nspe_write_app_rot_variable(void)
     if (g_test_i072 == DATA_VALUE)
         return VAL_STATUS_SUCCESS;
 
-    val->print(PRINT_ERROR, "\tExpected write to fault but it didn't\n", 0);
+    val->print(ERROR, "\tExpected write to fault but it didn't\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
     if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
         return VAL_STATUS_ERROR;
     }
     return VAL_STATUS_SUCCESS;

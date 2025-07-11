@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_s009.h"
 #include "test_data.h"
 
@@ -40,7 +39,7 @@ static int32_t psa_sst_zero_length_check(storage_function_code_t fCode)
     size_t  p_data_length = 0;
 
     /* Set data for UID with length 0 and NULL pointer */
-    val->print(PRINT_TEST, "[Check 1] Call set API with NULL pointer and data length 0\n", 0);
+    val->print(TEST, "Check 1: Call set API with NULL pointer and data length 0\n", 0);
     status = STORAGE_FUNCTION(s009_data[VAL_TEST_IDX1].api[fCode], uid, 0, NULL,
                               PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s009_data[VAL_TEST_IDX1].status, TEST_CHECKPOINT_NUM(1));
@@ -50,23 +49,23 @@ static int32_t psa_sst_zero_length_check(storage_function_code_t fCode)
     TEST_ASSERT_EQUAL(status, s009_data[VAL_TEST_IDX2].status, TEST_CHECKPOINT_NUM(2));
 
     /* Call get API with NULL read buffer */
-    val->print(PRINT_TEST, "[Check 2] Call get API with NULL read buffer and data length 0\n", 0);
+    val->print(TEST, "Check 2: Call get API with NULL read buffer and data length 0\n", 0);
     status = STORAGE_FUNCTION(s009_data[VAL_TEST_IDX3].api[fCode], uid, 0, 0, NULL, &p_data_length);
     TEST_ASSERT_EQUAL(status, s009_data[VAL_TEST_IDX3].status, TEST_CHECKPOINT_NUM(3));
     TEST_ASSERT_EQUAL(p_data_length, 0, TEST_CHECKPOINT_NUM(4));
 
     /* Remove the UID */
-    val->print(PRINT_TEST, "[Check 3] Remove the UID\n", 0);
+    val->print(TEST, "Check 3: Remove the UID\n", 0);
     status = STORAGE_FUNCTION(s009_data[VAL_TEST_IDX4].api[fCode], uid);
     TEST_ASSERT_EQUAL(status, s009_data[VAL_TEST_IDX4].status, TEST_CHECKPOINT_NUM(5));
 
     /* Call the get_info function to verify UID is removed */
-    val->print(PRINT_TEST, "[Check 4] Call get_info API to verify UID removed\n", 0);
+    val->print(TEST, "Check 4: Call get_info API to verify UID removed\n", 0);
     status = STORAGE_FUNCTION(s009_data[VAL_TEST_IDX5].api[fCode], uid, &info);
     TEST_ASSERT_EQUAL(status, s009_data[VAL_TEST_IDX5].status, TEST_CHECKPOINT_NUM(6));
 
     /* Create UID with length 0 and valid write buffer */
-    val->print(PRINT_TEST, "[Check 5] Create UID with zero data_len and valid write buffer\n", 0);
+    val->print(TEST, "Check 5: Create UID with zero data_len and valid write buffer\n", 0);
     status = STORAGE_FUNCTION(s009_data[VAL_TEST_IDX6].api[fCode], uid, 0, write_buff,
                           PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s009_data[VAL_TEST_IDX6].status, TEST_CHECKPOINT_NUM(7));
@@ -77,13 +76,13 @@ static int32_t psa_sst_zero_length_check(storage_function_code_t fCode)
     TEST_ASSERT_EQUAL(info.size, 0, TEST_CHECKPOINT_NUM(9));
 
     /* Call get API with NULL read buffer and valid UID */
-    val->print(PRINT_TEST, "[Check 8] Call get API with NULL read buffer and data length 0\n", 0);
+    val->print(TEST, "Check 6: Call get API with NULL read buffer and data length 0\n", 0);
     status = STORAGE_FUNCTION(s009_data[VAL_TEST_IDX9].api[fCode], uid, 0, 0, NULL, &p_data_length);
     TEST_ASSERT_EQUAL(status, s009_data[VAL_TEST_IDX9].status, TEST_CHECKPOINT_NUM(10));
     TEST_ASSERT_EQUAL(p_data_length, 0, TEST_CHECKPOINT_NUM(11));
 
     /* Change the length to test_buff_size */
-    val->print(PRINT_TEST, "[Check 9] Increase the length\n", 0);
+    val->print(TEST, "Check 7: Increase the length\n", 0);
     status = STORAGE_FUNCTION(s009_data[VAL_TEST_IDX10].api[fCode], uid, TEST_BUFF_SIZE, write_buff,
                           PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s009_data[VAL_TEST_IDX10].status, TEST_CHECKPOINT_NUM(12));
@@ -100,7 +99,8 @@ int32_t s009_storage_test(caller_security_t caller __UNUSED)
     int32_t status;
 
 #if defined(STORAGE) || defined(INTERNAL_TRUSTED_STORAGE)
-    val->print(PRINT_TEST, ITS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, ITS_TEST_MESSAGE, 0);
     status = psa_sst_zero_length_check(VAL_ITS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;
@@ -108,7 +108,8 @@ int32_t s009_storage_test(caller_security_t caller __UNUSED)
 #endif
 
 #if defined(STORAGE) || defined(PROTECTED_STORAGE)
-    val->print(PRINT_TEST, PS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, PS_TEST_MESSAGE, 0);
     status = psa_sst_zero_length_check(VAL_PS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;

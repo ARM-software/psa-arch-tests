@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_s016.h"
 #include "test_data.h"
 
@@ -45,7 +44,7 @@ static int32_t psa_sst_optional_api_sst_capacity(storage_function_code_t fCode)
     TEST_ASSERT_EQUAL(status, s016_data[VAL_TEST_IDX1].status, TEST_CHECKPOINT_NUM(1));
 
     /* Call to create API for existing UID should fail */
-    val->print(PRINT_TEST, "[Check 1] Create API call for existing UID\n", 0);
+    val->print(TEST, "Check 1: Create API call for existing UID\n", 0);
     status = STORAGE_FUNCTION(s016_data[VAL_TEST_IDX2].api[fCode], p_uid, TEST_BUFF_SIZE_2,
                               PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s016_data[VAL_TEST_IDX2].status, TEST_CHECKPOINT_NUM(2));
@@ -57,7 +56,7 @@ static int32_t psa_sst_optional_api_sst_capacity(storage_function_code_t fCode)
     TEST_ASSERT_EQUAL(info.size, 0, TEST_CHECKPOINT_NUM(5));
 
     /* Override storage using set API */
-    val->print(PRINT_TEST, "[Check 2] Call to set API call for existing UID\n", 0);
+    val->print(TEST, "Check 2: Call to set API call for existing UID\n", 0);
     status = STORAGE_FUNCTION(s016_data[VAL_TEST_IDX6].api[fCode], p_uid, TEST_BUFF_SIZE_3,
                               write_buff, PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s016_data[VAL_TEST_IDX6].status, TEST_CHECKPOINT_NUM(6));
@@ -69,7 +68,7 @@ static int32_t psa_sst_optional_api_sst_capacity(storage_function_code_t fCode)
     TEST_ASSERT_EQUAL(info.size, TEST_BUFF_SIZE_3, TEST_CHECKPOINT_NUM(9));
 
     /* Accessing old capacity with set_extended API should fail */
-    val->print(PRINT_TEST, "[Check 3] Access old capacity using set_extended API\n", 0);
+    val->print(TEST, "Check 3: Access old capacity using set_extended API\n", 0);
     status = STORAGE_FUNCTION(s016_data[VAL_TEST_IDX10].api[fCode], p_uid, 0, TEST_BUFF_SIZE_1,
                               write_buff);
     TEST_ASSERT_EQUAL(status, s016_data[VAL_TEST_IDX10].status, TEST_CHECKPOINT_NUM(10));
@@ -79,19 +78,19 @@ static int32_t psa_sst_optional_api_sst_capacity(storage_function_code_t fCode)
     TEST_ASSERT_EQUAL(status, s016_data[VAL_TEST_IDX11].status, TEST_CHECKPOINT_NUM(11));
 
     /* Create new storage assest using set API */
-    val->print(PRINT_TEST, "[Check 4] Creation of new storage assest\n", 0);
+    val->print(TEST, "Check 4: Creation of new storage assest\n", 0);
     status = STORAGE_FUNCTION(s016_data[VAL_TEST_IDX12].api[fCode], p_uid, TEST_BUFF_SIZE_2,
                               write_buff, PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s016_data[VAL_TEST_IDX12].status, TEST_CHECKPOINT_NUM(12));
 
     /* Call to create API for existing UID should fail */
-    val->print(PRINT_TEST, "[Check 5] Create API call for existing UID\n", 0);
+    val->print(TEST, "Check 5: Create API call for existing UID\n", 0);
     status = STORAGE_FUNCTION(s016_data[VAL_TEST_IDX13].api[fCode], p_uid, TEST_BUFF_SIZE_2,
                               PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s016_data[VAL_TEST_IDX13].status, TEST_CHECKPOINT_NUM(13));
 
     /* Call to create API for capacity bigger than available space should fail */
-    val->print(PRINT_TEST, "[Check 6] Create API call for capacity exceeding available space\n", 0);
+    val->print(TEST, "Check 6: Create API call for capacity exceeding available space\n", 0);
     status = STORAGE_FUNCTION(s016_data[VAL_TEST_IDX14].api[fCode], p_uid, TEST_MAX_UINT32,
                               PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s016_data[VAL_TEST_IDX14].status, TEST_CHECKPOINT_NUM(14));
@@ -113,10 +112,10 @@ static int32_t psa_sst_optional_api_sst_capacity_check(storage_function_code_t f
 
     if (status != s016_data[VAL_TEST_IDX0].status)
     {
-       val->print(PRINT_TEST, "Test Case skipped as Optional PS APIs not are supported.\n", 0);
+       val->print(TEST, "Test Case skipped as Optional PS APIs not are supported.\n", 0);
        return RESULT_SKIP(VAL_STATUS_UNSUPPORTED);
     } else {
-        val->print(PRINT_TEST, "Optional PS APIs are supported.\n", 0);
+        val->print(TEST, "Optional PS APIs are supported.\n", 0);
         test_status = psa_sst_optional_api_sst_capacity(fCode);
         if (test_status != VAL_STATUS_SUCCESS)
         {
@@ -131,7 +130,8 @@ int32_t s016_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 
-    val->print(PRINT_TEST, PS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, PS_TEST_MESSAGE, 0);
     status = psa_sst_optional_api_sst_capacity_check(VAL_PS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;

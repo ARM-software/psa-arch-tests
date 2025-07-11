@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021 Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,26 +34,26 @@ addr_t          g_test_info_addr;
 static void val_print_api_version(void)
 {
 #ifdef CRYPTO
-    val_print(PRINT_ALWAYS, " %d.", PSA_CRYPTO_API_VERSION_MAJOR);
-    val_print(PRINT_ALWAYS, "%d", PSA_CRYPTO_API_VERSION_MINOR);
+    val_print(ALWAYS, " %d.", PSA_CRYPTO_API_VERSION_MAJOR);
+    val_print(ALWAYS, "%d", PSA_CRYPTO_API_VERSION_MINOR);
 #endif
 #ifdef INTERNAL_TRUSTED_STORAGE
-    val_print(PRINT_ALWAYS, " %d.", PSA_ITS_API_VERSION_MAJOR);
-    val_print(PRINT_ALWAYS, "%d", PSA_ITS_API_VERSION_MINOR);
+    val_print(ALWAYS, " %d.", PSA_ITS_API_VERSION_MAJOR);
+    val_print(ALWAYS, "%d", PSA_ITS_API_VERSION_MINOR);
 #endif
 #ifdef PROTECTED_STORAGE
-    val_print(PRINT_ALWAYS, " %d.", PSA_PS_API_VERSION_MAJOR);
-    val_print(PRINT_ALWAYS, "%d", PSA_PS_API_VERSION_MINOR);
+    val_print(ALWAYS, " %d.", PSA_PS_API_VERSION_MAJOR);
+    val_print(ALWAYS, "%d", PSA_PS_API_VERSION_MINOR);
 #endif
 #ifdef STORAGE
-    val_print(PRINT_ALWAYS, " ITS %d.", PSA_ITS_API_VERSION_MAJOR);
-    val_print(PRINT_ALWAYS, "%d", PSA_ITS_API_VERSION_MINOR);
-    val_print(PRINT_ALWAYS, " and PS %d.", PSA_PS_API_VERSION_MAJOR);
-    val_print(PRINT_ALWAYS, "%d", PSA_PS_API_VERSION_MINOR);
+    val_print(ALWAYS, " ITS %d.", PSA_ITS_API_VERSION_MAJOR);
+    val_print(ALWAYS, "%d", PSA_ITS_API_VERSION_MINOR);
+    val_print(ALWAYS, " and PS %d.", PSA_PS_API_VERSION_MAJOR);
+    val_print(ALWAYS, "%d", PSA_PS_API_VERSION_MINOR);
 #endif
 #ifdef INITIAL_ATTESTATION
-    val_print(PRINT_ALWAYS, " %d.", PSA_INITIAL_ATTEST_API_VERSION_MAJOR);
-    val_print(PRINT_ALWAYS, "%d", PSA_INITIAL_ATTEST_API_VERSION_MINOR);
+    val_print(ALWAYS, " %d.", PSA_INITIAL_ATTEST_API_VERSION_MAJOR);
+    val_print(ALWAYS, "%d", PSA_INITIAL_ATTEST_API_VERSION_MINOR);
 #endif
 }
 
@@ -88,14 +88,14 @@ val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
         }
         else if (test_list[i].test_id == VAL_INVALID_TEST_ID)
         {
-            val_print(PRINT_DEBUG, "\n\nNo more valid tests found. Exiting.", 0);
+            val_print(DBG, "\n\nNo more valid tests found. Exiting.", 0);
             *test_id = VAL_INVALID_TEST_ID;
             return VAL_STATUS_SUCCESS;
         }
     }
 
     *test_id = VAL_INVALID_TEST_ID;
-    val_print(PRINT_ERROR, "\n\nError: No more valid tests found. Exiting.", 0);
+    val_print(ERROR, "\n\nError: No more valid tests found. Exiting.", 0);
     return VAL_STATUS_LOAD_ERROR;
 }
 
@@ -169,9 +169,9 @@ int32_t val_dispatcher(test_id_t test_id_prev)
 		}
 		if (VAL_GET_COMP_NUM(test_id_prev) != VAL_GET_COMP_NUM(test_id))
 		{
-			val_print(PRINT_ALWAYS, "\nRunning.. ", 0);
-			val_print(PRINT_ALWAYS, val_get_comp_name(test_id), 0);
-			val_print(PRINT_ALWAYS, "\n******************************\n", 0);
+			val_print(ALWAYS, "\nRunning.. ", 0);
+			val_print(ALWAYS, val_get_comp_name(test_id), 0);
+			val_print(ALWAYS, "\n******************************\n", 0);
 		}
 
 		val_execute_test_fn();
@@ -197,16 +197,16 @@ int32_t val_dispatcher(test_id_t test_id_prev)
         test_id_prev = test_id;
    } while (1);
 
-   val_print(PRINT_ALWAYS, "\n************ ", 0);
-   val_print(PRINT_ALWAYS, val_get_comp_name(test_id_prev), 0);
-   val_print(PRINT_ALWAYS, " Report **********\n", 0);
-   val_print(PRINT_ALWAYS, "TOTAL TESTS     : %d\n", test_count.pass_cnt + test_count.fail_cnt
+   val_print(ALWAYS, "\n************ ", 0);
+   val_print(ALWAYS, val_get_comp_name(test_id_prev), 0);
+   val_print(ALWAYS, " Report **********\n", 0);
+   val_print(ALWAYS, "TOTAL TESTS     : %d\n", test_count.pass_cnt + test_count.fail_cnt
             + test_count.skip_cnt + test_count.sim_error_cnt);
-   val_print(PRINT_ALWAYS, "TOTAL PASSED    : %d\n", test_count.pass_cnt);
-   val_print(PRINT_ALWAYS, "TOTAL SIM ERROR : %d\n", test_count.sim_error_cnt);
-   val_print(PRINT_ALWAYS, "TOTAL FAILED    : %d\n", test_count.fail_cnt);
-   val_print(PRINT_ALWAYS, "TOTAL SKIPPED   : %d\n", test_count.skip_cnt);
-   val_print(PRINT_ALWAYS, "******************************************\n", 0);
+   val_print(ALWAYS, "TOTAL PASSED    : %d\n", test_count.pass_cnt);
+   val_print(ALWAYS, "TOTAL SIM ERROR : %d\n", test_count.sim_error_cnt);
+   val_print(ALWAYS, "TOTAL FAILED    : %d\n", test_count.fail_cnt);
+   val_print(ALWAYS, "TOTAL SKIPPED   : %d\n", test_count.skip_cnt);
+   val_print(ALWAYS, "******************************************\n", 0);
 
    return (test_count.fail_cnt > 0) ? VAL_STATUS_TEST_FAILED : VAL_STATUS_SUCCESS;
 }

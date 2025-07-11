@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -36,13 +35,13 @@ int32_t client_test_psa_framework_version(caller_security_t caller __UNUSED)
 {
    int32_t         status = VAL_STATUS_SUCCESS;
 
-   val->print(PRINT_TEST, "[Check 1] psa_framework_version\n", 0);
+   val->print(TEST, "Check 1: psa_framework_version\n", 0);
 
    /* Retrieve the version of the PSA Framework API that is implemented.*/
    if (psa->framework_version() != PSA_FRAMEWORK_VERSION)
    {
        status = VAL_STATUS_FRAMEWORK_VERSION_FAILED;
-       val->print(PRINT_ERROR,
+       val->print(ERROR,
             "\tpsa_framework_version API failed, Returned=0x%x\n", (psa->framework_version()));
    }
 
@@ -54,7 +53,7 @@ int32_t client_test_psa_version(caller_security_t caller)
    int32_t         status = VAL_STATUS_SUCCESS;
    uint32_t        version;
 
-   val->print(PRINT_TEST, "[Check 2] psa_version\n", 0);
+   val->print(TEST, "Check 2: psa_version\n", 0);
 
    /*
     * Return PSA_VERSION_NONE when the RoT Service is not implemented,
@@ -79,7 +78,7 @@ int32_t client_test_psa_version(caller_security_t caller)
        || ((caller == CALLER_SECURE) && (version != SERVER_SECURE_CONNECT_ONLY_VERSION)))
    {
        status = VAL_STATUS_VERSION_API_FAILED;
-       val->print(PRINT_ERROR,
+       val->print(ERROR,
             "\tpsa_version API failed for SID which allows secure only connection\n", 0);
    }
 

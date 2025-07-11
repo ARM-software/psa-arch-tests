@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_s008.h"
 #include "test_data.h"
 
@@ -41,7 +40,7 @@ static int32_t psa_sst_invalid_offset_failure(storage_function_code_t fCode)
     int32_t  status;
 
     /* Case where offset = data_size +1 , data_len 0. Also check nothing is returned in read buff */
-    val->print(PRINT_TEST, "[Check 2] Try to access data with varying invalid offset\n", 0);
+    val->print(TEST, "Check 2: Try to access data with varying invalid offset\n", 0);
     memset(read_buff, 0, TEST_BUFF_SIZE);
     status = STORAGE_FUNCTION(s008_data[VAL_TEST_IDX6].api[fCode], uid, TEST_BUFF_SIZE+1, 0,
                               read_buff, &p_data_length);
@@ -92,7 +91,7 @@ static int32_t psa_sst_valid_offset_success(storage_function_code_t fCode)
     TEST_ASSERT_EQUAL(status, s008_data[VAL_TEST_IDX1].status, TEST_CHECKPOINT_NUM(1));
 
     /* Case where offset + datalen =  data_size */
-    val->print(PRINT_TEST, "[Check 1] Try to access data with varying valid offset\n", 0);
+    val->print(TEST, "Check 1: Try to access data with varying valid offset\n", 0);
     while (offset > 0)
     {
          data_len = TEST_BUFF_SIZE - offset;
@@ -136,7 +135,8 @@ int32_t s008_storage_test(caller_security_t caller __UNUSED)
     int32_t status;
 
 #if defined(STORAGE) || defined(INTERNAL_TRUSTED_STORAGE)
-    val->print(PRINT_TEST, ITS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, ITS_TEST_MESSAGE, 0);
     status = psa_sst_valid_offset_success(VAL_ITS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;
@@ -149,7 +149,8 @@ int32_t s008_storage_test(caller_security_t caller __UNUSED)
 #endif
 
 #if defined(STORAGE) || defined(PROTECTED_STORAGE)
-    val->print(PRINT_TEST, PS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, PS_TEST_MESSAGE, 0);
     status = psa_sst_valid_offset_success(VAL_PS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;

@@ -1,5 +1,5 @@
  /** @file
-  * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+  * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
   * SPDX-License-Identifier : Apache-2.0
   *
   * Copyright (c) 2021 Nordic Semiconductor ASA.
@@ -19,9 +19,6 @@
  **/
 
 #include "pal_driver_intf.h"
-#include "pal_common.h"
-#include "pal_config.h"
-#include "pal_nvmem.h"
 
 #include "nrf_wdt.h"
 
@@ -32,6 +29,9 @@ extern uint32_t pal_nvmem_get_addr(void);
 
 /* Interrupt handler provided by TF-M platform for testing */
 extern void pal_interrupt_handler(void);
+
+/* Regression test status reporting buffer */
+uint8_t test_status_buffer[256]  = {0};
 
 /**
     @brief    - This function initializes the UART
@@ -49,8 +49,7 @@ void pal_uart_init(uint32_t uart_base_addr)
     @param    - str      : Input String
               - data     : Value for format specifier
 **/
-
-void pal_print(const char *str, int32_t data)
+void pal_print_s(const char *str, int32_t data)
 {
     tfm_log_printf(str, data);
 }
@@ -92,7 +91,7 @@ int pal_nvmem_read(addr_t base, uint32_t offset, void *buffer, int size)
 }
 
 /**
-    @brief           - Initializes an hardware watchdog timer
+    @brief           - Initializes a hardware watchdog timer
     @param           - base_addr       : Base address of the watchdog module
                      - time_us         : Time in micro seconds
                      - timer_tick_us   : Number of ticks per micro second

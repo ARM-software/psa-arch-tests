@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_s006.h"
 #include "test_data.h"
 
@@ -92,7 +91,7 @@ static int32_t psa_sst_flags_not_supported(storage_function_code_t fCode)
 
     /* Calling set function with different create flag value */
 
-    val->print(PRINT_TEST, "[Check 1] Call set API with flag - PSA_STORAGE_FLAG_NONE\n", 0);
+    val->print(TEST, "Check 1: Call set API with flag - PSA_STORAGE_FLAG_NONE\n", 0);
     /* Create storage with flag value */
     flag = PSA_STORAGE_FLAG_NONE;
     test_status = psa_sst_create_storage_api(fCode, uid, TEST_BUFF_SIZE, write_buff, flag);
@@ -101,7 +100,7 @@ static int32_t psa_sst_flags_not_supported(storage_function_code_t fCode)
         return test_status;
     }
 
-    val->print(PRINT_TEST, "[Check 2] Call set API with flag - "
+    val->print(TEST, "Check 2: Call set API with flag - "
                             "PSA_STORAGE_FLAG_NO_CONFIDENTIALITY\n", 0);
     /* Create storage with flag value */
     flag = PSA_STORAGE_FLAG_NO_CONFIDENTIALITY;
@@ -111,7 +110,7 @@ static int32_t psa_sst_flags_not_supported(storage_function_code_t fCode)
         return test_status;
     }
 
-    val->print(PRINT_TEST, "[Check 3] Call set API with flag - "
+    val->print(TEST, "Check 3: Call set API with flag - "
                             "PSA_STORAGE_FLAG_NO_REPLAY_PROTECTION\n", 0);
     /* Create storage with flag value */
     flag = PSA_STORAGE_FLAG_NO_REPLAY_PROTECTION;
@@ -129,7 +128,8 @@ int32_t s006_storage_test(caller_security_t caller __UNUSED)
     int32_t status;
 
 #if defined(STORAGE) || defined(INTERNAL_TRUSTED_STORAGE)
-    val->print(PRINT_TEST, ITS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, ITS_TEST_MESSAGE, 0);
     status = psa_sst_flags_not_supported(VAL_ITS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;
@@ -137,7 +137,8 @@ int32_t s006_storage_test(caller_security_t caller __UNUSED)
 #endif
 
 #if defined(STORAGE) || defined(PROTECTED_STORAGE)
-    val->print(PRINT_TEST, PS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, PS_TEST_MESSAGE, 0);
     status = psa_sst_flags_not_supported(VAL_PS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;

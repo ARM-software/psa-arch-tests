@@ -1,5 +1,5 @@
  /** @file
-  * Copyright (c) 2021 Nordic Semiconductor ASA.
+  * Copyright (c) 2021-2025 Nordic Semiconductor ASA.
   * SPDX-License-Identifier : Apache-2.0
   *
   * Licensed under the Apache License, Version 2.0 (the "License");
@@ -63,7 +63,7 @@ struct NRF_WDT_Type {              /*!< (@ 0x40018000) WDT_NS Structure */
 #define WDT_RUNSTATUS_RUNSTATUSWDT_Running (1UL) /*!< Watchdog is running */
 
 /**
-    @brief           - Initializes an hardware watchdog timer
+    @brief           - Initializes a hardware watchdog timer
     @param           - base_addr       : Base address of the watchdog module
                      - time_us         : Time in micro seconds
     @return          - SUCCESS, FAILURE

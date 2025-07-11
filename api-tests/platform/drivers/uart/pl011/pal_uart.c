@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,7 +50,7 @@ static int pal_uart_is_tx_empty(void)
 /**
     @brief    - This function checks for empty TX FIFO and writes to FIFO register
 **/
-void pal_uart_putc(uint8_t c)
+void pal_uart_pl011_putc(uint8_t c)
 {
     const uint8_t pdata = (uint8_t)c;
 
@@ -59,74 +59,6 @@ void pal_uart_putc(uint8_t c)
 
     /* write the data (upper 24 bits are reserved) */
     ((uart_t *)g_uart)->uartdr = pdata;
-}
-
-/**
-    @brief    - This function parses the input string and writes bytes into UART TX FIFO
-    @param    - str      : Input String
-              - data     : Value for format specifier
-**/
-void pal_uart_pl011_print(const char *str, int32_t data)
-{
-    uint8_t j, buffer[16];
-    int8_t  i = 0, is_neg = 0, k = 2 * sizeof(data);
-
-    for (; *str != '\0'; ++str)
-    {
-        if (*str == '%')
-        {
-            ++str;
-            if (*str == 'd')
-            {
-                if (data < 0)
-                {
-                    data = -(data);
-                    is_neg = 1;
-                }
-
-                while (data != 0)
-                {
-                    j         = data % 10;
-                    data      = data / 10;
-                    buffer[i] = j + 48;
-                    i        += 1;
-                }
-
-                if (is_neg)
-                    buffer[i++] = '-';
-            }
-            else if (*str == 'x' || *str == 'X')
-            {
-                while (k--)
-                {
-                    j         = data & 0xf;
-                    data    >>= 4;
-                    buffer[i] = j + ((j > 9) ? 55 : 48);
-                    i        += 1;
-                }
-            }
-            if (i > 0)
-            {
-                while (i > 0)
-                {
-                    pal_uart_putc(buffer[--i]);
-                }
-            }
-            else
-            {
-                pal_uart_putc(48);
-            }
-        }
-        else
-        {
-            pal_uart_putc(*str);
-
-            if (*str == '\n')
-            {
-                pal_uart_putc('\r');
-            }
-        }
-    }
 }
 
 /**
@@ -150,7 +82,7 @@ void pal_uart_pl011_generate_irq(void)
     /* Fill the TX buffer to generate TX IRQ. TX buffer is 16x8 bit wide */
     do
     {
-        pal_uart_putc(' ');
+        pal_uart_pl011_putc(' ');
     } while (--bytecount);
 
     /* Loop until TX interrupt trigger */

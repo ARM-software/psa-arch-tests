@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  * Copyright 2023 NXP
  *
@@ -18,68 +18,32 @@
 #ifndef _PAL_INTERFACES_NS_H_
 #define _PAL_INTERFACES_NS_H_
 
-#include "val.h"
-#include "val_client_defs.h"
+#include "pal_common.h"
+#include "pal_common_val_intf.h"
 #include <stdarg.h>
 
 /**
     @brief    - This function initializes the UART
-    @param    - uart base addr
+    @param    - Void
     @return   - SUCCESS/FAILURE
 **/
-int pal_uart_init_ns(uint32_t uart_base_addr);
+int pal_uart_init_ns(void);
 
 /**
- *   @brief    - This function parses the input string and writes bytes into UART TX FIFO
- *   @param    - str      : Input String
- *             - data     : Value for format specifier
- *   @return   - SUCCESS/FAILURE
+    @brief    - This function parses the input string and writes bytes into UART TX FIFO
+    @param    - str      : Input String
+              - data     : Value for format specifier
+    @return   - SUCCESS/FAILURE
 **/
-
 int pal_print_ns(const char *str, int32_t data);
 
 /**
- *   @brief           - Initializes an hardware watchdog timer
- *   @param           - base_addr       : Base address of the watchdog module
- *                    - time_us         : Time in micro seconds
+ *   @brief           - Initializes a hardware watchdog timer
+ *   @param           - time_us         : Time in micro seconds
  *                    - timer_tick_us   : Number of ticks per micro second
  *   @return          - SUCCESS/FAILURE
 **/
-int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us);
-
-/**
- *   @brief           - Enables a hardware watchdog timer
- *   @param           - base_addr       : Base address of the watchdog module
- *   @return          - SUCCESS/FAILURE
-**/
-int pal_wd_timer_enable_ns(addr_t base_addr);
-
-/**
- *   @brief           - Disables a hardware watchdog timer
- *   @param           - base_addr  : Base address of the watchdog module
- *   @return          - SUCCESS/FAILURE
-**/
-int pal_wd_timer_disable_ns(addr_t base_addr);
-
-/**
- *   @brief    - Reads from given non-volatile address.
- *   @param    - base    : Base address of nvmem
- *               offset  : Offset
- *               buffer  : Pointer to source address
- *               size    : Number of bytes
- *   @return   - SUCCESS/FAILURE
-**/
-int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size);
-
-/**
- *   @brief    - Writes into given non-volatile address.
- *   @param    - base    : Base address of nvmem
- *               offset  : Offset
- *               buffer  : Pointer to source address
- *               size    : Number of bytes
- *   @return   - SUCCESS/FAILURE
-**/
-int pal_nvmem_write_ns(addr_t base, uint32_t offset, const void *buffer, int size);
+int pal_wd_timer_init_ns(uint32_t time_us, uint32_t timer_tick_us);
 
 /**
  *   @brief    - This API will call the requested crypto function

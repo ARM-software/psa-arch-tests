@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,45 @@
 #include "pal_crypto_config.h"
 #include "pal_storage_config.h"
 
+/*==========================  PLATFORM CONFIGURATIONS START  ==========================*/
+
+// UART device info
+// In this implementation we don't assume there's a UART device, we just print
+// to stdout, so the values below don't mean much.
+#define UART_NUM                               1
+
+#define UART_0_BASE                            0x00000000
+#define UART_0_SIZE                            0x0
+#define UART_0_INTR_ID                         0x0
+#define UART_0_PERMISSION                      TYPE_READ_WRITE
+
+// Watchdog device info
+// In this implementation we don't assume there's a watchdog. Watchdog PAL
+// functions all just return SUCCESS, so the values below don't mean much.
+#define WATCHDOG_NUM                           1
+
+#define WATCHDOG_0_BASE                        0x0
+#define WATCHDOG_0_SIZE                        0x0
+#define WATCHDOG_0_INTR_ID                     0x0
+#define WATCHDOG_0_PERMISSION                  TYPE_READ_WRITE
+#define WATCHDOG_0_NUM_OF_TICK_PER_MICRO_SEC   0x0
+#define WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_LOW    0x0
+#define WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_MEDIUM 0x0
+#define WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_HIGH   0x0
+#define WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_CRYPTO 0x0
+
+// In this implementation we don't actually use NV memory - we don't support
+// tests that require process or system restarts so NV memory isn't required.
+// The implementation just uses an array in memory.
+#define NVMEM_NUM                              1
+
+#define NVMEM_0_START                          0x0
+#define NVMEM_0_END                            0x0
+#define NVMEM_0_PERMISSION                     TYPE_READ_WRITE
+
+/*==========================  PLATFORM CONFIGURATIONS END  ============================*/
+
+
 #define TARGET_SPECIFIC_TYPES
 
 #ifdef TARGET_SPECIFIC_TYPES
@@ -37,7 +76,7 @@ typedef uint32_t            cfg_id_t;
 #if !defined(PSA_CMAKE_BUILD)
 
 /* Print verbosity = TEST */
-#define VERBOSE 3
+#define VERBOSITY 3
 
 /* NSPE or SPE VAL build? */
 #define VAL_NSPE_BUILD
@@ -60,6 +99,23 @@ typedef uint32_t            cfg_id_t;
 
 /* Use hardcoded public key */
 #define PLATFORM_OVERRIDE_ATTEST_PK
+
+/* Enable custom printing for Non-secure side */
+#define BESPOKE_PRINT_NS
+
+/* UART base address assigned */
+#define PLATFORM_UART_BASE UART_0_BASE
+
+/* Watchdog device configurations assigned */
+#define PLATFORM_WD_BASE                        WATCHDOG_0_BASE
+#define PLATFORM_WD_NUM_OF_TICK_PER_MICRO_SEC   WATCHDOG_0_NUM_OF_TICK_PER_MICRO_SEC
+#define PLATFORM_WD_TIMEOUT_IN_MICRO_SEC_LOW    WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_LOW
+#define PLATFORM_WD_TIMEOUT_IN_MICRO_SEC_MEDIUM WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_LOW
+#define PLATFORM_WD_TIMEOUT_IN_MICRO_SEC_HIGH   WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_LOW
+#define PLATFORM_WD_TIMEOUT_IN_MICRO_SEC_CRYPTO WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_CRYPTO
+
+/* Non-volatile memory base address assigned */
+#define PLATFORM_NVM_BASE NVMEM_0_START
 
 /*
  * Include of PSA defined Header files

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -35,12 +34,12 @@ int32_t client_test_psa_set_rhandle_with_null_handle(caller_security_t caller __
 {
    psa_handle_t       handle = 0;
 
-   val->print(PRINT_TEST, "[Check 1] Test psa_set_rhandle with null msg handle\n", 0);
+   val->print(TEST, "Check 1: Test psa_set_rhandle with null msg handle\n", 0);
 
    handle = psa->connect(SERVER_UNSPECIFIED_VERSION_SID, SERVER_UNSPECIFIED_VERSION_VERSION);
 
    /* Expectation is server test should hang and control shouldn't have come here */
-   val->print(PRINT_ERROR, "\tConnection should failed but succeed\n", 0);
+   val->print(ERROR, "\tConnection should failed but succeed\n", 0);
 
    (void)(handle);
    return VAL_STATUS_SPM_FAILED;

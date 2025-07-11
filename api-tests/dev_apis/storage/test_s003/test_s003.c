@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_s003.h"
 #include "test_data.h"
 
@@ -45,18 +44,18 @@ int32_t psa_sst_insufficient_space(storage_function_code_t fCode)
     /* Saturate the storage for NUM_ITERATION times, and remove them after */
     for (i = 0 ; i < NUM_ITERATIONS; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] ", i + 1);
-        val->print(PRINT_TEST, &test_desc[i][0], 0);
+        val->print(TEST, "Check %d: ", i + 1);
+        val->print(TEST, &test_desc[i][0], 0);
         for (uid = TEST_BASE_UID_VALUE; status == PSA_SUCCESS; uid++)
         {
-            val->print(PRINT_INFO, "Setting 0x%x bytes for ", ARCH_TEST_STORAGE_UID_MAX_SIZE);
-            val->print(PRINT_INFO, "UID %d\n", (int32_t)uid);
+            val->print(INFO, "Setting 0x%x bytes for ", ARCH_TEST_STORAGE_UID_MAX_SIZE);
+            val->print(INFO, "UID %d\n", (int32_t)uid);
             status = STORAGE_FUNCTION(s003_data[VAL_TEST_IDX1].api[fCode], uid,
                                       ARCH_TEST_STORAGE_UID_MAX_SIZE, write_buff,
                                       PSA_STORAGE_FLAG_NONE);
             if (status != PSA_SUCCESS)
             {
-                val->print(PRINT_TEST, "UID %d set failed due to insufficient space\n",
+                val->print(TEST, "UID %d set failed due to insufficient space\n",
                                        (int32_t)uid);
                 break;
             }
@@ -68,11 +67,11 @@ int32_t psa_sst_insufficient_space(storage_function_code_t fCode)
         results[i] = count;
 
         if (count) {
-           val->print(PRINT_TEST, "Remove all registered UIDs\n", 0);
+           val->print(TEST, "Remove all registered UIDs\n", 0);
         }
         for (uid = TEST_BASE_UID_VALUE; uid < (count + TEST_BASE_UID_VALUE); uid++)
         {
-            val->print(PRINT_INFO, "Removing UID %d\n", (int32_t)uid);
+            val->print(INFO, "Removing UID %d\n", (int32_t)uid);
             status = STORAGE_FUNCTION(s003_data[VAL_TEST_IDX2].api[fCode], uid);
             if (status != PSA_SUCCESS)
                 break;
@@ -87,9 +86,9 @@ int32_t psa_sst_insufficient_space(storage_function_code_t fCode)
     {
         if (results[i] != results[i+1])
         {
-            val->print(PRINT_ERROR, "\tERROR : Mismatch between number of UIDs required to\n", 0);
-            val->print(PRINT_ERROR, "\t fill up the storage between iteration %d", i);
-            val->print(PRINT_ERROR, " and iteration %d\n", i+1);
+            val->print(ERROR, "\tERROR : Mismatch between number of UIDs required to\n", 0);
+            val->print(ERROR, "\t fill up the storage between iteration %d", i);
+            val->print(ERROR, " and iteration %d\n", i+1);
             return VAL_STATUS_ERROR;
         }
     }
@@ -101,7 +100,8 @@ int32_t s003_storage_test(caller_security_t caller __UNUSED)
     int32_t status;
 
 #if defined(STORAGE) || defined(INTERNAL_TRUSTED_STORAGE)
-    val->print(PRINT_TEST, ITS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, ITS_TEST_MESSAGE, 0);
     status = psa_sst_insufficient_space(VAL_ITS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;
@@ -109,7 +109,8 @@ int32_t s003_storage_test(caller_security_t caller __UNUSED)
 #endif
 
 #if defined(STORAGE) || defined(PROTECTED_STORAGE)
-    val->print(PRINT_TEST, PS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, PS_TEST_MESSAGE, 0);
     status = psa_sst_insufficient_space(VAL_PS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;

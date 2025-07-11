@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2020-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2020-2023, 2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,7 @@
 #include <stdarg.h>
 
 #include "pal_config.h"
+#include "pal_common_val_intf.h"
 
 /* typedef's */
 #ifndef TARGET_SPECIFIC_TYPES

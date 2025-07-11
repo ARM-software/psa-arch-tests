@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,32 +15,30 @@
  * limitations under the License.
 **/
 
-#ifndef _VAL_PAL_INTERFACE_APIS_H_
-#define _VAL_PAL_INTERFACE_APIS_H_
+#ifndef _PAL_INTERFACES_S_H_
+#define _PAL_INTERFACES_S_H_
 
 
-#include "val.h"
+#include "pal_common.h"
 
 /* Peripherals APIs */
 
 /*
     @brief     - This function initializes the uart
     @param     - uart_base_addr : Base address of the UART
-    @return    -
+    @return    - void
 */
 void pal_uart_init(addr_t uart_base_addr);
 
-/*
-    @brief     - This function parses the input string and writes byte by byte to print
-                 the input string
-    @param     - str            : Input String
-               - data           : Value for Format specifier
-    @return    - void
- */
-void pal_print(const char *str, int32_t data);
+/**
+    @brief    - This function parses the input string and writes bytes into UART TX FIFO
+    @param    - str      : Input String
+              - data     : Value for format specifier
+**/
+void pal_print_s(const char *str, int32_t data);
 
 /**
-    @brief           - Initializes an hardware watchdog timer
+    @brief           - Initializes a hardware watchdog timer
     @param           - base_addr       : Base address of the watchdog module
                      - time_us         : Time in micro seconds
                      - timer_tick_us   : Number of ticks per micro second

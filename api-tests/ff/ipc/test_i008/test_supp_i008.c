@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,7 +52,7 @@ int32_t server_test_secure_access_only_connection(void)
 		 * */
         if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
         {
-           val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+           val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
         }
 
         psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);

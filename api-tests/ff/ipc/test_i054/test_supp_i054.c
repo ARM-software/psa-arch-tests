@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,13 +50,13 @@ wait:
         if (msg.type == PSA_IPC_CALL)
         {
             /* Control shouldn't have come here */
-            val->print(PRINT_ERROR, "\tControl shouldn't have reached here\n", 0);
+            val->print(ERROR, "\tControl shouldn't have reached here\n", 0);
             psa->reply(msg.handle, -2);
         }
     }
     else
     {
-        val->print(PRINT_ERROR, "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
+        val->print(ERROR, "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
         return VAL_STATUS_ERROR;
     }
 
@@ -100,7 +100,7 @@ wait:
         if (msg.type == PSA_IPC_CALL)
         {
             /* Control shouldn't have come here */
-            val->print(PRINT_ERROR, "\tControl shouldn't have reached here\n", 0);
+            val->print(ERROR, "\tControl shouldn't have reached here\n", 0);
             psa->reply(msg.handle, -2);
             val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
             psa->reply(msg.handle, PSA_SUCCESS);
@@ -113,7 +113,7 @@ wait:
     }
     else
     {
-        val->print(PRINT_ERROR, "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
+        val->print(ERROR, "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
         return VAL_STATUS_ERROR;
     }
 

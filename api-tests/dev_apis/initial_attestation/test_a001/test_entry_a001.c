@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,10 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_a001.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_INITIAL_ATTESTATION_BASE, 1)
-#define TEST_DESC "Testing attestation initial attestation APIs | UT: psa_initial_attestation\n"
+#define TEST_DESC "psa_initial_attestation : Desc=Initial Attestation APIs : "
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;
 psa_api_t *psa = NULL;
@@ -33,7 +32,8 @@ void test_entry(val_api_t *val_api, psa_api_t *psa_api)
     psa = psa_api;
 
     /* test init */
-    val->test_init(TEST_NUM, TEST_DESC, TEST_FIELD(TEST_ISOLATION_L1, WD_HIGH_TIMEOUT));
+    val->test_init(TEST_NUM, VAL_INITIAL_ATTESTATION_BASE, TEST_DESC,
+                             TEST_FIELD(TEST_ISOLATION_L1, WD_HIGH_TIMEOUT));
     if (!IS_TEST_START(val->get_status()))
     {
         goto test_exit;

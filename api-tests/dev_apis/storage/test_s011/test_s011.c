@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_s011.h"
 #include "test_data.h"
 
@@ -40,7 +39,7 @@ static int32_t psa_sst_uid_not_found(storage_function_code_t fCode)
     struct psa_storage_info_t orig_info;
 
     /* Call the set_extended API with UID which is not created */
-    val->print(PRINT_TEST, "[Check 1] Call set_extended API for UID %d which is not set\n",
+    val->print(TEST, "Check 1: Call set_extended API for UID %d which is not set\n",
                             (int32_t)p_uid);
     status = STORAGE_FUNCTION(s011_data[VAL_TEST_IDX1].api[fCode], p_uid, 0, TEST_BUFF_SIZE,
                               write_buff);
@@ -52,13 +51,13 @@ static int32_t psa_sst_uid_not_found(storage_function_code_t fCode)
     TEST_ASSERT_EQUAL(status, s011_data[VAL_TEST_IDX2].status, TEST_CHECKPOINT_NUM(2));
 
     /* Try to change data length for same UID using create API */
-    val->print(PRINT_TEST, "[Check 2] Call create API with length different than original\n", 0);
+    val->print(TEST, "Check 2: Call create API with length different than original\n", 0);
     status = STORAGE_FUNCTION(s011_data[VAL_TEST_IDX3].api[fCode], p_uid, TEST_BUFF_SIZE/2,
                               PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s011_data[VAL_TEST_IDX3].status, TEST_CHECKPOINT_NUM(3));
 
     /* Try to change flag value associated with the UID */
-    val->print(PRINT_TEST, "[Check 3] Call create API with flag value different than original\n",
+    val->print(TEST, "Check 3: Call create API with flag value different than original\n",
                            0);
     status = STORAGE_FUNCTION(s011_data[VAL_TEST_IDX4].api[fCode], p_uid, TEST_BUFF_SIZE,
                               PSA_STORAGE_FLAG_WRITE_ONCE);
@@ -80,7 +79,7 @@ static int32_t psa_sst_uid_not_found(storage_function_code_t fCode)
     TEST_ASSERT_EQUAL(status, s011_data[VAL_TEST_IDX9].status, TEST_CHECKPOINT_NUM(9));
 
     /* Try to change length using create API */
-    val->print(PRINT_TEST, "[Check 4] Call create API with parameters different than original\n",
+    val->print(TEST, "Check 4: Call create API with parameters different than original\n",
                            0);
     status = STORAGE_FUNCTION(s011_data[VAL_TEST_IDX10].api[fCode], p_uid, TEST_BUFF_SIZE,
                               PSA_STORAGE_FLAG_NONE);
@@ -99,7 +98,7 @@ static int32_t psa_sst_uid_not_found(storage_function_code_t fCode)
     TEST_ASSERT_EQUAL(status, s011_data[VAL_TEST_IDX13].status, TEST_CHECKPOINT_NUM(14));
 
     /* Call the set_extended API with UID which is removed */
-    val->print(PRINT_TEST, "[Check 5] Call set_extended API for UID %d which is removed\n",
+    val->print(TEST, "Check 5: Call set_extended API for UID %d which is removed\n",
                             (int32_t)p_uid);
     status = STORAGE_FUNCTION(s011_data[VAL_TEST_IDX14].api[fCode], p_uid, 0, TEST_BUFF_SIZE,
                               write_buff);
@@ -118,14 +117,14 @@ static int32_t psa_sst_optional_api_uid_not_found(storage_function_code_t fCode)
 
     if (status == s011_data[VAL_TEST_IDX0].status)
     {
-       val->print(PRINT_INFO, "Optional PS APIs are supported.\n", 0);
+       val->print(INFO, "Optional PS APIs are supported.\n", 0);
        test_status = psa_sst_uid_not_found(fCode);
        if (test_status != VAL_STATUS_SUCCESS)
           return test_status;
     }
     else
     {
-       val->print(PRINT_TEST, "Test Case skipped as Optional PS APIs are not supported.\n", 0);
+       val->print(TEST, "Test Case skipped as Optional PS APIs are not supported.\n", 0);
        return RESULT_SKIP(VAL_STATUS_UNSUPPORTED);
     }
 
@@ -136,7 +135,8 @@ int32_t s011_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 
-    val->print(PRINT_TEST, PS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, PS_TEST_MESSAGE, 0);
     status = psa_sst_optional_api_uid_not_found(VAL_PS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;
