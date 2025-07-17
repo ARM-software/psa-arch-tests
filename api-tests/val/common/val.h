@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,12 @@
  * limitations under the License.
 **/
 
-#ifndef _VAL_COMMON_H_
-#define _VAL_COMMON_H_
+#ifndef _VAL_H_
+#define _VAL_H_
 
 #include "pal_common.h"
+#include "val_common_log.h"
+#include "val_common_status.h"
 
 #ifndef VAL_NSPE_BUILD
 #define STATIC_DECLARE  static
@@ -44,37 +46,10 @@
 #define _CONCAT(A, B) A##B
 #define CONCAT(A, B) _CONCAT(A, B)
 
-/* test status defines */
-#define TEST_START                 0x01
-#define TEST_END                   0x02
-#define TEST_PASS                  0x04
-#define TEST_FAIL                  0x08
-#define TEST_SKIP                  0x10
-#define TEST_PENDING               0x20
-
-#define TEST_NUM_BIT                 32
-#define TEST_STATE_BIT                8
-#define TEST_STATUS_BIT               0
-
+#define TEST_NUM_BIT         32
 #define TEST_NUM_MASK        0xFFFFFFFF
-#define TEST_STATE_MASK            0xFF
-#define TEST_STATUS_MASK           0xFF
 
-#define RESULT_START(status)    (((TEST_START) << TEST_STATE_BIT) | ((status) << TEST_STATUS_BIT))
-#define RESULT_END(status)      (((TEST_END) << TEST_STATE_BIT) | ((status) << TEST_STATUS_BIT))
-#define RESULT_PASS(status)     (((TEST_PASS) << TEST_STATE_BIT) | ((status) << TEST_STATUS_BIT))
-#define RESULT_FAIL(status)     (((TEST_FAIL) << TEST_STATE_BIT) | ((status) << TEST_STATUS_BIT))
-#define RESULT_SKIP(status)     (((TEST_SKIP) << TEST_STATE_BIT) | ((status) << TEST_STATUS_BIT))
-#define RESULT_PENDING(status)  (((TEST_PENDING) << TEST_STATE_BIT) | ((status) << TEST_STATUS_BIT))
-
-#define IS_TEST_FAIL(status)    (((status >> TEST_STATE_BIT) & TEST_STATE_MASK) == TEST_FAIL)
-#define IS_TEST_PASS(status)    (((status >> TEST_STATE_BIT) & TEST_STATE_MASK) == TEST_PASS)
-#define IS_TEST_SKIP(status)    (((status >> TEST_STATE_BIT) & TEST_STATE_MASK) == TEST_SKIP)
-#define IS_TEST_PENDING(status) (((status >> TEST_STATE_BIT) & TEST_STATE_MASK) == TEST_PENDING)
-#define IS_TEST_START(status)   (((status >> TEST_STATE_BIT) & TEST_STATE_MASK) == TEST_START)
-#define IS_TEST_END(status)     (((status >> TEST_STATE_BIT) & TEST_STATE_MASK) == TEST_END)
-#define VAL_ERROR(status)       ((status & TEST_STATUS_MASK) ? 1 : 0)
-
+#define VAL_ERROR(status)       ((status & TEST_STATUS_CODE_MASK) ? 1 : 0)
 
 
 /* Test Defines */
@@ -111,9 +86,6 @@
 #define TEST_RETURN_RESULT              2
 #define INVALID_HANDLE                  0x1234DEAD
 
-#define VAL_NVMEM_BLOCK_SIZE           4
-#define VAL_NVMEM_OFFSET(nvmem_idx)    (nvmem_idx * VAL_NVMEM_BLOCK_SIZE)
-
 #define UART_INIT_SIGN  0xff
 #define UART_PRINT_SIGN 0xfe
 
@@ -129,9 +101,9 @@
         }                                                                           \
         if ((arg1) != arg2)                                                         \
         {                                                                           \
-            val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
-            val->print(PRINT_ERROR, "\tActual: %d\n", arg1);                        \
-            val->print(PRINT_ERROR, "\tExpected: %d\n", arg2);                      \
+            val->print(ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
+            val->print(ERROR, "\tActual: %d\n", arg1);                        \
+            val->print(ERROR, "\tExpected: %d\n", arg2);                      \
             return 1;                                                               \
         }                                                                           \
     } while (0)
@@ -144,16 +116,16 @@
         }                                                                           \
         if ((arg1) != status1 && (arg1) != status2)                                 \
         {                                                                           \
-            val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
-            val->print(PRINT_ERROR, "\tActual: %d\n", arg1);                        \
+            val->print(ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
+            val->print(ERROR, "\tActual: %d\n", arg1);                        \
             if ((status1) != (status2))                                             \
             {                                                                       \
-                val->print(PRINT_ERROR, "\tExpected: %d", status1);                 \
-                val->print(PRINT_ERROR, "or %d\n", status2);                        \
+                val->print(ERROR, "\tExpected: %d", status1);                 \
+                val->print(ERROR, "or %d\n", status2);                        \
             }                                                                       \
             else                                                                    \
             {                                                                       \
-                val->print(PRINT_ERROR, "\tExpected: %d\n", status1);               \
+                val->print(ERROR, "\tExpected: %d\n", status1);               \
             }                                                                       \
             return 1;                                                               \
         }                                                                           \
@@ -167,8 +139,8 @@
         }                                                                           \
         if ((arg1) == arg2)                                                         \
         {                                                                           \
-            val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
-            val->print(PRINT_ERROR, "\tValue: %d\n", arg1);                         \
+            val->print(ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
+            val->print(ERROR, "\tValue: %d\n", arg1);                         \
             return 1;                                                               \
         }                                                                           \
     } while (0)
@@ -177,8 +149,8 @@
     do {                                                                            \
         if (memcmp(buf1, buf2, size))                                               \
         {                                                                           \
-            val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d : ", checkpoint);   \
-            val->print(PRINT_ERROR, "Unequal data in compared buffers\n", 0);       \
+            val->print(ERROR, "\tFailed at Checkpoint: %d : ", checkpoint);   \
+            val->print(ERROR, "Unequal data in compared buffers\n", 0);       \
             return 1;                                                               \
         }                                                                           \
     } while (0)
@@ -191,10 +163,10 @@
         }                                                                           \
         if ((arg1) < range1 || (arg1) > range2)                                     \
         {                                                                           \
-            val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
-            val->print(PRINT_ERROR, "\tActual: %d\n", arg1);                        \
-            val->print(PRINT_ERROR, "\tExpected range: %d to ", range1);            \
-            val->print(PRINT_ERROR, "%d", range2);                                  \
+            val->print(ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
+            val->print(ERROR, "\tActual: %d\n", arg1);                        \
+            val->print(ERROR, "\tExpected range: %d to ", range1);            \
+            val->print(ERROR, "%d", range2);                                  \
             return 1;                                                               \
         }                                                                           \
     } while (0)
@@ -242,20 +214,9 @@ typedef enum {
     BOOT_EXPECTED_ON_SECOND_CHECK      = 0x8,
 } boot_state_t;
 
-typedef enum {
-    NV_BOOT             = 0x0,
-    NV_TEST_ID_PREVIOUS = 0x1,
-    NV_TEST_ID_CURRENT  = 0x2,
-    NV_TEST_CNT         = 0x3,
-    NV_TEST_DATA1       = 0x4,
-    NV_TEST_DATA2       = 0x5,
-    NV_TEST_DATA3       = 0x6,
-} nvmem_index_t;
-
 /* enums to report test sub-state */
 typedef enum {
   VAL_STATUS_SUCCESS                     = 0x0,
-  VAL_STATUS_INVALID                     = 0x10,
   VAL_STATUS_ERROR                       = 0x11,
   VAL_STATUS_NOT_FOUND                   = 0x12,
   VAL_STATUS_LOAD_ERROR                  = 0x13,
@@ -286,18 +247,8 @@ typedef enum {
   VAL_STATUS_DRIVER_FN_FAILED            = 0x2C,
   VAL_STATUS_NO_TESTS                    = 0X2D,
   VAL_STATUS_TEST_FAILED                 = 0x2E,
-  VAL_STATUS_ERROR_MAX                   = INT_MAX,
+  VAL_STATUS_MAX_ERROR                   = INT_MAX,
 } val_status_t;
-
-/* verbosity enums */
-typedef enum {
-    PRINT_INFO    = 1,
-    PRINT_DEBUG   = 2,
-    PRINT_TEST    = 3,
-    PRINT_WARN    = 4,
-    PRINT_ERROR   = 5,
-    PRINT_ALWAYS  = 9
-} print_verbosity_t;
 
 /* Driver test function id enums */
 typedef enum {
@@ -315,31 +266,29 @@ typedef enum {
     TEST_ISOLATION_PSA_ROT_MMIO_WR       = 12,
 } driver_test_fn_id_t;
 
+typedef enum {
+    NOT_AVAILABLE   = 0x0,
+    AVAILABLE       = 0x1,
+} is_available_t;
+
+typedef enum {
+    TYPE_READ_ONLY      = 0x10,
+    TYPE_WRITE_ONLY,
+    TYPE_READ_WRITE,
+    TYPE_EXECUTE,
+    TYPE_RESERVED,
+} perm_type_t;
+
 /* typedef's */
 typedef struct {
     boot_state_t state;
 } boot_t;
 
 typedef struct {
-    uint32_t pass_cnt:8;
-    uint32_t skip_cnt:8;
-    uint32_t fail_cnt:8;
-    uint32_t sim_error_cnt:8;
-} test_count_t;
-
-typedef struct {
     uint16_t test_num;
     uint8_t block_num;
-} test_info_t;
-
-
-/* struture to capture test state */
-typedef struct {
-    uint16_t reserved;
-    uint8_t  state;
-    uint8_t  status;
-} test_status_buffer_t;
+} test_info_ipc_t;
 
 typedef int32_t (*client_test_t)(caller_security_t caller);
 typedef int32_t (*server_test_t)(void);
-#endif /* VAL_COMMON_H */
+#endif /* VAL_H */

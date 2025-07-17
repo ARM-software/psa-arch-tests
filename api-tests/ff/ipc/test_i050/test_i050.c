@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -38,11 +37,10 @@ int32_t client_test_psa_call_with_invalid_invec_base(caller_security_t caller)
    int32_t                 status = VAL_STATUS_SUCCESS;
    psa_status_t            status_of_call;
    boot_state_t            boot_state;
-   memory_desc_t           *memory_desc;
    addr_t                  *invalid_base = NULL;
 
-   val->print(PRINT_TEST,
-            "[Check 1] Test psa_call with invalid psa_invec.base\n", 0);
+   val->print(TEST,
+            "Check 1: Test psa_call with invalid psa_invec.base\n", 0);
 
    /*
     * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
@@ -58,7 +56,7 @@ int32_t client_test_psa_call_with_invalid_invec_base(caller_security_t caller)
     * the test harness function.
     *
     * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
+    * timeout entries available in pal_config.h.
     *
     * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
@@ -80,29 +78,19 @@ int32_t client_test_psa_call_with_invalid_invec_base(caller_security_t caller)
     *       invalid_base = NULL;
     */
 
-   status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
-                                  MEMORY_DRIVER_PARTITION_MMIO, 0),
-                                  (uint8_t **)&memory_desc,
-                                  (uint32_t *)sizeof(memory_desc_t));
-   if (val->err_check_set(TEST_CHECKPOINT_NUM(101), status))
-   {
-       return status;
-   }
-
-
    if (caller == CALLER_NONSECURE)
-       invalid_base = (addr_t *) memory_desc->start;
+       invalid_base = (addr_t *) PLATFORM_DRIVER_PARTITION_MMIO_START;
    else
    {
        if (PLATFORM_PSA_ISOLATION_LEVEL > LEVEL1)
-           invalid_base = (addr_t *) memory_desc->start;
+           invalid_base = (addr_t *) PLATFORM_DRIVER_PARTITION_MMIO_START;
    }
 
    /* Setting boot.state before test check */
    boot_state = (caller == CALLER_NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
    if (val->set_boot_flag(boot_state))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
@@ -122,12 +110,12 @@ int32_t client_test_psa_call_with_invalid_invec_base(caller_security_t caller)
    }
 
    /* If PROGRAMMER ERROR results into panic then control shouldn't have reached here */
-   val->print(PRINT_ERROR, "\tpsa_call should failed but succeed\n", 0);
+   val->print(ERROR, "\tpsa_call should failed but succeed\n", 0);
 
    /* Resetting boot.state to catch unwanted reboot */
    if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
@@ -149,11 +137,10 @@ int32_t client_test_psa_call_with_invalid_invec_base(caller_security_t caller)
    psa_handle_t            handle = 0;
    psa_status_t            status_of_call;
    boot_state_t            boot_state;
-   memory_desc_t           *memory_desc;
    addr_t                  *invalid_base = NULL;
 
-   val->print(PRINT_TEST,
-            "[Check 1] Test psa_call with invalid psa_invec.base\n", 0);
+   val->print(TEST,
+            "Check 1: Test psa_call with invalid psa_invec.base\n", 0);
 
    /*
     * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
@@ -169,7 +156,7 @@ int32_t client_test_psa_call_with_invalid_invec_base(caller_security_t caller)
     * the test harness function.
     *
     * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
+    * timeout entries available in pal_config.h.
     *
     * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
@@ -180,7 +167,7 @@ int32_t client_test_psa_call_with_invalid_invec_base(caller_security_t caller)
    handle = psa->connect(SERVER_UNSPECIFIED_VERSION_SID, SERVER_UNSPECIFIED_VERSION_VERSION);
    if (!PSA_HANDLE_IS_VALID(handle))
    {
-       val->print(PRINT_ERROR, "\tConnection failed\n", 0);
+       val->print(ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
    }
 
@@ -198,30 +185,19 @@ int32_t client_test_psa_call_with_invalid_invec_base(caller_security_t caller)
     *       invalid_base = NULL;
     */
 
-   status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
-                                  MEMORY_DRIVER_PARTITION_MMIO, 0),
-                                  (uint8_t **)&memory_desc,
-                                  (uint32_t *)sizeof(memory_desc_t));
-   if (val->err_check_set(TEST_CHECKPOINT_NUM(101), status))
-   {
-       psa->close(handle);
-       return status;
-   }
-
-
    if (caller == CALLER_NONSECURE)
-       invalid_base = (addr_t *) memory_desc->start;
+       invalid_base = (addr_t *) PLATFORM_DRIVER_PARTITION_MMIO_START;
    else
    {
        if (PLATFORM_PSA_ISOLATION_LEVEL > LEVEL1)
-           invalid_base = (addr_t *) memory_desc->start;
+           invalid_base = (addr_t *) PLATFORM_DRIVER_PARTITION_MMIO_START;
    }
 
    /* Setting boot.state before test check */
    boot_state = (caller == CALLER_NONSECURE) ? BOOT_EXPECTED_NS : BOOT_EXPECTED_S;
    if (val->set_boot_flag(boot_state))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
@@ -242,12 +218,12 @@ int32_t client_test_psa_call_with_invalid_invec_base(caller_security_t caller)
    }
 
    /* If PROGRAMMER ERROR results into panic then control shouldn't have reached here */
-   val->print(PRINT_ERROR, "\tpsa_call should failed but succeed\n", 0);
+   val->print(ERROR, "\tpsa_call should failed but succeed\n", 0);
 
    /* Resetting boot.state to catch unwanted reboot */
    if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
        return VAL_STATUS_ERROR;
    }
 

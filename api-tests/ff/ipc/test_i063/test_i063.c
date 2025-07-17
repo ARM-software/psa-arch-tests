@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -35,7 +34,7 @@ const client_test_t test_i063_client_tests_list[] = {
 
 int32_t client_test_psa_wait_signal_mask(caller_security_t caller __UNUSED)
 {
-   val->print(PRINT_TEST, "[Check 1] Test psa_wait signal mask\n", 0);
+   val->print(TEST, "Check 1: Test psa_wait signal mask\n", 0);
 
    psa->call(SERVER_UNSPECIFIED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, NULL, 0);
 
@@ -57,13 +56,13 @@ int32_t client_test_psa_wait_signal_mask(caller_security_t caller __UNUSED)
 
    psa_handle_t     handle = 0;
 
-   val->print(PRINT_TEST, "[Check 1] Test psa_wait signal mask\n", 0);
+   val->print(TEST, "Check 1: Test psa_wait signal mask\n", 0);
 
    handle = psa->connect(SERVER_UNSPECIFIED_VERSION_SID, SERVER_UNSPECIFIED_VERSION_VERSION);
 
    if (handle != PSA_ERROR_CONNECTION_REFUSED)
    {
-       val->print(PRINT_ERROR, "psa_connect failed -1\n", 0);
+       val->print(ERROR, "psa_connect failed -1\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
    }
 
@@ -71,7 +70,7 @@ int32_t client_test_psa_wait_signal_mask(caller_security_t caller __UNUSED)
 
    if (handle != PSA_ERROR_CONNECTION_REFUSED)
    {
-       val->print(PRINT_ERROR, "psa_connect failed -2\n", 0);
+       val->print(ERROR, "psa_connect failed -2\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
    }
    return VAL_STATUS_SUCCESS;

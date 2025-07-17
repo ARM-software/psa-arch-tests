@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_c042.h"
 #include "test_data.h"
 
@@ -52,7 +51,7 @@ int32_t psa_verify_hash_test(caller_security_t caller __UNUSED)
 
     if (num_checks == 0)
     {
-        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        val->print(TEST, "No test available for the selected crypto configuration\n", 0);
         return RESULT_SKIP(VAL_STATUS_NO_TESTS);
     }
 
@@ -62,8 +61,8 @@ int32_t psa_verify_hash_test(caller_security_t caller __UNUSED)
 
     for (i = 0; i < num_checks; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
-        val->print(PRINT_TEST, check1[i].test_desc, 0);
+        val->print(TEST, "Check %d: ", g_test_count++);
+        val->print(TEST, check1[i].test_desc, 0);
 
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
@@ -112,7 +111,7 @@ int32_t psa_verify_hash_negative_test(caller_security_t caller __UNUSED)
     status = val->crypto_function(VAL_CRYPTO_INIT);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(1));
 
-    val->print(PRINT_TEST, "[Check %d] Test psa_verify_hash - Invalid key handle\n",
+    val->print(TEST, "Check %d: Test psa_verify_hash - Invalid key handle\n",
                                                                              g_test_count++);
 
     /* Setting up the watchdog timer for each check */
@@ -129,7 +128,7 @@ int32_t psa_verify_hash_negative_test(caller_security_t caller __UNUSED)
                                   check1[valid_test_input_index].signature_length);
     TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));
 
-    val->print(PRINT_TEST, "[Check %d] Test psa_verify_hash - Zero as key handle\n",
+    val->print(TEST, "Check %d: Test psa_verify_hash - Zero as key handle\n",
                                                                              g_test_count++);
     /* Verify the signature a hash or short message using a public key */
     status = val->crypto_function(VAL_CRYPTO_VERIFY_HASH,

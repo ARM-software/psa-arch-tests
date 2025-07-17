@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +38,6 @@ int32_t server_test_psa_write_with_invalid_buffer_addr(void)
     int32_t                 status = VAL_STATUS_SUCCESS;
     psa_msg_t               msg = {0};
     void                    *buffer = NULL;
-    memory_desc_t           *memory_desc;
 
    /*
     * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
@@ -54,7 +53,7 @@ int32_t server_test_psa_write_with_invalid_buffer_addr(void)
     * the test harness function.
     *
     * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
+    * timeout entries available in pal_config.h.
     *
     * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
@@ -73,22 +72,12 @@ int32_t server_test_psa_write_with_invalid_buffer_addr(void)
 
     if (PLATFORM_PSA_ISOLATION_LEVEL > LEVEL1)
     {
-        status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
-                                      MEMORY_DRIVER_PARTITION_MMIO, 0),
-                                      (uint8_t **)&memory_desc,
-                                      (uint32_t *)sizeof(memory_desc_t));
-        if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
-        {
-            psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
-            return status;
-        }
-
-        buffer = (void *) memory_desc->start;
+        buffer = (void *) PLATFORM_DRIVER_PARTITION_MMIO_START;
     }
 
     /* Server psa_call */
     status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
-    if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
+    if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
         psa->reply(msg.handle, -2);
     }
@@ -96,9 +85,9 @@ int32_t server_test_psa_write_with_invalid_buffer_addr(void)
     {
         /* Setting boot.state before test check */
         status = val->set_boot_flag(BOOT_EXPECTED_NS);
-        if (val->err_check_set(TEST_CHECKPOINT_NUM(204), status))
+        if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
         {
-            val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+            val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
             psa->reply(msg.handle, -3);
         }
         else
@@ -107,13 +96,13 @@ int32_t server_test_psa_write_with_invalid_buffer_addr(void)
             psa->write(msg.handle, 0, (void *)buffer, msg.out_size[0]);
 
             /* shouldn't have reached here */
-            val->print(PRINT_ERROR,
+            val->print(ERROR,
                 "\tpsa_write with invalid buffer should failed but succeed\n", 0);
 
             /* Resetting boot.state to catch unwanted reboot */
             if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
             {
-                val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+                val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
             }
 
             status = VAL_STATUS_SPM_FAILED;
@@ -121,7 +110,7 @@ int32_t server_test_psa_write_with_invalid_buffer_addr(void)
         }
     }
 
-    val->err_check_set(TEST_CHECKPOINT_NUM(205), status);
+    val->err_check_set(TEST_CHECKPOINT_NUM(204), status);
     return status;
 }
 
@@ -140,7 +129,6 @@ int32_t server_test_psa_write_with_invalid_buffer_addr(void)
     int32_t                 status = VAL_STATUS_SUCCESS;
     psa_msg_t               msg = {0};
     void                    *buffer = NULL;
-    memory_desc_t           *memory_desc;
 
    /*
     * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
@@ -156,7 +144,7 @@ int32_t server_test_psa_write_with_invalid_buffer_addr(void)
     * the test harness function.
     *
     * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
+    * timeout entries available in pal_config.h.
     *
     * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
@@ -182,17 +170,7 @@ int32_t server_test_psa_write_with_invalid_buffer_addr(void)
 
     if (PLATFORM_PSA_ISOLATION_LEVEL > LEVEL1)
     {
-        status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
-                                      MEMORY_DRIVER_PARTITION_MMIO, 0),
-                                      (uint8_t **)&memory_desc,
-                                      (uint32_t *)sizeof(memory_desc_t));
-        if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
-        {
-            psa->reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
-            return status;
-        }
-
-        buffer = (void *) memory_desc->start;
+        buffer = (void *) PLATFORM_DRIVER_PARTITION_MMIO_START;
     }
 
     /* Accept the connection */
@@ -200,7 +178,7 @@ int32_t server_test_psa_write_with_invalid_buffer_addr(void)
 
     /* Server psa_call */
     status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
-    if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
+    if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
         psa->reply(msg.handle, -2);
     }
@@ -208,9 +186,9 @@ int32_t server_test_psa_write_with_invalid_buffer_addr(void)
     {
         /* Setting boot.state before test check */
         status = val->set_boot_flag(BOOT_EXPECTED_NS);
-        if (val->err_check_set(TEST_CHECKPOINT_NUM(204), status))
+        if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
         {
-            val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+            val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
             psa->reply(msg.handle, -3);
         }
         else
@@ -219,13 +197,13 @@ int32_t server_test_psa_write_with_invalid_buffer_addr(void)
             psa->write(msg.handle, 0, (void *)buffer, msg.out_size[0]);
 
             /* shouldn't have reached here */
-            val->print(PRINT_ERROR,
+            val->print(ERROR,
                 "\tpsa_write with invalid buffer should failed but succeed\n", 0);
 
             /* Resetting boot.state to catch unwanted reboot */
             if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
             {
-                val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+                val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
             }
 
             status = VAL_STATUS_SPM_FAILED;
@@ -233,7 +211,7 @@ int32_t server_test_psa_write_with_invalid_buffer_addr(void)
         }
     }
 
-    val->err_check_set(TEST_CHECKPOINT_NUM(205), status);
+    val->err_check_set(TEST_CHECKPOINT_NUM(204), status);
     status = ((val->process_disconnect_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg))
                ? VAL_STATUS_ERROR : status);
     psa->reply(msg.handle, PSA_SUCCESS);

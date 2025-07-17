@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -35,12 +34,12 @@ int32_t client_test_psa_skip_at_ipc_connect(caller_security_t caller __UNUSED)
 {
    psa_handle_t       handle = 0;
 
-   val->print(PRINT_TEST, "[Check 1] Test psa_skip at PSA_IPC_CONNECT\n", 0);
+   val->print(TEST, "Check 1: Test psa_skip at PSA_IPC_CONNECT\n", 0);
 
    handle = psa->connect(SERVER_RELAX_VERSION_SID, SERVER_RELAX_VERSION_VERSION);
 
    /* Shouldn't have reached here */
-   val->print(PRINT_ERROR, "\tConnection should have failed but succeeded\n", 0);
+   val->print(ERROR, "\tConnection should have failed but succeeded\n", 0);
 
    (void)(handle);
    return VAL_STATUS_SPM_FAILED;

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,7 +57,7 @@ void test_entry(val_api_t *val_api)
     }
 
     if (response->status == ADAC_SUCCESS)
-	    val->print(PRINT_INFO, "Target is locked\n", 0);
+	    val->print(INFO, "Target is locked\n", 0);
     else
         val->err_check_set(TEST_CHECKPOINT_NUM(3), VAL_STATUS_ERROR);
 
@@ -171,14 +171,14 @@ void test_entry(val_api_t *val_api)
         goto test_end;
     }
 
-	val->print(PRINT_INFO, "Sending older token\n", 0);
+	val->print(INFO, "Sending older token\n", 0);
     ret = psa_adac_issue_command(ADAC_AUTH_RESPONSE_CMD, request, (uint8_t *)token1, token1_size);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(17), VAL_STATUS_WRITE_FAILED);
         goto test_end;
     }
 
-	val->print(PRINT_INFO, "Receiving token_authentication response\n", 0);
+	val->print(INFO, "Receiving token_authentication response\n", 0);
     response = psa_adac_await_response();
     ret = psa_adac_parse_response(ADAC_AUTH_RESPONSE_CMD, response);
     if (ret != PSA_SUCCESS) {
@@ -193,14 +193,14 @@ void test_entry(val_api_t *val_api)
 
     response_packet_release(response);
 
-	val->print(PRINT_INFO, "Sending new token\n", 0);
+	val->print(INFO, "Sending new token\n", 0);
     ret = psa_adac_issue_command(ADAC_AUTH_RESPONSE_CMD, request, (uint8_t *)token2, token2_size);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(20), VAL_STATUS_WRITE_FAILED);
         goto test_end;
     }
 
-	val->print(PRINT_INFO, "Receiving token_authentication response\n", 0);
+	val->print(INFO, "Receiving token_authentication response\n", 0);
     response = psa_adac_await_response();
     ret = psa_adac_parse_response(ADAC_AUTH_RESPONSE_CMD, response);
     if (ret != PSA_SUCCESS) {

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2022, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@
 #include "val_framework.h"
 #include "val_interfaces.h"
 #include "val_peripherals.h"
-#include "val_target.h"
 #include "val_crypto.h"
 #include "val_storage.h"
 #include "val_attestation.h"
@@ -32,7 +31,6 @@ const val_api_t val_api = {
     .test_init                 = val_test_init,
     .test_exit                 = val_test_exit,
     .err_check_set             = val_err_check_set,
-    .target_get_config         = val_target_get_config,
     .execute_non_secure_tests  = val_execute_non_secure_tests,
 #ifdef IPC
     .switch_to_secure_client   = val_switch_to_secure_client,
@@ -49,11 +47,11 @@ const val_api_t val_api = {
     .ipc_call                  = NULL,
     .ipc_close                 = NULL,
 #endif
-    .nvmem_read                = val_nvmem_read,
-    .nvmem_write               = val_nvmem_write,
+    .nvmem_read                = val_nvm_read,
+    .nvmem_write               = val_nvm_write,
     .wd_timer_init             = val_wd_timer_init,
-    .wd_timer_enable           = val_wd_timer_enable,
-    .wd_timer_disable          = val_wd_timer_disable,
+    .wd_timer_enable           = val_watchdog_enable,
+    .wd_timer_disable          = val_watchdog_disable,
     .wd_reprogram_timer        = val_wd_reprogram_timer,
     .set_boot_flag             = val_set_boot_flag,
     .get_boot_flag             = val_get_boot_flag,

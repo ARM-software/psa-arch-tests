@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_c023.h"
 #include "test_data.h"
 
@@ -35,7 +34,7 @@ int32_t psa_key_derivation_set_get_capacity_test(caller_security_t caller __UNUS
 
     if (num_checks == 0)
     {
-        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        val->print(TEST, "No test available for the selected crypto configuration\n", 0);
         return RESULT_SKIP(VAL_STATUS_NO_TESTS);
     }
 
@@ -45,8 +44,8 @@ int32_t psa_key_derivation_set_get_capacity_test(caller_security_t caller __UNUS
 
     for (i = 0; i < num_checks; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] ", i+1);
-        val->print(PRINT_TEST, check1[i].test_desc, 0);
+        val->print(TEST, "Check %d: ", i+1);
+        val->print(TEST, check1[i].test_desc, 0);
         memset(&operation, 0, sizeof(operation));
 
         /* Setting up the watchdog timer for each check */
@@ -98,8 +97,8 @@ int32_t psa_key_derivation_set_get_capacity_test(caller_security_t caller __UNUS
        the operation object remains valid and its capacity remains unchanged */
     get_capacity = 0;
     memset(&operation, 0, sizeof(operation));
-    val->print(PRINT_TEST, "[Check %d] ", i+1);
-    val->print(PRINT_TEST, "Test psa_key_derivation_set_get_capacity - unchanged capacity\n", 0);
+    val->print(TEST, "Check %d: ", i+1);
+    val->print(TEST, "Test psa_key_derivation_set_get_capacity - unchanged capacity\n", 0);
     /* Start the key derivation operation */
     status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_SETUP, &operation, check1[0].alg);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(11));

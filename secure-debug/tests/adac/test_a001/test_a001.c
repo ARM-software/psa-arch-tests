@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -86,10 +86,10 @@ void test_entry(val_api_t *val_api)
     }
 
     if (i == CHALLENGE_SIZE) {
-	    val->print(PRINT_ERROR, "Challenge response obtained is not unique\n", 0);
+	    val->print(ERROR, "Challenge response obtained is not unique\n", 0);
         val->err_check_set(TEST_CHECKPOINT_NUM(5), VAL_STATUS_ERROR);
     } else {
-	    val->print(PRINT_INFO, "Challenge response obtained is unique\n", 0);
+	    val->print(INFO, "Challenge response obtained is unique\n", 0);
     }
 
 test_end:

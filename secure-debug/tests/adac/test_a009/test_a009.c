@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -136,7 +136,7 @@ void test_entry(val_api_t *val_api)
             if (response->status == ADAC_NEED_MORE_DATA) {
                 response_packet_release(response);
             } else if (response->status == ADAC_FAILURE) {
-                val->print(PRINT_INFO, "Inconsistent certificate chain rejected by target\n", 0);
+                val->print(INFO, "Inconsistent certificate chain rejected by target\n", 0);
                 break;
             } else {
                 val->err_check_set(TEST_CHECKPOINT_NUM(9), VAL_STATUS_INVALID);
@@ -146,7 +146,7 @@ void test_entry(val_api_t *val_api)
     }
 
     if (leaf_cert == NULL) {
-	    val->print(PRINT_ERROR, "Leaf certificate not found\n", 0);
+	    val->print(ERROR, "Leaf certificate not found\n", 0);
         val->err_check_set(TEST_CHECKPOINT_NUM(10), VAL_STATUS_NOT_FOUND);
         goto test_end;
     }

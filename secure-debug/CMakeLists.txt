@@ -1,5 +1,5 @@
 # @file
-# Copyright (c) 2021-2023, Arm Limited or its affiliates. All rights reserved.
+# Copyright (c) 2021-2025, Arm Limited or its affiliates. All rights reserved.
 # SPDX-License-Identifier : Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -81,8 +81,8 @@ list(APPEND PSA_SUITES  #PSA_SUITES
 )
 endif()
 
-# list of VERBOSE options
-list(APPEND PSA_VERBOSE_OPTIONS 1 2 3 4 5)
+# list of VERBOSITY options
+list(APPEND PSA_VERBOSITY_OPTIONS 1 2 3 4 5)
 
 message(STATUS "[PSA] : ----------Process input arguments- start-------------")
 
@@ -127,15 +127,15 @@ set(PSA_TESTLIST_FILE			    ${CMAKE_CURRENT_BINARY_DIR}/${SUITE_LOWER}_testlist.
 set(PSA_TEST_ENTRY_LIST_INC		    ${CMAKE_CURRENT_BINARY_DIR}/test_entry_list.inc)
 set(PSA_TEST_ENTRY_FUN_DECLARE_INC	${CMAKE_CURRENT_BINARY_DIR}/test_entry_fn_declare_list.inc)
 
-# Check for VERBOSE
-if(NOT DEFINED VERBOSE)
-	set(VERBOSE 3 CACHE INTERNAL "Default VERBOSE value" FORCE)
-        message(STATUS "[PSA] : Defaulting VERBOSE to ${VERBOSE}")
+# Check for VERBOSITY
+if(NOT DEFINED VERBOSITY)
+	set(VERBOSITY 3 CACHE INTERNAL "Default VERBOSITY value" FORCE)
+        message(STATUS "[PSA] : Defaulting VERBOSITY to ${VERBOSITY}")
 else()
-	if(NOT ${VERBOSE} IN_LIST PSA_VERBOSE_OPTIONS)
-		message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DVERBOSE=${VERBOSE}, supported values are : ${PSA_VERBOSE_OPTIONS}")
+	if(NOT ${VERBOSITY} IN_LIST PSA_VERBOSITY_OPTIONS)
+		message(FATAL_ERROR "[PSA] : Error: Unsupported value for -DVERBOSITY=${VERBOSITY}, supported values are : ${PSA_VERBOSITY_OPTIONS}")
 	endif()
-    message(STATUS "[PSA] : VERBOSE is set to ${VERBOSE}")
+    message(STATUS "[PSA] : VERBOSITY is set to ${VERBOSITY}")
 endif()
 
 if(NOT DEFINED SUITE_TEST_RANGE)
@@ -188,7 +188,7 @@ string(REGEX REPLACE "\n" ";" PSA_TEST_LIST "${PSA_TEST_LIST}")
 
 # Global macro to identify the PSA test suite cmake build
 add_definitions(-D${SUITE})
-add_definitions(-DVERBOSE=${VERBOSE})
+add_definitions(-DVERBOSITY=${VERBOSITY})
 add_definitions(-D${TARGET})
 
 # Build PAL LIB

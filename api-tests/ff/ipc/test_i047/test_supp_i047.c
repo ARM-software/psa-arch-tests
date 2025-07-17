@@ -35,10 +35,8 @@ const server_test_t test_i047_server_tests_list[] = {
 
 int32_t server_test_psa_get_with_invalid_msg_pointer(void)
 {
-   int32_t                 status = VAL_STATUS_SUCCESS;
    psa_signal_t            signals = 0;
    psa_msg_t               *invalid_msg = NULL;
-   memory_desc_t           *memory_desc;
 
    /*
     * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
@@ -54,7 +52,7 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
     * the test harness function.
     *
     * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
+    * timeout entries available in pal_config.h.
     *
     * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
@@ -65,7 +63,7 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
     signals = psa->wait(SERVER_UNSPECIFIED_VERSION_SIGNAL, PSA_BLOCK);
     if ((signals & SERVER_UNSPECIFIED_VERSION_SIGNAL) == 0)
     {
-       val->print(PRINT_ERROR,
+       val->print(ERROR,
                 "psa_wait returned with invalid signal value = 0x%x\n", signals);
        return VAL_STATUS_ERROR;
     }
@@ -81,22 +79,13 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
 
     if (PLATFORM_PSA_ISOLATION_LEVEL > LEVEL1)
     {
-        status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
-                                      MEMORY_DRIVER_PARTITION_MMIO, 0),
-                                      (uint8_t **)&memory_desc,
-                                      (uint32_t *)sizeof(memory_desc_t));
-        if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
-        {
-            return status;
-        }
-
-        invalid_msg = (psa_msg_t *) memory_desc->start;
+        invalid_msg = (psa_msg_t *) PLATFORM_DRIVER_PARTITION_MMIO_START;
     }
 
     /* Setting boot.state before test check */
     if (val->set_boot_flag(BOOT_EXPECTED_NS))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
         return VAL_STATUS_ERROR;
     }
 
@@ -104,13 +93,13 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
     psa->get(SERVER_UNSPECIFIED_VERSION_SIGNAL, invalid_msg);
 
     /* shouldn't have reached here */
-    val->print(PRINT_ERROR,
+    val->print(ERROR,
              "\tpsa_get with invalid msg pointer should failed but succeed\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
     if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
     }
 
     return VAL_STATUS_SPM_FAILED;
@@ -128,10 +117,8 @@ const server_test_t test_i047_server_tests_list[] = {
 
 int32_t server_test_psa_get_with_invalid_msg_pointer(void)
 {
-   int32_t                 status = VAL_STATUS_SUCCESS;
    psa_signal_t            signals = 0;
    psa_msg_t               *invalid_msg = NULL;
-   memory_desc_t           *memory_desc;
 
    /*
     * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
@@ -147,7 +134,7 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
     * the test harness function.
     *
     * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
+    * timeout entries available in pal_config.h.
     *
     * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
@@ -158,7 +145,7 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
     signals = psa->wait(SERVER_UNSPECIFIED_VERSION_SIGNAL, PSA_BLOCK);
     if ((signals & SERVER_UNSPECIFIED_VERSION_SIGNAL) == 0)
     {
-       val->print(PRINT_ERROR,
+       val->print(ERROR,
                 "psa_wait returned with invalid signal value = 0x%x\n", signals);
        return VAL_STATUS_ERROR;
     }
@@ -174,22 +161,13 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
 
     if (PLATFORM_PSA_ISOLATION_LEVEL > LEVEL1)
     {
-        status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
-                                      MEMORY_DRIVER_PARTITION_MMIO, 0),
-                                      (uint8_t **)&memory_desc,
-                                      (uint32_t *)sizeof(memory_desc_t));
-        if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
-        {
-            return status;
-        }
-
-        invalid_msg = (psa_msg_t *) memory_desc->start;
+        invalid_msg = (psa_msg_t *) PLATFORM_DRIVER_PARTITION_MMIO_START;
     }
 
     /* Setting boot.state before test check */
     if (val->set_boot_flag(BOOT_EXPECTED_NS))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
         return VAL_STATUS_ERROR;
     }
 
@@ -197,13 +175,13 @@ int32_t server_test_psa_get_with_invalid_msg_pointer(void)
     psa->get(SERVER_UNSPECIFIED_VERSION_SIGNAL, invalid_msg);
 
     /* shouldn't have reached here */
-    val->print(PRINT_ERROR,
+    val->print(ERROR,
              "\tpsa_get with invalid msg pointer should failed but succeed\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
     if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
     }
 
     /* GCC null-dereference check fails because of invalid_msg, however this

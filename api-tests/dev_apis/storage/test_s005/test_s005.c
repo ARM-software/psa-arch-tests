@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_s005.h"
 #include "test_data.h"
 
@@ -74,18 +73,18 @@ static int32_t psa_sst_apis_check_success_case(storage_function_code_t fCode)
    int32_t           status   = VAL_STATUS_SUCCESS;
 
     /* Calling set function with data_len 1 and valid data pointer */
-    val->print(PRINT_TEST, "[Check 1] Set UID with data length zero and call storage APIs\n", 0);
+    val->print(TEST, "Check 1: Set UID with data length zero and call storage APIs\n", 0);
     if (psa_sst_apis_check(fCode, uid, data_len, write_buff, PSA_STORAGE_FLAG_NONE))
     {
-        val->print(PRINT_ERROR, "Data Len = %d\n", data_len);
+        val->print(ERROR, "Data Len = %d\n", data_len);
         return VAL_STATUS_ERROR;
     }
 
     data_len = TEST_BUFF_SIZE/2;
-    val->print(PRINT_TEST, "[Check 2] Resetting the length check\n", 0);
+    val->print(TEST, "Check 2: Resetting the length check\n", 0);
     if (psa_sst_apis_check(fCode, uid, data_len, write_buff, PSA_STORAGE_FLAG_NONE))
     {
-       val->print(PRINT_ERROR, "Data Len = %d\n", data_len);
+       val->print(ERROR, "Data Len = %d\n", data_len);
        return VAL_STATUS_ERROR;
     }
 
@@ -97,7 +96,8 @@ int32_t s005_storage_test(caller_security_t caller __UNUSED)
     int32_t status;
 
 #if defined(STORAGE) || defined(INTERNAL_TRUSTED_STORAGE)
-    val->print(PRINT_TEST, ITS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, ITS_TEST_MESSAGE, 0);
     status = psa_sst_apis_check_success_case(VAL_ITS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;
@@ -105,7 +105,8 @@ int32_t s005_storage_test(caller_security_t caller __UNUSED)
 #endif
 
 #if defined(STORAGE) || defined(PROTECTED_STORAGE)
-    val->print(PRINT_TEST, PS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, PS_TEST_MESSAGE, 0);
     status = psa_sst_apis_check_success_case(VAL_PS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;

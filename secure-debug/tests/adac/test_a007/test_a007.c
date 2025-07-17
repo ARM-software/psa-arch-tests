@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021-2022 Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,7 +48,7 @@ void test_entry(val_api_t *val_api)
     for (i = 0; i < cmd_list_size; i++) {
         request = request_packet_build(command[i], NULL, 0);
         if (request != NULL) {
-	        val->print(PRINT_INFO, "Sending command 0x%x\n", command[i]);
+	        val->print(INFO, "Sending command 0x%x\n", command[i]);
             if (request_packet_send(request) < 0) {
                 val->err_check_set(TEST_CHECKPOINT_NUM((1*i)), VAL_STATUS_WRITE_FAILED);
                 goto test_end;

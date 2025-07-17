@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,20 +39,7 @@ const server_test_t test_i087_server_tests_list[] = {
 
 static int32_t get_mmio_addr(addr_t *addr)
 {
-   memory_desc_t           *memory_desc;
-   int32_t                 status = VAL_STATUS_SUCCESS;
-
-   /* Get APP-ROT MMIO address */
-   status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
-                                  MEMORY_SERVER_PARTITION_MMIO, 0),
-                                  (uint8_t **)&memory_desc,
-                                  (uint32_t *)sizeof(memory_desc_t));
-   if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
-   {
-       return status;
-   }
-
-   *addr = memory_desc->start;
+   *addr = PLATFORM_SERVER_PARTITION_MMIO_START;
    return VAL_STATUS_SUCCESS;
 }
 
@@ -68,7 +55,7 @@ static int32_t send_secure_partition_address(addr_t *addr)
         return status;
     }
 
-    val->print(PRINT_DEBUG, "\tServer SP: Passing 0x%x to Client SP\n", (int)*addr);
+    val->print(DBG, "\tServer SP: Passing 0x%x to Client SP\n", (int)*addr);
 
     /* Send Application RoT mmio address */
     psa->write(msg.handle, 0, (void *)addr, sizeof(addr_t));
@@ -109,12 +96,12 @@ int32_t server_test_sp_write_other_sp_mmio(void)
     if (*(uint32_t *)app_rot_addr == (uint32_t)DATA_VALUE)
         return VAL_STATUS_SUCCESS;
 
-    val->print(PRINT_ERROR, "\tExpected write to fault but it didn't\n", 0);
+    val->print(ERROR, "\tExpected write to fault but it didn't\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
     if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
         return VAL_STATUS_ERROR;
     }
     return VAL_STATUS_SUCCESS;
@@ -131,20 +118,7 @@ const server_test_t test_i087_server_tests_list[] = {
 
 static int32_t get_mmio_addr(addr_t *addr)
 {
-   memory_desc_t           *memory_desc;
-   int32_t                 status = VAL_STATUS_SUCCESS;
-
-   /* Get APP-ROT MMIO address */
-   status = val->target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
-                                  MEMORY_SERVER_PARTITION_MMIO, 0),
-                                  (uint8_t **)&memory_desc,
-                                  (uint32_t *)sizeof(memory_desc_t));
-   if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
-   {
-       return status;
-   }
-
-   *addr = memory_desc->start;
+   *addr = PLATFORM_SERVER_PARTITION_MMIO_START;
    return VAL_STATUS_SUCCESS;
 }
 
@@ -169,7 +143,7 @@ static int32_t send_secure_partition_address(addr_t *addr)
         return status;
     }
 
-    val->print(PRINT_DEBUG, "\tServer SP: Passing 0x%x to Client SP\n", (int)*addr);
+    val->print(DBG, "\tServer SP: Passing 0x%x to Client SP\n", (int)*addr);
 
     /* Send Application RoT mmio address */
     psa->write(msg.handle, 0, (void *)addr, sizeof(addr_t));
@@ -227,12 +201,12 @@ int32_t server_test_sp_write_other_sp_mmio(void)
     if (*(uint32_t *)app_rot_addr == (uint32_t)DATA_VALUE)
         return VAL_STATUS_SUCCESS;
 
-    val->print(PRINT_ERROR, "\tExpected write to fault but it didn't\n", 0);
+    val->print(ERROR, "\tExpected write to fault but it didn't\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
     if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
         return VAL_STATUS_ERROR;
     }
     return VAL_STATUS_SUCCESS;

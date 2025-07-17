@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2021, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,10 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_c013.h"
 
 #define TEST_NUM  VAL_CREATE_TEST_ID(VAL_CRYPTO_BASE, 13)
-#define TEST_DESC "Testing crypto hash functions APIs | UT: psa_hash_verify\n"
+#define TEST_DESC "psa_hash_verify : Desc=Hash Functions APIs : "
 
 TEST_PUBLISH(TEST_NUM, test_entry);
 val_api_t *val = NULL;
@@ -34,7 +33,8 @@ void test_entry(val_api_t *val_api, psa_api_t *psa_api)
     psa = psa_api;
 
     /* test init */
-    val->test_init(TEST_NUM, TEST_DESC, TEST_FIELD(TEST_ISOLATION_L1, WD_HIGH_TIMEOUT));
+    val->test_init(TEST_NUM, VAL_CRYPTO_BASE, TEST_DESC,
+                             TEST_FIELD(TEST_ISOLATION_L1, WD_HIGH_TIMEOUT));
     if (!IS_TEST_START(val->get_status()))
     {
         goto test_exit;

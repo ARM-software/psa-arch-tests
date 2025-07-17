@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021 Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,7 +43,7 @@ val_status_t val_logger_init(void)
 **/
 val_status_t val_print(print_verbosity_t verbosity, const char *string, int32_t data)
 {
-    if ((is_logger_init_done == 0) && (verbosity < VERBOSE))
+    if ((is_logger_init_done == 0) && (verbosity < VERBOSITY))
     {
        return VAL_STATUS_SUCCESS;
     }

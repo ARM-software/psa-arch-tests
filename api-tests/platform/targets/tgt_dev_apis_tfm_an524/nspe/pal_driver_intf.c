@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,75 +20,74 @@
 #include "pal_nvmem.h"
 #include "pal_wd_cmsdk.h"
 
+/* Regression test status reporting buffer */
+uint8_t test_status_buffer[256]  = {0};
+
 int32_t tfm_platform_system_reset(void);
 
 /**
     @brief    - This function initializes the UART
-    @param    - uart base addr
+    @param    - Void
     @return   - SUCCESS/FAILURE
 **/
-int pal_uart_init_ns(uint32_t uart_base_addr)
+int pal_uart_init_ns(void)
 {
-    pal_uart_cmsdk_init(uart_base_addr);
+    pal_uart_cmsdk_init((uint32_t) PLATFORM_UART_BASE);
     return PAL_STATUS_SUCCESS;
 }
 
 /**
-    @brief    - This function parses the input string and writes bytes into UART TX FIFO
-    @param    - str      : Input String
-              - data     : Value for format specifier
+    @brief    - This function sends a character to the UART TX FIFO.
+    @param    - c  :  Input character
     @return   - SUCCESS/FAILURE
 **/
-
-int pal_print_ns(const char *str, int32_t data)
+int pal_print(uint8_t c)
 {
-    pal_cmsdk_print(str, data);
+    pal_uart_cmsdk_putc(c);
     return PAL_STATUS_SUCCESS;
 }
 
 /**
-    @brief           - Initializes an hardware watchdog timer
-    @param           - base_addr       : Base address of the watchdog module
-                     - time_us         : Time in micro seconds
+    @brief           - Initializes a hardware watchdog timer
+    @param           - time_us         : Time in micro seconds
                      - timer_tick_us   : Number of ticks per micro second
     @return          - SUCCESS/FAILURE
 **/
-int pal_wd_timer_init_ns(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us)
+int pal_wd_timer_init_ns(uint32_t time_us, uint32_t timer_tick_us)
 {
-    return pal_wd_cmsdk_init(base_addr, time_us, timer_tick_us);
+    return pal_wd_cmsdk_init((addr_t) PLATFORM_WD_BASE, time_us, timer_tick_us);
 }
 
 /**
     @brief           - Enables a hardware watchdog timer
-    @param           - base_addr       : Base address of the watchdog module
+    @param           - Void
     @return          - SUCCESS/FAILURE
 **/
-int pal_wd_timer_enable_ns(addr_t base_addr)
+int pal_watchdog_enable(void)
 {
-    return pal_wd_cmsdk_enable(base_addr);
+    return pal_wd_cmsdk_enable((addr_t) PLATFORM_WD_BASE);
 }
 
 /**
     @brief           - Disables a hardware watchdog timer
-    @param           - base_addr  : Base address of the watchdog module
+    @param           - Void
     @return          - SUCCESS/FAILURE
 **/
-int pal_wd_timer_disable_ns(addr_t base_addr)
+int pal_watchdog_disable(void)
 {
-    return pal_wd_cmsdk_disable(base_addr);
+    return pal_wd_cmsdk_disable((addr_t) PLATFORM_WD_BASE);
 }
 
 /**
     @brief    - Reads from given non-volatile address.
-    @param    - base    : Base address of nvmem
-                offset  : Offset
+    @param    - offset  : Offset
                 buffer  : Pointer to source address
                 size    : Number of bytes
     @return   - SUCCESS/FAILURE
 **/
-int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size)
+int pal_nvm_read(uint32_t offset, void *buffer, size_t size)
 {
-    if (nvmem_read(base, offset, buffer, size))
+    if (nvmem_read((addr_t) PLATFORM_NVM_BASE, offset, buffer, size))
     {
         return PAL_STATUS_SUCCESS;
     }
@@ -100,15 +99,14 @@ int pal_nvmem_read_ns(addr_t base, uint32_t offset, void *buffer, int size)
 
 /**
     @brief    - Writes into given non-volatile address.
-    @param    - base    : Base address of nvmem
-                offset  : Offset
+    @param    - offset  : Offset
                 buffer  : Pointer to source address
                 size    : Number of bytes
     @return   - SUCCESS/FAILURE
 **/
-int pal_nvmem_write_ns(addr_t base, uint32_t offset, void *buffer, int size)
+int pal_nvm_write(uint32_t offset, void *buffer, size_t size)
 {
-    if (nvmem_write(base, offset, buffer, size))
+    if (nvmem_write((addr_t) PLATFORM_NVM_BASE, offset, buffer, size))
     {
         return PAL_STATUS_SUCCESS;
     }

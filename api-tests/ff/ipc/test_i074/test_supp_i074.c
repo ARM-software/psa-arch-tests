@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,7 +56,7 @@ static int32_t send_secure_partition_address(uint8_t *heap)
         return status;
     }
 
-	val->print(PRINT_DEBUG, "\tAPP-ROT: Passing 0x%x to NSPE\n", (int)heap);
+	val->print(DBG, "\tAPP-ROT: Passing 0x%x to NSPE\n", (int)heap);
 
     /* Send Application RoT heap address */
     psa->write(msg.handle, 0, (void *)&heap, sizeof(BUFFER_SIZE));
@@ -98,12 +98,12 @@ int32_t server_test_nspe_write_app_rot_heap(void)
     if (buffer[0] == DATA_VALUE_ORG)
         return VAL_STATUS_SUCCESS;
 
-    val->print(PRINT_ERROR, "\tExpected write to fault but it didn't\n", 0);
+    val->print(ERROR, "\tExpected write to fault but it didn't\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
     if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
         return VAL_STATUS_ERROR;
     }
 
@@ -154,7 +154,7 @@ static int32_t send_secure_partition_address(uint8_t *heap)
         return status;
     }
 
-	val->print(PRINT_DEBUG, "\tAPP-ROT: Passing 0x%x to NSPE\n", (int)heap);
+	val->print(DBG, "\tAPP-ROT: Passing 0x%x to NSPE\n", (int)heap);
 
     /* Send Application RoT heap address */
     psa->write(msg.handle, 0, (void *)&heap, sizeof(BUFFER_SIZE));
@@ -214,12 +214,12 @@ int32_t server_test_nspe_write_app_rot_heap(void)
     if (buffer[0] == DATA_VALUE_ORG)
         return VAL_STATUS_SUCCESS;
 
-    val->print(PRINT_ERROR, "\tExpected write to fault but it didn't\n", 0);
+    val->print(ERROR, "\tExpected write to fault but it didn't\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
     if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
         return VAL_STATUS_ERROR;
     }
 

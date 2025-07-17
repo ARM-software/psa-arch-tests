@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_c010.h"
 #include "test_data.h"
 
@@ -40,7 +39,7 @@ int32_t psa_key_attributes_set_get_test(caller_security_t caller __UNUSED)
 
     if (num_checks == 0)
     {
-        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        val->print(TEST, "No test available for the selected crypto configuration\n", 0);
         return RESULT_SKIP(VAL_STATUS_NO_TESTS);
     }
 
@@ -51,8 +50,8 @@ int32_t psa_key_attributes_set_get_test(caller_security_t caller __UNUSED)
     /* Set the key data buffer to the input base on algorithm */
     for (i = 0; i < num_checks; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] ", i+1);
-        val->print(PRINT_TEST, check1[i].test_desc, 0);
+        val->print(TEST, "Check %d: ", i+1);
+        val->print(TEST, check1[i].test_desc, 0);
 
         /* Setting up the watchdog timer for each check */
         status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);

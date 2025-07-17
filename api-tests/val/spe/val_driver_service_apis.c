@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,23 @@
 
 
 #include "val_driver_service_apis.h"
-#include "val_target.c"
+#include "val_common_log.h"
 
-print_verbosity_t  g_print_level = PRINT_INFO;
+print_verbosity_t  g_print_level = INFO;
 static int is_uart_init_done;
+const uint32_t total_tests;
+
+/* Use raw print for driver partition */
+#ifdef DRIVER_PARTITION_INCLUDE
+#define val_print(x, y, z)                        \
+       do {                                       \
+           if (x >= VERBOSITY)                    \
+              val_print_sf(x, y, z);              \
+       } while (0)
+#else
+__UNUSED STATIC_DECLARE val_status_t val_print
+                        (print_verbosity_t verbosity, char *string, int32_t data);
+#endif
 
 /* UART APIs */
 /*
@@ -38,18 +51,22 @@ val_status_t val_uart_init_sf(addr_t uart_base_addr)
 /*
     @brief     - This function parses the input string and writes byte by byte to
                  print the input string
-    @param     - pointer         : Input String
-               - data            : Value for Format specifier
+    @param    - verbosity: Print verbosity level
+              - string   : Input string
+              - data     : Value for format specifier
     @return    - error status
  */
-val_status_t val_print_sf(const char *string, int32_t data)
+val_status_t val_print_sf(print_verbosity_t verbosity, const char *string, int32_t data)
 {
-    if (is_uart_init_done == 1)
+    if ((is_uart_init_done == 0) || (verbosity < VERBOSITY))
     {
-        /* Do not print until uart_init is complete */
-        pal_print(string, data);
+       return VAL_STATUS_SUCCESS;
     }
-    return VAL_STATUS_SUCCESS;
+#ifdef BESPOKE_PRINT_S
+    return pal_print_s(string, data);
+#else
+    return val_printf(verbosity, string, data);
+#endif
 }
 
 /* Watchdog APIs */
@@ -151,25 +168,15 @@ val_status_t val_driver_private_set_boot_flag_fn(boot_state_t state)
 {
    boot_t           boot;
    val_status_t     status;
-   memory_desc_t   *memory_desc;
-
-   status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY, MEMORY_NVMEM, 0),
-                                  (uint8_t **)&memory_desc,
-                                  (uint32_t *)sizeof(memory_desc_t));
-
-   if (VAL_ERROR(status))
-   {
-        return status;
-   }
 
    boot.state = state;
-   status = val_nvmem_write_sf(memory_desc->start,
-                               VAL_NVMEM_OFFSET(NV_BOOT),
+   status = val_nvmem_write_sf(PLATFORM_NVM_BASE,
+                               VAL_NVM_OFFSET(NVM_BOOT),
                                &boot,
                                sizeof(boot_t));
    if (VAL_ERROR(status))
    {
-       val_print_sf("val_nvmem_write_sf failed Error=0x%x\n", status);
+       val_print_sf(ERROR, "val_nvmem_write_sf failed Error=0x%x\n", status);
        return status;
    }
    return status;
@@ -182,20 +189,9 @@ val_status_t val_driver_private_set_boot_flag_fn(boot_state_t state)
 **/
 val_status_t val_init_driver_memory(void)
 {
-   val_status_t     status;
-   memory_desc_t   *memory_desc;
-
-   status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
-                                  MEMORY_DRIVER_PARTITION_MMIO, 0),
-                                  (uint8_t **)&memory_desc,
-                                  (uint32_t *)sizeof(memory_desc_t));
-   if (VAL_ERROR(status))
-   {
-        return status;
-   }
-
    /* Init driver mmio space to 0 to avoid uninit access */
-   memset((uint32_t *)memory_desc->start, 0, (memory_desc->end - memory_desc->start + 1));
+   memset((uint32_t *)PLATFORM_DRIVER_PARTITION_MMIO_START, 0,
+                (PLATFORM_DRIVER_PARTITION_MMIO_END - PLATFORM_DRIVER_PARTITION_MMIO_START + 1));
 
    return VAL_STATUS_SUCCESS;
 }
@@ -207,19 +203,7 @@ val_status_t val_init_driver_memory(void)
 **/
 val_status_t val_get_driver_mmio_addr(addr_t *base_addr)
 {
-   val_status_t     status;
-   memory_desc_t   *memory_desc;
-
-   status = val_target_get_config(TARGET_CONFIG_CREATE_ID(GROUP_MEMORY,
-                                  MEMORY_DRIVER_PARTITION_MMIO, 0),
-                                  (uint8_t **)&memory_desc,
-                                  (uint32_t *)sizeof(memory_desc_t));
-   if (VAL_ERROR(status))
-   {
-        return status;
-   }
-
-   *base_addr = memory_desc->start;
+   *base_addr = PLATFORM_DRIVER_PARTITION_MMIO_START;
    return VAL_STATUS_SUCCESS;
 }
 

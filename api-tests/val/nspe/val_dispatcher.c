@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  * Copyright 2023 NXP
  *
@@ -20,7 +20,6 @@
 #include "val_dispatcher.h"
 #include "val_interfaces.h"
 #include "val_peripherals.h"
-#include "val_target.h"
 
 extern val_api_t val_api;
 extern psa_api_t psa_api;
@@ -37,26 +36,26 @@ addr_t          g_test_info_addr;
 __attribute__((unused)) static void val_print_api_version(void)
 {
 #ifdef CRYPTO
-    val_print(PRINT_ALWAYS, " %d.", PSA_CRYPTO_API_VERSION_MAJOR);
-    val_print(PRINT_ALWAYS, "%d", PSA_CRYPTO_API_VERSION_MINOR);
+    val_print(ALWAYS, " %d.", PSA_CRYPTO_API_VERSION_MAJOR);
+    val_print(ALWAYS, "%d", PSA_CRYPTO_API_VERSION_MINOR);
 #endif
 #ifdef INTERNAL_TRUSTED_STORAGE
-    val_print(PRINT_ALWAYS, " %d.", PSA_ITS_API_VERSION_MAJOR);
-    val_print(PRINT_ALWAYS, "%d", PSA_ITS_API_VERSION_MINOR);
+    val_print(ALWAYS, " %d.", PSA_ITS_API_VERSION_MAJOR);
+    val_print(ALWAYS, "%d", PSA_ITS_API_VERSION_MINOR);
 #endif
 #ifdef PROTECTED_STORAGE
-    val_print(PRINT_ALWAYS, " %d.", PSA_PS_API_VERSION_MAJOR);
-    val_print(PRINT_ALWAYS, "%d", PSA_PS_API_VERSION_MINOR);
+    val_print(ALWAYS, " %d.", PSA_PS_API_VERSION_MAJOR);
+    val_print(ALWAYS, "%d", PSA_PS_API_VERSION_MINOR);
 #endif
 #ifdef STORAGE
-    val_print(PRINT_ALWAYS, " ITS %d.", PSA_ITS_API_VERSION_MAJOR);
-    val_print(PRINT_ALWAYS, "%d", PSA_ITS_API_VERSION_MINOR);
-    val_print(PRINT_ALWAYS, " and PS %d.", PSA_PS_API_VERSION_MAJOR);
-    val_print(PRINT_ALWAYS, "%d", PSA_PS_API_VERSION_MINOR);
+    val_print(ALWAYS, " ITS %d.", PSA_ITS_API_VERSION_MAJOR);
+    val_print(ALWAYS, "%d", PSA_ITS_API_VERSION_MINOR);
+    val_print(ALWAYS, " and PS %d.", PSA_PS_API_VERSION_MAJOR);
+    val_print(ALWAYS, "%d", PSA_PS_API_VERSION_MINOR);
 #endif
 #ifdef INITIAL_ATTESTATION
-    val_print(PRINT_ALWAYS, " %d.", PSA_INITIAL_ATTEST_API_VERSION_MAJOR);
-    val_print(PRINT_ALWAYS, "%d", PSA_INITIAL_ATTEST_API_VERSION_MINOR);
+    val_print(ALWAYS, " %d.", PSA_INITIAL_ATTEST_API_VERSION_MAJOR);
+    val_print(ALWAYS, "%d", PSA_INITIAL_ATTEST_API_VERSION_MINOR);
 #endif
 }
 
@@ -64,6 +63,8 @@ static val_test_info_t g_test_list[] = {
 #include "test_entry_list.inc"
                                   {VAL_INVALID_TEST_ID, NULL}
                               };
+
+const uint32_t total_tests = sizeof(g_test_list)/sizeof(g_test_list[0]) - 1;
 
 /**
     @brief        - This function returns the IDs list of available tests
@@ -129,7 +130,7 @@ val_status_t val_test_load(test_id_t *test_id, test_id_t test_id_prev)
         }
     }
 
-    val_print(PRINT_DEBUG, "\n\nNo more valid tests found. Exiting.", 0);
+    val_print(DBG, "\n\nNo more valid tests found. Exiting.", 0);
     *test_id = VAL_INVALID_TEST_ID;
     return VAL_STATUS_SUCCESS;
 }
@@ -195,7 +196,7 @@ int32_t val_dispatcher(test_id_t test_id_prev)
     test_id_t            test_id;
     val_status_t         status;
     boot_t               boot;
-    test_count_t         test_count;
+    regre_report_t       test_count;
     uint32_t             test_result;
 
     do
@@ -211,28 +212,28 @@ int32_t val_dispatcher(test_id_t test_id_prev)
            to SIM ERROR and go to next test. */
         if (boot.state == BOOT_NOT_EXPECTED)
         {
-            val_set_status(RESULT_PENDING(VAL_STATUS_ERROR));
-            status = val_nvmem_read(VAL_NVMEM_OFFSET(NV_TEST_ID_CURRENT),
+            val_set_status(RESULT_ERROR(VAL_STATUS_ERROR));
+            status = val_nvm_read(VAL_NVM_OFFSET(NVM_CUR_TEST_NUM_INDEX),
                                     &test_id, sizeof(test_id_t));
             if (VAL_ERROR(status))
             {
-                val_print(PRINT_ERROR, "\n\tNVMEM read error", 0);
+                val_print(ERROR, "\n\tNVMEM read error", 0);
                 return status;
             }
         }
         /* Did last run test hang and system reset due to watchdog timeout but
            boot.state was set to BOOT_EXPECTED_BUT_FAILED ? If yes, set the test status
            to FAIL and go to next test. This condition will hit when test was expecting
-           re-boot on perticular scenario but it didn't happen and system re-booted due
+           re-boot on particular scenario but it didn't happen and system re-booted due
            to other reason. */
         else if (boot.state == BOOT_EXPECTED_BUT_FAILED)
         {
             val_set_status(RESULT_FAIL(VAL_STATUS_BOOT_EXPECTED_BUT_FAILED));
-            status = val_nvmem_read(VAL_NVMEM_OFFSET(NV_TEST_ID_CURRENT),
+            status = val_nvm_read(VAL_NVM_OFFSET(NVM_CUR_TEST_NUM_INDEX),
                                     &test_id, sizeof(test_id_t));
             if (VAL_ERROR(status))
             {
-                val_print(PRINT_ERROR, "\n\tNVMEM read error", 0);
+                val_print(ERROR, "\n\tNVMEM read error", 0);
                 return status;
             }
         }
@@ -249,24 +250,25 @@ int32_t val_dispatcher(test_id_t test_id_prev)
                 break;
             }
 
-            status = val_nvmem_write(VAL_NVMEM_OFFSET(NV_TEST_ID_CURRENT),
+            status = val_nvm_write(VAL_NVM_OFFSET(NVM_CUR_TEST_NUM_INDEX),
                                      &test_id, sizeof(test_id_t));
             if (VAL_ERROR(status))
             {
-                val_print(PRINT_ERROR, "\n\tNVMEM write error", 0);
+                val_print(ERROR, "\n\tNVMEM write error", 0);
                 return status;
             }
 
             if (VAL_GET_COMP_NUM(test_id_prev) != VAL_GET_COMP_NUM(test_id))
             {
-                val_print(PRINT_ALWAYS, "\nRunning.. ", 0);
-                val_print(PRINT_ALWAYS, val_get_comp_name(test_id), 0);
+                val_get_comp_name(test_id);
+              //  val_print(ALWAYS, "\nRunning.. ", 0);
+                //val_print(ALWAYS, val_get_comp_name(test_id), 0);
 			//	val_print_api_version();
 #ifdef TESTS_COVERAGE
-                val_print(PRINT_ALWAYS, "\nNOTE : Known failing tests are excluded from this \
+                val_print(ALWAYS, "\nNOTE : Known failing tests are excluded from this \
 build. For PSA functional API certification, all tests must be run.\n", 0);
 #endif
-                val_print(PRINT_ALWAYS, "\n******************************************\n", 0);
+                val_print(ALWAYS, "\n******************************************\n", 0);
             }
 
             if (boot.state == BOOT_UNKNOWN)
@@ -281,9 +283,13 @@ build. For PSA functional API certification, all tests must be run.\n", 0);
             val_execute_test_fn();
         }
 
+#ifdef BESPOKE_PRINT_NS
+        test_result = val_report_status_bespoke();
+#else
         test_result = val_report_status();
+#endif
 
-        /* Reset boot.state to UNKNOWN before lunching next test */
+        /* Reset boot.state to UNKNOWN before launching next test */
         status = val_set_boot_flag(BOOT_UNKNOWN);
         if (VAL_ERROR(status))
         {
@@ -291,71 +297,78 @@ build. For PSA functional API certification, all tests must be run.\n", 0);
         }
 
         /* Prepare suite summary data structure */
-        status = val_nvmem_read(VAL_NVMEM_OFFSET(NV_TEST_CNT), &test_count, sizeof(test_count_t));
+        status = (val_nvm_read(VAL_NVM_OFFSET(NVM_TOTAL_PASS_INDEX),
+                        &test_count.total_pass, sizeof(uint32_t)) ||
+                  val_nvm_read(VAL_NVM_OFFSET(NVM_TOTAL_FAIL_INDEX),
+                        &test_count.total_fail, sizeof(uint32_t))  ||
+                  val_nvm_read(VAL_NVM_OFFSET(NVM_TOTAL_SKIP_INDEX),
+                        &test_count.total_skip, sizeof(uint32_t))  ||
+                  val_nvm_read(VAL_NVM_OFFSET(NVM_TOTAL_ERROR_INDEX),
+                        &test_count.total_error, sizeof(uint32_t)));
+
         if (VAL_ERROR(status))
         {
-            val_print(PRINT_ERROR, "\n\tNVMEM read error", 0);
+            val_print(ERROR, "\n\tNVMEM read error", 0);
             return status;
         }
 
-        switch (test_result)
-        {
-            case TEST_PASS:
-                test_count.pass_cnt += 1;
-                break;
-            case TEST_FAIL:
-                test_count.fail_cnt += 1;
-                break;
-            case TEST_SKIP:
-                test_count.skip_cnt += 1;
-                break;
-            case TEST_PENDING:
-                test_count.sim_error_cnt += 1;
-                break;
-        }
+        val_update_regression_report(test_result, &test_count);
 
-        status = val_nvmem_write(VAL_NVMEM_OFFSET(NV_TEST_CNT), &test_count, sizeof(test_count_t));
+        status = (val_nvm_write(VAL_NVM_OFFSET(NVM_TOTAL_PASS_INDEX),
+                        &test_count.total_pass, sizeof(uint32_t)) ||
+                  val_nvm_write(VAL_NVM_OFFSET(NVM_TOTAL_FAIL_INDEX),
+                       &test_count.total_fail, sizeof(uint32_t))  ||
+                  val_nvm_write(VAL_NVM_OFFSET(NVM_TOTAL_SKIP_INDEX),
+                       &test_count.total_skip, sizeof(uint32_t))  ||
+                  val_nvm_write(VAL_NVM_OFFSET(NVM_TOTAL_ERROR_INDEX),
+                       &test_count.total_error, sizeof(uint32_t)));
+
         if (VAL_ERROR(status))
         {
-            val_print(PRINT_ERROR, "\n\tNVMEM write error", 0);
+            val_print(ERROR, "\n\tNVMEM write error", 0);
             return status;
         }
 
         test_id_prev = test_id;
-        status = val_nvmem_write(VAL_NVMEM_OFFSET(NV_TEST_ID_PREVIOUS),
+        status = val_nvm_write(VAL_NVM_OFFSET(NVM_PREVIOUS_TEST_ID),
                                  &test_id, sizeof(test_id_t));
         if (VAL_ERROR(status))
         {
-            val_print(PRINT_ERROR, "\n\tNVMEM write error", 0);
+            val_print(ERROR, "\n\tNVMEM write error", 0);
             return status;
         }
 
    } while (1);
 
-   status = val_nvmem_read(VAL_NVMEM_OFFSET(NV_TEST_CNT), &test_count, sizeof(test_count_t));
+   status = (val_nvm_read(VAL_NVM_OFFSET(NVM_TOTAL_PASS_INDEX),
+                    &test_count.total_pass, sizeof(uint32_t)) ||
+             val_nvm_read(VAL_NVM_OFFSET(NVM_TOTAL_FAIL_INDEX),
+                    &test_count.total_fail, sizeof(uint32_t))  ||
+             val_nvm_read(VAL_NVM_OFFSET(NVM_TOTAL_SKIP_INDEX),
+                    &test_count.total_skip, sizeof(uint32_t))  ||
+             val_nvm_read(VAL_NVM_OFFSET(NVM_TOTAL_ERROR_INDEX),
+                    &test_count.total_error, sizeof(uint32_t)));
+
    if (VAL_ERROR(status))
    {
-       val_print(PRINT_ERROR, "\n\tNVMEM read error", 0);
+       val_print(ERROR, "\n\tNVMEM read error", 0);
        return status;
    }
 
-   val_print(PRINT_ALWAYS, "\n************ ", 0);
-   val_print(PRINT_ALWAYS, val_get_comp_name(test_id_prev), 0);
-   val_print(PRINT_ALWAYS, " Report **********\n", 0);
-   val_print(PRINT_ALWAYS, "TOTAL TESTS     : %d\n", test_count.pass_cnt + test_count.fail_cnt
-            + test_count.skip_cnt + test_count.sim_error_cnt);
-   val_print(PRINT_ALWAYS, "TOTAL PASSED    : %d\n", test_count.pass_cnt);
-   val_print(PRINT_ALWAYS, "TOTAL SIM ERROR : %d\n", test_count.sim_error_cnt);
-   val_print(PRINT_ALWAYS, "TOTAL FAILED    : %d\n", test_count.fail_cnt);
-   val_print(PRINT_ALWAYS, "TOTAL SKIPPED   : %d\n", test_count.skip_cnt);
-   val_print(PRINT_ALWAYS, "******************************************\n", 0);
+#ifdef BESPOKE_PRINT_NS
+   val_print(ALWAYS, "\n************ ", 0);
+   val_print(ALWAYS, val_get_comp_name(test_id_prev), 0);
+   val_print(ALWAYS, " Report ************\n", 0);
+   val_print(ALWAYS, "TOTAL TESTS     : %d\n", (uint32_t)test_count.total_pass +
+            test_count.total_fail + test_count.total_skip + test_count.total_error);
+   val_print(ALWAYS, "TOTAL PASSED    : %d\n", test_count.total_pass);
+   val_print(ALWAYS, "TOTAL SIM ERROR : %d\n", test_count.total_error);
+   val_print(ALWAYS, "TOTAL FAILED    : %d\n", test_count.total_fail);
+   val_print(ALWAYS, "TOTAL SKIPPED   : %d\n", test_count.total_skip);
+   val_print(ALWAYS, "******************************************\n", 0);
+#else
+    val_print_regression_report(&test_count);
+#endif
 
-   return (test_count.fail_cnt > 0) ? VAL_STATUS_TEST_FAILED : VAL_STATUS_SUCCESS;
+   return (test_count.total_fail > 0) ? VAL_STATUS_TEST_FAILED : VAL_STATUS_SUCCESS;
 }
-
-
-
-
-
-
-

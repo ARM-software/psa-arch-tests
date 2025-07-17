@@ -60,10 +60,12 @@ Before starting the test suite build, ensure that the following requirements are
 
 
 ## Download source
-This repository uses git submodules. Either add the --recurse-submodules argument when running git clone, or run git submodule update --init after cloning.
+
 To download the main branch of the repository, type the following command:
 
 	git clone https://github.com/ARM-software/psa-arch-tests.git
+    cd psa-arch-tests/
+    git submodule update --init
 
 ## Porting steps
 
@@ -129,4 +131,4 @@ The mbedtls code repository is distributed under Apache v2.0 license.
 
 --------------
 
-*Copyright (c) 2021-2023, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2021-2023, 2025, Arm Limited and Contributors. All rights reserved.*

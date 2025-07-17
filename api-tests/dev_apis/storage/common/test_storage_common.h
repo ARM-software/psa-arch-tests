@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2020-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2020-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,11 +23,8 @@
 #define val              CONCAT(val, test_entry)
 #define psa              CONCAT(psa, test_entry)
 #define STORAGE_FUNCTION val->storage_function
-#define ITS_TEST_MESSAGE "\n[Info] Executing ITS tests\n"
-#define PS_TEST_MESSAGE  "\n[Info] Executing PS tests\n"
-#define TEST_DESC_STORAGE " | UT: STORAGE\n"
-#define TEST_DESC_ITS " | UT: ITS\n"
-#define TEST_DESC_PS " | UT: PS\n"
+#define ITS_TEST_MESSAGE "[Info] Executing ITS tests\n"
+#define PS_TEST_MESSAGE  "[Info] Executing PS tests\n"
 
 extern val_api_t           *val;
 extern psa_api_t           *psa;

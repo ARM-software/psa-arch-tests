@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -42,22 +41,22 @@ int32_t client_test_dynamic_mem_alloc_fn(caller_security_t caller __UNUSED)
 #ifdef SP_HEAP_MEM_SUPP
   uint8_t              *buffer;
 
-  val->print(PRINT_TEST, "[Check 1] Test dynamic memory allocation\n", 0);
+  val->print(TEST, "Check 1: Test dynamic memory allocation\n", 0);
 
   /* If heap_size field is not specified in the manifest then the SPM can assume the size is 0 */
   buffer = (uint8_t *)malloc(sizeof(uint8_t) * 8);
   if (buffer != NULL)
   {
-      val->print(PRINT_ERROR, "\tmalloc failed for unspecified heap size\n", 0);
+      val->print(ERROR, "\tmalloc failed for unspecified heap size\n", 0);
       return VAL_STATUS_SPM_FAILED;
   }
 
 #else
 
-  val->print(PRINT_TEST, "[Check 1] Test dynamic memory allocation\n", 0);
+  val->print(TEST, "Check 1: Test dynamic memory allocation\n", 0);
 
   /* Skip the test */
-  val->print(PRINT_ERROR, "\tSkipping test as heap memory not supported\n", 0);
+  val->print(ERROR, "\tSkipping test as heap memory not supported\n", 0);
   return RESULT_SKIP(VAL_STATUS_HEAP_NOT_AVAILABLE);
 
 #endif

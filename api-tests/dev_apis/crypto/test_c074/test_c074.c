@@ -15,7 +15,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_c074.h"
 #include "test_data.h"
 
@@ -54,7 +53,7 @@ int32_t jpake_setup(psa_pake_operation_t *op, const uint8_t *user, const uint8_t
 {
    psa_status_t status;
 
-   val->print(PRINT_DEBUG, "Starting with jpake setup \n", 0);
+   val->print(DBG, "Starting with jpake setup \n", 0);
 
   /* Initialize PSA crypto library */
   status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -101,7 +100,7 @@ int32_t spake2p_setup(psa_pake_operation_t *op, const uint8_t *user, const uint8
 {
   psa_status_t status;
 
-  val->print(PRINT_DEBUG, "Starting with SPAKE2P setup...\n", 0);
+  val->print(DBG, "Starting with SPAKE2P setup...\n", 0);
 
   /* Initialize PSA crypto library */
   status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -164,7 +163,7 @@ int32_t psa_pake_output_test(caller_security_t caller __UNUSED)
 
     if (num_checks == 0)
     {
-        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        val->print(TEST, "No test available for the selected crypto configuration\n", 0);
         return RESULT_SKIP(VAL_STATUS_NO_TESTS);
     }
 
@@ -174,8 +173,8 @@ int32_t psa_pake_output_test(caller_security_t caller __UNUSED)
 
    for (i = 0; i < num_checks; i++)
     {
-      val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
-      val->print(PRINT_TEST, check1[i].test_desc, 0);
+      val->print(TEST, "Check %d: ", g_test_count++);
+      val->print(TEST, check1[i].test_desc, 0);
 
       val->crypto_function(VAL_CRYPTO_PAKE_OPERATION_INIT,
                            &user);

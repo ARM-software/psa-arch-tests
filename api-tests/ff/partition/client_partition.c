@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,11 +21,11 @@ psa_api_t *psa_client_sp = &psa_api;
 
 void client_main(void)
 {
-    uint32_t        test_data = 0;
-    psa_signal_t    signals = 0;
-    val_status_t    status, test_status;
-    psa_msg_t       msg = {0};
-    test_info_t     test_info;
+    uint32_t            test_data = 0;
+    psa_signal_t        signals = 0;
+    val_status_t        status, test_status;
+    psa_msg_t           msg = {0};
+    test_info_ipc_t     test_info;
 
     while (1)
     {
@@ -40,7 +40,7 @@ void client_main(void)
                 case PSA_IPC_CONNECT:
                     if (test_data != 0)
                     {
-                        val_print(PRINT_ERROR, "must clear previous dispatcher connection\n", 0);
+                        val_print(ERROR, "must clear previous dispatcher connection\n", 0);
                         psa_reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
                     }
                     else
@@ -52,7 +52,7 @@ void client_main(void)
                     if ((msg.in_size[0] <= sizeof(test_data)) &&
                         (psa_read(msg.handle, 0, &test_data, msg.in_size[0]) != sizeof(test_data)))
                     {
-                        val_print(PRINT_ERROR, "could not read dispatcher payload\n", 0);
+                        val_print(ERROR, "could not read dispatcher payload\n", 0);
                         status = VAL_STATUS_READ_FAILED;
                     }
                     if (VAL_ERROR(status))
@@ -65,7 +65,7 @@ void client_main(void)
                     {
                         psa_reply(msg.handle, PSA_SUCCESS);
 
-                        val_print(PRINT_INFO, "In client part, test-id %d\n",
+                        val_print(INFO, "In client part, test-id %d\n",
                                                     GET_TEST_NUM(test_data));
                         test_info.test_num = GET_TEST_NUM(test_data);
                         test_info.block_num = GET_BLOCK_NUM(test_data);
@@ -90,7 +90,7 @@ void client_main(void)
                     psa_reply(msg.handle, PSA_SUCCESS);
                     break;
                 default:
-                    val_print(PRINT_ERROR, "Unexpected message type %d!", (int)(msg.type));
+                    val_print(ERROR, "Unexpected message type %d!", (int)(msg.type));
                     TEST_PANIC();
             }
         }
@@ -103,14 +103,14 @@ void client_main(void)
             if (psa_connect(SERVER_SECURE_CONNECT_ONLY_SID, SERVER_SECURE_CONNECT_ONLY_VERSION)
                 != PSA_ERROR_CONNECTION_REFUSED)
             {
-               val_print(PRINT_ERROR, "psa_connect failed \n", 0);
+               val_print(ERROR, "psa_connect failed \n", 0);
             }
 #endif
             psa_clear();
         }
         else
         {
-            val_print(PRINT_ERROR, "In client_partition, Control shouldn't have reach here\n", 0);
+            val_print(ERROR, "In client_partition, Control shouldn't have reach here\n", 0);
             TEST_PANIC();
         }
     }

@@ -1,5 +1,5 @@
  /** @file
-  * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+  * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
   * SPDX-License-Identifier : Apache-2.0
   *
   * Copyright (c) 2021 Nordic Semiconductor ASA.
@@ -21,6 +21,7 @@
 #ifndef _PAL_DRIVER_INTF_H_
 #define _PAL_DRIVER_INTF_H_
 
+#include "pal_interfaces_s.h"
 #include "pal_uart.h"
 #include "pal_nvmem.h"
 
@@ -60,15 +61,4 @@ __IOM uint32_t  INTENCLR;
 #define NRF_EGU5_S ((NRF_EGU_Type *) 0x50020000UL)
 #define NRF_EGU5   (NRF_EGU5_S)
 
-
-void pal_uart_init(uint32_t uart_base_addr);
-void pal_print(const char *str, int32_t data);
-int pal_nvmem_write(addr_t base, uint32_t offset, void *buffer, int size);
-int pal_nvmem_read(addr_t base, uint32_t offset, void *buffer, int size);
-int pal_wd_timer_init(addr_t base_addr, uint32_t time_us, uint32_t timer_tick_us);
-int pal_wd_timer_enable(addr_t base_addr);
-int pal_wd_timer_disable(addr_t base_addr);
-int pal_wd_timer_is_enabled(addr_t base_addr);
-void pal_generate_interrupt(void);
-void pal_disable_interrupt(void);
 #endif /* _PAL_DRIVER_INTF_H_ */

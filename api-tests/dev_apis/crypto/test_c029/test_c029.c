@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_c029.h"
 #include "test_data.h"
 
@@ -42,7 +41,7 @@ int32_t psa_mac_verify_setup_test(caller_security_t caller __UNUSED)
 
     if (num_checks == 0)
     {
-        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        val->print(TEST, "No test available for the selected crypto configuration\n", 0);
         return RESULT_SKIP(VAL_STATUS_NO_TESTS);
     }
 
@@ -52,8 +51,8 @@ int32_t psa_mac_verify_setup_test(caller_security_t caller __UNUSED)
 
     for (i = 0; i < num_checks; i++)
     {
-        val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
-        val->print(PRINT_TEST, check1[i].test_desc, 0);
+        val->print(TEST, "Check %d: ", g_test_count++);
+        val->print(TEST, check1[i].test_desc, 0);
 
         val->crypto_function(VAL_CRYPTO_KEY_ATTRIBUTES_INIT,
                              &attributes);
@@ -120,7 +119,7 @@ int32_t psa_mac_verify_setup_test(caller_security_t caller __UNUSED)
 
     return VAL_STATUS_SUCCESS;
 #else
-    val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+    val->print(TEST, "No test available for the selected crypto configuration\n", 0);
     return RESULT_SKIP(VAL_STATUS_NO_TESTS);
 #endif
 }
@@ -144,7 +143,7 @@ int32_t psa_mac_verify_setup_negative_test(caller_security_t caller __UNUSED)
     status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
     TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
-    val->print(PRINT_TEST, "[Check %d] Test psa_mac_verify_setup invalid key handle\n",
+    val->print(TEST, "Check %d: Test psa_mac_verify_setup invalid key handle\n",
                                                                              g_test_count++);
     val->crypto_function(VAL_CRYPTO_MAC_OPERATION_INIT,
                          &operation);
@@ -156,7 +155,7 @@ int32_t psa_mac_verify_setup_negative_test(caller_security_t caller __UNUSED)
                                   check1[valid_test_input_index].alg);
     TEST_ASSERT_EQUAL(status, PSA_ERROR_INVALID_HANDLE, TEST_CHECKPOINT_NUM(3));
 
-    val->print(PRINT_TEST, "[Check %d] Test psa_mac_verify_setup zero as key handle\n",
+    val->print(TEST, "Check %d: Test psa_mac_verify_setup zero as key handle\n",
                                                                              g_test_count++);
 
     val->crypto_function(VAL_CRYPTO_MAC_OPERATION_INIT,
@@ -171,7 +170,7 @@ int32_t psa_mac_verify_setup_negative_test(caller_security_t caller __UNUSED)
 
     return VAL_STATUS_SUCCESS;
 #else
-    val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+    val->print(TEST, "No test available for the selected crypto configuration\n", 0);
     return RESULT_SKIP(VAL_STATUS_NO_TESTS);
 #endif
 }

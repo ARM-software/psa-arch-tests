@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_s013.h"
 #include "test_data.h"
 
@@ -46,12 +45,12 @@ static int32_t psa_sst_set_extended_create_success(storage_function_code_t fCode
     struct psa_storage_info_t info;
 
     /* Create storage of zero length using create API */
-    val->print(PRINT_TEST, "[Check 1] Create storage using create API for 0 length\n", 0);
+    val->print(TEST, "Check 1: Create storage using create API for 0 length\n", 0);
     status = STORAGE_FUNCTION(s013_data[VAL_TEST_IDX1].api[fCode], p_uid, 0, PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s013_data[VAL_TEST_IDX1].status, TEST_CHECKPOINT_NUM(1));
 
     /* Set some data in the storage created */
-    val->print(PRINT_TEST, "[Check 2] Call set_extended for zero storage length\n", 0);
+    val->print(TEST, "Check 2: Call set_extended for zero storage length\n", 0);
     status = STORAGE_FUNCTION(s013_data[VAL_TEST_IDX2].api[fCode], p_uid, 0, 0, write_buff);
     TEST_ASSERT_EQUAL(status, s013_data[VAL_TEST_IDX2].status, TEST_CHECKPOINT_NUM(2));
 
@@ -62,7 +61,7 @@ static int32_t psa_sst_set_extended_create_success(storage_function_code_t fCode
     TEST_ASSERT_EQUAL(info.size, 0, TEST_CHECKPOINT_NUM(5));
 
     /* Remove the storage */
-    val->print(PRINT_TEST, "[Check 3] Remove the storage\n", 0);
+    val->print(TEST, "Check 3: Remove the storage\n", 0);
     status = STORAGE_FUNCTION(s013_data[VAL_TEST_IDX6].api[fCode], p_uid);
     TEST_ASSERT_EQUAL(status, s013_data[VAL_TEST_IDX6].status, TEST_CHECKPOINT_NUM(6));
 
@@ -82,7 +81,7 @@ static int32_t psa_sst_set_extended_create_success(storage_function_code_t fCode
     TEST_ASSERT_EQUAL(status, s013_data[VAL_TEST_IDX9].status, TEST_CHECKPOINT_NUM(9));
 
     /* Call the get function to match the data */
-    val->print(PRINT_TEST, "[Check 4] Valid data written by multiple set_extended\n", 0);
+    val->print(TEST, "Check 4: Valid data written by multiple set_extended\n", 0);
     status = STORAGE_FUNCTION(s013_data[VAL_TEST_IDX10].api[fCode], p_uid, 0, TEST_BUFF_SIZE,
                               read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s013_data[VAL_TEST_IDX10].status, TEST_CHECKPOINT_NUM(10));
@@ -92,13 +91,13 @@ static int32_t psa_sst_set_extended_create_success(storage_function_code_t fCode
     TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(13));
 
     /* Overwrite data using set API */
-    val->print(PRINT_TEST, "[Check 5] Overwrite whole data using SET API\n", 0);
+    val->print(TEST, "Check 5: Overwrite whole data using SET API\n", 0);
     status = STORAGE_FUNCTION(s013_data[VAL_TEST_IDX13].api[fCode], p_uid, TEST_BUFF_SIZE,
                               write_buff_3, PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s013_data[VAL_TEST_IDX13].status, TEST_CHECKPOINT_NUM(14));
 
     /* Call the get function to match the data */
-    val->print(PRINT_TEST, "[Check 6] Validate the data using get API\n", 0);
+    val->print(TEST, "Check 6: Validate the data using get API\n", 0);
     status = STORAGE_FUNCTION(s013_data[VAL_TEST_IDX14].api[fCode], p_uid, 0, TEST_BUFF_SIZE,
                               read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s013_data[VAL_TEST_IDX14].status, TEST_CHECKPOINT_NUM(15));
@@ -106,13 +105,13 @@ static int32_t psa_sst_set_extended_create_success(storage_function_code_t fCode
     TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(17));
 
     /* Call create API for existing UID with same parameters */
-    val->print(PRINT_TEST, "[Check 7] Call create API for existing UID with same parameters\n", 0);
+    val->print(TEST, "Check 7: Call create API for existing UID with same parameters\n", 0);
     status = STORAGE_FUNCTION(s013_data[VAL_TEST_IDX16].api[fCode], p_uid, TEST_BUFF_SIZE,
                               PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s013_data[VAL_TEST_IDX16].status, TEST_CHECKPOINT_NUM(18));
 
     /* Call the get function to match the data */
-    val->print(PRINT_TEST, "[Check 8] Validity of data after create API call\n", 0);
+    val->print(TEST, "Check 8: Validity of data after create API call\n", 0);
     status = STORAGE_FUNCTION(s013_data[VAL_TEST_IDX17].api[fCode], p_uid, 0, TEST_BUFF_SIZE,
                               read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s013_data[VAL_TEST_IDX17].status, TEST_CHECKPOINT_NUM(19));
@@ -120,13 +119,13 @@ static int32_t psa_sst_set_extended_create_success(storage_function_code_t fCode
     TEST_ASSERT_EQUAL(p_data_length, TEST_BUFF_SIZE, TEST_CHECKPOINT_NUM(21));
 
     /* Remove the storage */
-    val->print(PRINT_TEST, "[Check 9] Remove the UID\n", 0);
+    val->print(TEST, "Check 9: Remove the UID\n", 0);
     status = STORAGE_FUNCTION(s013_data[VAL_TEST_IDX19].api[fCode], p_uid);
     TEST_ASSERT_EQUAL(status, s013_data[VAL_TEST_IDX19].status, TEST_CHECKPOINT_NUM(22));
 
     /* Validate there should not be duplicate UID present */
     memset(read_buff, 0, TEST_BUFF_SIZE);
-    val->print(PRINT_TEST, "[Check 10] No duplicate entry of UID present\n", 0);
+    val->print(TEST, "Check 10: No duplicate entry of UID present\n", 0);
     status = STORAGE_FUNCTION(s013_data[VAL_TEST_IDX20].api[fCode], p_uid, 0, TEST_BUFF_SIZE,
                               read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s013_data[VAL_TEST_IDX20].status, TEST_CHECKPOINT_NUM(23));
@@ -146,14 +145,14 @@ int32_t psa_sst_optional_api_success_check(storage_function_code_t fCode)
 
     if (status == s013_data[VAL_TEST_IDX0].status)
     {
-       val->print(PRINT_INFO, "Optional PS APIs are supported.\n", 0);
+       val->print(INFO, "Optional PS APIs are supported.\n", 0);
        test_status = psa_sst_set_extended_create_success(fCode);
        if (test_status != VAL_STATUS_SUCCESS)
           return test_status;
     }
     else
     {
-       val->print(PRINT_TEST, "Test Case skipped as Optional PS APIs are not supported.\n", 0);
+       val->print(TEST, "Test Case skipped as Optional PS APIs are not supported.\n", 0);
        return RESULT_SKIP(VAL_STATUS_UNSUPPORTED);
     }
 
@@ -164,7 +163,8 @@ int32_t s013_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 
-    val->print(PRINT_TEST, PS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, PS_TEST_MESSAGE, 0);
     status = psa_sst_optional_api_success_check(VAL_PS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;

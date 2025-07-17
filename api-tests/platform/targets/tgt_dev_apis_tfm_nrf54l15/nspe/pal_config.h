@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2024-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,12 +22,42 @@
 #include "pal_attestation_config.h"
 #include "pal_storage_config.h"
 
+/*==========================  PLATFORM CONFIGURATIONS START  ==========================*/
+
+// UART device info
+#define UART_NUM                               20
+#define UART_20_BASE                           0    // Unused value
+
+// Watchdog device info
+
+// The nRF instance that is appropriate to use on 54L non-secure is
+// NRF_WDT31, but 31 breaks the test infrastructure so we pretend we are
+// using the non-existent instance 4 instead.
+
+#define WATCHDOG_NUM                           4
+
+#define WATCHDOG_4_BASE                        0x40109000   // Unused value
+#define WATCHDOG_4_NUM_OF_TICK_PER_MICRO_SEC   1        // Unused value
+
+#define WATCHDOG_4_TIMEOUT_IN_MICRO_SEC_LOW    500000000    // Unused value
+#define WATCHDOG_4_TIMEOUT_IN_MICRO_SEC_MEDIUM 500000000    // Unused value
+#define WATCHDOG_4_TIMEOUT_IN_MICRO_SEC_HIGH   500000000    // Unused value
+#define WATCHDOG_4_TIMEOUT_IN_MICRO_SEC_CRYPTO 500000000    // Unused value
+
+// Range of 1KB Non-volatile memory to preserve data over reset. Ex, NVRAM and FLASH
+#define NVMEM_NUM                              1
+
+#define NVMEM_0_START                          0    // Unused value
+#define NVMEM_0_END                            0x3ff
+
+/*==========================  PLATFORM CONFIGURATIONS END  ============================*/
+
 
 /* Define PSA test suite dependent macros for non-cmake build */
 #if !defined(PSA_CMAKE_BUILD)
 
 /* Print verbosity = TEST */
-#define VERBOSE 3
+#define VERBOSITY 3
 
 /* NSPE or SPE VAL build? */
 #define VAL_NSPE_BUILD
@@ -50,6 +80,23 @@
 
 /* Use hardcoded public key */
 #define PLATFORM_OVERRIDE_ATTEST_PK
+
+/* Enable custom printing for Non-secure side */
+#define BESPOKE_PRINT_NS
+
+/* UART base address assigned */
+#define PLATFORM_UART_BASE UART_20_BASE
+
+/* Watchdog device configurations assigned */
+#define PLATFORM_WD_BASE                        WATCHDOG_4_BASE
+#define PLATFORM_WD_NUM_OF_TICK_PER_MICRO_SEC   WATCHDOG_4_NUM_OF_TICK_PER_MICRO_SEC
+#define PLATFORM_WD_TIMEOUT_IN_MICRO_SEC_LOW    WATCHDOG_4_TIMEOUT_IN_MICRO_SEC_LOW
+#define PLATFORM_WD_TIMEOUT_IN_MICRO_SEC_MEDIUM WATCHDOG_4_TIMEOUT_IN_MICRO_SEC_LOW
+#define PLATFORM_WD_TIMEOUT_IN_MICRO_SEC_HIGH   WATCHDOG_4_TIMEOUT_IN_MICRO_SEC_LOW
+#define PLATFORM_WD_TIMEOUT_IN_MICRO_SEC_CRYPTO WATCHDOG_4_TIMEOUT_IN_MICRO_SEC_CRYPTO
+
+/* Non-volatile memory base address assigned */
+#define PLATFORM_NVM_BASE NVMEM_0_START
 
 /*
  * Include of PSA defined Header files

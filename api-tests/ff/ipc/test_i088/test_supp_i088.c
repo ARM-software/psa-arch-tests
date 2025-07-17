@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,7 @@ int32_t server_test_psa_rot_lifecycle_state(void)
     uint32_t state;
     int32_t  status = VAL_STATUS_UNSUPPORTED;
 
-    val->print(PRINT_TEST, "[Check 1] Test calling psa_rot_lifecycle_state API\n", 0);
+    val->print(TEST, "[Check 1] Test calling psa_rot_lifecycle_state API\n", 0);
 
     state = psa->rot_lifecycle_state();
     switch (state & PSA_LIFECYCLE_PSA_STATE_MASK)
@@ -51,7 +51,7 @@ int32_t server_test_psa_rot_lifecycle_state(void)
             status = VAL_STATUS_SUCCESS;
             break;
         default:
-            val->print(PRINT_ERROR, "\tpsa_rot_lifecycle_state API returned"
+            val->print(ERROR, "\tpsa_rot_lifecycle_state API returned"
                                     "unsupported value\n", 0);
     }
 

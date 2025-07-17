@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,7 @@ int32_t server_test_psa_panic(void)
 {
     int32_t     status = VAL_STATUS_SUCCESS;
 
-    val->print(PRINT_TEST, "[Check 1] Test psa_panic API\n", 0);
+    val->print(TEST, "[Check 1] Test psa_panic API\n", 0);
    /*
     * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
     * PROGRAMMER ERROR could be either to return appropriate status code or panic the caller.
@@ -50,7 +50,7 @@ int32_t server_test_psa_panic(void)
     * the test harness function.
     *
     * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
+    * timeout entries available in pal_config.h.
     *
     * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
@@ -62,7 +62,7 @@ int32_t server_test_psa_panic(void)
     status = val->set_boot_flag(BOOT_EXPECTED_NS);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(201), status))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
         return status;
     }
 
@@ -73,7 +73,7 @@ int32_t server_test_psa_panic(void)
     status = val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(202), status))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
     }
 
     status = VAL_STATUS_SPM_FAILED;

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021 Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,35 +43,35 @@ uint32_t val_report_status(void)
     {
         case TEST_START:
             state = TEST_FAIL;
-            val_print(PRINT_ALWAYS, "\nTEST RESULT: FAILED (Error Code=0x%x)\n",
+            val_print(ALWAYS, "\nTEST RESULT: FAILED (Error Code=0x%x)\n",
                                                     VAL_STATUS_INIT_FAILED);
             break;
 
         case TEST_END:
             state = TEST_PASS;
-            val_print(PRINT_ALWAYS, "\nTEST RESULT: PASSED\n", 0);
+            val_print(ALWAYS, "\nTEST RESULT: PASSED\n", 0);
             break;
 
         case TEST_FAIL:
-            val_print(PRINT_ALWAYS, "\nTEST RESULT: FAILED (Error Code=0x%x)\n", status);
+            val_print(ALWAYS, "\nTEST RESULT: FAILED (Error Code=0x%x)\n", status);
             break;
 
         case TEST_SKIP:
             state = TEST_SKIP;
-            val_print(PRINT_ALWAYS, "\nTEST RESULT: SKIPPED (Skip Code=0x%x)\n", status);
+            val_print(ALWAYS, "\nTEST RESULT: SKIPPED (Skip Code=0x%x)\n", status);
             break;
 
         case TEST_PENDING:
-            val_print(PRINT_ALWAYS, "\nTEST RESULT: SIM ERROR (Error Code=0x%x)\n", status);
+            val_print(ALWAYS, "\nTEST RESULT: SIM ERROR (Error Code=0x%x)\n", status);
             break;
 
         default:
             state = TEST_FAIL;
-            val_print(PRINT_ALWAYS, "\nTEST RESULT: FAILED(Error Code=0x%x)\n", VAL_STATUS_INVALID);
+            val_print(ALWAYS, "\nTEST RESULT: FAILED(Error Code=0x%x)\n", VAL_STATUS_INVALID);
             break;
     }
 
-    val_print(PRINT_ALWAYS, "\n******************************************\n", 0);
+    val_print(ALWAYS, "\n******************************************\n", 0);
     return state;
 }
 
@@ -107,16 +107,16 @@ uint32_t val_get_status(void)
 val_status_t val_err_check_set(uint32_t checkpoint, val_status_t status)
 {
     if (VAL_ERROR(status)) {
-        val_print(PRINT_ERROR, "\tCheckpoint %d : ", checkpoint);
-        val_print(PRINT_ERROR, "Error Code=0x%x \n", status);
+        val_print(ERROR, "\tCheckpoint %d : ", checkpoint);
+        val_print(ERROR, "Error Code=0x%x \n", status);
         val_set_status(RESULT_FAIL(status));
     } else {
         status = (val_get_status() & TEST_STATUS_MASK);
         if (VAL_ERROR(status)) {
-            val_print(PRINT_ERROR, "\tCheckpoint %d : ", checkpoint);
-            val_print(PRINT_ERROR, "Error Code=0x%x \n", status);
+            val_print(ERROR, "\tCheckpoint %d : ", checkpoint);
+            val_print(ERROR, "Error Code=0x%x \n", status);
         } else
-            val_print(PRINT_DEBUG, "\tCheckpoint %d \n", checkpoint);
+            val_print(DBG, "\tCheckpoint %d \n", checkpoint);
     }
     return status;
 }
@@ -140,8 +140,8 @@ void val_test_init(uint32_t test_num, char8_t *desc)
    g_status_buffer.state   = TEST_FAIL;
    g_status_buffer.status  = VAL_STATUS_INVALID;
 
-   val_print(PRINT_ALWAYS, "\nTEST: %d | DESCRIPTION: ", test_num);
-   val_print(PRINT_ALWAYS, desc, 0);
+   val_print(ALWAYS, "\nTEST: %d | DESCRIPTION: ", test_num);
+   val_print(ALWAYS, desc, 0);
 
    val_set_status(RESULT_START(status));
    return;

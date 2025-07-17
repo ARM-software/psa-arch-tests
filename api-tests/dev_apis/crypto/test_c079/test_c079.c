@@ -15,7 +15,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_c079.h"
 #include "test_data.h"
 
@@ -132,8 +131,8 @@ int32_t psa_pake_spake2p_test(caller_security_t caller __UNUSED)
 
     for (j = 0 ; j < num_checks ; j++) {
 
-    val->print(PRINT_TEST, "[Check %d] ", g_test_count++);
-    val->print(PRINT_TEST, check1[j].test_desc, 0);
+    val->print(TEST, "Check %d: ", g_test_count++);
+    val->print(TEST, check1[j].test_desc, 0);
 
     /* Setting up the watchdog timer for each check */
     status = val->wd_reprogram_timer(WD_CRYPTO_TIMEOUT);
@@ -187,12 +186,12 @@ int32_t psa_pake_spake2p_test(caller_security_t caller __UNUSED)
    /* Setup spake2p operation for prover/client */
     status = psa_pake_spake2p_setup(&client, (const uint8_t *)"client", (const uint8_t *)"server",
                             (const uint8_t *)"context", check1[j].alg, PSA_PAKE_ROLE_CLIENT, ckey);
-    val->print(PRINT_DEBUG, "       1 : SPAKE2P operation setup for prover done \n", 0);
+    val->print(DBG, "       1 : SPAKE2P operation setup for prover done \n", 0);
 
   /* Setup spake2p operation for verifier/server */
    status = psa_pake_spake2p_setup(&server, (const uint8_t *)"server", (const uint8_t *)"client",
                             (const uint8_t *)"context", check1[j].alg, PSA_PAKE_ROLE_SERVER, skey);
-   val->print(PRINT_DEBUG, "       2 : SPAKE2P operation setup for verifier done \n", 0);
+   val->print(DBG, "       2 : SPAKE2P operation setup for verifier done \n", 0);
 
    /* Starting key exchange operation */
 
@@ -212,7 +211,7 @@ int32_t psa_pake_spake2p_test(caller_security_t caller __UNUSED)
    status = send_message_spake2p(&client, &server, PSA_PAKE_STEP_CONFIRM);
    TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(10));
 
-   val->print(PRINT_DEBUG, "       3 : SPAKE2P key exchange between prover and verifier done\n", 0);
+   val->print(DBG, "       3 : SPAKE2P key exchange between prover and verifier done\n", 0);
    /* Extract Shared Secret as a key derivation key */
 
    /* Setup the attributes for the key */
@@ -226,7 +225,7 @@ int32_t psa_pake_spake2p_test(caller_security_t caller __UNUSED)
                           &attributes,
                           PSA_ALG_HKDF(PSA_ALG_SHA_256));
 
-     val->print(PRINT_DEBUG, "       4 : Derive shared secret from prover \n", 0);
+     val->print(DBG, "       4 : Derive shared secret from prover \n", 0);
 
     /* Setup Key Derivation for prover/client */
      status = val->crypto_function(VAL_CRYPTO_PAKE_GET_SHARED_KEY,
@@ -257,17 +256,17 @@ int32_t psa_pake_spake2p_test(caller_security_t caller __UNUSED)
      status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &kdf);
      TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(17));
 
-     val->print(PRINT_DEBUG, " secret1 : ", 0);
+     val->print(DBG, " secret1 : ", 0);
      for (i = 0; i < 32; i++)
       {
-        val->print(PRINT_DEBUG, "%x", secret1[i]);
+        val->print(DBG, "%x", secret1[i]);
       }
-      val->print(PRINT_DEBUG, "\n", 0);
+      val->print(DBG, "\n", 0);
 
      status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, shared_key);
      TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(18));
 
-     val->print(PRINT_DEBUG, "       5 : Derive shared secret from verifier \n", 0);
+     val->print(DBG, "       5 : Derive shared secret from verifier \n", 0);
 
     /* Setup Key Derivation for prover/client */
      status = val->crypto_function(VAL_CRYPTO_PAKE_GET_SHARED_KEY,
@@ -298,13 +297,13 @@ int32_t psa_pake_spake2p_test(caller_security_t caller __UNUSED)
      status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &kdf);
      TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(25));
 
-     val->print(PRINT_DEBUG, " secret2 : ", 0);
+     val->print(DBG, " secret2 : ", 0);
      for (i = 0; i < 32; i++)
       {
-        val->print(PRINT_DEBUG, "%x", secret2[i]);
+        val->print(DBG, "%x", secret2[i]);
       }
 
-       val->print(PRINT_DEBUG, "\n", 0);
+       val->print(DBG, "\n", 0);
 
        status = val->crypto_function(VAL_CRYPTO_DESTROY_KEY, shared_key);
        TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(26));

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -35,7 +34,7 @@ int32_t client_test_unspecified_dependent_sid(caller_security_t caller __UNUSED)
 {
    psa_handle_t       handle = 0;
 
-   val->print(PRINT_TEST, "[Check 1] Test psa_connect with SID unspecified in dependencies\n", 0);
+   val->print(TEST, "Check 1: Test psa_connect with SID unspecified in dependencies\n", 0);
 
    /*
     * This test checks for the PROGRAMMER ERROR condition for the PSA API. API's respond to
@@ -51,7 +50,7 @@ int32_t client_test_unspecified_dependent_sid(caller_security_t caller __UNUSED)
     * the test harness function.
     *
     * If programmed timeout value isn't sufficient for your system, it can be reconfigured using
-    * timeout entries available in target.cfg.
+    * timeout entries available in pal_config.h.
     *
     * To decide, a reboot happened as intended by test scenario or it happended
     * due to other reasons, test is setting a boot signature into non-volatile memory before and
@@ -62,7 +61,7 @@ int32_t client_test_unspecified_dependent_sid(caller_security_t caller __UNUSED)
    /* Setting boot.state before test check */
    if (val->set_boot_flag(BOOT_EXPECTED_S))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
@@ -73,12 +72,12 @@ int32_t client_test_unspecified_dependent_sid(caller_security_t caller __UNUSED)
    handle = psa->connect(SERVER_UNEXTERN_SID, SERVER_UNEXTERN_VERSION);
 
    /* If PROGRAMMER ERROR results into panic then control shouldn't have reached here */
-   val->print(PRINT_ERROR, "\tunextern SID connection should have failed but succeed\n", 0);
+   val->print(ERROR, "\tunextern SID connection should have failed but succeed\n", 0);
 
    /* Resetting boot.state to catch unwanted reboot */
    if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
        return VAL_STATUS_ERROR;
    }
 

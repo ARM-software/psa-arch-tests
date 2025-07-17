@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -65,7 +65,7 @@ exit:
     status = val->process_disconnect_request(SERVER_CONNECTION_DROP_SIGNAL, &msg);
     if (val->err_check_set(TEST_CHECKPOINT_NUM(203), status))
     {
-        val->print(PRINT_ERROR, "\tDisconnect request failed\n", 0);
+        val->print(ERROR, "\tDisconnect request failed\n", 0);
     }
     psa->reply(msg.handle, PSA_SUCCESS);
     return status;

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -38,8 +37,8 @@ int32_t client_test_psa_get_with_invalid_msg_pointer(caller_security_t caller __
 
     psa_status_t            status_of_call;
 
-	val->print(PRINT_TEST,
-            "[Check 1] Test psa_get with invalid msg pointer\n", 0);
+	val->print(TEST,
+            "Check 1: Test psa_get with invalid msg pointer\n", 0);
 
     status_of_call = psa->call(SERVER_UNSPECIFIED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, NULL, 0);
     (void)status_of_call;
@@ -61,8 +60,8 @@ int32_t client_test_psa_get_with_invalid_msg_pointer(caller_security_t caller __
 
    psa_handle_t       handle = 0;
 
-   val->print(PRINT_TEST,
-            "[Check 1] Test psa_get with invalid msg pointer\n", 0);
+   val->print(TEST,
+            "Check 1: Test psa_get with invalid msg pointer\n", 0);
 
 
    handle = psa->connect(SERVER_UNSPECIFIED_VERSION_SID, SERVER_UNSPECIFIED_VERSION_VERSION);
@@ -72,7 +71,7 @@ int32_t client_test_psa_get_with_invalid_msg_pointer(caller_security_t caller __
    }
 
    /* Expectation is server test should hang and control shouldn't have come here */
-   val->print(PRINT_ERROR, "\tpsa_connect should failed but succeed\n", 0);
+   val->print(ERROR, "\tpsa_connect should failed but succeed\n", 0);
 
    (void)(handle);
 

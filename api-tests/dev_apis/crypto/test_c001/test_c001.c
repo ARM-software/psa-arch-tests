@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_c001.h"
 
 const client_test_t test_c001_crypto_list[] = {
@@ -32,7 +31,7 @@ int32_t psa_generate_random_without_init_test(caller_security_t caller __UNUSED)
     uint8_t         output[GENERATE_SIZE];
     int32_t         status;
 
-    val->print(PRINT_TEST, "[Check 1] Test calling crypto functions before psa_crypto_init\n", 0);
+    val->print(TEST, "Check 1: Test calling crypto functions before psa_crypto_init\n", 0);
 
     /* Generate random bytes */
     status = val->crypto_function(VAL_CRYPTO_GENERATE_RANDOM, output, GENERATE_SIZE);
@@ -48,7 +47,7 @@ int32_t psa_crypto_init_test(caller_security_t caller __UNUSED)
 {
     int32_t        status;
 
-    val->print(PRINT_TEST, "[Check 2] Test psa_crypto_init\n", 0);
+    val->print(TEST, "Check 2: Test psa_crypto_init\n", 0);
 
     /* Initialize the PSA crypto library*/
     status = val->crypto_function(VAL_CRYPTO_INIT);
@@ -61,7 +60,7 @@ int32_t multiple_psa_crypto_init_test(caller_security_t caller __UNUSED)
 {
     int32_t         i, status;
 
-    val->print(PRINT_TEST, "[Check 3] Test multiple psa_crypto_init \n", 0);
+    val->print(TEST, "Check 3: Test multiple psa_crypto_init \n", 0);
     for (i = 0; i < 5; i++)
     {
         /* Initialize the PSA crypto library*/

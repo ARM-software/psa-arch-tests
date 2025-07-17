@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -55,7 +54,7 @@ void test_i068_dummy_func(void)
 
 int32_t client_test_instr_exec_from_writable_mem(caller_security_t caller __UNUSED)
 {
-  val->print(PRINT_TEST, "[Check 1] Test Instr execution from writable memory\n", 0);
+  val->print(TEST, "Check 1: Test Instr execution from writable memory\n", 0);
 
   /*
    * Copy test_i068_dummy_func function code into data memory
@@ -66,25 +65,25 @@ int32_t client_test_instr_exec_from_writable_mem(caller_security_t caller __UNUS
 
   /* Point function pointer to data memory */
   fptr = (fptr_t) opcode;
-  val->print(PRINT_DEBUG, "\t&opcode = 0x%x\n", (uint32_t) &opcode);
-  val->print(PRINT_DEBUG, "\tfptr = 0x%x\n", (uint32_t) fptr);
+  val->print(DBG, "\t&opcode = 0x%x\n", (uint32_t) &opcode);
+  val->print(DBG, "\tfptr = 0x%x\n", (uint32_t) fptr);
 
   /* Setting boot.state before test check */
    if (val->set_boot_flag(BOOT_EXPECTED_S))
    {
-       val->print(PRINT_ERROR, "\tFailed to set boot flag before check\n", 0);
+       val->print(ERROR, "\tFailed to set boot flag before check\n", 0);
        return VAL_STATUS_ERROR;
    }
 
   /* Check - Execute opcode from data memory. This should generate internal fault */
   fptr();
 
-  val->print(PRINT_ERROR, "\tControl shouldn't have reached here\n", 0);
+  val->print(ERROR, "\tControl shouldn't have reached here\n", 0);
 
   /* Resetting boot.state to catch unwanted reboot */
   if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
   {
-      val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+      val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
   }
 
   return VAL_STATUS_ERROR;

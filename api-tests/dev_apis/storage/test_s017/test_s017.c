@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_s017.h"
 #include "test_data.h"
 
@@ -44,25 +43,25 @@ static int32_t psa_sst_optional_api_partial_write(storage_function_code_t fCode)
     TEST_ASSERT_EQUAL(status, s017_data[VAL_TEST_IDX1].status, TEST_CHECKPOINT_NUM(1));
 
     /* Call set extended API to set data in first half */
-    val->print(PRINT_TEST, "[Check 1] Set data in first half of storage\n", 0);
+    val->print(TEST, "Check 1: Set data in first half of storage\n", 0);
     status = STORAGE_FUNCTION(s017_data[VAL_TEST_IDX2].api[fCode], p_uid, 0, TEST_BUFF_SIZE_1/2,
                               write_buff);
     TEST_ASSERT_EQUAL(status, s017_data[VAL_TEST_IDX2].status, TEST_CHECKPOINT_NUM(2));
 
     /* Call set extended API to set data with gaps */
-    val->print(PRINT_TEST, "[Check 2] Set data having gap with existing data \n", 0);
+    val->print(TEST, "Check 2: Set data having gap with existing data \n", 0);
     status = STORAGE_FUNCTION(s017_data[VAL_TEST_IDX3].api[fCode], p_uid, (TEST_BUFF_SIZE_1/2) + 2,
                               2,  write_buff);
     TEST_ASSERT_EQUAL(status, s017_data[VAL_TEST_IDX3].status, TEST_CHECKPOINT_NUM(3));
 
     /* Call set extended API to overwrite and extend the existing data */
-    val->print(PRINT_TEST, "[Check 3] Overwrite and extend existing data\n", 0);
+    val->print(TEST, "Check 3: Overwrite and extend existing data\n", 0);
     status = STORAGE_FUNCTION(s017_data[VAL_TEST_IDX4].api[fCode], p_uid, 0, TEST_BUFF_SIZE_2,
                               write_buff);
     TEST_ASSERT_EQUAL(status, s017_data[VAL_TEST_IDX4].status, TEST_CHECKPOINT_NUM(4));
 
     /* Check the attributes of existing storage */
-    val->print(PRINT_TEST, "[Check 4] Check the storage attributes\n", 0);
+    val->print(TEST, "Check 4: Check the storage attributes\n", 0);
     status = STORAGE_FUNCTION(s017_data[VAL_TEST_IDX5].api[fCode], p_uid, &info);
     TEST_ASSERT_EQUAL(status, s017_data[VAL_TEST_IDX5].status, TEST_CHECKPOINT_NUM(5));
     TEST_ASSERT_EQUAL(info.size, TEST_BUFF_SIZE_2, TEST_CHECKPOINT_NUM(6));
@@ -85,10 +84,10 @@ static int32_t psa_sst_optional_api_partial_write_check(storage_function_code_t 
 
     if (status != s017_data[VAL_TEST_IDX0].status)
     {
-       val->print(PRINT_TEST, "Test Case skipped as Optional PS APIs not are supported.\n", 0);
+       val->print(TEST, "Test Case skipped as Optional PS APIs not are supported.\n", 0);
        return RESULT_SKIP(VAL_STATUS_UNSUPPORTED);
     } else {
-        val->print(PRINT_TEST, "Optional PS APIs are supported.\n", 0);
+        val->print(TEST, "Optional PS APIs are supported.\n", 0);
         test_status = psa_sst_optional_api_partial_write(fCode);
         if (test_status != VAL_STATUS_SUCCESS)
         {
@@ -103,7 +102,8 @@ int32_t s017_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 
-    val->print(PRINT_TEST, PS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, PS_TEST_MESSAGE, 0);
     status = psa_sst_optional_api_partial_write_check(VAL_PS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;

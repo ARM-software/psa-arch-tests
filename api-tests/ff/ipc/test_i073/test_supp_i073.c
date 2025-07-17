@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,7 +49,7 @@ static int32_t send_secure_partition_address(addr_t *stack)
         return status;
     }
 
-    val->print(PRINT_DEBUG, "\tAPP-ROT: Passing 0x%x to NSPE\n", (int)stack);
+    val->print(DBG, "\tAPP-ROT: Passing 0x%x to NSPE\n", (int)stack);
 
     /* Send Application RoT stack address */
     psa->write(msg.handle, 0, (void *)&stack, sizeof(uint32_t));
@@ -67,7 +67,7 @@ int32_t server_test_nspe_read_app_rot_stack(void)
     status = send_secure_partition_address(&l_test_i073);
 
     /* Dummy print to avoid compiler optimisation on local variable */
-    val->print(PRINT_INFO, "\tStack data 0x%x\n", l_test_i073);
+    val->print(INFO, "\tStack data 0x%x\n", l_test_i073);
     return status;
 }
 
@@ -85,12 +85,12 @@ int32_t server_test_nspe_write_app_rot_stack(void)
     if (l_test_i073 == DATA_VALUE)
         return VAL_STATUS_SUCCESS;
 
-    val->print(PRINT_ERROR, "\tExpected write to fault but it didn't\n", 0);
+    val->print(ERROR, "\tExpected write to fault but it didn't\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
     if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
         return VAL_STATUS_ERROR;
     }
     return VAL_STATUS_SUCCESS;
@@ -126,7 +126,7 @@ static int32_t send_secure_partition_address(addr_t *stack)
         return status;
     }
 
-    val->print(PRINT_DEBUG, "\tAPP-ROT: Passing 0x%x to NSPE\n", (int)stack);
+    val->print(DBG, "\tAPP-ROT: Passing 0x%x to NSPE\n", (int)stack);
 
     /* Send Application RoT stack address */
     psa->write(msg.handle, 0, (void *)&stack, sizeof(uint32_t));
@@ -151,7 +151,7 @@ int32_t server_test_nspe_read_app_rot_stack(void)
     status = send_secure_partition_address(&l_test_i073);
 
     /* Dummy print to avoid compiler optimisation on local variable */
-    val->print(PRINT_INFO, "\tStack data 0x%x\n", l_test_i073);
+    val->print(INFO, "\tStack data 0x%x\n", l_test_i073);
     return status;
 }
 
@@ -181,12 +181,12 @@ int32_t server_test_nspe_write_app_rot_stack(void)
     if (l_test_i073 == DATA_VALUE)
         return VAL_STATUS_SUCCESS;
 
-    val->print(PRINT_ERROR, "\tExpected write to fault but it didn't\n", 0);
+    val->print(ERROR, "\tExpected write to fault but it didn't\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
     if (val->set_boot_flag(BOOT_EXPECTED_BUT_FAILED))
     {
-        val->print(PRINT_ERROR, "\tFailed to set boot flag after check\n", 0);
+        val->print(ERROR, "\tFailed to set boot flag after check\n", 0);
         return VAL_STATUS_ERROR;
     }
     return VAL_STATUS_SUCCESS;

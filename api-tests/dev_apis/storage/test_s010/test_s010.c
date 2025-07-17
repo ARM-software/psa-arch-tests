@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_s010.h"
 #include "test_data.h"
 
@@ -37,18 +36,18 @@ int32_t psa_sst_uid_value_zero_check(storage_function_code_t fCode)
     struct psa_storage_info_t info;
 
     /* Set with UID value zero should fail */
-    val->print(PRINT_TEST, "[Check 1] Creating storage with UID 0 should fail\n", 0);
+    val->print(TEST, "Check 1: Creating storage with UID 0 should fail\n", 0);
     status = STORAGE_FUNCTION(s010_data[VAL_TEST_IDX0].api[fCode], uid, TEST_BUFF_SIZE,
                               write_buff, PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s010_data[VAL_TEST_IDX0].status, TEST_CHECKPOINT_NUM(1));
 
     /* Call to get_info call with UID zero should fail */
-    val->print(PRINT_TEST, "[Check 2] Get_info for UID 0 should fail\n", 0);
+    val->print(TEST, "Check 2: Get_info for UID 0 should fail\n", 0);
     status = STORAGE_FUNCTION(s010_data[VAL_TEST_IDX1].api[fCode], uid, &info);
     TEST_ASSERT_EQUAL(status, s010_data[VAL_TEST_IDX1].status, TEST_CHECKPOINT_NUM(2));
 
     /* UID removal should fail  */
-    val->print(PRINT_TEST, "[Check 3] Removing storage with UID 0 should fail\n", 0);
+    val->print(TEST, "Check 3: Removing storage with UID 0 should fail\n", 0);
     status = STORAGE_FUNCTION(s010_data[VAL_TEST_IDX2].api[fCode], uid);
     TEST_ASSERT_EQUAL(status, s010_data[VAL_TEST_IDX2].status, TEST_CHECKPOINT_NUM(3));
 
@@ -60,7 +59,8 @@ int32_t s010_storage_test(caller_security_t caller __UNUSED)
     int32_t status;
 
 #if defined(STORAGE) || defined(INTERNAL_TRUSTED_STORAGE)
-    val->print(PRINT_TEST, ITS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, ITS_TEST_MESSAGE, 0);
     status = psa_sst_uid_value_zero_check(VAL_ITS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;
@@ -68,7 +68,8 @@ int32_t s010_storage_test(caller_security_t caller __UNUSED)
 #endif
 
 #if defined(STORAGE) || defined(PROTECTED_STORAGE)
-    val->print(PRINT_TEST, PS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, PS_TEST_MESSAGE, 0);
     status = psa_sst_uid_value_zero_check(VAL_PS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;

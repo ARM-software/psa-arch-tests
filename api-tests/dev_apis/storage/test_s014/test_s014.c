@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_s014.h"
 #include "test_data.h"
 
@@ -39,7 +38,7 @@ static int32_t psa_sst_optional_api_not_supported(storage_function_code_t fCode)
     struct  psa_storage_info_t info;
 
     /* Try to create storage using create API */
-    val->print(PRINT_TEST, "[Check 1] Call to create API should fail as API not supported\n", 0);
+    val->print(TEST, "Check 1: Call to create API should fail as API not supported\n", 0);
     status = STORAGE_FUNCTION(s014_data[VAL_TEST_IDX1].api[fCode], p_uid, TEST_BUFF_SIZE,
                               PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s014_data[VAL_TEST_IDX1].status, TEST_CHECKPOINT_NUM(1));
@@ -49,18 +48,18 @@ static int32_t psa_sst_optional_api_not_supported(storage_function_code_t fCode)
     TEST_ASSERT_EQUAL(status, s014_data[VAL_TEST_IDX2].status, TEST_CHECKPOINT_NUM(2));
 
     /* Create a valid storage using set API */
-    val->print(PRINT_TEST, "[Check 2] Create valid storage with set API\n", 0);
+    val->print(TEST, "Check 2: Create valid storage with set API\n", 0);
     status = STORAGE_FUNCTION(s014_data[VAL_TEST_IDX3].api[fCode], p_uid, TEST_BUFF_SIZE/4,
                               write_buff, PSA_STORAGE_FLAG_NONE);
     TEST_ASSERT_EQUAL(status, s014_data[VAL_TEST_IDX3].status, TEST_CHECKPOINT_NUM(3));
 
     /* Partial data write with set_extended API should fail */
-    val->print(PRINT_TEST, "[Check 3] Call to set_extended API call should fail\n", 0);
+    val->print(TEST, "Check 3: Call to set_extended API call should fail\n", 0);
     status = STORAGE_FUNCTION(s014_data[VAL_TEST_IDX4].api[fCode], p_uid, 0, 2, write_buff);
     TEST_ASSERT_EQUAL(status, s014_data[VAL_TEST_IDX4].status, TEST_CHECKPOINT_NUM(4));
 
     /* Call the get function to match the data */
-    val->print(PRINT_TEST, "[Check 4] Verify data is unchanged\n", 0);
+    val->print(TEST, "Check 4: Verify data is unchanged\n", 0);
     status = STORAGE_FUNCTION(s014_data[VAL_TEST_IDX5].api[fCode], p_uid, 0, TEST_BUFF_SIZE/4,
                               read_buff, &p_data_length);
     TEST_ASSERT_EQUAL(status, s014_data[VAL_TEST_IDX5].status, TEST_CHECKPOINT_NUM(5));
@@ -84,12 +83,12 @@ static int32_t psa_sst_optional_api_not_supported_check(storage_function_code_t 
 
     if (status == s014_data[VAL_TEST_IDX0].status)
     {
-       val->print(PRINT_INFO, "Test Case skipped as Optional PS APIs are supported.\n", 0);
+       val->print(INFO, "Test Case skipped as Optional PS APIs are supported.\n", 0);
        return RESULT_SKIP(VAL_STATUS_UNSUPPORTED);
     }
     else
     {
-        val->print(PRINT_TEST, "Optional PS APIs are not supported.\n", 0);
+        val->print(TEST, "Optional PS APIs are not supported.\n", 0);
         test_status = psa_sst_optional_api_not_supported(fCode);
         if (test_status != VAL_STATUS_SUCCESS)
            return test_status;
@@ -102,7 +101,8 @@ int32_t s014_storage_test(caller_security_t caller __UNUSED)
 {
     int32_t status;
 
-    val->print(PRINT_TEST, PS_TEST_MESSAGE, 0);
+    val->print(TEST, "\n", 0);
+    val->print(TEST, PS_TEST_MESSAGE, 0);
     status = psa_sst_optional_api_not_supported_check(VAL_PS_FUNCTION);
     if (status != VAL_STATUS_SUCCESS) {
         return status;

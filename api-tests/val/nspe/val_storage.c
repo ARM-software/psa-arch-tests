@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2020-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,6 @@
  * limitations under the License.
 **/
 
-#include "val_target.h"
 #include "pal_interfaces_ns.h"
 #include "val_framework.h"
 #include "val_client_defs.h"
@@ -57,7 +56,7 @@ int32_t val_storage_function(int type, ...)
             break;
 #endif
         default:
-            val_print(PRINT_ERROR, "\n\nError: Not a valid ITS or PS function code!", 0);
+            val_print(ERROR, "\n\nError: Not a valid ITS or PS function code!", 0);
             return VAL_STATUS_ERROR;
     }
     va_end(valist);

@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2023-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2023-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,11 +18,71 @@
 #ifndef _PAL_CONFIG_H_
 #define _PAL_CONFIG_H_
 
+/*==========================  PLATFORM CONFIGURATIONS START  ==========================*/
+
+// UART device info
+#define UART_NUM                               1
+
+#define UART_0_BASE                            0x59305000  // UART2_S
+#define UART_0_SIZE                            0xFFF
+#define UART_0_INTR_ID                         0xFF
+#define UART_0_PERMISSION                      TYPE_READ_WRITE
+
+// Watchdog device info
+#define WATCHDOG_NUM                           1
+
+#define WATCHDOG_0_BASE                        0x58040000   // APB_WATCHDOG_BASE_S
+#define WATCHDOG_0_SIZE                        0x2000
+#define WATCHDOG_0_INTR_ID                     0xFF
+#define WATCHDOG_0_PERMISSION                  TYPE_READ_WRITE
+#define WATCHDOG_0_NUM_OF_TICK_PER_MICRO_SEC   0x19        //(sys_freq/1000000)
+#define WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_LOW    0xF4240    //1.0  sec :  1 * 1000 * 1000
+#define WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_MEDIUM 0x1E8480   //2.0  sec :  2 * 1000 * 1000
+#define WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_HIGH   0x4C4B40   //5.0  sec :  5 * 1000 * 1000
+#define WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_CRYPTO 0x1312D00  //18.0 sec : 18 * 1000 * 1000
+
+// Range of 1KB Non-volatile memory to preserve data over reset. Ex, NVRAM and FLASH
+#define NVMEM_NUM                              1
+
+#define NVMEM_0_START                          0x010FC000
+#define NVMEM_0_END                            0x010FC3FF
+#define NVMEM_0_PERMISSION                     TYPE_READ_WRITE
+
+// ###################################################################
+// Following Target configuration parameters are required for IPC tests
+// only. Avoid updating them if you are running dev_apis tests.
+// ###################################################################
+
+// Assign free memory range for isolation testing. Choose the addresses
+// for these memory regions such that it follows below condition:
+// nspe_mmio.0.start < server_partition_mmio.0.start < driver_partition_mmio.0.start.
+
+#define NSPE_MMIO_NUM                      1
+
+#define NSPE_MMIO_0_START                  0x010FC200
+#define NSPE_MMIO_0_END                    0x010FC300
+#define NSPE_MMIO_0_PERMISSION             TYPE_READ_WRITE
+
+#define SERVER_PARTITION_MMIO_NUM          1
+
+#define SERVER_PARTITION_MMIO_0_START      0x010FC400
+#define SERVER_PARTITION_MMIO_0_END        0x010FC500
+#define SERVER_PARTITION_MMIO_0_PERMISSION TYPE_READ_WRITE
+
+#define DRIVER_PARTITION_MMIO_NUM          1
+
+#define DRIVER_PARTITION_MMIO_0_START      0x010FC600
+#define DRIVER_PARTITION_MMIO_0_END        0x010FC700
+#define DRIVER_PARTITION_MMIO_0_PERMISSION TYPE_READ_WRITE
+
+/*==========================  PLATFORM CONFIGURATIONS END  ============================*/
+
+
 /* Define PSA test suite dependent macros for non-cmake build */
 #if !defined(PSA_CMAKE_BUILD)
 
 /* Print verbosity = TEST */
-#define VERBOSE 3
+#define VERBOSITY 3
 
 /* NSPE or SPE VAL build? */
 #define VAL_NSPE_BUILD
@@ -45,6 +105,34 @@
 
 /* Use hardcoded public key */
 #define PLATFORM_OVERRIDE_ATTEST_PK
+
+/* Enable custom printing for Non-secure side */
+#define BESPOKE_PRINT_NS
+
+/* UART base address assigned */
+#define PLATFORM_UART_BASE UART_0_BASE
+
+/* Watchdog device configurations assigned */
+#define PLATFORM_WD_BASE                        WATCHDOG_0_BASE
+#define PLATFORM_WD_NUM_OF_TICK_PER_MICRO_SEC   WATCHDOG_0_NUM_OF_TICK_PER_MICRO_SEC
+#define PLATFORM_WD_TIMEOUT_IN_MICRO_SEC_LOW    WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_LOW
+#define PLATFORM_WD_TIMEOUT_IN_MICRO_SEC_MEDIUM WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_LOW
+#define PLATFORM_WD_TIMEOUT_IN_MICRO_SEC_HIGH   WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_LOW
+#define PLATFORM_WD_TIMEOUT_IN_MICRO_SEC_CRYPTO WATCHDOG_0_TIMEOUT_IN_MICRO_SEC_CRYPTO
+
+/* Non-volatile memory base address assigned */
+#define PLATFORM_NVM_BASE NVMEM_0_START
+
+
+/* Non-secure partition Memory Mapped I/O base address assigned */
+#define PLATFORM_NSPE_MMIO_START NSPE_MMIO_0_START
+
+/* Server partition Memory Mapped I/O base address assigned */
+#define PLATFORM_SERVER_PARTITION_MMIO_START SERVER_PARTITION_MMIO_0_START
+
+/* Driver partition Memory Mapped I/O configurations assigned */
+#define PLATFORM_DRIVER_PARTITION_MMIO_START DRIVER_PARTITION_MMIO_0_START
+#define PLATFORM_DRIVER_PARTITION_MMIO_END   DRIVER_PARTITION_MMIO_0_END
 
 /*
  * Include of PSA defined Header files

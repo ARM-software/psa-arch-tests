@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,7 +50,7 @@ int32_t server_test_psa_doorbell_signal(void)
     else
     {
         status = VAL_STATUS_SPM_FAILED;
-        val->print(PRINT_ERROR, "Caller is from non-secure\n", 0);
+        val->print(ERROR, "Caller is from non-secure\n", 0);
     }
 
     status = val->process_call_request(SERVER_UNSPECIFIED_VERSION_SIGNAL, &msg);
@@ -93,7 +93,7 @@ int32_t server_test_psa_doorbell_signal(void)
     else
     {
         status = VAL_STATUS_SPM_FAILED;
-        val->print(PRINT_ERROR, "Caller is from non-secure\n", 0);
+        val->print(ERROR, "Caller is from non-secure\n", 0);
     }
 
     /* Serve psa_close */

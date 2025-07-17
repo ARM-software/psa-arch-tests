@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -96,7 +96,7 @@ void driver_main(void)
                         /* arg2=string, arg3=DATA */
                         psa_read(msg.handle, 1, &string, msg.in_size[1]);
                         psa_read(msg.handle, 2, &data, msg.in_size[2]);
-                        fn_status = val_print_sf(string, data);
+                        fn_status = val_print_sf(ALWAYS, string, data);
                     }
                     if (VAL_ERROR(fn_status))
                     {
@@ -124,7 +124,7 @@ void driver_main(void)
                     {
                         /* buffer overflow */
                         psa_reply(msg.handle, VAL_STATUS_ERROR);
-                        val_print_sf("msg.in_size[0] buffer overflow\n", 0);
+                        val_print_sf(ERROR, "msg.in_size[0] buffer overflow\n", 0);
                         break;
                     }
                     else
@@ -177,7 +177,7 @@ void driver_main(void)
                     {
                         /* buffer overflow */
                         psa_reply(msg.handle, VAL_STATUS_ERROR);
-                        val_print_sf("msg.in_size[0] buffer overflow\n", 0);
+                        val_print_sf(ERROR, "msg.in_size[0] buffer overflow\n", 0);
                         break;
                     }
                     else
@@ -199,7 +199,7 @@ void driver_main(void)
                         {
                             /* buffer overflow */
                             fn_status = VAL_STATUS_ERROR;
-                            val_print_sf("msg.in_size[1] buffer overflow\n", 0);
+                            val_print_sf(ERROR, "msg.in_size[1] buffer overflow\n", 0);
                         }
                         else
                         {
@@ -236,7 +236,7 @@ void driver_main(void)
                     {
                         /* buffer overflow */
                         psa_reply(msg.handle, VAL_STATUS_ERROR);
-                        val_print_sf("msg.in_size[0] buffer overflow\n", 0);
+                        val_print_sf(ERROR, "msg.in_size[0] buffer overflow\n", 0);
                         break;
                     }
                     else
@@ -298,7 +298,7 @@ void driver_main(void)
         }
         else
         {
-            val_print_sf("Unexpected signal value=0x%x. Entering into infinite loop\n",
+            val_print_sf(ERROR, "Unexpected signal value=0x%x. Entering into infinite loop\n",
                          signals);
             TEST_PANIC();
         }
@@ -310,7 +310,7 @@ int32_t driver_test_psa_eoi_with_non_intr_signal(void)
     /* Setting boot.state before test check */
     if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_NS))
     {
-        val_print_sf("\tFailed to set boot flag before check\n", 0);
+        val_print_sf(ERROR, "\tFailed to set boot flag before check\n", 0);
         return VAL_STATUS_ERROR;
     }
 
@@ -318,12 +318,12 @@ int32_t driver_test_psa_eoi_with_non_intr_signal(void)
     psa_eoi(PSA_DOORBELL);
 
     /* Control shouldn't have reached here */
-    val_print_sf("\tCheck for psa_eoi(non_intr_sig) failed\n", 0);
+    val_print_sf(ERROR, "\tCheck for psa_eoi(non_intr_sig) failed\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
     if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_BUT_FAILED))
     {
-        val_print_sf("\tFailed to set boot flag after check\n", 0);
+        val_print_sf(ERROR, "\tFailed to set boot flag after check\n", 0);
         return VAL_STATUS_ERROR;
     }
 
@@ -335,7 +335,7 @@ int32_t driver_test_psa_eoi_with_unasserted_signal(void)
     /* Setting boot.state before test check */
     if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_NS))
     {
-        val_print_sf("\tFailed to set boot flag before check\n", 0);
+        val_print_sf(ERROR, "\tFailed to set boot flag before check\n", 0);
         return VAL_STATUS_ERROR;
     }
 
@@ -343,12 +343,12 @@ int32_t driver_test_psa_eoi_with_unasserted_signal(void)
     psa_eoi(DRIVER_UART_INTR_SIG);
 
     /* Control shouldn't have reached here */
-    val_print_sf("\tCheck for psa_eoi(multiple_signals) failed\n", 0);
+    val_print_sf(ERROR, "\tCheck for psa_eoi(multiple_signals) failed\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
     if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_BUT_FAILED))
     {
-        val_print_sf("\tFailed to set boot flag after check\n", 0);
+        val_print_sf(ERROR, "\tFailed to set boot flag after check\n", 0);
         return VAL_STATUS_ERROR;
     }
 
@@ -375,14 +375,14 @@ int32_t driver_test_psa_eoi_with_multiple_signals(void)
     {
         /* didn't receive DRIVER_UART_INTR_SIG signal, however process it */
         val_disable_interrupt();
-        val_print_sf("\tFailed to receive irq signal\n", 0);
+        val_print_sf(ERROR, "\tFailed to receive irq signal\n", 0);
         return VAL_STATUS_SPM_FAILED;
     }
 
     /* Setting boot.state before test check */
     if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_NS))
     {
-        val_print_sf("\tFailed to set boot flag before check\n", 0);
+        val_print_sf(ERROR, "\tFailed to set boot flag before check\n", 0);
         return VAL_STATUS_ERROR;
     }
 
@@ -390,12 +390,12 @@ int32_t driver_test_psa_eoi_with_multiple_signals(void)
     psa_eoi(DRIVER_UART_INTR_SIG|DRIVER_TEST_SIGNAL);
 
     /* Control shouldn't have reached here */
-    val_print_sf("\tCheck for psa_eoi(multiple_signals) failed\n", 0);
+    val_print_sf(ERROR, "\tCheck for psa_eoi(multiple_signals) failed\n", 0);
 
     /* Resetting boot.state to catch unwanted reboot */
     if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_BUT_FAILED))
     {
-        val_print_sf("\tFailed to set boot flag after check\n", 0);
+        val_print_sf(ERROR, "\tFailed to set boot flag after check\n", 0);
         return VAL_STATUS_ERROR;
     }
 
@@ -423,7 +423,7 @@ int32_t driver_test_irq_routing(void)
         /* A signal remains active until it is processed by psa_eoi */
         if ((psa_wait(DRIVER_UART_INTR_SIG, PSA_BLOCK) & DRIVER_UART_INTR_SIG) == 0)
         {
-            val_print_sf("\tIrq signal got de-activate before psa_eoi()\n", 0);
+            val_print_sf(ERROR, "\tIrq signal got de-activate before psa_eoi()\n", 0);
             return VAL_STATUS_SPM_FAILED;
         }
 
@@ -433,7 +433,7 @@ int32_t driver_test_irq_routing(void)
         /* Irq signal should be de-activated now */
         if (psa_wait(DRIVER_UART_INTR_SIG, PSA_POLL) & DRIVER_UART_INTR_SIG)
         {
-            val_print_sf("\tIrq signal didn't get de-activate after psa_eoi()\n", 0);
+            val_print_sf(ERROR, "\tIrq signal didn't get de-activate after psa_eoi()\n", 0);
             return VAL_STATUS_SPM_FAILED;
         }
 
@@ -443,7 +443,7 @@ int32_t driver_test_irq_routing(void)
     {
         /* didn't receive DRIVER_UART_INTR_SIG signal, however process it */
         val_disable_interrupt();
-        val_print_sf("\tFailed to receive irq signal, signals=0x%x\n", signals);
+        val_print_sf(ERROR, "\tFailed to receive irq signal, signals=0x%x\n", signals);
         return VAL_STATUS_SPM_FAILED;
     }
 }
@@ -464,7 +464,7 @@ wait:
 
         if ((msg->type < PSA_IPC_CALL) || (msg->handle <= 0))
         {
-            val_print_sf("\tpsa_get failed for request message\n", 0);
+            val_print_sf(ERROR, "\tpsa_get failed for request message\n", 0);
             res = VAL_STATUS_ERROR;
         }
         else
@@ -474,7 +474,7 @@ wait:
     }
     else
     {
-        val_print_sf("\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
+        val_print_sf(ERROR, "\tpsa_wait returned with invalid signal value = 0x%x\n", signals);
         res = VAL_STATUS_ERROR;
     }
     return res;
@@ -499,7 +499,7 @@ void driver_test_isolation_psa_rot_data_wr(psa_msg_t *msg)
     /* Setting boot.state before test check */
     if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_ON_SECOND_CHECK))
     {
-       val_print_sf("\tFailed to set boot flag before check\n", 0);
+       val_print_sf(ERROR, "\tFailed to set boot flag before check\n", 0);
        psa_reply(msg->handle, -2);
     }
     psa_reply(msg->handle, PSA_SUCCESS);
@@ -514,7 +514,7 @@ void driver_test_isolation_psa_rot_data_wr(psa_msg_t *msg)
     /* Resetting boot.state to catch unwanted reboot */
     if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_BUT_FAILED))
     {
-        val_print_sf("\tFailed to set boot flag after check\n", 0);
+        val_print_sf(ERROR, "\tFailed to set boot flag after check\n", 0);
         psa_reply(msg->handle, -2);
         return;
     }
@@ -526,7 +526,7 @@ void driver_test_isolation_psa_rot_data_wr(psa_msg_t *msg)
     }
     else
     {
-        val_print_sf("\tExpected write to fault but it didn't\n", 0);
+        val_print_sf(ERROR, "\tExpected write to fault but it didn't\n", 0);
         psa_reply(msg->handle, -2);
     }
 }
@@ -541,7 +541,7 @@ void driver_test_isolation_psa_rot_stack_rd(psa_msg_t *msg)
     psa_reply(msg->handle, PSA_SUCCESS);
 
     /* Dummy print to avoid compiler optimisation on local variable */
-    val_print_sf("\tStack data 0x%x\n", (int)l_psa_rot_data);
+    val_print_sf(ALWAYS, "\tStack data 0x%x\n", (int)l_psa_rot_data);
 }
 
 void driver_test_isolation_psa_rot_stack_wr(psa_msg_t *msg)
@@ -555,7 +555,7 @@ void driver_test_isolation_psa_rot_stack_wr(psa_msg_t *msg)
     /* Setting boot.state before test check */
     if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_ON_SECOND_CHECK))
     {
-       val_print_sf("\tFailed to set boot flag before check\n", 0);
+       val_print_sf(ERROR, "\tFailed to set boot flag before check\n", 0);
        psa_reply(msg->handle, -2);
     }
     psa_reply(msg->handle, PSA_SUCCESS);
@@ -570,7 +570,7 @@ void driver_test_isolation_psa_rot_stack_wr(psa_msg_t *msg)
     /* Resetting boot.state to catch unwanted reboot */
     if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_BUT_FAILED))
     {
-        val_print_sf("\tFailed to set boot flag after check\n", 0);
+        val_print_sf(ERROR, "\tFailed to set boot flag after check\n", 0);
         psa_reply(msg->handle, -2);
         return;
     }
@@ -582,7 +582,7 @@ void driver_test_isolation_psa_rot_stack_wr(psa_msg_t *msg)
     }
     else
     {
-        val_print_sf("\tExpected write to fault but it didn't\n", 0);
+        val_print_sf(ERROR, "\tExpected write to fault but it didn't\n", 0);
         psa_reply(msg->handle, -2);
     }
 }
@@ -618,7 +618,7 @@ void driver_test_isolation_psa_rot_heap_wr(psa_msg_t *msg)
     /* Setting boot.state before test check */
     if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_ON_SECOND_CHECK))
     {
-       val_print_sf("\tFailed to set boot flag before check\n", 0);
+       val_print_sf(ERROR, "\tFailed to set boot flag before check\n", 0);
        psa_reply(msg->handle, -2);
     }
     psa_reply(msg->handle, PSA_SUCCESS);
@@ -633,7 +633,7 @@ void driver_test_isolation_psa_rot_heap_wr(psa_msg_t *msg)
     /* Resetting boot.state to catch unwanted reboot */
     if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_BUT_FAILED))
     {
-        val_print_sf("\tFailed to set boot flag after check\n", 0);
+        val_print_sf(ERROR, "\tFailed to set boot flag after check\n", 0);
         psa_reply(msg->handle, -2);
         return;
     }
@@ -645,7 +645,7 @@ void driver_test_isolation_psa_rot_heap_wr(psa_msg_t *msg)
     }
     else
     {
-        val_print_sf("\tExpected write to fault but it didn't\n", 0);
+        val_print_sf(ERROR, "\tExpected write to fault but it didn't\n", 0);
         psa_reply(msg->handle, -2);
     }
     free(buffer);
@@ -687,7 +687,7 @@ void driver_test_isolation_psa_rot_mmio_wr(psa_msg_t *msg)
     /* Setting boot.state before test check */
     if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_ON_SECOND_CHECK))
     {
-        val_print_sf("\tFailed to set boot flag before check\n", 0);
+        val_print_sf(ERROR, "\tFailed to set boot flag before check\n", 0);
         psa_reply(msg->handle, -2);
     }
    psa_reply(msg->handle, PSA_SUCCESS);
@@ -702,7 +702,7 @@ void driver_test_isolation_psa_rot_mmio_wr(psa_msg_t *msg)
     /* Resetting boot.state to catch unwanted reboot */
     if (val_driver_private_set_boot_flag_fn(BOOT_EXPECTED_BUT_FAILED))
     {
-        val_print_sf("\tFailed to set boot flag after check\n", 0);
+        val_print_sf(ERROR, "\tFailed to set boot flag after check\n", 0);
         psa_reply(msg->handle, -2);
         return;
     }
@@ -714,7 +714,7 @@ void driver_test_isolation_psa_rot_mmio_wr(psa_msg_t *msg)
     }
     else
     {
-        val_print_sf("\tExpected write to fault but it didn't\n", 0);
+        val_print_sf(ERROR, "\tExpected write to fault but it didn't\n", 0);
         psa_reply(msg->handle, -2);
     }
 }

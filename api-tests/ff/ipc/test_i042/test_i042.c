@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 
 #ifdef NONSECURE_TEST_BUILD
 #include "val_interfaces.h"
-#include "val_target.h"
 #else
 #include "val_client_defs.h"
 #include "val_service_defs.h"
@@ -38,13 +37,13 @@ int32_t client_test_psa_write_with_null_handle(caller_security_t caller __UNUSED
    int32_t            status = VAL_STATUS_SUCCESS;
    psa_status_t       status_of_call;
 
-   val->print(PRINT_TEST,
-            "[Check 1] Test psa_write with NULL handle\n", 0);
+   val->print(TEST,
+            "Check 1: Test psa_write with NULL handle\n", 0);
 
    status_of_call =  psa->call(SERVER_UNSPECIFIED_VERSION_HANDLE, PSA_IPC_CALL, NULL, 0, NULL, 0);
 
    /* Expectation is server test should hang and control shouldn't have come here */
-   val->print(PRINT_ERROR, "\tCall should failed but succeed\n", 0);
+   val->print(ERROR, "\tCall should failed but succeed\n", 0);
 
    status = VAL_STATUS_SPM_FAILED;
 
@@ -66,20 +65,20 @@ int32_t client_test_psa_write_with_null_handle(caller_security_t caller __UNUSED
 
    psa_status_t       status_of_call;
    psa_handle_t       handle = 0;
-   val->print(PRINT_TEST,
-            "[Check 1] Test psa_write with NULL handle\n", 0);
+   val->print(TEST,
+            "Check 1: Test psa_write with NULL handle\n", 0);
 
    handle = psa->connect(SERVER_UNSPECIFIED_VERSION_SID, SERVER_UNSPECIFIED_VERSION_VERSION);
    if (!PSA_HANDLE_IS_VALID(handle))
    {
-       val->print(PRINT_ERROR, "\tConnection failed\n", 0);
+       val->print(ERROR, "\tConnection failed\n", 0);
        return VAL_STATUS_INVALID_HANDLE;
    }
 
    status_of_call =  psa->call(handle, PSA_IPC_CALL, NULL, 0, NULL, 0);
 
    /* Expectation is server test should hang and control shouldn't have come here */
-   val->print(PRINT_ERROR, "\tCall should failed but succeed\n", 0);
+   val->print(ERROR, "\tCall should failed but succeed\n", 0);
 
    status = VAL_STATUS_SPM_FAILED;
 

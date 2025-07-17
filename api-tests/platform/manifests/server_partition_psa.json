@@ -5,7 +5,7 @@
   "priority": "NORMAL",
   "description": "Server partition executing server test func",
   "entry_point": "server_main",
-  "stack_size": "0x400",
+  "stack_size": "0x1000",
   "heap_size": "0x100",
   "services": [{
       "name": "SERVER_TEST_DISPATCHER",

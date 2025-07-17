@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019-2022, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2022, 2025, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,6 +47,7 @@ function(_create_psa_stdc_exe _exe_name _api_dir)
 	list(APPEND EXE_LIBS
 		${PROJECT_BINARY_DIR}/val/val_nspe.a
 		${PROJECT_BINARY_DIR}/platform/pal_nspe.a
+            ${COMMON_VAL_PATH}/common_val_lib.a
 		${PROJECT_BINARY_DIR}/dev_apis/${_api_dir}/test_combine.a
 	)
 

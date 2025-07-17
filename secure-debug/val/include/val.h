@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021 Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,8 +32,8 @@ typedef char                char8_t;
 typedef uint32_t            cfg_id_t;
 
 /* Print verbosity = TEST */
-#ifndef VERBOSE
-#define VERBOSE 9
+#ifndef VERBOSITY
+#define VERBOSITY 9
 #endif
 
 #ifndef __WEAK
@@ -125,9 +125,9 @@ typedef uint32_t            cfg_id_t;
     do {                                                                            \
         if ((arg1) != arg2)                                                         \
         {                                                                           \
-            val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
-            val->print(PRINT_ERROR, "\tActual: %d\n", arg1);                        \
-            val->print(PRINT_ERROR, "\tExpected: %d\n", arg2);                      \
+            val->print(ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
+            val->print(ERROR, "\tActual: %d\n", arg1);                        \
+            val->print(ERROR, "\tExpected: %d\n", arg2);                      \
             return 1;                                                               \
         }                                                                           \
     } while (0)
@@ -136,16 +136,16 @@ typedef uint32_t            cfg_id_t;
     do {                                                                            \
         if ((arg1) != status1 && (arg1) != status2)                                 \
         {                                                                           \
-            val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
-            val->print(PRINT_ERROR, "\tActual: %d\n", arg1);                        \
+            val->print(ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
+            val->print(ERROR, "\tActual: %d\n", arg1);                        \
             if ((status1) != (status2))                                             \
             {                                                                       \
-                val->print(PRINT_ERROR, "\tExpected: %d", status1);                 \
-                val->print(PRINT_ERROR, "or %d\n", status2);                        \
+                val->print(ERROR, "\tExpected: %d", status1);                 \
+                val->print(ERROR, "or %d\n", status2);                        \
             }                                                                       \
             else                                                                    \
             {                                                                       \
-                val->print(PRINT_ERROR, "\tExpected: %d\n", status1);               \
+                val->print(ERROR, "\tExpected: %d\n", status1);               \
             }                                                                       \
             return 1;                                                               \
         }                                                                           \
@@ -155,8 +155,8 @@ typedef uint32_t            cfg_id_t;
     do {                                                                            \
         if ((arg1) == arg2)                                                         \
         {                                                                           \
-            val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
-            val->print(PRINT_ERROR, "\tValue: %d\n", arg1);                         \
+            val->print(ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
+            val->print(ERROR, "\tValue: %d\n", arg1);                         \
             return 1;                                                               \
         }                                                                           \
     } while (0)
@@ -165,8 +165,8 @@ typedef uint32_t            cfg_id_t;
     do {                                                                            \
         if (memcmp(buf1, buf2, size))                                               \
         {                                                                           \
-            val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d : ", checkpoint);   \
-            val->print(PRINT_ERROR, "Unequal data in compared buffers\n", 0);       \
+            val->print(ERROR, "\tFailed at Checkpoint: %d : ", checkpoint);   \
+            val->print(ERROR, "Unequal data in compared buffers\n", 0);       \
             return 1;                                                               \
         }                                                                           \
     } while (0)
@@ -175,10 +175,10 @@ typedef uint32_t            cfg_id_t;
     do {                                                                            \
         if ((arg1) < range1 || (arg1) > range2)                                     \
         {                                                                           \
-            val->print(PRINT_ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
-            val->print(PRINT_ERROR, "\tActual: %d\n", arg1);                        \
-            val->print(PRINT_ERROR, "\tExpected range: %d to ", range1);            \
-            val->print(PRINT_ERROR, "%d", range2);                                  \
+            val->print(ERROR, "\tFailed at Checkpoint: %d\n", checkpoint);    \
+            val->print(ERROR, "\tActual: %d\n", arg1);                        \
+            val->print(ERROR, "\tExpected range: %d to ", range1);            \
+            val->print(ERROR, "%d", range2);                                  \
             return 1;                                                               \
         }                                                                           \
     } while (0)
@@ -224,12 +224,12 @@ typedef enum {
 
 /* verbosity enums */
 typedef enum {
-    PRINT_INFO    = 1,
-    PRINT_DEBUG   = 2,
-    PRINT_TEST    = 3,
-    PRINT_WARN    = 4,
-    PRINT_ERROR   = 5,
-    PRINT_ALWAYS  = 9
+    INFO    = 1,
+    DBG     = 2,
+    TEST    = 3,
+    WARN    = 4,
+    ERROR   = 5,
+    ALWAYS  = 9
 } print_verbosity_t;
 
 /* typedef's */

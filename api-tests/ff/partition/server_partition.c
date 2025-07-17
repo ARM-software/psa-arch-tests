@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,7 +42,7 @@ void server_main(void)
                 case PSA_IPC_CONNECT:
                     if (test_data != 0)
                     {
-                        val_print(PRINT_ERROR, "must clear previous dispatcher connection\n", 0);
+                        val_print(ERROR, "must clear previous dispatcher connection\n", 0);
                         psa_reply(msg.handle, PSA_ERROR_CONNECTION_REFUSED);
                     }
                     else
@@ -54,7 +54,7 @@ void server_main(void)
                     if ((msg.in_size[0] <= sizeof(test_data)) &&
                         (psa_read(msg.handle, 0, &test_data, msg.in_size[0]) != sizeof(test_data)))
                     {
-                        val_print(PRINT_ERROR, "could not read dispatcher payload\n", 0);
+                        val_print(ERROR, "could not read dispatcher payload\n", 0);
                         status = VAL_STATUS_READ_FAILED;
                     }
                     if (VAL_ERROR(status))
@@ -66,7 +66,7 @@ void server_main(void)
                     if (GET_ACTION_NUM(test_data) == TEST_EXECUTE_FUNC)
                     {
                         psa_reply(msg.handle, PSA_SUCCESS);
-                        val_print(PRINT_INFO, "\tSERVER TEST FUNC START %d\n",
+                        val_print(INFO, "\tSERVER TEST FUNC START %d\n",
                                                     GET_BLOCK_NUM(test_data));
 
                         /* Get server test list of given test */
@@ -77,7 +77,7 @@ void server_main(void)
                     }
                     else if (GET_ACTION_NUM(test_data) == TEST_RETURN_RESULT)
                     {
-                        val_print(PRINT_INFO, "\tSERVER TEST FUNC END\n", 0);
+                        val_print(INFO, "\tSERVER TEST FUNC END\n", 0);
                         psa_write(msg.handle, 0, &test_status, msg.out_size[0]);
                         psa_reply(msg.handle, PSA_SUCCESS);
                     }
@@ -93,13 +93,13 @@ void server_main(void)
                     psa_reply(msg.handle, PSA_SUCCESS);
                     break;
                 default:
-                    val_print(PRINT_ERROR, "Unexpected message type %d!", (int)(msg.type));
+                    val_print(ERROR, "Unexpected message type %d!", (int)(msg.type));
                     TEST_PANIC();
             }
         }
         else
         {
-            val_print(PRINT_ERROR, "In server_partition, Control shouldn't have reach here\n", 0);
+            val_print(ERROR, "In server_partition, Control shouldn't have reach here\n", 0);
             TEST_PANIC();
         }
     }

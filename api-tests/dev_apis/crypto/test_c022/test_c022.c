@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2020, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 **/
 
 #include "val_interfaces.h"
-#include "val_target.h"
 #include "test_c022.h"
 #include "test_data.h"
 
@@ -44,8 +43,8 @@ int32_t psa_key_derivation_abort_test(caller_security_t caller __UNUSED)
     TEST_ASSERT_EQUAL(status, VAL_STATUS_SUCCESS, TEST_CHECKPOINT_NUM(2));
 
     i = 1;
-    val->print(PRINT_TEST, "[Check %d] ", i++);
-    val->print(PRINT_TEST, "Test psa_key_derivation_abort\n", 0);
+    val->print(TEST, "Check %d: ", i++);
+    val->print(TEST, "Test psa_key_derivation_abort\n", 0);
 
     status = val->crypto_function(VAL_CRYPTO_KEY_DERIVATION_ABORT, &func);
     TEST_ASSERT_EQUAL(status, PSA_SUCCESS, TEST_CHECKPOINT_NUM(3));
