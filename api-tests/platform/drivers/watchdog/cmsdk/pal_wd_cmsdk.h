@@ -22,18 +22,20 @@
 
 #define WDOG_TIMER_MAX_VALUE           0xFFFFFFFF
 
+typedef volatile uint32_t vuint32_t;
+
 typedef struct {
-    uint32_t  LOAD;          /* Offset: 0x000 (R/W) Watchdog Load Register */
-    uint32_t  VALUE;         /* Offset: 0x004 (R/ ) Watchdog Value Register */
-    uint32_t  CTRL;          /* Offset: 0x008 (R/W) Watchdog Control Register */
-    uint32_t  INTCLR;        /* Offset: 0x00C ( /W) Watchdog Clear Interrupt Register */
-    uint32_t  RAWINTSTAT;    /* Offset: 0x010 (R/ ) Watchdog Raw Interrupt Status Register */
-    uint32_t  MASKINTSTAT;   /* Offset: 0x014 (R/ ) Watchdog Interrupt Status Register */
-    uint32_t  RESERVED0[762];
-    uint32_t  LOCK;          /* Offset: 0xC00 (R/W) Watchdog Lock Register */
-    uint32_t  RESERVED1[191];
-    uint32_t  ITCR;          /* Offset: 0xF00 (R/W) Watchdog Integration Test Control Register */
-    uint32_t  ITOP;          /* Offset: 0xF04 ( /W) Watchdog Integration Test Output Set Register */
+    vuint32_t LOAD;          /* Offset: 0x000 (R/W) Watchdog Load Register */
+    vuint32_t VALUE;         /* Offset: 0x004 (R/ ) Watchdog Value Register */
+    vuint32_t CTRL;          /* Offset: 0x008 (R/W) Watchdog Control Register */
+    vuint32_t INTCLR;        /* Offset: 0x00C ( /W) Watchdog Clear Interrupt Register */
+    vuint32_t RAWINTSTAT;    /* Offset: 0x010 (R/ ) Watchdog Raw Interrupt Status Register */
+    vuint32_t MASKINTSTAT;   /* Offset: 0x014 (R/ ) Watchdog Interrupt Status Register */
+    vuint32_t RESERVED0[762];
+    vuint32_t LOCK;          /* Offset: 0xC00 (R/W) Watchdog Lock Register */
+    vuint32_t RESERVED1[191];
+    vuint32_t ITCR;          /* Offset: 0xF00 (R/W) Watchdog Integration Test Control Register */
+    vuint32_t ITOP;          /* Offset: 0xF04 ( /W) Watchdog Integration Test Output Set Register */
 } wd_timer_t;
 
 /* WATCHDOG LOAD Register Definitions */
