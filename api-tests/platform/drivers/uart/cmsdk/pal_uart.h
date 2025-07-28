@@ -36,17 +36,18 @@
 #define CMSDK_UART_INTSTATUS_TXIRQ_Pos  0   /* CMSDK_UART STATUS: TXIRQ Position */
 #define CMSDK_UART_INTSTATUS_TXIRQ_Msk       (0x01ul << CMSDK_UART_INTSTATUS_TXIRQ_Pos)
                                             /* CMSDK_UART STATUS: TXIRQ Mask */
+typedef volatile uint32_t vuint32_t;
 
 /* typedef's */
 typedef struct {
-    uint32_t  DATA;                     /* Offset: 0x000 (R/W) Data Register */
-    uint32_t  STATE;                    /* Offset: 0x004 (R/W) Status state */
-    uint32_t  CTRL;                     /* Offset: 0x008 (R/W) Control Register */
+    vuint32_t DATA;                     /* Offset: 0x000 (R/W) Data Register */
+    vuint32_t STATE;                    /* Offset: 0x004 (R/W) Status state */
+    vuint32_t CTRL;                     /* Offset: 0x008 (R/W) Control Register */
     union {
-        uint32_t INTSTATUS;             /* Offset: 0x00C (R/ ) Interrupt Status Register */
-        uint32_t INTCLEAR;              /* Offset: 0x00C ( /W) Interrupt Clear Register */
+        vuint32_t INTSTATUS;            /* Offset: 0x00C (R/ ) Interrupt Status Register */
+        vuint32_t INTCLEAR;             /* Offset: 0x00C ( /W) Interrupt Clear Register */
     };
-    uint32_t  BAUDDIV;                  /* Offset: 0x010 (R/W) Baud rate divider */
+    vuint32_t BAUDDIV;                  /* Offset: 0x010 (R/W) Baud rate divider */
 } uart_t;
 
 
