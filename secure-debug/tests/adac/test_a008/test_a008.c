@@ -144,6 +144,14 @@ void test_entry(val_api_t *val_api)
     if (response->status != ADAC_FAILURE)
         val->err_check_set(TEST_CHECKPOINT_NUM(11), VAL_STATUS_ERROR);
 
+    val->print(INFO, "Closing debug session after Target reports Failure\n", 0);
+    ret = psa_adac_issue_command(ADAC_CLOSE_SESSION_CMD, request, NULL, 0);
+    if (ret != PSA_SUCCESS) {
+        val->print(INFO, "Command not send due to unsuccessful authentication\n", 0);
+        goto test_end;
+    }
+
+
 test_end:
     response_packet_release(response);
     val->test_exit();

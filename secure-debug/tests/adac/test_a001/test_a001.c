@@ -92,6 +92,26 @@ void test_entry(val_api_t *val_api)
 	    val->print(INFO, "Challenge response obtained is unique\n", 0);
     }
 
+    val->print(INFO, "Closing debug session\n", 0);
+    ret = psa_adac_issue_command(ADAC_CLOSE_SESSION_CMD, request, NULL, 0);
+    if (ret != PSA_SUCCESS) {
+        val->err_check_set(TEST_CHECKPOINT_NUM(6), VAL_STATUS_WRITE_FAILED);
+        goto test_end;
+    }
+
+    response = psa_adac_await_response();
+    ret = psa_adac_parse_response(ADAC_CLOSE_SESSION_CMD, response);
+    if (ret != PSA_SUCCESS) {
+        val->err_check_set(TEST_CHECKPOINT_NUM(7), VAL_STATUS_READ_FAILED);
+        goto test_end;
+    }
+
+    if (response->status != ADAC_SUCCESS) {
+        val->err_check_set(TEST_CHECKPOINT_NUM(8), VAL_STATUS_INVALID);
+        goto test_end;
+    }
+    response_packet_release(response);
+
 test_end:
     response_packet_release(response);
     val->test_exit();

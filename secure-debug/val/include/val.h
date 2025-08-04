@@ -83,7 +83,7 @@ typedef uint32_t            cfg_id_t;
 #define IS_TEST_PENDING(status) (((status >> TEST_STATE_BIT) & TEST_STATE_MASK) == TEST_PENDING)
 #define IS_TEST_START(status)   (((status >> TEST_STATE_BIT) & TEST_STATE_MASK) == TEST_START)
 #define IS_TEST_END(status)     (((status >> TEST_STATE_BIT) & TEST_STATE_MASK) == TEST_END)
-#define VAL_ERROR(status)       ((status & TEST_STATUS_MASK) ? 1 : 0)
+#define VAL_IS_ERROR(status)       ((status & TEST_STATUS_MASK) ? 1 : 0)
 
 /* Test Defines */
 #define TEST_PUBLISH(test_id, entry) \

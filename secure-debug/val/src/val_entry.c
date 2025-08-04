@@ -32,7 +32,7 @@ int32_t val_entry(void)
     int32_t         status;
 
     status = val_logger_init();
-    if (VAL_ERROR(status))
+    if (VAL_IS_ERROR(status))
     {
         goto exit;
     }

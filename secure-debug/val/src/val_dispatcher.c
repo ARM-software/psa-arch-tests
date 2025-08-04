@@ -157,24 +157,24 @@ int32_t val_dispatcher(test_id_t test_id_prev)
 
     do
     {
-		status = val_test_load(&test_id, test_id_prev);
+        status = val_test_load(&test_id, test_id_prev);
 
-		if (VAL_ERROR(status))
-		{
-			return status;
-		}
-		else if (test_id == VAL_INVALID_TEST_ID)
-		{
-			break;
-		}
-		if (VAL_GET_COMP_NUM(test_id_prev) != VAL_GET_COMP_NUM(test_id))
-		{
-			val_print(ALWAYS, "\nRunning.. ", 0);
-			val_print(ALWAYS, val_get_comp_name(test_id), 0);
-			val_print(ALWAYS, "\n******************************\n", 0);
-		}
+        if (VAL_IS_ERROR(status))
+        {
+            return status;
+        }
+        else if (test_id == VAL_INVALID_TEST_ID)
+        {
+            break;
+        }
+        if (VAL_GET_COMP_NUM(test_id_prev) != VAL_GET_COMP_NUM(test_id))
+        {
+            val_print(ALWAYS, "\nRunning.. ", 0);
+            val_print(ALWAYS, val_get_comp_name(test_id), 0);
+            val_print(ALWAYS, "\n******************************\n", 0);
+        }
 
-		val_execute_test_fn();
+        val_execute_test_fn();
 
         test_result = val_report_status();
 

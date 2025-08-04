@@ -106,13 +106,13 @@ uint32_t val_get_status(void)
 
 val_status_t val_err_check_set(uint32_t checkpoint, val_status_t status)
 {
-    if (VAL_ERROR(status)) {
+    if (VAL_IS_ERROR(status)) {
         val_print(ERROR, "\tCheckpoint %d : ", checkpoint);
         val_print(ERROR, "Error Code=0x%x \n", status);
         val_set_status(RESULT_FAIL(status));
     } else {
         status = (val_get_status() & TEST_STATUS_MASK);
-        if (VAL_ERROR(status)) {
+        if (VAL_IS_ERROR(status)) {
             val_print(ERROR, "\tCheckpoint %d : ", checkpoint);
             val_print(ERROR, "Error Code=0x%x \n", status);
         } else

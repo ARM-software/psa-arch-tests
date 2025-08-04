@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2023-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2023-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -80,14 +80,14 @@ void test_entry(val_api_t *val_api)
     response_packet_release(response);
 
     // Send ADAC LCS command with empty TLV list
-    ret = psa_adac_issue_command(ADAC_LCS_CHANGE_CMD, request, NULL, 0);
+    ret = psa_adac_issue_command(ADAC_LCS_CHANGE, request, NULL, 0);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(4), VAL_STATUS_WRITE_FAILED);
         goto test_end;
     }
 
     response = psa_adac_await_response();
-    ret = psa_adac_parse_response(ADAC_LCS_CHANGE_CMD, response);
+    ret = psa_adac_parse_response(ADAC_LCS_CHANGE, response);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(2), VAL_STATUS_READ_FAILED);
         goto test_end;
@@ -106,14 +106,14 @@ void test_entry(val_api_t *val_api)
     response_packet_release(response);
 
     // Send ADAC LCS command with TLV sequence
-    ret = psa_adac_issue_command(ADAC_LCS_CHANGE_CMD, request, tlv_ptr, tlv_size);
+    ret = psa_adac_issue_command(ADAC_LCS_CHANGE, request, tlv_ptr, tlv_size);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(4), VAL_STATUS_WRITE_FAILED);
         goto test_end;
     }
 
     response = psa_adac_await_response();
-    ret = psa_adac_parse_response(ADAC_LCS_CHANGE_CMD, response);
+    ret = psa_adac_parse_response(ADAC_LCS_CHANGE, response);
     if (ret != PSA_SUCCESS) {
         val->err_check_set(TEST_CHECKPOINT_NUM(2), VAL_STATUS_READ_FAILED);
         goto test_end;

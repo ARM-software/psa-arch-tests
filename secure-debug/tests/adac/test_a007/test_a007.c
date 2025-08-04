@@ -40,7 +40,7 @@ void test_entry(val_api_t *val_api)
 
     request_packet_t *request;
     response_packet_t *response;
-    uint16_t command[] = { 0x0, 0x100, 0xBAD, 0x7FFF};
+    uint16_t command[] = { 0x0, 0x700, 0xBAD, 0x7FFF};
     uint32_t i, cmd_list_size;
 
     cmd_list_size = sizeof(command)/sizeof(command[0]);
