@@ -5,7 +5,7 @@
 
 ### ADAC Specification
 
-The [ADAC specification](https://developer.arm.com/documentation/den0101/1) defines the protocol that allows a target to securely authenticate a debug host. The specification targets software-only layers that are above the physical debug link.
+The [ADAC specification](https://developer.arm.com/documentation/den0101/2/) defines the protocol that allows a target to securely authenticate a debug host. The specification targets software-only layers that are above the physical debug link.
 
 ### ADAC test suite
 
@@ -17,7 +17,7 @@ The ADAC test suite checks if a device-side implementation conforms to the behav
  - And the corresponding abstraction layers are available with an Apache v2.0 license allowing for external contribution.
 
 ## Release details
- - Release Version - 1.0
+ - Release Version - 1.1
  - Code Quality: EAC <br/>
 
  - The ADAC tests are written for EAC version of the ADAC specification.
@@ -44,7 +44,6 @@ The mapping of the rules to the test cases and the steps followed in the tests a
 
 ## Getting started
 
-
 Follow the instructions in the subsequent sections to get a copy of the source code on your local machine and build the tests. <br/>
 See [Arm Authenticated Debug Access Control Test Suite User guide](docs/Arm_Authenticated_Debug_Access_Control_Test_Suite_User_Guide.pdf) to get details on the steps involved in running the test suite on your platform.
 This test suite is provided as a separate directory within the psa-arch-tests repository.
@@ -61,9 +60,9 @@ Before starting the test suite build, ensure that the following requirements are
 
 ## Download source
 
-To download the main branch of the repository, type the following command:
+To download the main branch of the repository, type the following commands:
 
-	git clone https://github.com/ARM-software/psa-arch-tests.git
+    git clone https://github.com/ARM-software/psa-arch-tests.git
     cd psa-arch-tests/
     git submodule update --init
 

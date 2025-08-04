@@ -1,17 +1,26 @@
 diff --git a/psa-adac/sda/src/psa_adac_sda.c b/psa-adac/sda/src/psa_adac_sda.c
-index d7786cc..0c5a0c1 100644
+index 0866f9a..a2ec687 100644
 --- a/psa-adac/sda/src/psa_adac_sda.c
 +++ b/psa-adac/sda/src/psa_adac_sda.c
-@@ -395,7 +395,7 @@ int authentication_handle(authentication_context_t *auth_ctx) {
-                 (void) authenticator_request_packet_release(auth_ctx, request);
+@@ -397,7 +397,7 @@ int authentication_handle(authentication_context_t *auth_ctx) {
                  response = authenticator_response_packet_build(auth_ctx, ADAC_SUCCESS, NULL, 0);
                  ret = authenticator_send_response(auth_ctx, response);
+                 psa_adac_close_session();
 -                done = 1;
 +                //done = 1;
                  break;
  
-             case ADAC_LCS_CHANGE_CMD:
-@@ -417,7 +417,7 @@ int authentication_handle(authentication_context_t *auth_ctx) {
+                 /* Send success status and terminate command loop. */
+@@ -407,7 +407,7 @@ int authentication_handle(authentication_context_t *auth_ctx) {
+                 response = authenticator_response_packet_build(auth_ctx, ADAC_SUCCESS, NULL, 0);
+                 ret = authenticator_send_response(auth_ctx, response);
+                 psa_adac_resume();
+-                done = 1;
++                //done = 1;
+                 break;
+ 
+                 /* Send success status but otherwise do nothing. */
+@@ -438,7 +438,7 @@ int authentication_handle(authentication_context_t *auth_ctx) {
          }
  
          if ((auth_ctx->state == AUTH_SUCCESS) || (auth_ctx->state == AUTH_FAILURE)) {

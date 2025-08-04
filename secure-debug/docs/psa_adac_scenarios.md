@@ -11,7 +11,7 @@
 | S_ADAC_007  | Commands   | Send an authentication response command with a NULL payload and verify that the target responds with ADAC_FAILURE status. | test_a006 <br/>  |
 | S_ADAC_008  | Commands   | Verify that the target responds to an unrecognized ADAC command with ADAC_INVALID_COMMAND status. | test_a007 <br/>  |
 | S_ADAC_009  | Commands   | Verify that for a multiple fragment Authentication response request, the device responds with a ADAC_MORE_DATA_NEEDED status code after each response fragment. | test_a001, test_a005 <br/>  |
-| S_ADAC_010  | Commands   | Check that the Close Session command always returns an ADAC_SUCCESS status. | test_a001 <br/>  |
+| S_ADAC_010  | Commands   | Check that the Close Session command always returns an ADAC_SUCCESS status. | test_a001, test_a002 br/>  |
 | S_ADAC_011  | Constraints| In a certificate chain, provide a leaf certificate before a root certificate and verify that the target responds with an error. | test_a008 <br/>  |
 | S_ADAC_012  | Constraints| Check that a certificate is rejected due to each of the following scope-limiting feature:<br/>1. Role<br/>2. Lifecycle<br/>| test_a008 <br/>  |
 | S_ADAC_013  | Constraints| Check that if two or more distinct non-neutral values are present in the certificate chain, a failure response is obtained.| test_a009 <br/>  |
@@ -20,7 +20,7 @@
 | S_ADAC_016  | Constraints| Verify that the reserved fields of TLV sequences read as 0 for  ADAC version 1.0 implementation.| test_a011 <br/>  |
 | S_ADAC_017  | Constraints| Verify that when the host sends ADAC_LCS_CHANGE command, the target does not respond with ADAC_INVALID_COMMAND status.| test_a012 <br/>  |
 | S_ADAC_018  | Constraints| Verify that when the host sends ADAC_LCS_CHANGE command without a TLV sequence containing lifecycle state, the target responds with ADAC_INVALID_PARAMETERS status.| test_a012 <br/>  |
-
+| S_ADAC_019  | Commands   | Issue a ADAC_CLOSE_SESSION_CMD once target has reported ADAC_FAILURE. The command construction fails as host is not authorized after failed authentication.| test_a008 <br/> |
 ## Note
 
 1. The list of identified scenarios is not exhaustive and is subject to change.<br/>
@@ -31,4 +31,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2021-2023 Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2021-2025 Arm Limited and Contributors. All rights reserved.*

@@ -2,10 +2,10 @@
 # Test failure analysis document
 -----------------------------------------------------
 
-This file contains list of failures identified when testing the release of EAC quality ADAC Test suite.
-MBEDTLS repository commit Hash - 8d42cfddd65f5d379c21e910e546cf9d7d1b212f
-PSA-ADAC repository commit Hash - 4c35930fb6df95400ea4fe5722acaaa594ac3b8b
-TF-M repository commit Tag -  TF-Mv1.8.0
+This file contains list of failures identified when testing the release of EAC quality ADAC Test suite.<br/>
+MBEDTLS repository commit Hash - 8d42cfddd65f5d379c21e910e546cf9d7d1b212f <br/>
+PSA-ADAC repository commit Hash - 8118fd289a30ebcf3c0ed1bb186a9b15d99beb09 <br/>
+TF-M repository commit Tag - TF-Mv2.2.0
 
 The reason for each failing test is listed here in this file.
 
@@ -21,4 +21,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2022-2023 Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2022-2025, Arm Limited and Contributors. All rights reserved.*

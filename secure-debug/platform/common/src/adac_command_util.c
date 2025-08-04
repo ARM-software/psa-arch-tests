@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2021-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2021-2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -171,13 +171,16 @@ psa_status_t psa_adac_issue_command(uint32_t command, request_packet_t *packet,
     case ADAC_AUTH_RESPONSE_CMD:
         PSA_ADAC_LOG_INFO("host", "Sending authentication response\n");
         break;
-    case ADAC_RESUME_BOOT_CMD:
+    case ADAC_RESUME_CMD:
+        PSA_ADAC_LOG_INFO("host", "Sending close session with resume command\n");
+        break;
+    case ADAC_CLOSE_SESSION_CMD:
         PSA_ADAC_LOG_INFO("host", "Sending close session command\n");
         break;
     case ADAC_LOCK_DEBUG_CMD:
         PSA_ADAC_LOG_INFO("host", "Sending lock debug request\n");
         break;
-    case ADAC_LCS_CHANGE_CMD:
+    case ADAC_LCS_CHANGE:
         PSA_ADAC_LOG_INFO("host", "Sending LCS change command\n");
         break;
     default:
@@ -237,9 +240,10 @@ psa_status_t psa_adac_parse_response(uint32_t command, response_packet_t *packet
         challenge = (psa_auth_challenge_t *) packet->data;
         break;
     case ADAC_AUTH_RESPONSE_CMD:
-    case ADAC_RESUME_BOOT_CMD:
+    case ADAC_RESUME_CMD:
+    case ADAC_CLOSE_SESSION_CMD:
     case ADAC_LOCK_DEBUG_CMD:
-    case ADAC_LCS_CHANGE_CMD:
+    case ADAC_LCS_CHANGE:
         break;
     default:
         r = PSA_ERROR_NOT_SUPPORTED;
