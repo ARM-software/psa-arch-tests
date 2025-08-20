@@ -36,7 +36,11 @@
 #define CMSDK_UART_INTSTATUS_TXIRQ_Pos  0   /* CMSDK_UART STATUS: TXIRQ Position */
 #define CMSDK_UART_INTSTATUS_TXIRQ_Msk       (0x01ul << CMSDK_UART_INTSTATUS_TXIRQ_Pos)
                                             /* CMSDK_UART STATUS: TXIRQ Mask */
+
+#ifndef VUINT32_T_DEFINED
+#define VUINT32_T_DEFINED
 typedef volatile uint32_t vuint32_t;
+#endif
 
 /* typedef's */
 typedef struct {

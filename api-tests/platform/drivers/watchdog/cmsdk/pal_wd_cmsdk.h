@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2019, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2019, 2025, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,10 @@
 
 #define WDOG_TIMER_MAX_VALUE           0xFFFFFFFF
 
+#ifndef VUINT32_T_DEFINED
+#define VUINT32_T_DEFINED
 typedef volatile uint32_t vuint32_t;
+#endif
 
 typedef struct {
     vuint32_t LOAD;          /* Offset: 0x000 (R/W) Watchdog Load Register */
