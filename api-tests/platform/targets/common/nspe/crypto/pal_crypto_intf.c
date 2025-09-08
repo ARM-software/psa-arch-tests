@@ -672,8 +672,12 @@ int32_t pal_crypto_function(int type, va_list valist)
 			c_attributes             = va_arg(valist, const psa_key_attributes_t *);
 			derivation_operation     = va_arg(valist, psa_key_derivation_operation_t *);
 			p_key                    = va_arg(valist, psa_key_id_t *);
-			return psa_key_derivation_output_key(c_attributes,
+			status = psa_key_derivation_output_key(c_attributes,
 		        derivation_operation, p_key);
+			if (status == PSA_SUCCESS) {
+				g_global_key_array[g_key_count++] = *p_key;
+			}
+			return status;
 			break;
         case PAL_CRYPTO_KEY_DERIVATION_VERIFY_BYTES:
 			derivation_operation     = va_arg(valist, psa_key_derivation_operation_t *);
