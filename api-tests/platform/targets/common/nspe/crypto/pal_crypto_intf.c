@@ -396,7 +396,16 @@ int32_t pal_crypto_function(int type, va_list valist)
 			break;
 		case PAL_CRYPTO_DESTROY_KEY:
 			key                      = va_arg(valist, psa_key_id_t);
-			return psa_destroy_key(key);
+			status = psa_destroy_key(key);
+			for (int i = 0; i < g_key_count; i++) {
+				if (g_global_key_array[i] == key) {
+					g_global_key_array[i] = 0;
+					g_key_count--;
+					g_global_key_array[i] = g_global_key_array[g_key_count];
+					break;
+				}
+			}
+			return status;
 			break;
 		case PAL_CRYPTO_EXPORT_KEY:
 			key                      = va_arg(valist, psa_key_id_t);
