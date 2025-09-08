@@ -388,8 +388,10 @@ int32_t pal_crypto_function(int type, va_list valist)
 			status = psa_copy_key(key,
 								c_attributes,
 								target_key);
-			g_global_key_array[g_key_count++] = *target_key;
-                        return status;
+			if (status == PSA_SUCCESS) {
+				g_global_key_array[g_key_count++] = *target_key;
+			}
+			return status;
 			break;
 		case PAL_CRYPTO_INIT:
 			return psa_crypto_init();
@@ -431,8 +433,10 @@ int32_t pal_crypto_function(int type, va_list valist)
 			c_attributes             = va_arg(valist, const psa_key_attributes_t *);
 			target_key               = va_arg(valist, psa_key_id_t *);
 			status =  psa_generate_key(c_attributes, target_key);
-                        g_global_key_array[g_key_count++] = *target_key;
-                        return status;
+			if (status == PSA_SUCCESS) {
+				g_global_key_array[g_key_count++] = *target_key;
+			}
+			return status;
 			break;
 		case PAL_CRYPTO_GENERATE_RANDOM:
 			output                   = va_arg(valist, uint8_t *);
@@ -592,7 +596,9 @@ int32_t pal_crypto_function(int type, va_list valist)
 								  input,
 								  input_length,
 								  p_key);
-			g_global_key_array[g_key_count++] = *p_key;
+			if (status == PSA_SUCCESS) {
+				g_global_key_array[g_key_count++] = *p_key;
+			}
 			return status;
 			break;
 		case PAL_CRYPTO_KEY_ATTRIBUTES_INIT:
