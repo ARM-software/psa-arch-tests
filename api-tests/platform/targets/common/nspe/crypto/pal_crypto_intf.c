@@ -1027,9 +1027,13 @@ int32_t pal_crypto_function(int type, va_list valist)
 			pake_operation = va_arg(valist, psa_pake_operation_t* );
 			pake_key_attr  = va_arg(valist, const psa_key_attributes_t* );
 			pw_key         = va_arg(valist, psa_key_id_t *);
-			return psa_pake_get_shared_key(pake_operation,
+			status = psa_pake_get_shared_key(pake_operation,
 										   pake_key_attr,
 										   pw_key);
+			if (status == PSA_SUCCESS) {
+				g_global_key_array[g_key_count++] = *pw_key;
+			}
+			return status;
 			break;
 		case PAL_CRYPTO_RESET:
 			return pal_system_reset();
