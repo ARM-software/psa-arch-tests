@@ -121,7 +121,7 @@ int32_t psa_pake_spake2p_test(caller_security_t caller __UNUSED)
 
     if (num_checks == 0)
     {
-        val->print(PRINT_TEST, "No test available for the selected crypto configuration\n", 0);
+        val->print(TEST, "No test available for the selected crypto configuration\n", 0);
         return RESULT_SKIP(VAL_STATUS_NO_TESTS);
     }
 
