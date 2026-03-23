@@ -98,6 +98,7 @@ To build the test suite for your target platform, perform the following steps.
 ```
     -DPSA_INCLUDE_PATHS=`readlink -f <relative_include_path>`
 ```
+-   -DNO_FSHORT_FLAGS=<0|1> : This option is applicable only for ARMCLANG toolchain. 0 means compile with `-fshort-enums` and `-fshort-wchar`, while 1 means compile without those flags. Default is 0.
 
 For using FF-1.1 do the following manifests changes in api-tests/platform/manifests files.
 	Change "psa_framework_version" attribute from 1.0 to 1.1 in all manifests files.
@@ -163,4 +164,4 @@ Arm PSA test suite is distributed under Apache v2.0 License.
 
 --------------
 
-*Copyright (c) 2018-2025, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2018-2026, Arm Limited and Contributors. All rights reserved.*
