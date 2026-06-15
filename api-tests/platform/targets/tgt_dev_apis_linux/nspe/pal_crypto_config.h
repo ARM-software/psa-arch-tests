@@ -275,6 +275,31 @@
 #define ARCH_TEST_HKDF
 #define ARCH_TEST_HKDF_EXTRACT
 #define ARCH_TEST_HKDF_EXPAND
+
+/**
+ * \def ARCH_TEST_MAX_PARALLEL_HASH_OPS
+ *
+ * Maximum number of parallel multipart hash operations supported by
+ * the target for the hash capacity test.
+ *
+ * Uncomment and set to enable test_c081.
+ *
+ * Requires: ARCH_TEST_HASH and at least one enabled hash algorithm.
+ */
+#define ARCH_TEST_MAX_PARALLEL_HASH_OPS 8
+
+/**
+ * \def ARCH_TEST_PARALLEL_HASH_OPS_FAILURE_STATUS
+ *
+ * Error expected when the target refuses one more multipart hash
+ * operation beyond ARCH_TEST_MAX_PARALLEL_HASH_OPS.
+ *
+ * Uncomment to enable test_c081.
+ *
+ * Requires: ARCH_TEST_MAX_PARALLEL_HASH_OPS
+ */
+#define ARCH_TEST_PARALLEL_HASH_OPS_FAILURE_STATUS PSA_ERROR_INSUFFICIENT_MEMORY
+
 /**
  * \def ARCH_TEST_TLS12_PRF
  *

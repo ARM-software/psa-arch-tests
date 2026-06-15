@@ -192,6 +192,20 @@
 #error "ARCH_TEST_HKDF defined, but not all prerequisites"
 #endif
 
+#if defined(ARCH_TEST_MAX_PARALLEL_HASH_OPS) && !defined(ARCH_TEST_HASH)
+#error "ARCH_TEST_MAX_PARALLEL_HASH_OPS defined, but not all prerequisites"
+#endif
+
+#if defined(ARCH_TEST_MAX_PARALLEL_HASH_OPS) && \
+    !defined(ARCH_TEST_PARALLEL_HASH_OPS_FAILURE_STATUS)
+#error "ARCH_TEST_MAX_PARALLEL_HASH_OPS defined, but failure status is missing"
+#endif
+
+#if defined(ARCH_TEST_PARALLEL_HASH_OPS_FAILURE_STATUS) && \
+    !defined(ARCH_TEST_MAX_PARALLEL_HASH_OPS)
+#error "ARCH_TEST_PARALLEL_HASH_OPS_FAILURE_STATUS defined, but max parallel ops is missing"
+#endif
+
 #if defined(ARCH_TEST_CMAC) && !defined(ARCH_TEST_AES)
 #error "ARCH_TEST_CMAC defined, but not all prerequisites"
 #endif
