@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2024, 2026, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2026, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,4 +16,4 @@
 **/
 
 /* nRF54L family shared PSA arch test configuration, see tgt_dev_apis_tfm_nrf54l_common. */
-#include "../../tgt_dev_apis_tfm_nrf54l_common/nspe/pal_crypto_config.h"
+#include "../../tgt_dev_apis_tfm_nrf54l_common/nspe/pal_config.h"

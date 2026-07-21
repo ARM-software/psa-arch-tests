@@ -1,5 +1,5 @@
  /** @file
-  * Copyright (c) 2021-2025, Nordic Semiconductor ASA.
+  * Copyright (c) 2021-2026, Nordic Semiconductor ASA.
   * SPDX-License-Identifier : Apache-2.0
   *
   * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,8 @@
 #define NRF_WDT31_NS ((struct NRF_WDT_Type *)0x40109000)
 #define NRF_WDT0_NS ((struct NRF_WDT_Type *)0x40018000)
 
-#if defined(NRF54L15_XXAA) || defined(NRF7120_ENGA_XXAA)
+#if defined(NRF54L15_XXAA) || defined(NRF54LC10A_XXAA) || \
+    defined(NRF54LV10A_XXAA) || defined(NRF7120_ENGA_XXAA)
 #define PSA_TEST_WDT_INSTANCE NRF_WDT31_NS
 #else
 #define PSA_TEST_WDT_INSTANCE NRF_WDT0_NS
