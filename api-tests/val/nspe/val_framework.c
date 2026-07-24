@@ -24,6 +24,86 @@
 extern val_api_t val_api;
 extern psa_api_t psa_api;
 
+/**
+ *   @brief    - Returns the shared status buffer used by the current test run
+ *   @param    - void
+ *   @return   - Pointer to the shared status record
+**/
+static val_test_status_buffer_ts *val_status_buffer(void)
+{
+    return (val_test_status_buffer_ts *)PLATFORM_SHARED_REGION_BASE;
+}
+
+/**
+ *   @brief    - Stores the packed test state and status code in shared memory
+ *   @param    - status : Packed status field
+ *   @return   - void
+**/
+void val_set_status(uint32_t status)
+{
+    val_test_status_buffer_ts *status_buffer = val_status_buffer();
+
+    status_buffer->state = (uint8_t)((status >> TEST_STATE_SHIFT) & TEST_STATE_MASK);
+    status_buffer->status_code = (uint8_t)(status & TEST_STATUS_CODE_MASK);
+}
+
+/**
+ *   @brief    - Reads the packed test state and status code from shared memory
+ *   @param    - void
+ *   @return   - Packed status field
+**/
+uint32_t val_get_status(void)
+{
+    const val_test_status_buffer_ts *status_buffer = val_status_buffer();
+
+    return (((uint32_t)status_buffer->state) << TEST_STATE_SHIFT) |
+        (uint32_t)status_buffer->status_code;
+}
+
+/**
+ *   @brief    - Prints the textual result line for a completed test
+ *   @param    - state       : Encoded test state
+ *             - status_code : Associated status or error code
+ *   @return   - Normalized test state
+**/
+static uint32_t val_emit_status_line(uint32_t state, uint32_t status_code)
+{
+    switch (state)
+    {
+    case TEST_PASS:
+        val_printf(ALWAYS, "Result=Passed\n");
+        return TEST_PASS;
+    case TEST_FAIL:
+        val_printf(ALWAYS, "Result=Failed (Error code=%d)\n", status_code);
+        return TEST_FAIL;
+    case TEST_SKIP:
+        val_printf(ALWAYS, "Result=Skipped (Skip code=%d)\n", status_code);
+        return TEST_SKIP;
+    case TEST_ERROR:
+        val_printf(ALWAYS, "Result=Error (Error code=%d)\n", status_code);
+        return TEST_ERROR;
+    default:
+        val_printf(ALWAYS, "Result=Failed (Error Code=%d)\n", status_code);
+        return TEST_FAIL;
+    }
+}
+
+/**
+ *   @brief    - Reports the current test result and returns the normalized state
+ *   @param    - void
+ *   @return   - Final test state
+**/
+uint32_t val_report_status(void)
+{
+    uint32_t status = val_get_status();
+    uint32_t state = (status >> TEST_STATE_SHIFT) & TEST_STATE_MASK;
+    uint32_t status_code = status & TEST_STATUS_CODE_MASK;
+
+    state = val_emit_status_line(state, status_code);
+    val_printf(ALWAYS, "***********************************\n");
+    return state;
+}
+
 #ifdef IPC
 /**
  * @brief Connect to given sid
@@ -594,7 +674,7 @@ void val_test_init(uint32_t test_num, uint32_t comp_num, char8_t *desc, uint32_t
    }
 
    /* Enable watchdog Timer */
-   status = val_watchdog_enable();
+   status = val_enable_watchdog();
    if (VAL_IS_ERROR(status))
    {
        val_print(ERROR, "\tval_wd_timer_enable failed Error=0x%x\n", status);
@@ -617,7 +697,7 @@ void val_test_exit(void)
     val_status_t         status = VAL_STATUS_SUCCESS;
 
 #ifdef WATCHDOG_AVAILABLE
-    status = val_watchdog_disable();
+    status = val_disable_watchdog();
     if (VAL_IS_ERROR(status))
     {
        val_print(ERROR, "\tval_wd_timer_disable failed Error=0x%x\n", status);
@@ -680,7 +760,7 @@ val_status_t val_get_last_run_test_id(test_id_t *test_id)
          }
 
          *test_id = VAL_INVALID_TEST_ID;
-         status = val_nvm_write(VAL_NVM_OFFSET(NVM_PREVIOUS_TEST_ID),
+         status = val_write_nvm(VAL_NVM_OFFSET(NVM_PREVIOUS_TEST_ID),
                                   test_id, sizeof(test_id_t));
          if (VAL_IS_ERROR(status))
          {
@@ -689,13 +769,13 @@ val_status_t val_get_last_run_test_id(test_id_t *test_id)
          }
 
          val_reset_regression_report(&test_count);
-         status = (val_nvm_write(VAL_NVM_OFFSET(NVM_TOTAL_PASS_INDEX),
+         status = (val_write_nvm(VAL_NVM_OFFSET(NVM_TOTAL_PASS_INDEX),
                         &test_count.total_pass, sizeof(uint32_t)) ||
-                   val_nvm_write(VAL_NVM_OFFSET(NVM_TOTAL_FAIL_INDEX),
+                   val_write_nvm(VAL_NVM_OFFSET(NVM_TOTAL_FAIL_INDEX),
                         &test_count.total_fail, sizeof(uint32_t))  ||
-                   val_nvm_write(VAL_NVM_OFFSET(NVM_TOTAL_SKIP_INDEX),
+                   val_write_nvm(VAL_NVM_OFFSET(NVM_TOTAL_SKIP_INDEX),
                         &test_count.total_skip, sizeof(uint32_t))  ||
-                   val_nvm_write(VAL_NVM_OFFSET(NVM_TOTAL_ERROR_INDEX),
+                   val_write_nvm(VAL_NVM_OFFSET(NVM_TOTAL_ERROR_INDEX),
                         &test_count.total_error, sizeof(uint32_t)));
 
          if (VAL_IS_ERROR(status))
@@ -705,7 +785,7 @@ val_status_t val_get_last_run_test_id(test_id_t *test_id)
          }
     }
 
-    status = val_nvm_read(VAL_NVM_OFFSET(NVM_PREVIOUS_TEST_ID), test_id, sizeof(test_id_t));
+    status = val_read_nvm(VAL_NVM_OFFSET(NVM_PREVIOUS_TEST_ID), test_id, sizeof(test_id_t));
     if (VAL_IS_ERROR(status))
     {
         val_print(ERROR, "\n\tNVMEM read error", 0);
@@ -727,7 +807,7 @@ val_status_t val_set_boot_flag(boot_state_t state)
    val_status_t     status;
 
    boot.state = state;
-   status = val_nvm_write(VAL_NVM_OFFSET(NVM_BOOT), &boot, sizeof(boot_t));
+   status = val_write_nvm(VAL_NVM_OFFSET(NVM_BOOT), &boot, sizeof(boot_t));
    if (VAL_IS_ERROR(status))
    {
        val_print(ERROR, "\tval_nvmem_write failed. Error=0x%x\n", status);
@@ -746,7 +826,7 @@ val_status_t val_get_boot_flag(boot_state_t *state)
    boot_t           boot;
    val_status_t     status;
 
-   status = val_nvm_read(VAL_NVM_OFFSET(NVM_BOOT), &boot, sizeof(boot_t));
+   status = val_read_nvm(VAL_NVM_OFFSET(NVM_BOOT), &boot, sizeof(boot_t));
    if (VAL_IS_ERROR(status))
    {
        val_print(ERROR, "\tval_nvmem_read failed. Error=0x%x\n", status);
@@ -767,7 +847,7 @@ val_status_t val_set_test_data(int32_t nvm_index, int32_t test_data)
 {
    val_status_t     status;
 
-   status = val_nvm_write(VAL_NVM_OFFSET(nvm_index), &test_data, sizeof(int32_t));
+   status = val_write_nvm(VAL_NVM_OFFSET(nvm_index), &test_data, sizeof(int32_t));
    if (VAL_IS_ERROR(status))
    {
        val_print(ERROR, "\tval_nvmem_write failed for test data. Error=0x%x\n", status);
@@ -787,7 +867,7 @@ val_status_t val_get_test_data(int32_t nvm_index, int32_t *test_data)
 {
    val_status_t     status;
 
-   status = val_nvm_read(VAL_NVM_OFFSET(nvm_index), test_data, sizeof(int32_t));
+   status = val_read_nvm(VAL_NVM_OFFSET(nvm_index), test_data, sizeof(int32_t));
    if (VAL_IS_ERROR(status))
    {
        val_print(ERROR, "\tval_nvmem_read failed for test data. Error=0x%x\n", status);

@@ -1,5 +1,5 @@
 #/** @file
-# * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
+# * Copyright (c) 2019-2026, Arm Limited or its affiliates. All rights reserved.
 # * SPDX-License-Identifier : Apache-2.0
 # *
 # * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,7 @@ list(APPEND VAL_SRC_C_NSPE
 	${PSA_ROOT_DIR}/val/nspe/val_attestation.c
 	${PSA_ROOT_DIR}/val/nspe/val_storage.c
 	${PSA_ROOT_DIR}/val/nspe/val_platform.c
+	${PSA_ROOT_DIR}/val/common/val_log.c
 )
 
 # Create VAL NSPE library
@@ -52,7 +53,6 @@ target_include_directories(${PSA_TARGET_VAL_NSPE_LIB} PRIVATE
 	${PSA_ROOT_DIR}/platform/targets/common/nspe
 	${PSA_ROOT_DIR}/platform/targets/common/nspe/crypto
 	${PSA_ROOT_DIR}/platform/targets/${TARGET}/nspe
-	${COMMON_VAL_PATH}/inc
 )
 
 if(${WATCHDOG_AVAILABLE} EQUAL 1)

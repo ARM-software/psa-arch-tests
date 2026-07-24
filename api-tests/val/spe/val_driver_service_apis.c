@@ -17,7 +17,7 @@
 
 
 #include "val_driver_service_apis.h"
-#include "val_common_log.h"
+#include "val_log.h"
 
 print_verbosity_t  g_print_level = INFO;
 static int is_uart_init_done;

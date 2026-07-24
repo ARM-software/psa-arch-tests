@@ -30,6 +30,94 @@ extern psa_api_t psa_api;
 addr_t          g_test_info_addr;
 
 /**
+ *   @brief    - Checks whether a stored progress marker represents a reboot path
+ *   @param    - test_progress : Stored progress marker
+ *             - pattern       : Accepted reboot markers
+ *             - length        : Number of entries in pattern
+ *   @return   - 1 on match, else 0
+**/
+uint32_t is_reboot_run(uint32_t test_progress, const uint8_t *pattern, uint32_t length)
+{
+    uint32_t index;
+
+    for (index = 0; index < length; index++)
+    {
+        if (pattern[index] == test_progress)
+            return 1;
+    }
+
+    return 0;
+}
+
+/**
+ *   @brief    - Clears the accumulated regression counters
+ *   @param    - report : Regression summary to reset
+ *   @return   - void
+**/
+void val_reset_regression_report(regre_report_t *report)
+{
+    report->total_pass = 0;
+    report->total_fail = 0;
+    report->total_skip = 0;
+    report->total_error = 0;
+}
+
+/**
+ *   @brief    - Increments the regression counter that matches a test outcome
+ *   @param    - test_result   : Final state of the executed test
+ *             - regre_report  : Regression summary to update
+ *   @return   - void
+**/
+void val_update_regression_report(uint32_t test_result, regre_report_t *regre_report)
+{
+    uint32_t *counter = NULL;
+
+    switch (test_result)
+    {
+    case TEST_PASS:
+        counter = &regre_report->total_pass;
+        break;
+    case TEST_FAIL:
+        counter = &regre_report->total_fail;
+        break;
+    case TEST_SKIP:
+        counter = &regre_report->total_skip;
+        break;
+    case TEST_ERROR:
+        counter = &regre_report->total_error;
+        break;
+    default:
+        break;
+    }
+
+    if (counter != NULL)
+        (*counter)++;
+}
+
+/**
+ *   @brief    - Prints the regression summary after the suite completes
+ *   @param    - regre_report : Regression summary to display
+ *   @return   - void
+**/
+void val_print_regression_report(regre_report_t *regre_report)
+{
+    uint32_t total = regre_report->total_pass + regre_report->total_fail +
+        regre_report->total_skip + regre_report->total_error;
+
+    val_printf(ALWAYS, "\n\n");
+    val_printf(ALWAYS, "REGRESSION REPORT: \n");
+    val_printf(ALWAYS, "==========================\n");
+    val_printf(ALWAYS, "   TOTAL TESTS     : %d\n", total);
+    val_printf(ALWAYS, "   TOTAL PASSED    : %d\n", regre_report->total_pass);
+    val_printf(ALWAYS, "   TOTAL FAILED    : %d\n", regre_report->total_fail);
+    val_printf(ALWAYS, "   TOTAL SKIPPED   : %d\n", regre_report->total_skip);
+    val_printf(ALWAYS, "   TOTAL SIM ERROR : %d\n", regre_report->total_error);
+    val_printf(ALWAYS, "==========================\n");
+    val_printf(ALWAYS, "******* END OF ACS *******\n");
+    val_printf(ALWAYS, "\n");
+}
+
+/**
     @brief        - This function prints PSA_{SUITE}_API_VERSION_MAJOR
                     PSA_{SUITE}_API_VERSION_MINOR details.
     @param        - None
@@ -215,7 +303,7 @@ int32_t val_dispatcher(test_id_t test_id_prev)
         if (boot.state == BOOT_NOT_EXPECTED)
         {
             val_set_status(RESULT_ERROR(VAL_STATUS_ERROR));
-            status = val_nvm_read(VAL_NVM_OFFSET(NVM_CUR_TEST_NUM_INDEX),
+            status = val_read_nvm(VAL_NVM_OFFSET(NVM_CUR_TEST_NUM_INDEX),
                                     &test_id, sizeof(test_id_t));
             if (VAL_IS_ERROR(status))
             {
@@ -231,7 +319,7 @@ int32_t val_dispatcher(test_id_t test_id_prev)
         else if (boot.state == BOOT_EXPECTED_BUT_FAILED)
         {
             val_set_status(RESULT_FAIL(VAL_STATUS_BOOT_EXPECTED_BUT_FAILED));
-            status = val_nvm_read(VAL_NVM_OFFSET(NVM_CUR_TEST_NUM_INDEX),
+            status = val_read_nvm(VAL_NVM_OFFSET(NVM_CUR_TEST_NUM_INDEX),
                                     &test_id, sizeof(test_id_t));
             if (VAL_IS_ERROR(status))
             {
@@ -252,7 +340,7 @@ int32_t val_dispatcher(test_id_t test_id_prev)
                 break;
             }
 
-            status = val_nvm_write(VAL_NVM_OFFSET(NVM_CUR_TEST_NUM_INDEX),
+            status = val_write_nvm(VAL_NVM_OFFSET(NVM_CUR_TEST_NUM_INDEX),
                                      &test_id, sizeof(test_id_t));
             if (VAL_IS_ERROR(status))
             {
@@ -299,13 +387,13 @@ build. For PSA functional API certification, all tests must be run.\n", 0);
         }
 
         /* Prepare suite summary data structure */
-        status = (val_nvm_read(VAL_NVM_OFFSET(NVM_TOTAL_PASS_INDEX),
+        status = (val_read_nvm(VAL_NVM_OFFSET(NVM_TOTAL_PASS_INDEX),
                         &test_count.total_pass, sizeof(uint32_t)) ||
-                  val_nvm_read(VAL_NVM_OFFSET(NVM_TOTAL_FAIL_INDEX),
+                  val_read_nvm(VAL_NVM_OFFSET(NVM_TOTAL_FAIL_INDEX),
                         &test_count.total_fail, sizeof(uint32_t))  ||
-                  val_nvm_read(VAL_NVM_OFFSET(NVM_TOTAL_SKIP_INDEX),
+                  val_read_nvm(VAL_NVM_OFFSET(NVM_TOTAL_SKIP_INDEX),
                         &test_count.total_skip, sizeof(uint32_t))  ||
-                  val_nvm_read(VAL_NVM_OFFSET(NVM_TOTAL_ERROR_INDEX),
+                  val_read_nvm(VAL_NVM_OFFSET(NVM_TOTAL_ERROR_INDEX),
                         &test_count.total_error, sizeof(uint32_t)));
 
         if (VAL_IS_ERROR(status))
@@ -316,13 +404,13 @@ build. For PSA functional API certification, all tests must be run.\n", 0);
 
         val_update_regression_report(test_result, &test_count);
 
-        status = (val_nvm_write(VAL_NVM_OFFSET(NVM_TOTAL_PASS_INDEX),
+        status = (val_write_nvm(VAL_NVM_OFFSET(NVM_TOTAL_PASS_INDEX),
                         &test_count.total_pass, sizeof(uint32_t)) ||
-                  val_nvm_write(VAL_NVM_OFFSET(NVM_TOTAL_FAIL_INDEX),
+                  val_write_nvm(VAL_NVM_OFFSET(NVM_TOTAL_FAIL_INDEX),
                        &test_count.total_fail, sizeof(uint32_t))  ||
-                  val_nvm_write(VAL_NVM_OFFSET(NVM_TOTAL_SKIP_INDEX),
+                  val_write_nvm(VAL_NVM_OFFSET(NVM_TOTAL_SKIP_INDEX),
                        &test_count.total_skip, sizeof(uint32_t))  ||
-                  val_nvm_write(VAL_NVM_OFFSET(NVM_TOTAL_ERROR_INDEX),
+                  val_write_nvm(VAL_NVM_OFFSET(NVM_TOTAL_ERROR_INDEX),
                        &test_count.total_error, sizeof(uint32_t)));
 
         if (VAL_IS_ERROR(status))
@@ -332,7 +420,7 @@ build. For PSA functional API certification, all tests must be run.\n", 0);
         }
 
         test_id_prev = test_id;
-        status = val_nvm_write(VAL_NVM_OFFSET(NVM_PREVIOUS_TEST_ID),
+        status = val_write_nvm(VAL_NVM_OFFSET(NVM_PREVIOUS_TEST_ID),
                                  &test_id, sizeof(test_id_t));
         if (VAL_IS_ERROR(status))
         {
@@ -342,13 +430,13 @@ build. For PSA functional API certification, all tests must be run.\n", 0);
 
    } while (1);
 
-   status = (val_nvm_read(VAL_NVM_OFFSET(NVM_TOTAL_PASS_INDEX),
+   status = (val_read_nvm(VAL_NVM_OFFSET(NVM_TOTAL_PASS_INDEX),
                     &test_count.total_pass, sizeof(uint32_t)) ||
-             val_nvm_read(VAL_NVM_OFFSET(NVM_TOTAL_FAIL_INDEX),
+             val_read_nvm(VAL_NVM_OFFSET(NVM_TOTAL_FAIL_INDEX),
                     &test_count.total_fail, sizeof(uint32_t))  ||
-             val_nvm_read(VAL_NVM_OFFSET(NVM_TOTAL_SKIP_INDEX),
+             val_read_nvm(VAL_NVM_OFFSET(NVM_TOTAL_SKIP_INDEX),
                     &test_count.total_skip, sizeof(uint32_t))  ||
-             val_nvm_read(VAL_NVM_OFFSET(NVM_TOTAL_ERROR_INDEX),
+             val_read_nvm(VAL_NVM_OFFSET(NVM_TOTAL_ERROR_INDEX),
                     &test_count.total_error, sizeof(uint32_t)));
 
    if (VAL_IS_ERROR(status))

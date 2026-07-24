@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2026, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,18 @@
 #include "val_client_defs.h"
 #include "val_interfaces.h"
 
+/* Struture to capture test state */
+typedef struct {
+    uint16_t reserved;
+    uint8_t  state;
+    uint8_t  status_code;
+} val_test_status_buffer_ts;
+
 /* prototypes */
+void val_set_status(uint32_t status);
+uint32_t val_get_status(void);
+uint32_t val_report_status(void);
+
 uint32_t     val_report_status_bespoke(void);
 val_status_t val_err_check_set(uint32_t checkpoint, val_status_t status);
 void         val_test_init(uint32_t test_num, uint32_t comp_num, char8_t *desc,
