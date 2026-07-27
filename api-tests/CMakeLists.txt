@@ -634,6 +634,10 @@ if(${CC312_LEGACY_DRIVER_API_ENABLED})
 	add_definitions(-DCC312_LEGACY_DRIVER_API_ENABLED)
 endif()
 
+if(${MBED_TLS_CRYPTO_BUILD})
+	add_definitions(-DMBED_TLS_CRYPTO_BUILD)
+endif()
+
 # Build PAL NSPE LIB
 include(${PSA_ROOT_DIR}/platform/targets/common/nspe/pal_nspe.cmake)
 include(${PSA_ROOT_DIR}/platform/targets/${TARGET}/target.cmake)

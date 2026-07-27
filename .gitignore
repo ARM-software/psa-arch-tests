@@ -9,3 +9,5 @@ sbsa
 #Ignore build directory
 build/
 BUILD/
+#Ignore pre commit data
+pre_commit_data/
