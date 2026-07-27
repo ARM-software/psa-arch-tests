@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2026, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,11 +47,11 @@ const val_api_t val_api = {
     .ipc_call                  = NULL,
     .ipc_close                 = NULL,
 #endif
-    .nvmem_read                = val_nvm_read,
-    .nvmem_write               = val_nvm_write,
+    .nvmem_read                = val_read_nvm,
+    .nvmem_write               = val_write_nvm,
     .wd_timer_init             = val_wd_timer_init,
-    .wd_timer_enable           = val_watchdog_enable,
-    .wd_timer_disable          = val_watchdog_disable,
+    .wd_timer_enable           = val_enable_watchdog,
+    .wd_timer_disable          = val_disable_watchdog,
     .wd_reprogram_timer        = val_wd_reprogram_timer,
     .set_boot_flag             = val_set_boot_flag,
     .get_boot_flag             = val_get_boot_flag,

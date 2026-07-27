@@ -19,8 +19,6 @@
 #define _VAL_H_
 
 #include "pal_common.h"
-#include "val_common_log.h"
-#include "val_common_status.h"
 
 #ifndef VAL_NSPE_BUILD
 #define STATIC_DECLARE  static
@@ -49,7 +47,50 @@
 #define TEST_NUM_BIT         32
 #define TEST_NUM_MASK        0xFFFFFFFF
 
-#define VAL_IS_ERROR(status)       ((status & TEST_STATUS_CODE_MASK) ? 1 : 0)
+typedef enum {
+    VAL_STEP_STARTED = 0x01,
+    VAL_STEP_PASSED  = 0x02,
+    VAL_STEP_FAILED  = 0x03,
+    VAL_STEP_SKIPPED = 0x04,
+    VAL_STEP_ERRORED = 0x05,
+    VAL_STEP_ENDED   = 0x06,
+} val_step_t;
+
+enum {
+    VAL_TEST_STATE_SHIFT = 8U,
+    VAL_TEST_FIELD_MASK  = 0xFFU,
+    VAL_TEST_CODE_SHIFT  = 0U,
+    VAL_STATUS_INVALID   = 102U,
+    VAL_NVM_WORD_BYTES   = 4U,
+};
+
+static inline uint32_t val_compose_status(val_step_t step, uint32_t code)
+{
+    return (((uint32_t)step) << VAL_TEST_STATE_SHIFT) |
+           ((uint32_t)code << VAL_TEST_CODE_SHIFT);
+}
+
+static inline uint32_t val_status_code(uint32_t status)
+{
+    return (status >> VAL_TEST_CODE_SHIFT) & VAL_TEST_FIELD_MASK;
+}
+
+static inline val_step_t val_status_step(uint32_t status)
+{
+    return (val_step_t)((status >> VAL_TEST_STATE_SHIFT) & VAL_TEST_FIELD_MASK);
+}
+
+static inline bool_t val_has_status_error(uint32_t status)
+{
+    return (bool_t)(val_status_code(status) != 0U);
+}
+
+static inline bool_t val_has_status_step(uint32_t status, val_step_t expected)
+{
+    return (bool_t)(val_status_step(status) == expected);
+}
+
+#define VAL_IS_ERROR(status)       val_has_status_error((uint32_t)(status))
 
 
 /* Test Defines */
@@ -72,6 +113,28 @@
 #define GET_TEST_ISOLATION_LEVEL(num)   (num & 0x3)
 #define GET_WD_TIMOUT_TYPE(num)         ((num >> 8) & 0x7)
 
+#define TEST_START              ((uint32_t)VAL_STEP_STARTED)
+#define TEST_PASS               ((uint32_t)VAL_STEP_PASSED)
+#define TEST_FAIL               ((uint32_t)VAL_STEP_FAILED)
+#define TEST_SKIP               ((uint32_t)VAL_STEP_SKIPPED)
+#define TEST_ERROR              ((uint32_t)VAL_STEP_ERRORED)
+#define TEST_END                ((uint32_t)VAL_STEP_ENDED)
+
+#define TEST_STATE_SHIFT        VAL_TEST_STATE_SHIFT
+#define TEST_STATE_MASK         VAL_TEST_FIELD_MASK
+#define TEST_STATUS_CODE_MASK   VAL_TEST_FIELD_MASK
+#define TEST_STATUS_CODE_SHIFT  VAL_TEST_CODE_SHIFT
+
+#define RESULT_START(status)    val_compose_status(VAL_STEP_STARTED, (uint32_t)(status))
+#define RESULT_PASS(status)     val_compose_status(VAL_STEP_PASSED, (uint32_t)(status))
+#define RESULT_FAIL(status)     val_compose_status(VAL_STEP_FAILED, (uint32_t)(status))
+#define RESULT_SKIP(status)     val_compose_status(VAL_STEP_SKIPPED, (uint32_t)(status))
+#define RESULT_ERROR(status)    val_compose_status(VAL_STEP_ERRORED, (uint32_t)(status))
+
+#define IS_TEST_FAIL(status)    val_has_status_step((uint32_t)(status), VAL_STEP_FAILED)
+#define IS_TEST_SKIP(status)    val_has_status_step((uint32_t)(status), VAL_STEP_SKIPPED)
+#define IS_TEST_START(status)   val_has_status_step((uint32_t)(status), VAL_STEP_STARTED)
+
 #define TEST_CHECKPOINT_NUM(n)          n
 #define TEST(n)                         n
 #define BLOCK(n)                        n
@@ -88,6 +151,48 @@
 
 #define UART_INIT_SIGN  0xff
 #define UART_PRINT_SIGN 0xfe
+
+/* NVM Index size */
+#define VAL_NVM_BLOCK_SIZE       VAL_NVM_WORD_BYTES
+
+typedef enum {
+    VAL_NVM_PLATFORM_RESERVED = 0x0,
+    VAL_NVM_CURRENT_SUITE     = 0x1,
+    VAL_NVM_CURRENT_TEST      = 0x2,
+    VAL_NVM_LAST_TEST         = 0x3,
+    VAL_NVM_PROGRESS          = 0x4,
+    VAL_NVM_PASS_COUNT        = 0x5,
+    VAL_NVM_FAIL_COUNT        = 0x6,
+    VAL_NVM_SKIP_COUNT        = 0x7,
+    VAL_NVM_ERROR_COUNT       = 0x8,
+    VAL_NVM_BOOT_STATE        = 0x9,
+    VAL_NVM_PREVIOUS_TEST     = 0xA,
+    VAL_NVM_DATA_SLOT0        = 0xB,
+    VAL_NVM_DATA_SLOT1        = 0xC,
+    VAL_NVM_DATA_SLOT2        = 0xD,
+} nvm_map_index_t;
+
+static inline uint32_t val_nvm_offset(uint32_t nvm_idx)
+{
+    return nvm_idx * VAL_NVM_BLOCK_SIZE;
+}
+
+#define VAL_NVM_OFFSET(nvm_idx)  val_nvm_offset((uint32_t)(nvm_idx))
+
+#define NVM_PLATFORM_RESERVE_INDEX  VAL_NVM_PLATFORM_RESERVED
+#define NVM_CUR_SUITE_NUM_INDEX     VAL_NVM_CURRENT_SUITE
+#define NVM_CUR_TEST_NUM_INDEX      VAL_NVM_CURRENT_TEST
+#define NVM_END_TEST_NUM_INDEX      VAL_NVM_LAST_TEST
+#define NVM_TEST_PROGRESS_INDEX     VAL_NVM_PROGRESS
+#define NVM_TOTAL_PASS_INDEX        VAL_NVM_PASS_COUNT
+#define NVM_TOTAL_FAIL_INDEX        VAL_NVM_FAIL_COUNT
+#define NVM_TOTAL_SKIP_INDEX        VAL_NVM_SKIP_COUNT
+#define NVM_TOTAL_ERROR_INDEX       VAL_NVM_ERROR_COUNT
+#define NVM_BOOT                    VAL_NVM_BOOT_STATE
+#define NVM_PREVIOUS_TEST_ID        VAL_NVM_PREVIOUS_TEST
+#define NVM_TEST_DATA1              VAL_NVM_DATA_SLOT0
+#define NVM_TEST_DATA2              VAL_NVM_DATA_SLOT1
+#define NVM_TEST_DATA3              VAL_NVM_DATA_SLOT2
 
 #define TEST_PANIC()                          \
     do {                                         \
@@ -291,4 +396,6 @@ typedef struct {
 
 typedef int32_t (*client_test_t)(caller_security_t caller);
 typedef int32_t (*server_test_t)(void);
+
+#include "val_log.h"
 #endif /* VAL_H */

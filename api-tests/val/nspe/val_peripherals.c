@@ -23,6 +23,50 @@
 /* Global */
 uint32_t   is_uart_init_done = 0;
 
+/**
+ *   @brief   -  Reads bytes from non-volatile storage into the caller buffer
+ *   @param   -  offset  : Offset from NV Memory base address
+ *            -  buffer  : Pointer to destination address
+ *            -  size    : Number of bytes
+ *   @return  -  SUCCESS/FAILURE
+**/
+uint32_t val_read_nvm(uint32_t offset, void *buffer, size_t size)
+{
+      return pal_nvm_read(offset, buffer, size);
+}
+
+/**
+ *    @brief   -  Writes bytes from the caller buffer into non-volatile storage
+ *    @param   -  offset  : Offset from NV Memory base address
+ *             -  buffer  : Pointer to source address
+ *             -  size    : Number of bytes
+ *    @return  -  SUCCESS/FAILURE
+**/
+uint32_t val_write_nvm(uint32_t offset, void *buffer, size_t size)
+{
+      return pal_nvm_write(offset, buffer, size);
+}
+
+/**
+ *   @brief   -  Turns on the platform watchdog timer
+ *   @param   -  void
+ *   @return  -  SUCCESS/FAILURE
+ **/
+uint32_t val_enable_watchdog(void)
+{
+      return pal_watchdog_enable();
+}
+
+/**
+ *   @brief   -  Turns off the platform watchdog timer
+ *   @param   -  void
+ *   @return  -  SUCCESS/FAILURE
+ **/
+uint32_t val_disable_watchdog(void)
+{
+      return pal_watchdog_disable();
+}
+
 /*
     @brief    - Initialize UART.
                 This is client interface API of secure partition UART INIT API.
@@ -93,7 +137,7 @@ val_status_t val_wd_reprogram_timer(wd_timeout_type_t timeout_type)
     val_status_t    status = VAL_STATUS_SUCCESS;
 #ifdef WATCHDOG_AVAILABLE
     /* Disable watchdog Timer */
-    val_watchdog_disable();
+    val_disable_watchdog();
 
     /* Initialise watchdog */
     status = val_wd_timer_init(timeout_type);
@@ -103,7 +147,7 @@ val_status_t val_wd_reprogram_timer(wd_timeout_type_t timeout_type)
     }
 
     /* Enable watchdog Timer */
-    status = val_watchdog_enable();
+    status = val_enable_watchdog();
     if (VAL_IS_ERROR(status))
     {
         return status;

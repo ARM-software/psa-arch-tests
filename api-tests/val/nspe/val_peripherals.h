@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2026, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,11 @@
 #define _VAL_PERIPHERALS_H_
 
 #include "val.h"
-#include "val_common_peripherals.h"
+
+uint32_t val_read_nvm(uint32_t offset, void *buffer, size_t size);
+uint32_t val_write_nvm(uint32_t offset, void *buffer, size_t size);
+uint32_t val_enable_watchdog(void);
+uint32_t val_disable_watchdog(void);
 
 val_status_t val_uart_init(void);
 val_status_t val_print(print_verbosity_t verbosity, const char *string, int32_t data);
