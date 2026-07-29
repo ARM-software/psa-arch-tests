@@ -402,10 +402,12 @@
 #define ARCH_TEST_SPAKE2P_CMAC
 #define ARCH_TEST_SPAKE2P_MATTER
 
+#ifdef MBED_TLS_CRYPTO_BUILD
 /* Disable PSA API calls for PAKE and Key-agreement test cases */
 #define DISABLE_CRYPTO_PAKE
 #define DISABLE_CRYPTO_1_1_0
 #define DISABLE_KEY_AGREEMENT
+#endif
 
 #include "pal_crypto_config_check.h"
 
