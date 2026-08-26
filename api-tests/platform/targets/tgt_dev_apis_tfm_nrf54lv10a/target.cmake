@@ -15,8 +15,9 @@
 # * limitations under the License.
 #**/
 
-# The nRF54L family targets (nrf54l15, nrf54lc10a, nrf54lv10a) share an
-# identical PSA arch test configuration. The configuration lives in
-# tgt_dev_apis_tfm_nrf54l_common; this per-target directory only exists because the framework
-# discovers targets by directory and loads target.cmake per target.
+# The nRF54L family targets (nrf54l15, nrf54lc10a, nrf54lv10a, nrf54lm20a,
+# nrf54lm20b) share an identical PSA arch test configuration. The
+# configuration lives in tgt_dev_apis_tfm_nrf54l_common; this per-target
+# directory only exists because the framework discovers targets by directory
+# and loads target.cmake per target.
 include(${CMAKE_CURRENT_LIST_DIR}/../tgt_dev_apis_tfm_nrf54l_common/target.cmake)

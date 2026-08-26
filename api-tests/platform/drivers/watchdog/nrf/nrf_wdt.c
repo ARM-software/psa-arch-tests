@@ -36,7 +36,8 @@
 #define NRF_WDT0_NS ((struct NRF_WDT_Type *)0x40018000)
 
 #if defined(NRF54L15_XXAA) || defined(NRF54LC10A_XXAA) || \
-    defined(NRF54LV10A_XXAA) || defined(NRF7120_ENGA_XXAA)
+    defined(NRF54LV10A_XXAA) || defined(NRF7120_ENGA_XXAA) || \
+    defined(NRF54LM20A_XXAA) || defined(NRF54LM20B_XXAA)
 #define PSA_TEST_WDT_INSTANCE NRF_WDT31_NS
 #else
 #define PSA_TEST_WDT_INSTANCE NRF_WDT0_NS
