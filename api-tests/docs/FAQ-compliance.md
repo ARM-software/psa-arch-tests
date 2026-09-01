@@ -83,7 +83,7 @@ Functions that need to be implemented for each badge:
 | Badge mention              | Functions
 | -------------------------  | -----
 | All badges                 | `init`<br>`import_key`<br>`export_key`<br>`destroy_key`<br>`key_attributes_set_get`<br>`generate_key`<br>`copy_key`
-| `crypto_hash` | `hash_setup`<br>`hash_update`<br>`hash_verify`<br>`hash_finish`<br>`hash_abort`<br>`hash_clone`<br><br>optional:<br>`hash_compute`<br>`hash_compare`<br>`hash_suspend`<br>`hash_resume`
+| `crypto_hash` | `hash_setup`<br>`hash_update`<br>`hash_verify`<br>`hash_finish`<br>`hash_abort`<br><br>optional:<br>`hash_clone`<br>`hash_compute`<br>`hash_compare`<br>`hash_suspend`<br>`hash_resume`
 | `crypto_mac`  | `mac_sign_setup`<br>`mac_update`<br>`mac_sign_finish`<br>`mac_verify_setup`<br>`mac_verify_finish`<br>`mac_abort`<br><br>optional:<br>`mac_compute`<br>`mac_verify`<br>`mac_sign_multipart`<br>`mac_verify_multipart`
 | `crypto_asym_sign` | `sign_hash`<br>`verify_hash`<br>`sign_message`<br>`verify_message`
 | `crypto_asym_crypt`  | `asymmetric_encrypt`<br>`asymmetric_decrypt`
@@ -94,7 +94,7 @@ Functions that need to be implemented for each badge:
 | `crypto_rng`         | `generate_random`
 | `crypto_pake`        | A consistent set of PAKE operations needed to complete a PAKE key exchange.
 
-This list is probably not exhaustive. Crypto vendors are expected to use common sense to determine which functions of a given subset are interesting for their own users.
+This list is probably not exhaustive and offers flexibility. Crypto vendors are expected to use common sense to determine which functions of a given subset are interesting for their own users. For example, it is not necessary to implement all hash-related functions to be in a position to claim a `crypto_hash` badge. Asymmetric crypto signature could support signing hashes only and not entire messages, and still claim a `crypto_asym_sign` badge. Those badges are not strict grades, they are a way for vendors to summarize to their customers what their products support, inviting them to review specific data sheets for more detailed information.
 
 ## What about crypto primitives like AES, RSA, SHA?
 
@@ -130,4 +130,4 @@ Delivering a badge usually takes a few working days, please bear with us if any 
 
 --------------
 
-*Copyright (c) 2023-2024, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2023-2024, 2026, Arm Limited and Contributors. All rights reserved.*
