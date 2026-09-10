@@ -70,6 +70,9 @@ extern const uint8_t ec_key_data[];
 extern const uint8_t ec_key_pair[];
 extern const uint8_t ec_keypair_deterministic[];
 
+extern const uint8_t ec_secp521_pub_data[];
+extern const uint8_t ec_secp521_priv_data[];
+
 extern const uint8_t ecdsa_secp384r1_sha384_priv[];
 extern const uint8_t ecdsa_secp384r1_sha384_pub[];
 extern const uint8_t ecdsa_secp384r1_sha384_hash[];

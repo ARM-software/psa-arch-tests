@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2018-2025, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2026, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -78,7 +78,9 @@ int32_t psa_import_key_test(caller_security_t caller __UNUSED)
         TEST_ASSERT_EQUAL(get_type, check1[i].type, TEST_CHECKPOINT_NUM(5));
 
         val->crypto_function(VAL_CRYPTO_GET_KEY_BITS, &get_attributes, &get_bits);
-        TEST_ASSERT_EQUAL(get_bits, check1[i].bits, TEST_CHECKPOINT_NUM(6));
+        TEST_ASSERT_EQUAL(get_bits,
+                          (check1[i].expected_bits ? check1[i].expected_bits : check1[i].bits),
+                          TEST_CHECKPOINT_NUM(6));
 
         /* Reset the key attributes and check if psa_import_key fails */
         val->crypto_function(VAL_CRYPTO_RESET_KEY_ATTRIBUTES, &attributes);
