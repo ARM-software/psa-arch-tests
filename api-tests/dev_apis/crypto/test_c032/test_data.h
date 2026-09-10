@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, 2026, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -145,6 +145,45 @@ static const test_data check1[] = {
     .bits            = BYTES_TO_BITS(DES3_3B_KEY_SIZE),
     .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
     .alg             = PSA_ALG_CBC_NO_PADDING,
+    .expected_status = PSA_SUCCESS
+},
+#endif
+#endif
+
+#ifdef ARCH_TEST_CIPHER_MODE_ECB
+#ifdef ARCH_TEST_AES_128
+{
+    .test_desc       = "Test psa_cipher_encrypt_setup 16 Byte AES ECB\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_16B_KEY_SIZE,
+    .bits            = BYTES_TO_BITS(AES_16B_KEY_SIZE),
+    .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
+    .alg             = PSA_ALG_ECB_NO_PADDING,
+    .expected_status = PSA_SUCCESS
+},
+#endif
+#ifdef ARCH_TEST_AES_192
+{
+    .test_desc       = "Test psa_cipher_encrypt_setup 24 Byte AES ECB\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_24B_KEY_SIZE,
+    .bits            = BYTES_TO_BITS(AES_24B_KEY_SIZE),
+    .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
+    .alg             = PSA_ALG_ECB_NO_PADDING,
+    .expected_status = PSA_SUCCESS
+},
+#endif
+#ifdef ARCH_TEST_AES_256
+{
+    .test_desc       = "Test psa_cipher_encrypt_setup 32 Byte AES ECB\n",
+    .type            = PSA_KEY_TYPE_AES,
+    .data            = key_data,
+    .data_length     = AES_32B_KEY_SIZE,
+    .bits            = BYTES_TO_BITS(AES_32B_KEY_SIZE),
+    .usage_flags     = PSA_KEY_USAGE_ENCRYPT,
+    .alg             = PSA_ALG_ECB_NO_PADDING,
     .expected_status = PSA_SUCCESS
 },
 #endif
