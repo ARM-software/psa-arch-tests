@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2026, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,8 +29,8 @@ extern  uint32_t g_test_count;
 
 int32_t psa_aead_update_test(caller_security_t caller __UNUSED)
 {
-#if (defined(ARCH_TEST_CCM) && defined(ARCH_TEST_AES_128) && \
-!defined(ARCH_TEST_AEAD_MULTISTAGE_OFF))
+#if ((defined(ARCH_TEST_CCM) || defined(ARCH_TEST_GCM)) && \
+(defined(ARCH_TEST_AES_128)) && (!defined(ARCH_TEST_AEAD_MULTISTAGE_OFF)))
     int32_t               i, status;
     size_t                output_length;
     int                   num_checks = sizeof(check1)/sizeof(check1[0]);

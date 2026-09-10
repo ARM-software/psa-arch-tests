@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2024, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2024, 2026, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,10 +41,17 @@ typedef struct {
     psa_status_t            expected_status;
 } test_data;
 
-#if (defined(ARCH_TEST_CCM) && defined(ARCH_TEST_AES_128))
+#if (defined(ARCH_TEST_GCM) && defined(ARCH_TEST_AES_128))
+/* GCM ciphertext for (key_data, nonce[:12], additional_data, plaintext) */
+static const uint8_t gcm_update_ct_24B[24] = {
+ 0x1d, 0xec, 0xc1, 0xed, 0x4b, 0x1a, 0x0f, 0x94, 0x64, 0x3c, 0xbb, 0x22,
+ 0x89, 0xb5, 0xe3, 0x46, 0x21, 0x11, 0x43, 0x20, 0x2d, 0xea, 0x2b, 0x66};
+#endif
+
+#if ((defined(ARCH_TEST_CCM) || defined(ARCH_TEST_GCM)) && defined(ARCH_TEST_AES_128))
 static const test_data check1[] = {
-#ifdef ARCH_TEST_CCM
 #ifdef ARCH_TEST_AES_128
+#ifdef ARCH_TEST_CCM
 {
     .test_desc              = "Test psa_aead_update - Encrypt - CCM\n",
     .type                   = PSA_KEY_TYPE_AES,
@@ -428,7 +435,177 @@ static const test_data check1[] = {
     .operation_state        = 0,
     .expected_status        = PSA_ERROR_BAD_STATE
 },
-#endif
-#endif
+#endif /* ARCH_TEST_CCM */
+
+#ifdef ARCH_TEST_GCM
+{
+    .test_desc              = "Test psa_aead_update - Encrypt - GCM\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_GCM,
+    .setup_alg              = PSA_ALG_GCM,
+    .nonce                  = nonce,
+    .nonce_length           = 12,
+    .ad_length              = 32,
+    .plaintext_length       = 24,
+    .additional_data        = additional_data,
+    .ad_input_length        = 32,
+    .input                  = plaintext,
+    .input_length           = 24,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = gcm_update_ct_24B,
+    .expected_output_length = 24,
+    .operation_state        = 1,
+    .expected_status        = PSA_SUCCESS
+},
+
+{
+    .test_desc              = "Test psa_aead_update - Encrypt - GCM - Tag length = 12\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_GCM, 12),
+    .setup_alg              = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_GCM, 12),
+    .nonce                  = nonce,
+    .nonce_length           = 12,
+    .ad_length              = 32,
+    .plaintext_length       = 24,
+    .additional_data        = additional_data,
+    .ad_input_length        = 32,
+    .input                  = plaintext,
+    .input_length           = 24,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = gcm_update_ct_24B,
+    .expected_output_length = 24,
+    .operation_state        = 1,
+    .expected_status        = PSA_SUCCESS
+},
+
+{
+    .test_desc              = "Test psa_aead_update - Encrypt - GCM - Small buffer size\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_GCM,
+    .setup_alg              = PSA_ALG_GCM,
+    .nonce                  = nonce,
+    .nonce_length           = 12,
+    .ad_length              = 32,
+    .plaintext_length       = 24,
+    .additional_data        = additional_data,
+    .ad_input_length        = 32,
+    .input                  = plaintext,
+    .input_length           = 24,
+    .output                 = expected_output,
+    .output_size            = 15,
+    .expected_output        = gcm_update_ct_24B,
+    .expected_output_length = 0,
+    .operation_state        = 1,
+    .expected_status        = PSA_ERROR_BUFFER_TOO_SMALL
+},
+
+{
+    .test_desc              = "Test psa_aead_update - Encrypt - GCM - Invalid operation state\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_ENCRYPT,
+    .alg                    = PSA_ALG_GCM,
+    .setup_alg              = PSA_ALG_GCM,
+    .nonce                  = nonce,
+    .nonce_length           = 12,
+    .ad_length              = 32,
+    .plaintext_length       = 24,
+    .additional_data        = additional_data,
+    .ad_input_length        = 32,
+    .input                  = plaintext,
+    .input_length           = 24,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = NULL,
+    .expected_output_length = 0,
+    .operation_state        = 0,
+    .expected_status        = PSA_ERROR_BAD_STATE
+},
+
+{
+    .test_desc              = "Test psa_aead_update - Decrypt - GCM\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_DECRYPT,
+    .alg                    = PSA_ALG_GCM,
+    .setup_alg              = PSA_ALG_GCM,
+    .nonce                  = nonce,
+    .nonce_length           = 12,
+    .ad_length              = 32,
+    .plaintext_length       = 24,
+    .additional_data        = additional_data,
+    .ad_input_length        = 32,
+    .input                  = gcm_update_ct_24B,
+    .input_length           = 24,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = plaintext,
+    .expected_output_length = 24,
+    .operation_state        = 1,
+    .expected_status        = PSA_SUCCESS
+},
+
+{
+    .test_desc              = "Test psa_aead_update - Decrypt - GCM - Tag length = 12\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_DECRYPT,
+    .alg                    = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_GCM, 12),
+    .setup_alg              = PSA_ALG_AEAD_WITH_SHORTENED_TAG(PSA_ALG_GCM, 12),
+    .nonce                  = nonce,
+    .nonce_length           = 12,
+    .ad_length              = 32,
+    .plaintext_length       = 24,
+    .additional_data        = additional_data,
+    .ad_input_length        = 32,
+    .input                  = gcm_update_ct_24B,
+    .input_length           = 24,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = plaintext,
+    .expected_output_length = 24,
+    .operation_state        = 1,
+    .expected_status        = PSA_SUCCESS
+},
+
+{
+    .test_desc              = "Test psa_aead_update - Decrypt - GCM - Invalid operation state\n",
+    .type                   = PSA_KEY_TYPE_AES,
+    .data                   = key_data,
+    .data_length            = AES_16B_KEY_SIZE,
+    .usage_flags            = PSA_KEY_USAGE_DECRYPT,
+    .alg                    = PSA_ALG_GCM,
+    .setup_alg              = PSA_ALG_GCM,
+    .nonce                  = nonce,
+    .nonce_length           = 12,
+    .ad_length              = 32,
+    .plaintext_length       = 24,
+    .additional_data        = additional_data,
+    .ad_input_length        = 32,
+    .input                  = gcm_update_ct_24B,
+    .input_length           = 24,
+    .output                 = expected_output,
+    .output_size            = BUFFER_SIZE,
+    .expected_output        = NULL,
+    .expected_output_length = 0,
+    .operation_state        = 0,
+    .expected_status        = PSA_ERROR_BAD_STATE
+},
+#endif /* ARCH_TEST_GCM */
+#endif /* ARCH_TEST_AES_128 */
 };
 #endif
