@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2020-2025, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2020-2026, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -69,6 +69,21 @@ extern const uint8_t rsa_256_key_data[];
 extern const uint8_t ec_key_data[];
 extern const uint8_t ec_key_pair[];
 extern const uint8_t ec_keypair_deterministic[];
+
+extern const uint8_t ecdsa_secp384r1_sha384_priv[];
+extern const uint8_t ecdsa_secp384r1_sha384_pub[];
+extern const uint8_t ecdsa_secp384r1_sha384_hash[];
+extern const uint8_t ecdsa_secp384r1_sha384_sig[];
+
+extern const uint8_t ecdsa_secp521r1_sha384_priv[];
+extern const uint8_t ecdsa_secp521r1_sha384_pub[];
+extern const uint8_t ecdsa_secp521r1_sha384_hash[];
+extern const uint8_t ecdsa_secp521r1_sha384_sig[];
+
+extern const uint8_t ecdsa_secp521r1_sha512_priv[];
+extern const uint8_t ecdsa_secp521r1_sha512_pub[];
+extern const uint8_t ecdsa_secp521r1_sha512_hash[];
+extern const uint8_t ecdsa_secp521r1_sha512_sig[];
 
 extern const uint8_t md2_hash[];
 extern const uint8_t md4_hash[];

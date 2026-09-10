@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2025, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2026, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -280,4 +280,36 @@ static const test_data check1[] = {
 },
 #endif
 
+#ifdef ARCH_TEST_ECC_CURVE_SECP521R1
+#ifdef ARCH_TEST_SHA384
+{
+    .test_desc = "Test psa_verify_hash - ECDSA KEY_PAIR SECP521R1 SHA-384\n",
+    .type = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
+    .data = ecdsa_secp521r1_sha384_priv,
+    .data_length = 66,
+    .usage_flags = PSA_KEY_USAGE_VERIFY_HASH,
+    .alg = PSA_ALG_ECDSA(PSA_ALG_SHA_384),
+    .hash = ecdsa_secp521r1_sha384_hash,
+    .hash_length = 48,
+    .signature = ecdsa_secp521r1_sha384_sig,
+    .signature_length = 132,
+    .expected_status = PSA_SUCCESS
+},
+#endif
+#ifdef ARCH_TEST_SHA512
+{
+    .test_desc = "Test psa_verify_hash - ECDSA KEY_PAIR SECP521R1 SHA-512\n",
+    .type = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
+    .data = ecdsa_secp521r1_sha512_priv,
+    .data_length = 66,
+    .usage_flags = PSA_KEY_USAGE_VERIFY_HASH,
+    .alg = PSA_ALG_ECDSA(PSA_ALG_SHA_512),
+    .hash = ecdsa_secp521r1_sha512_hash,
+    .hash_length = 64,
+    .signature = ecdsa_secp521r1_sha512_sig,
+    .signature_length = 132,
+    .expected_status = PSA_SUCCESS
+},
+#endif
+#endif
 };
