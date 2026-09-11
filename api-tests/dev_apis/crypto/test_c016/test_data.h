@@ -1,5 +1,5 @@
 /** @file
- * Copyright (c) 2019-2023, Arm Limited or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2023, 2026, Arm Limited or its affiliates. All rights reserved.
  * SPDX-License-Identifier : Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -136,6 +136,42 @@ static const test_data check1[] = {
     .expected_status = PSA_SUCCESS
 },
 #endif
+#endif
+
+#ifdef ARCH_TEST_ECC_CURVE_SECP256R1
+{
+    .test_desc       = "Test psa_generate_key with ECC KeyPair SECP_R1 256\n",
+    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
+    .usage_flags     = PSA_KEY_USAGE_EXPORT,
+    .alg             = PSA_ALG_ECDSA_ANY,
+    .bits            = 256,
+    .expected_range  = {32, 32},
+    .expected_status = PSA_SUCCESS
+},
+#endif
+
+#ifdef ARCH_TEST_ECC_CURVE_SECP384R1
+{
+    .test_desc       = "Test psa_generate_key with ECC KeyPair SECP_R1 384\n",
+    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
+    .usage_flags     = PSA_KEY_USAGE_EXPORT,
+    .alg             = PSA_ALG_ECDSA_ANY,
+    .bits            = 384,
+    .expected_range  = {48, 48},
+    .expected_status = PSA_SUCCESS
+},
+#endif
+
+#ifdef ARCH_TEST_ECC_CURVE_SECP521R1
+{
+    .test_desc       = "Test psa_generate_key with ECC KeyPair SECP_R1 521\n",
+    .type            = PSA_KEY_TYPE_ECC_KEY_PAIR(PSA_ECC_FAMILY_SECP_R1),
+    .usage_flags     = PSA_KEY_USAGE_EXPORT,
+    .alg             = PSA_ALG_ECDSA_ANY,
+    .bits            = 521,
+    .expected_range  = {66, 66},
+    .expected_status = PSA_SUCCESS
+},
 #endif
 
 #ifdef ARCH_TEST_RSA_PKCS1V15_SIGN_RAW

@@ -39,6 +39,8 @@
 #define ARCH_TEST_RSA_1024
 #define ARCH_TEST_RSA_2048
 #define ARCH_TEST_RSA_3072
+/* Enable ARCH_TEST_SKIP_RSA_2048_GEN_KEY to skip RSA 2048 public-key data-sets */
+// #define ARCH_TEST_SKIP_RSA_2048_GEN_KEY
 
 /**
  * \def  ARCH_TEST_ECC
